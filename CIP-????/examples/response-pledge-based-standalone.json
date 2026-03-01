@@ -1,0 +1,20 @@
+{
+  "17": {
+    "msg": [
+      "Standalone PledgeBased response"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "1414141414141414141414141414141414141414141414141414141414141414",
+      "answers": [
+        {
+          "questionId": "hardening_work",
+          "selection": [
+            0,
+            2
+          ]
+        }
+      ]
+    }
+  }
+}

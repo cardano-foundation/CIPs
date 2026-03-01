@@ -32,7 +32,8 @@
       "type": "string",
       "enum": [
         "StakeBased",
-        "CredentialBased"
+        "CredentialBased",
+        "PledgeBased"
       ]
     },
     "builtin_method_type": {
@@ -327,9 +328,33 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "voteWeighting": {
+                "const": "PledgeBased"
+              }
+            },
+            "required": [
+              "voteWeighting"
+            ]
+          },
+          "then": {
+            "required": [
+              "eligibility"
+            ],
+            "properties": {
+              "eligibility": {
+                "const": [
+                  "SPO"
+                ]
+              }
+            }
+          }
         }
       ],
-      "description": "Note: lifecycle.endSlot requirement for standalone StakeBased surveys is semantic and enforced by CIP prose."
+      "description": "Note: lifecycle.endSlot requirement for standalone StakeBased/PledgeBased surveys is semantic and enforced by CIP prose."
     },
     "answer_item": {
       "oneOf": [

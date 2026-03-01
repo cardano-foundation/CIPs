@@ -91,7 +91,7 @@ A survey is identified by:
 | `description` | String | Yes | Human-readable survey context or rationale. |
 | `questions` | Array of Question Objects | Yes | Survey questions. MUST contain at least one item. |
 | `eligibility` | Array of Strings | No | Eligible responder classes. Allowed values: `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
-| `voteWeighting` | String | Yes | `"StakeBased"` or `"CredentialBased"`. |
+| `voteWeighting` | String | Yes | `"StakeBased"`, `"CredentialBased"`, or `"PledgeBased"`. |
 | `lifecycle` | Object | No | Optional lifecycle window using slot bounds: `{ startSlot, endSlot }`. |
 
 #### Question object fields (`questions[]` items)
@@ -116,6 +116,9 @@ Question objects MUST NOT include `eligibility`, `voteWeighting`, or `lifecycle`
 - If `voteWeighting = "StakeBased"`:
   - `eligibility`, if present, MUST NOT include `"CC"`.
   - For standalone surveys (no governance-action linkage), `lifecycle.endSlot` MUST be present and is used as the snapshot point for stake weighting.
+- If `voteWeighting = "PledgeBased"`:
+  - `eligibility` MUST be present and MUST be exactly `["SPO"]`.
+  - For standalone surveys (no governance-action linkage), `lifecycle.endSlot` MUST be present and is used as the snapshot point for live-pledge weighting.
 - If `voteWeighting = "CredentialBased"` and `eligibility` includes any of `"DRep"`, `"SPO"`, or `"CC"`, tooling MUST enforce role-membership validation for those roles as specified in [Weighting Semantics](#weighting-semantics).
 
 ### Method Types
@@ -251,6 +254,9 @@ Deterministic derivation rules:
    - Tooling MUST derive exactly one stake credential from stake-credential signals in chain data (for example withdrawals, certificates, or governance voting procedures that carry a stake credential).
    - If zero or multiple distinct stake credentials are derivable, the response is invalid.
    - The derived stake credential key hash is the `responseCredential`.
+4. For surveys with `voteWeighting = "PledgeBased"`:
+   - For governance-linked surveys, `responseCredential` MUST be derived from governance voting procedures (SPO voter credential).
+   - For standalone surveys, response transaction MUST include exactly one required signer; that key hash is the `responseCredential`.
 
 ### Duplicate and Ordering Semantics
 
@@ -274,6 +280,14 @@ Latest-response semantics replace the full prior response for that tuple.
   - For governance-linked surveys, stake weighting MUST mirror the linked governance action's role-specific stake distribution and snapshot logic.
   - For standalone surveys, stake weighting snapshot MUST be taken at `lifecycle.endSlot`.
   - When multiple role domains are eligible, canonical results are per-role tallies. Tools MAY additionally publish merged/composite tallies.
+- `PledgeBased`:
+  - SPO-only mode. `eligibility` MUST be exactly `["SPO"]`.
+  - One valid latest response per `(surveyTxId, responseCredential)` is weighted by the sum of live pledge over all active registered pools mapped to `responseCredential` at snapshot.
+  - Declared pledge MUST NOT be used for weighting.
+  - For governance-linked surveys, snapshot timing MUST mirror the linked governance action snapshot/distribution timing.
+  - For standalone surveys, snapshot timing MUST use `lifecycle.endSlot`.
+  - If `responseCredential` maps to zero active registered pools at snapshot, the response is invalid.
+  - If live pledge cannot be resolved for the mapped active pool set at snapshot, the response is invalid.
 
 ### Security and Tooling Guidance
 
@@ -281,6 +295,7 @@ Latest-response semantics replace the full prior response for that tuple.
 - Tools SHOULD surface warning text for `CredentialBased` surveys, especially when `eligibility` is absent or includes `"Stakeholder"`.
 - Mixing stake domains (for example DRep and SPO) into one opaque total can obscure interpretation. Tools SHOULD always expose per-role canonical tallies even when publishing merged views.
 - Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from governance voting procedures and eligibility is bounded by action voter classes.
+- `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge, but remains chain-state dependent; tools SHOULD disclose snapshot slot and mapped pool set used for each weighted response.
 
 ### Info Action Profile
 
@@ -311,7 +326,8 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 8. Derive `responseCredential` using [Responder identity for deduplication](#responder-identity-for-deduplication).
 9. Enforce role-membership checks required by [Weighting Semantics](#weighting-semantics).
 10. Apply latest-valid-response-wins ordering.
-11. Apply selected weighting mode and produce per-role canonical tallies (and optional merged views).
+11. For `PledgeBased`, derive active pool set mapped to `responseCredential` at snapshot and resolve live pledge values.
+12. Apply selected weighting mode and produce per-role canonical tallies (and optional merged views).
 
 ### CDDL Schema
 
@@ -323,7 +339,7 @@ hex_blake2b_256 = tstr .regexp "[0-9a-fA-F]{64}"
 uri = tstr
 
 eligibility_role = "DRep" / "SPO" / "CC" / "Stakeholder"
-vote_weighting = "StakeBased" / "CredentialBased"
+vote_weighting = "StakeBased" / "CredentialBased" / "PledgeBased"
 
 builtin_method_type =
   "urn:cardano:poll-method:single-choice:v1" /
@@ -439,6 +455,7 @@ This revision defines version `1.0.0`.
 - Requiring explicit `voteWeighting` removes ambiguous defaults and forces clear tally intent.
 - Governance-linked surveys can inherit governance voter-class constraints while still allowing surveys to narrow eligibility via intersection.
 - Role-aware validation and per-role stake tallies reduce sybil and mixed-domain interpretation risks.
+- `PledgeBased` adds an SPO-specific mode that uses live pledge instead of declared pledge for more defensible weighting.
 - Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.
 - URI-based method identifiers plus schema hash integrity enable safe extensibility for future/custom methods.
 - Latest-valid-response-wins gives participants a correction path while preserving deterministic tally behavior.

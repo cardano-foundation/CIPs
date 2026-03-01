@@ -1,0 +1,19 @@
+{
+  "17": {
+    "msg": [
+      "Invalid: live pledge cannot be resolved for mapped active pool set"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "1414141414141414141414141414141414141414141414141414141414141414",
+      "answers": [
+        {
+          "questionId": "hardening_work",
+          "selection": [
+            2
+          ]
+        }
+      ]
+    }
+  }
+}

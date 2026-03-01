@@ -7,6 +7,7 @@ This file defines reproducible vectors for:
 - Invalid response detection for unresolved survey binding.
 - Governance action anchor linkage validation.
 - Weighting, eligibility, and role-validation behavior.
+- `PledgeBased` live-pledge weighting behavior.
 
 ## Survey Definition Vectors
 
@@ -180,6 +181,52 @@ Expected validation behavior:
 Expected validation behavior:
 - A survey definition without `voteWeighting` is invalid.
 
+### Vector 20: Valid linked `PledgeBased`
+
+Sources:
+- Survey definition: [examples/survey-pledge-based-linked.json](./examples/survey-pledge-based-linked.json)
+- Response: [examples/response-pledge-based-linked.json](./examples/response-pledge-based-linked.json)
+
+Expected validation behavior:
+- Survey is valid because `voteWeighting = "PledgeBased"` and `eligibility = ["SPO"]`.
+- Linked response identity is derived from governance voting procedures (SPO voter credential).
+- Weight is computed from the sum of live pledge over active registered pools mapped to the responder at the governance-linked snapshot.
+
+### Vector 21: Valid standalone `PledgeBased`
+
+Sources:
+- Survey definition: [examples/survey-pledge-based-standalone.json](./examples/survey-pledge-based-standalone.json)
+- Response: [examples/response-pledge-based-standalone.json](./examples/response-pledge-based-standalone.json)
+
+Expected validation behavior:
+- Survey is valid because `voteWeighting = "PledgeBased"`, `eligibility = ["SPO"]`, and `lifecycle.endSlot` is present.
+- Standalone response must include exactly one required signer; that key hash is used as `responseCredential`.
+- Weight is computed from live pledge at `lifecycle.endSlot` across active registered pools mapped to `responseCredential`.
+
+### Vector 22: Invalid `PledgeBased` eligibility configuration
+
+Source:
+- Survey definition: [examples/survey-invalid-pledge-based-eligibility.json](./examples/survey-invalid-pledge-based-eligibility.json)
+
+Expected validation behavior:
+- Survey is invalid because `PledgeBased` requires `eligibility` to be exactly `["SPO"]`.
+
+### Vector 23: Invalid `PledgeBased` response (no active pool mapping)
+
+Source:
+- Response: [examples/response-invalid-pledge-based-no-active-pool.json](./examples/response-invalid-pledge-based-no-active-pool.json)
+
+Expected validation behavior:
+- Response is invalid because `responseCredential` maps to zero active registered pools at snapshot.
+
+### Vector 24: Invalid `PledgeBased` response (unresolved live pledge)
+
+Source:
+- Response: [examples/response-invalid-pledge-based-unresolved-live-pledge.json](./examples/response-invalid-pledge-based-unresolved-live-pledge.json)
+
+Expected validation behavior:
+- Response is invalid because live pledge cannot be resolved for the mapped active pool set at snapshot.
+
 ## Schema vs Semantic Validation Boundary
 
 Expected implementation behavior:
@@ -191,3 +238,4 @@ Expected implementation behavior:
   - governance-linked response source requirements (governance voting procedures)
   - role-membership verification requirements for `CredentialBased`
   - `StakeBased` role-domain and snapshot/source rules
+  - `PledgeBased` signer-to-pool mapping and live-pledge snapshot/source rules

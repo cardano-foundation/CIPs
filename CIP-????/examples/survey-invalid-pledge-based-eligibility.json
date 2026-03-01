@@ -1,0 +1,28 @@
+{
+  "17": {
+    "msg": [
+      "Invalid PledgeBased eligibility configuration"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Invalid PledgeBased eligibility configuration",
+      "description": "This example is invalid because PledgeBased requires eligibility to be exactly ['SPO'].",
+      "questions": [
+        {
+          "questionId": "invalid_mix",
+          "question": "This invalid survey should not be accepted.",
+          "methodType": "urn:cardano:poll-method:single-choice:v1",
+          "options": [
+            "Yes",
+            "No"
+          ]
+        }
+      ],
+      "eligibility": [
+        "SPO",
+        "DRep"
+      ],
+      "voteWeighting": "PledgeBased"
+    }
+  }
+}
