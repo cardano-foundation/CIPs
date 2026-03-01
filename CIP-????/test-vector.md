@@ -121,11 +121,8 @@ Expected tally behavior:
 
 ## Invalid Binding Vector
 
-Source:
-- Invalid response: [examples/response-invalid-mismatch.json](./examples/response-invalid-mismatch.json)
-
 Expected validation behavior:
-- Response is invalid because `surveyTxId` does not resolve to a `surveyDetails` transaction under label `17`.
+- A response is invalid when `surveyTxId` does not resolve to a `surveyDetails` transaction under label `17`.
 - Response MUST be ignored in tallies.
 
 ## Governance Action Anchor Linkage Vectors
@@ -156,7 +153,7 @@ Expected validation behavior:
 ### Vector 15: Invalid link compatibility (lifecycle or role mismatch)
 
 Sources:
-- Survey definition: [examples/survey-mixed-role-linked.json](./examples/survey-mixed-role-linked.json)
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
 - Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
 
 Expected validation behavior:
@@ -197,8 +194,8 @@ Expected validation behavior:
 ### Vector 20: Valid linked mixed-role weighting
 
 Sources:
-- Survey definition: [examples/survey-mixed-role-linked.json](./examples/survey-mixed-role-linked.json)
-- Response: [examples/response-mixed-role-linked.json](./examples/response-mixed-role-linked.json)
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
@@ -208,60 +205,29 @@ Expected validation behavior:
 ### Vector 21: Valid standalone mixed-role weighting
 
 Sources:
-- Survey definition: [examples/survey-mixed-role-standalone.json](./examples/survey-mixed-role-standalone.json)
-- Response: [examples/response-mixed-role-standalone.json](./examples/response-mixed-role-standalone.json)
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting and required lifecycle.
 - Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
 - Membership checks occur at response slot; weighting uses `lifecycle.endEpoch`.
 
-### Vector 22: Invalid role weighting (`CC: StakeBased`)
-
-Source:
-- Survey definition: [examples/survey-invalid-roleweighting-cc-stakebased.json](./examples/survey-invalid-roleweighting-cc-stakebased.json)
+## Invalid Scenarios
 
 Expected validation behavior:
-- Survey is invalid because `CC` MAY only use `CredentialBased`.
-
-### Vector 23: Invalid role weighting (`Stakeholder: CredentialBased`)
-
-Source:
-- Survey definition: [examples/survey-invalid-roleweighting-stakeholder-credentialbased.json](./examples/survey-invalid-roleweighting-stakeholder-credentialbased.json)
-
-Expected validation behavior:
-- Survey is invalid because `Stakeholder` MAY only use `StakeBased`.
-
-### Vector 24: Invalid response (ambiguous role+credential candidates)
-
-Source:
-- Response: [examples/response-invalid-ambiguous-role-candidate.json](./examples/response-invalid-ambiguous-role-candidate.json)
-
-Expected validation behavior:
-- Response is invalid because more than one eligible `(responderRole, responseCredential)` candidate is derivable.
-
-### Vector 25: Invalid response (no eligible role+credential candidate)
-
-Source:
-- Response: [examples/response-invalid-no-eligible-role-candidate.json](./examples/response-invalid-no-eligible-role-candidate.json)
-
-Expected validation behavior:
-- Response is invalid because no eligible `(responderRole, responseCredential)` candidate is derivable.
-
-### Vector 26: Invalid `PledgeBased` response (unresolved live pledge)
-
-Source:
-- Response: [examples/response-invalid-pledge-based-unresolved-live-pledge.json](./examples/response-invalid-pledge-based-unresolved-live-pledge.json)
-
-Expected validation behavior:
-- Response is invalid because live pledge cannot be resolved for the mapped active pool set at snapshot.
+- `CC: StakeBased` is invalid because `CC` MAY only use `CredentialBased`.
+- `Stakeholder: CredentialBased` is invalid because `Stakeholder` MAY only use `StakeBased`.
+- A standalone response is invalid if more than one eligible `(responderRole, responseCredential)` candidate is derivable.
+- A standalone response is invalid if no eligible `(responderRole, responseCredential)` candidate is derivable.
+- A `PledgeBased` response is invalid when live pledge cannot be resolved for the mapped active pool set at snapshot.
 
 ## Schema vs Semantic Validation Boundary
 
 Expected implementation behavior:
 - JSON Schema validation SHOULD be used for payload shape validation.
 - Successful JSON Schema validation does not imply semantic validity.
-- Tools MUST additionally enforce semantic rules from CIP prose, including:
+- Tools MUST additionally enforce semantic rules from CIP text, including:
   - governance-link resolution by `surveyTxId`
   - linked role/lifecycle compatibility checks and invalid-link handling
   - governance-linked response source requirements (governance voting procedures)
