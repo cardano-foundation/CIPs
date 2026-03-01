@@ -252,25 +252,6 @@
         }
       ]
     },
-    "lifecycle": {
-      "type": "object",
-      "properties": {
-        "startEpoch": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "endEpoch": {
-          "type": "integer",
-          "minimum": 0
-        }
-      },
-      "required": [
-        "startEpoch",
-        "endEpoch"
-      ],
-      "additionalProperties": false,
-      "description": "Note: JSON Schema does not enforce startEpoch < endEpoch; tooling MUST enforce per CIP prose."
-    },
     "survey_details_inner": {
       "type": "object",
       "properties": {
@@ -295,8 +276,9 @@
         "roleWeighting": {
           "$ref": "#/$defs/role_weighting"
         },
-        "lifecycle": {
-          "$ref": "#/$defs/lifecycle"
+        "endEpoch": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "required": [
@@ -305,10 +287,10 @@
         "description",
         "questions",
         "roleWeighting",
-        "lifecycle"
+        "endEpoch"
       ],
       "additionalProperties": false,
-      "description": "Note: lifecycle.startEpoch/endEpoch is required for all surveys; linked compatibility and epoch-window semantics are enforced by CIP prose."
+      "description": "Note: endEpoch is required for all surveys; linked compatibility and epoch semantics are enforced by CIP prose."
     },
     "answer_item": {
       "oneOf": [

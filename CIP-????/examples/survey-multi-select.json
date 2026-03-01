@@ -24,10 +24,7 @@
       "roleWeighting": {
         "DRep": "CredentialBased"
       },
-      "lifecycle": {
-        "startEpoch": 500,
-        "endEpoch": 504
-      }
+      "endEpoch": 504
     }
   }
 }

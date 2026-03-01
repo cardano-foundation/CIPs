@@ -22,10 +22,7 @@
       "roleWeighting": {
         "Stakeholder": "StakeBased"
       },
-      "lifecycle": {
-        "startEpoch": 500,
-        "endEpoch": 504
-      }
+      "endEpoch": 504
     }
   }
 }

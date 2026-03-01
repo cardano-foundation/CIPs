@@ -135,7 +135,7 @@ Expected validation behavior:
 - The legacy nested form `surveyRef.surveyTxId` is invalid for this version.
 - Linkage MUST additionally pass compatibility checks:
   - `linkedRoleWeighting = roleWeighting ∩ actionEligibility` is non-empty.
-  - Survey `lifecycle` exactly matches the governance action active voting epoch window.
+  - Survey `endEpoch` exactly matches the governance action active voting end epoch.
 - If validation fails, tooling MUST treat the action-to-survey linkage as invalid and MUST NOT attach that survey to the governance action.
 - Linkage invalidity does not invalidate the survey as standalone metadata.
 
@@ -147,10 +147,10 @@ Current anchor reference:
 ### Vector 14: Governance-linked response source requirement
 
 Expected validation behavior:
-- For governance-linked surveys, response transactions MUST include governance voting procedures.
-- A signer-only response (without governance voting procedures) is invalid for linked surveys.
+- For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
+- A signer-only response (without transaction-body `voting_procedures`) is invalid for linked surveys.
 
-### Vector 15: Invalid link compatibility (lifecycle or role mismatch)
+### Vector 15: Invalid link compatibility (endEpoch or role mismatch)
 
 Sources:
 - Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
@@ -158,7 +158,7 @@ Sources:
 
 Expected validation behavior:
 - If `roleWeighting ∩ actionEligibility` is empty, the action-to-survey link is invalid.
-- If survey lifecycle does not exactly equal the action voting epoch window, the action-to-survey link is invalid.
+- If survey `endEpoch` does not exactly equal the action voting end epoch, the action-to-survey link is invalid.
 - In both cases, tooling MUST ignore the linkage while keeping the survey valid as standalone metadata.
 
 ### Vector 16: CredentialBased role verification
@@ -175,21 +175,20 @@ Expected validation behavior:
 - `Stakeholder: CredentialBased` is invalid.
 - Canonical tally output is per-role. Tools MAY additionally publish merged/composite outputs with disclosed logic.
 
-### Vector 18: Lifecycle and timing semantics
+### Vector 18: End-epoch and timing semantics
 
 Expected validation behavior:
-- All surveys MUST define `lifecycle.startEpoch` and `lifecycle.endEpoch`.
-- `startEpoch` MUST be strictly less than `endEpoch`.
-- Lifecycle bounds are inclusive (`startEpoch <= responseEpoch <= endEpoch`).
+- All surveys MUST define `endEpoch`.
+- Responses are valid only when `responseEpoch <= endEpoch`.
 - Role-membership and credential eligibility checks are evaluated at response time.
-- `StakeBased` and `PledgeBased` weights are read at `lifecycle.endEpoch`.
+- `StakeBased` and `PledgeBased` weights are read at `endEpoch`.
 - `CredentialBased` weight is `1` per valid latest response.
 
 ### Vector 19: roleWeighting is mandatory
 
 Expected validation behavior:
 - A survey definition without `roleWeighting` is invalid.
-- A survey definition without `lifecycle` is invalid.
+- A survey definition without `endEpoch` is invalid.
 - Legacy `eligibility` and `voteWeighting` fields are invalid for this draft model.
 
 ### Vector 20: Valid linked mixed-role weighting
@@ -200,7 +199,7 @@ Sources:
 
 Expected validation behavior:
 - Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
-- Linked response identity is derived from governance voting procedures.
+- Linked response identity is derived from transaction-body `voting_procedures`.
 - Canonical output is role-separated tally results.
 
 ### Vector 21: Valid standalone mixed-role weighting
@@ -210,9 +209,9 @@ Sources:
 - Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
 
 Expected validation behavior:
-- Survey is valid with mixed role weighting and required lifecycle.
+- Survey is valid with mixed role weighting and required `endEpoch`.
 - Standalone response must resolve to exactly one eligible `(responderRole, responseCredential)` candidate.
-- Membership checks occur at response time. Weighting uses `lifecycle.endEpoch`.
+- Membership checks occur at response time. Weighting uses `endEpoch`.
 
 ## Invalid Scenarios
 
@@ -229,9 +228,9 @@ Expected implementation behavior:
 - Successful JSON Schema validation does not imply semantic validity.
 - Tools MUST additionally enforce semantic rules from CIP text, including:
   - governance-link resolution by `surveyTxId`
-  - linked role/lifecycle compatibility checks and invalid-link handling
-  - governance-linked response source requirements (governance voting procedures)
+  - linked role/end-epoch compatibility checks and invalid-link handling
+  - governance-linked response source requirements (non-empty transaction-body `voting_procedures`)
   - role-membership verification requirements
   - single eligible `(responderRole, responseCredential)` derivation requirement
-  - epoch lifecycle window filtering and end-epoch snapshot rules
+  - end-epoch response cutoff and snapshot rules
   - `PledgeBased` signer-to-pool mapping and live-pledge resolution rules
