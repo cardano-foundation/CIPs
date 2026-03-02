@@ -89,7 +89,7 @@ A survey is identified by:
 | `description` | String | Yes | Human-readable survey context or rationale. |
 | `questions` | Array of Question Objects | Yes | Survey questions. MUST contain at least one item. |
 | `roleWeighting` | Object | Yes | Map from responder role to weighting mode. Keys MUST be a subset of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"` and define eligibility exactly. |
-| `endEpoch` | Integer | Yes | Inclusive epoch cutoff for response validity and weighting snapshot point for weighted modes. |
+| `endEpoch` | Integer | Yes | Inclusive epoch cutoff for response validity, deterministic tally re-verification anchor, and weighting snapshot point for weighted modes. |
 
 #### Question object fields (`questions[]` items)
 
@@ -117,6 +117,7 @@ Question objects MUST NOT include `roleWeighting` or `endEpoch`. Those fields ar
   - `Stakeholder` MAY only use `"StakeBased"`.
 - `endEpoch` MUST be present.
 - Responses are valid only when `responseEpoch <= endEpoch`.
+- Tally inclusion MUST additionally pass mandatory re-verification at `endEpoch`.
 
 ### Method Types
 
@@ -243,6 +244,11 @@ Validation rules:
 #### Responder identity for deduplication
 
 A tallying tool MUST treat `surveyResponse.responderRole` as a required role claim and MUST validate it against chain-derived role evidence. `responseCredential` (credential key hash) MUST be derived from chain data.
+Tools MUST NOT blindly trust role claims that appear in on-chain response metadata.
+Validation MUST run in two phases:
+- response-time validation (at response inclusion),
+- tally-time re-verification (at survey `endEpoch` snapshot).
+Only responses that pass both phases are counted.
 
 Deterministic derivation rules:
 1. `surveyResponse.responderRole` is mandatory and is a role claim, not authoritative identity by itself.
@@ -268,19 +274,25 @@ Deterministic derivation rules:
    - otherwise the response is invalid.
 10. A response is invalid when claimed `surveyResponse.responderRole` does not match chain-derived role evidence.
 11. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
+12. During tallying, tooling MUST re-verify each response at the `endEpoch` snapshot:
+   - re-derive role/credential evidence from the response transaction witnesses/signers and other chain evidence sources,
+   - re-check role-membership and credential eligibility at `endEpoch`.
+13. A response MUST be excluded from tally results when tally-time re-verification fails, even if it passed response-time validation.
 
 ### Epoch Semantics
 
 - `endEpoch` is mandatory for every survey definition.
 - `responseEpoch` is derived from the response transaction inclusion via ledger epoch mapping.
 - Responses with `responseEpoch > endEpoch` are invalid.
-- Role-membership and credential eligibility checks are evaluated at response time.
+- Role-membership and credential eligibility checks are evaluated at response time and MUST be re-verified at tally time.
+- Tally-time re-verification is anchored to the survey `endEpoch` snapshot to preserve deterministic, reproducible tallies.
+- A response is counted only if it passes both response-time validation and `endEpoch` tally-time re-verification.
 - For `StakeBased` and `PledgeBased`, weighting snapshots are taken at `endEpoch` for both linked and standalone surveys.
 
 ### Duplicate and Ordering Semantics
 
 For a given tuple `(surveyTxId, responderRole, responseCredential)`:
-- If multiple valid responses exist, the latest valid response wins.
+- If multiple responses pass both validation phases, the latest valid response wins.
 - Latest is determined by chain ordering tuple: `(slot, txIndexInBlock, metadataPosition)`.
 - `metadataPosition` is the position of label `17` payload in metadata processing order (for this label-specific standard it is typically `0`).
 
@@ -316,6 +328,7 @@ Latest-response semantics replace the full prior response for that tuple.
 - Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from transaction-body `voting_procedures` and role eligibility is bounded by action voter classes.
 - `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
 - Required `responderRole` claims do not replace chain validation; tools MUST reject responses when claimed role and chain-derived role evidence disagree.
+- Standalone and linked surveys both require full tx-level identity verification; tooling MUST verify that claimed role/credential evidence matches the actual signer/witness context (for example, the wallet credentials that created the response transaction).
 
 ### Info Action Profile
 
@@ -325,6 +338,7 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 - Responses MUST include claimed `responderRole`.
 - Responses MUST include a non-empty transaction-body `voting_procedures` element.
 - For linked responses, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry, and that `govActionId` MUST equal the linked action id.
+- Tally-time re-verification at `endEpoch` remains mandatory for linked responses.
 - `endEpoch` MUST exactly match the ledger-defined active voting end epoch of the referencing Info Action.
 - Responses with `responseEpoch > endEpoch` MUST be ignored.
 - Other governance action types may also link surveys; additional type-specific profiles are out of scope for this CIP version.
@@ -346,9 +360,10 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 7. Validate claimed `responderRole` and derive exactly one eligible `responseCredential` for that claimed role using [Responder identity for deduplication](#responder-identity-for-deduplication), including linked-survey checks for `voting_procedures` cardinality and `linkedActionId` match.
 8. Filter responses by `responseEpoch <= endEpoch`.
 9. Enforce role-membership and credential eligibility checks at response time as required by [Responder identity for deduplication](#responder-identity-for-deduplication) and [Weighting Semantics](#weighting-semantics).
-10. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)`.
-11. At or after `endEpoch`, derive `StakeBased` and `PledgeBased` weights from snapshot state; for `PledgeBased`, derive active pool set mapped to `responseCredential` and resolve live pledge values.
-12. Apply selected per-role weighting and produce canonical per-role tallies (and optional merged views).
+10. At or after `endEpoch`, re-verify each response using `endEpoch` snapshot state (role-membership, credential eligibility, and claim-vs-chain consistency); exclude failures.
+11. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)` over responses that passed both validation phases.
+12. Derive `StakeBased` and `PledgeBased` weights from `endEpoch` snapshot state; for `PledgeBased`, derive active pool set mapped to `responseCredential` and resolve live pledge values.
+13. Apply selected per-role weighting and produce canonical per-role tallies (and optional merged views).
 
 ### CDDL Schema
 

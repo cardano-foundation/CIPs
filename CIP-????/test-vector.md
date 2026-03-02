@@ -9,6 +9,7 @@ This file defines reproducible vectors for:
 - Linked-response tx-context validation for `voting_procedures` cardinality and linked action-id matching.
 - Role-weighting, role-validation, and mixed-role behavior.
 - Required `responderRole` claims with claim-vs-chain role validation.
+- Mandatory tally-time re-verification at `endEpoch` before counting results.
 - `PledgeBased` live-pledge weighting behavior.
 
 ## Survey Definition Vectors
@@ -173,6 +174,7 @@ Expected validation behavior:
 Expected validation behavior:
 - Every response MUST include claimed `responderRole`.
 - In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response time.
+- Role/credential evidence MUST be re-verified again at tally time (`endEpoch`) before counting.
 - A response is invalid when claimed `responderRole` is not part of the active role set.
 - A response is invalid when claimed `responderRole` disagrees with chain-derived role evidence.
 - Unverifiable role membership is invalid.
@@ -192,7 +194,8 @@ Expected validation behavior:
 Expected validation behavior:
 - All surveys MUST define `endEpoch`.
 - Responses are valid only when `responseEpoch <= endEpoch`.
-- Role-membership and credential eligibility checks are evaluated at response time.
+- Role-membership and credential eligibility checks are evaluated at response time and re-verified at tally time using `endEpoch` snapshot state.
+- A response that passed response-time checks but fails `endEpoch` re-verification is excluded from tally results.
 - `StakeBased` and `PledgeBased` weights are read at `endEpoch`.
 - `CredentialBased` weight is `1` per valid latest response.
 
@@ -225,7 +228,7 @@ Expected validation behavior:
 - Survey is valid with mixed role weighting and required `endEpoch`.
 - Standalone response must include claimed `responderRole`, and derivation is scoped to that claimed role.
 - Standalone response is valid only if exactly one eligible `responseCredential` is derivable for claimed `responderRole`.
-- Membership checks occur at response time. Weighting uses `endEpoch`.
+- Membership checks occur at response time and are re-verified at tally time (`endEpoch`). Weighting uses `endEpoch`.
 
 ### Vector 22: Invalid linked response (`voting_procedures` action-id mismatch)
 
@@ -264,8 +267,20 @@ Source:
 - Pledge weighting context: [examples/txctx-pledge-zero-pools-at-end.json](./examples/txctx-pledge-zero-pools-at-end.json)
 
 Expected validation behavior:
-- Response remains valid when SPO credential validity was established at response time.
+- Response remains valid when SPO credential validity was established at response time and still passes tally-time re-verification at `endEpoch`.
 - If mapped active pool set is empty at `endEpoch`, `PledgeBased` contribution is weight `0`.
+
+### Vector 26: Invalid standalone forged role claim at tally
+
+Expected validation behavior:
+- A standalone response with claimed `responderRole` that is not supported by tx signer/witness and credential evidence MUST be excluded at tally.
+- This exclusion applies even when the payload is syntactically valid and included on-chain.
+
+### Vector 27: Invalid due to role drift by `endEpoch`
+
+Expected validation behavior:
+- If a response passes response-time membership checks but the same role/credential is not eligible at `endEpoch`, it MUST be excluded from tally results.
+- Canonical tallies are computed after this `endEpoch` re-verification filter.
 
 ## Invalid Scenarios
 
@@ -275,6 +290,7 @@ Expected validation behavior:
 - A response is invalid if `responderRole` is missing.
 - A response is invalid if claimed `responderRole` is not eligible under the survey active role set.
 - A response is invalid if claimed `responderRole` disagrees with chain-derived role evidence.
+- A response is excluded from tally if it fails mandatory `endEpoch` re-verification, even if it passed response-time checks.
 - A standalone response is invalid if more than one eligible `responseCredential` is derivable for the claimed role.
 - A standalone response is invalid if no eligible `responseCredential` is derivable for the claimed role.
 
@@ -288,6 +304,7 @@ Expected implementation behavior:
   - linked role/end-epoch compatibility checks and invalid-link handling
   - governance-linked response source requirements (non-empty transaction-body `voting_procedures`, exactly-one voter+entry, and linked action-id match)
   - required `responderRole` claim and claim-vs-chain role consistency checks
+  - mandatory second-pass re-verification at `endEpoch` before tally inclusion
   - role-membership verification requirements
   - single eligible `responseCredential` derivation requirement within the claimed role scope
   - end-epoch response cutoff and snapshot rules
