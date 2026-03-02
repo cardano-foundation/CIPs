@@ -222,7 +222,8 @@ The redeemer passed to the programmableLogicGlobal stake validator follows this 
 ```ts
 type ProgrammableLogicGlobalRedeemer {
     TransferAct {
-        registryProofs: List<RegistryProof>
+        registryProofs: List<RegistryProof>,
+        mintProofs: List<RegistryProof>
     }
     ThirdPartyAct {
         registry_node_idx: Int,
@@ -264,6 +265,15 @@ When using this constructor:
 3. For each proof of type `TokenDoesNotExist`:
    - The covering RegistryNode MUST be included as a reference input at the specified index (`node_idx`)
    - The token is treated as a normal CNT and can be transferred without additional validation
+4. The `mintProofs` field MUST contain a list of proofs, one for each token policy present in `tx.mint`. Each proof validates the minted/burned programmable token against the registry directory, following the same `TokenExists`/`TokenDoesNotExist` rules as `registryProofs`
+   - If `tx.mint` is empty and `mintProofs` is empty, this is a no-op (pure transfer, no minting)
+   - If `tx.mint` is non-empty but `mintProofs` is empty, the transaction MUST be rejected
+   - If `tx.mint` is empty but `mintProofs` is non-empty, the transaction MUST be rejected
+
+**Output Value Calculation:**
+The expected output value at programmableLogicBase addresses is the sum of validated input programmable token value **plus** validated mint value. This enables:
+- **Partial burn during transfer**: e.g., input 100 tokens, burn 30, output 70
+- **Minting during transfer**: e.g., input 100 tokens, mint 50, output 150
 
 #### ThirdPartyAct Constructor
 
@@ -287,9 +297,17 @@ Each input at `input_idxs[i]` is paired with an output at `outputs_start_idx + i
 - For each input/output pair:
   - The output MUST have the same address as the input
   - The output MUST have the same datum as the input
-  - The output MUST contain the original value MINUS the seized/modified tokens
-- At least some tokens MUST be removed from each UTxO (to prevent DoS attacks)
+  - Non-policy assets (i.e., all assets except the seized token's policy) MUST be exactly equal between input and output
+  - The seized policy's tokens MUST actually change between input and output (to prevent DoS attacks with no-op seizures)
 - The authorization check for the stake credential is bypassed (third parties don't need user permission)
+
+**Balance Invariant:**
+Instead of requiring each paired output to contain the input value minus seized tokens, the validator enforces a global balance invariant: the total output of the seized policy's tokens across **all outputs at programmableLogicBase** MUST be greater than or equal to the total input tokens of that policy (adjusted for mints/burns). This ensures seized tokens stay within the programmable token system and enables:
+- **Partial seizure**: Seize some tokens from an owner while leaving others (e.g., seize 40 of 100 tokens, leaving 60 with the owner)
+- **Wipe** (seize + burn): Seize tokens and burn them in the same transaction via `tx.mint` with negative quantities. The burn reduces the expected output accordingly
+- **Top-up** (seize + mint): Seize tokens and mint additional ones in the same transaction
+
+The adjusted input for the balance check is computed as: `total_input_policy_tokens + tx.mint_policy_tokens`, filtering out non-positive entries. Authorization for minting/burning is enforced separately by the `issuanceMintingPolicy` validator and the Cardano ledger.
 
 #### RegistryProof Requirements
 
@@ -324,18 +342,22 @@ The programmableLogicGlobal stake validator performs the following validation:
    - If the stake credential is a script hash, verify that script is executed in the transaction
    - Exception: ThirdPartyAct bypasses this check (third parties don't need user permission)
 
-2. **Proof Validation** (TransferAct only): For each RegistryProof:
+2. **Proof Validation** (TransferAct only): For each RegistryProof in `registryProofs`:
    - Verify the referenced RegistryNode exists at the specified index in reference inputs
    - For TokenExists: verify the RegistryNode's `key` matches the policy being validated
    - For TokenDoesNotExist: verify the covering node relationship (prev.key < unregistered < prev.next)
 
-3. **Logic Script Execution**: For each registered programmable token:
+3. **Mint Proof Validation** (TransferAct only): For each RegistryProof in `mintProofs`:
+   - Validate each minted/burned programmable token policy against the registry directory, using the same TokenExists/TokenDoesNotExist rules as step 2
+   - If `tx.mint` is non-empty, `mintProofs` MUST be non-empty (and vice versa)
+
+4. **Logic Script Execution**: For each registered programmable token:
    - TransferAct: verify the token's `transfer_logic_script` is executed (appears in withdrawals)
    - ThirdPartyAct: verify the token's `third_party_transfer_logic_script` is executed
 
-4. **Output Validation**:
-   - TransferAct: Verify all programmable tokens in outputs remain at programmableLogicBase addresses with valid stake credentials
-   - ThirdPartyAct: Verify the output at `seize_output_idx` matches requirements (same address, datum, value minus seized tokens)
+5. **Output Validation**:
+   - TransferAct: Verify that outputs at programmableLogicBase addresses contain at least the expected programmable token value (validated input value + validated mint value). All programmable tokens in outputs MUST remain at programmableLogicBase addresses with valid stake credentials
+   - ThirdPartyAct: Verify input/output pair constraints (same address, same datum, unchanged non-policy assets, changed policy tokens) and enforce the balance invariant (total output policy tokens at programmableLogicBase >= total input policy tokens adjusted for mints/burns)
 
 #### Additional Reference Inputs
 
@@ -348,9 +370,11 @@ Depending on the substandard and the specific programmable token implementation,
 
 - The programmableLogicBase/programmableLogicGlobal split ensures all programmable tokens can only be spent if proper validation occurs
 - The RegistryProof mechanism prevents bypassing transfer restrictions by claiming a token is unregistered when it actually is registered
-- Third-party actions provide a mechanism for compliance (seizure, freezes) while maintaining clear on-chain definitions of third-party capabilities
+- Minted/burned programmable tokens MUST be validated against the registry via `mintProofs`, preventing unvalidated tokens from bypassing the directory check
+- Third-party actions provide a mechanism for compliance (seizure, freezes, wipe) while maintaining clear on-chain definitions of third-party capabilities
+- The balance invariant ensures seized tokens remain within the programmable token system (at programmableLogicBase addresses) and cannot escape to external addresses
 - The authorization check ensures users maintain control over their tokens (except when third-party actions are explicitly defined)
-- ThirdPartyAct supports batch operations on multiple UTxOs while requiring value changes to prevent DoS attacks
+- ThirdPartyAct supports batch operations on multiple UTxOs while requiring policy token changes to prevent DoS attacks
 
 ### CIP-113 Version
 
