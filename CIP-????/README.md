@@ -268,10 +268,10 @@ Deterministic derivation rules:
    - claimed `surveyResponse.responderRole` exists in `roleWeighting`,
    - candidate derivation is restricted to claimed `surveyResponse.responderRole`,
    - exactly one eligible `responseCredential` is derivable for the claimed role.
-9. Stakeholder residual rule (standalone and linked):
-   - `Stakeholder` is valid only when no governance-role candidate (`DRep`, `SPO`, or `CC`) is valid,
-   - and exactly one stake credential is derivable,
-   - otherwise the response is invalid.
+9. Stakeholder role derivation (standalone and linked):
+   - `Stakeholder` is valid when claimed `surveyResponse.responderRole = "Stakeholder"` and exactly one eligible stake credential is derivable for the signer.
+   - The presence of governance-role candidates (`DRep`, `SPO`, `CC`) does not by itself invalidate a `Stakeholder` claim.
+   - A signer MAY submit separate responses for different claimed roles, provided each claimed role independently passes all response-time and tally-time checks.
 10. A response is invalid when claimed `surveyResponse.responderRole` does not match chain-derived role evidence.
 11. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
 12. During tallying, tooling MUST re-verify each response at the `endEpoch` snapshot:
@@ -319,12 +319,23 @@ Latest-response semantics replace the full prior response for that tuple.
   - Declared pledge MUST NOT be used.
   - Snapshot point is `endEpoch`.
   - If `responseCredential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
-- Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs with disclosed merge logic.
+- Canonical outputs MUST be per-role tallies.
+- Tools MAY additionally publish merged/composite outputs only if:
+  - the merged/composite output is explicitly labeled as non-canonical,
+  - merge logic is disclosed alongside the output,
+  - and canonical per-role tallies remain available as primary outputs.
+
+### Tool Output Requirements
+
+- Tools MUST expose canonical per-role tallies as primary outputs whenever multiple roles are configured.
+- Tools MUST NOT present merged/composite totals as canonical role results.
+- Any merged/composite display (for example "All roles") MUST explicitly disclose its merge policy and weighting interpretation.
+- Audit/export output MUST include `responderRole`, `responseCredential`, counted/excluded status, and exclusion reason when applicable.
 
 ### Security and Tooling Guidance
 
 - `CredentialBased` can be sybil attacked when governance-role validation is not applied.
-- Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools SHOULD expose per-role canonical tallies and clearly label any merged output.
+- Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools MUST expose per-role canonical tallies and clearly label any merged output as non-canonical.
 - Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from transaction-body `voting_procedures` and role eligibility is bounded by action voter classes.
 - `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
 - Required `responderRole` claims do not replace chain validation; tools MUST reject responses when claimed role and chain-derived role evidence disagree.
@@ -363,7 +374,8 @@ This CIP is general-purpose. For tools implementing the Info Action profile:
 10. At or after `endEpoch`, re-verify each response using `endEpoch` snapshot state (role-membership, credential eligibility, and claim-vs-chain consistency); exclude failures.
 11. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)` over responses that passed both validation phases.
 12. Derive `StakeBased` and `PledgeBased` weights from `endEpoch` snapshot state; for `PledgeBased`, derive active pool set mapped to `responseCredential` and resolve live pledge values.
-13. Apply selected per-role weighting and produce canonical per-role tallies (and optional merged views).
+13. Apply selected per-role weighting and produce canonical per-role tallies.
+14. If publishing optional merged/composite views, label them as non-canonical and disclose merge logic per [Tool Output Requirements](#tool-output-requirements).
 
 ### CDDL Schema
 
@@ -514,7 +526,7 @@ This revision defines version `1.0.0`.
 
 - [ ] Finalize CIP text and examples from PR review feedback.
 - [ ] Publish reference test vectors and validation notes.
-- [ ] Implement and demonstrate end-to-end survey creation + response + tally in at least two toolchains.
+- [ ] Implement and demonstrate end-to-end survey creation + response + tally in at least one toolchain.
 - [ ] Document interoperability results and edge-case handling.
 
 ## Copyright
