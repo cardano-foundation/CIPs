@@ -16,7 +16,7 @@ License: CC-BY-4.0
 ## Abstract
 
 Stake Pool Operators (SPOs) currently sign on-chain governance votes with pool
-cold keys. This CIP introduces new on-chain certificates that let a pool cold
+cold keys. This CIP introduces a new on-chain certificate that lets a pool cold
 key authorize a hot credential for a stake pool. For
 `StakePoolVoter poolId`, the ledger accepts either:
 
@@ -59,28 +59,44 @@ credentials while preserving cold-key voting as it already works today.
 
 ### Certificate Semantics
 
-This CIP introduces two new stake-pool governance certificates:
+This CIP introduces one new stake-pool governance certificate:
 
-- `AuthStakePoolHotKey(poolId, hotCred)`
-- `ResignStakePoolHotKey(poolId)`
+- `AssignStakePoolHotCredential(poolId, hotCredOpt)`
+
+`hotCredOpt` semantics:
+
+- If `hotCredOpt = hotCred` (a `Credential`), the pool's hot credential is
+  set to `hotCred` (overwrite allowed).
+- If `hotCredOpt = null`, any existing hot credential for `poolId` is revoked.
+  If none exists, this is a valid no-op.
+
+### Certificate CDDL
+
+```cddl
+; Numeric certificate tag allocation is TBD in Conway ledger CDDL integration.
+assign_stake_pool_hot_credential_tag = uint
+
+assign_stake_pool_hot_credential_cert = [
+  assign_stake_pool_hot_credential_tag,
+  pool_id : pool_keyhash,
+  hot_credential : null / credential
+]
+```
 
 ### Certificate Validation Rules
 
-For both certificates:
+For `AssignStakePoolHotCredential(poolId, hotCredOpt)`:
 
 1. `poolId` MUST identify a currently registered pool.
 2. The transaction MUST include a valid witness by that pool's cold key.
-
-Additional transaction restrictions to prevent ambiguity:
-
-1. A transaction MUST NOT include more than one of these certificates for the
-   same `poolId`. If it does, the transaction is invalid.
-2. A transaction MUST NOT include any SPO governance vote for `poolId` if it
-   also includes one of these certificates for `poolId`. If it does, the
-   transaction is invalid.
-
-`ResignStakePoolHotKey(poolId)` is valid even if no hot credential is currently
-authorized for `poolId`; it is a no-op in that case.
+3. If multiple `AssignStakePoolHotCredential` certificates for the same
+   `poolId` appear in one transaction, they are processed in transaction order;
+   the last one determines the final hot credential state for that `poolId`.
+4. A transaction MAY include SPO governance vote(s) for the same `poolId` as
+   one or more `AssignStakePoolHotCredential` certificates.
+5. Same-transaction vote authorization for `poolId` MUST evaluate against the
+   hot credential state resulting from certificates that appear earlier in that
+   transaction's certificate list.
 
 ### Ledger State Extension
 
@@ -92,9 +108,12 @@ poolGovHotCreds : Map PoolId Credential
 
 State transitions:
 
-- `AuthStakePoolHotKey(poolId, hotCred)` sets
-  `poolGovHotCreds[poolId] = hotCred` (overwrite allowed).
-- `ResignStakePoolHotKey(poolId)` removes `poolId` from the map if present.
+- `AssignStakePoolHotCredential(poolId, hotCredOpt)` with
+  `hotCredOpt = hotCred` sets `poolGovHotCreds[poolId] = hotCred`
+  (overwrite allowed).
+- `AssignStakePoolHotCredential(poolId, hotCredOpt)` with
+  `hotCredOpt = null` removes `poolId` from the map if present (otherwise
+  no-op).
 
 No uniqueness constraint is imposed on `hotCred`. The same hot credential MAY be
 authorized for multiple pools.
@@ -151,7 +170,7 @@ This applies regardless of transaction or block ordering history.
 This CIP integrates at existing Conway rule boundaries:
 
 - **`UTXO`** applies certificate-driven updates to `poolGovHotCreds` and
-  enforces transaction-level constraints for these certificates.
+  enforces transaction-level constraints for this certificate type.
 - **`UTXOW`** extends SPO vote witness authorization checks to allow either
   pool cold or authorized hot credential satisfaction.
 - **`GOV`** (vote state handling) records `VoteSource` for stake-pool votes and
@@ -172,6 +191,8 @@ canonical SPO governance voter identity.
   models without a second hard-fork change.
 - **MPO support**: Explicitly permitting hot credential reuse across pools
   supports multi-pool operational workflows.
+- **Simplicity**: A single certificate with nullable payload reduces complexity
+  in specification, validation, and tooling.
 
 ### Backward Compatibility
 
@@ -198,7 +219,7 @@ canonical SPO governance voter identity.
 
 - [ ] Ledger implementation merged in at least one node client.
 - [ ] Ledger implementation includes:
-      `AuthStakePoolHotKey`/`ResignStakePoolHotKey`,
+      `AssignStakePoolHotCredential`,
       `poolGovHotCreds` state management, SPO vote authorization extension, and
       cold-over-hot precedence behavior.
 - [ ] Compatible tooling available to create/submit new certificates and submit
@@ -209,7 +230,7 @@ canonical SPO governance voter identity.
 ### Implementation Plan
 
 - Add certificate constructors and semantic validation for pool hot
-  authorization/resignation.
+  credential assignment/revocation via a nullable payload.
 - Add and maintain `poolGovHotCreds` in Conway ledger state.
 - Extend SPO vote witness verification for authorized hot credentials
   (key and script forms).
