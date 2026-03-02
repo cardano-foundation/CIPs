@@ -1,118 +1,110 @@
 # Test Vectors for CIP-00XX
 
 This file defines reproducible vectors for:
-- Survey hash derivation.
-- Built-in method responses.
-- Numeric and custom method responses.
+- Single-question and multi-question survey definitions.
+- Built-in, numeric, and custom method responses.
 - Latest-valid-response-wins behavior.
-- Invalid response detection for mismatched survey binding.
-
-## Canonical Hash Preimage Rule
-
-For every survey definition, compute `surveyHash` as:
-1. Construct envelope `{17: {"surveyDetails": <surveyDetails>}}`.
-2. Exclude `msg`.
-3. Serialize envelope as canonical CBOR.
-4. Blake2b-256 hash the CBOR bytes.
-5. Encode digest as lowercase hex.
+- Invalid response detection for unresolved survey binding.
+- Governance action anchor linkage validation.
+- Linked-response tx-context validation for `voting_procedures` cardinality and linked action-id matching.
+- Role-weighting, role-validation, and mixed-role behavior.
+- Required `responderRole` claims with claim-vs-chain role validation.
+- Mandatory tally-time re-verification at `endEpoch` before counting results.
+- `PledgeBased` live-pledge weighting behavior.
 
 ## Survey Definition Vectors
 
-### Vector 1: Single-choice (YES/NO/ABSTAIN)
+### Vector 1: Single-choice (single-question survey)
 
 Source file: [examples/survey-single-choice.json](./examples/survey-single-choice.json)
 
-Expected `surveyHash`:
-`3ad7edfb4477e21087ff882f4b9403ab7dfa2dae63e662c5f51397c566d9d7be`
-
-Canonical CBOR preimage (hex):
-```text
-a111a16d73757276657944657461696c73aa657469746c65782544696a6b7374726120686172642d666f726b2043495020696e636c7573696f6e20706f6c6c676f7074696f6e738363594553624e4f674142535441494e687175657374696f6e783653686f756c64204349502d3031333620626520696e636c7564656420696e207468652044696a6b73747261206861726420666f726b3f696c6966656379636c65a267656e64536c6f741a072da580697374617274536c6f741a07270e006a6d6574686f6454797065782875726e3a63617264616e6f3a706f6c6c2d6d6574686f643a73696e676c652d63686f6963653a76316b6465736372697074696f6e78415369676e616c20737570706f727420666f7220696e636c7573696f6e206f66204349502d3031333620696e20746865206861726420666f726b2062756e646c652e6b656c69676962696c697479816b5374616b65686f6c6465726b7370656356657273696f6e65312e302e306d766f7465576569676874696e676a5374616b6542617365646f7265666572656e6365416374696f6ea26b616374696f6e496e646578006d7472616e73616374696f6e4964784061616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161
-```
-
-### Vector 2: Multi-select
+### Vector 2: Multi-select (single-question survey)
 
 Source file: [examples/survey-multi-select.json](./examples/survey-multi-select.json)
 
-Expected `surveyHash`:
-`44b7b4b7bad4dce5634b40f16966f45ee52981a7bc3cdd39542b4beffc25d8e9`
-
-Canonical CBOR preimage (hex):
-```text
-a111a16d73757276657944657461696c73a9657469746c65782044696a6b7374726120686172642d666f726b204349502073686f72746c697374676f7074696f6e7384684349502d30313038684349502d30313139684349502d30313336684349502d30313439687175657374696f6e7845576869636820434950732073686f756c642062652073686f72746c697374656420666f7220706f74656e7469616c20696e636c7573696f6e20696e2044696a6b737472613f6a6d6574686f6454797065782775726e3a63617264616e6f3a706f6c6c2d6d6574686f643a6d756c74692d73656c6563743a76316b6465736372697074696f6e785653656c65637420616e79206e756d626572206f662063616e646964617465204349507320666f7220706f74656e7469616c20696e636c7573696f6e20696e207468652044696a6b73747261206861726420666f726b2e6b656c69676962696c697479816b5374616b65686f6c6465726b7370656356657273696f6e65312e302e306d6d617853656c656374696f6e73046d766f7465576569676874696e676f43726564656e7469616c4261736564
-```
-
-### Vector 3: Numeric range
+### Vector 3: Numeric range (single-question survey)
 
 Source file: [examples/survey-numeric-range.json](./examples/survey-numeric-range.json)
 
-Expected `surveyHash`:
-`5f813108613bc0e6a2edc8537cc20f4fd3c907470622d01e272baa2aa52e20f2`
-
-Canonical CBOR preimage (hex):
-```text
-a111a16d73757276657944657461696c73a8657469746c65781d496e697469616c20706172616d657465722063616c6962726174696f6e687175657374696f6e782453656c65637420696e697469616c2076616c756520666f7220706172616d6574657220586a6d6574686f6454797065782875726e3a63617264616e6f3a706f6c6c2d6d6574686f643a6e756d657269632d72616e67653a76316b6465736372697074696f6e782943686f6f736520616e20696e74656765722074617267657420666f7220706172616d6574657220582e6b656c69676962696c6974798364445265706353504f6243436b7370656356657273696f6e65312e302e306d766f7465576569676874696e676f43726564656e7469616c4261736564726e756d65726963436f6e73747261696e7473a3647374657005686d617856616c75651903e8686d696e56616c75650a
-```
-
-### Vector 4: Custom method with schema integrity
+### Vector 4: Custom method with schema integrity (single-question survey)
 
 Source file: [examples/survey-custom-method.json](./examples/survey-custom-method.json)
 
-Expected `surveyHash`:
-`758b30b701373b0b2289cd28502136610f3e904b5256833f41d0717e10fa0bf3`
+### Vector 5: Multi-question same-type (numeric-range)
 
-Canonical CBOR preimage (hex):
-```text
-a111a16d73757276657944657461696c73a9657469746c65781d52616e6b656420696e66726173747275637475726520726f61646d6170676f7074696f6e7383684879647261205558734d69746872696c20696e746567726174696f6e74476f7665726e616e636520616e616c7974696373687175657374696f6e783052616e6b2074686520726f61646d6170206f7074696f6e7320696e206f72646572206f6620707265666572656e63652e6a6d6574686f6454797065783468747470733a2f2f6578616d706c652e6f72672f63617264616e6f2f6d6574686f64732f72616e6b65642d63686f6963652f76316b6465736372697074696f6e7835437573746f6d2072616e6b65642d63686f696365206d6574686f64207573696e6720616e2065787465726e616c20736368656d612e6b7370656356657273696f6e65312e302e306d68617368416c676f726974686d6b626c616b6532622d3235366f6d6574686f64536368656d615572697842697066733a2f2f62616679626569676479727a74367a3675336d72693475376d78683272336535663274727a37727878326a78366435796a3476356e7834716a786d706d6574686f64536368656d6148617368784036663164396531626337373161633566383139346633313532646636346439666461396165323866343266323366386634643063396463623266346438663761
-```
+Source file: [examples/survey-multi-question-same-type.json](./examples/survey-multi-question-same-type.json)
+
+### Vector 6: Multi-question mixed-type
+
+Source file: [examples/survey-multi-question-mixed-type.json](./examples/survey-multi-question-mixed-type.json)
+
+All survey definition examples are expected to include explicit `roleWeighting`.
 
 ## Survey Response Vectors
 
-### Vector 5: Single-choice response
+### Vector 7: Single-choice response
 
 Source file: [examples/response-single-choice.json](./examples/response-single-choice.json)
 
 Canonical CBOR payload (hex):
 ```text
-a111a16e737572766579526573706f6e7365a46973656c656374696f6e81006a737572766579486173687840336164376564666234343737653231303837666638383266346239343033616237646661326461653633653636326335663531333937633536366439643762656a737572766579547849647840626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626b7370656356657273696f6e65312e302e30
+a111a16e737572766579526573706f6e7365a467616e737765727381a26973656c656374696f6e81006a7175657374696f6e4964726369705f303133365f696e636c7573696f6e6a737572766579547849647840626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626262626b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656b5374616b65686f6c646572
 ```
 
-### Vector 6: Multi-select response
+### Vector 8: Multi-select response
 
 Source file: [examples/response-multi-select.json](./examples/response-multi-select.json)
 
 Canonical CBOR payload (hex):
 ```text
-a111a16e737572766579526573706f6e7365a46973656c656374696f6e8201036a737572766579486173687840343462376234623762616434646365353633346234306631363936366634356565353239383161376263336364643339353432623462656666633235643865396a737572766579547849647840656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666b7370656356657273696f6e65312e302e30
+a111a16e737572766579526573706f6e7365a467616e737765727381a26973656c656374696f6e8201036a7175657374696f6e49646d6369705f73686f72746c6973746a737572766579547849647840656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656444526570
 ```
 
-### Vector 7: Multi-select response (no selections)
+### Vector 9: Multi-select response (no selections)
 
 Source file: [examples/response-multi-select-empty.json](./examples/response-multi-select-empty.json)
 
 Canonical CBOR payload (hex):
 ```text
-a111a16e737572766579526573706f6e7365a46973656c656374696f6e806a737572766579486173687840343462376234623762616434646365353633346234306631363936366634356565353239383161376263336364643339353432623462656666633235643865396a737572766579547849647840656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666b7370656356657273696f6e65312e302e30
+a111a16e737572766579526573706f6e7365a467616e737765727381a26973656c656374696f6e806a7175657374696f6e49646d6369705f73686f72746c6973746a737572766579547849647840656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666566656665666b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656444526570
 ```
 
 This vector is valid and demonstrates that `selection: []` is allowed for `multi-select`.
 
-### Vector 8: Numeric response
+### Vector 10: Numeric response
 
 Source file: [examples/response-numeric-range.json](./examples/response-numeric-range.json)
 
 Canonical CBOR payload (hex):
 ```text
-a111a16e737572766579526573706f6e7365a46a737572766579486173687840356638313331303836313362633065366132656463383533376363323066346664336339303734373036323264303165323732626161326161353265323066326a737572766579547849647840636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636b7370656356657273696f6e65312e302e306c6e756d6572696356616c7565190145
+a111a16e737572766579526573706f6e7365a467616e737765727381a26a7175657374696f6e49647819706172616d657465725f785f696e697469616c5f76616c75656c6e756d6572696356616c75651901456a737572766579547849647840636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636363636b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656444526570
 ```
 
-### Vector 9: Custom method response
+### Vector 11: Custom method response
 
 Source file: [examples/response-custom-method.json](./examples/response-custom-method.json)
 
 Canonical CBOR payload (hex):
 ```text
-a111a16e737572766579526573706f6e7365a46a737572766579486173687840373538623330623730313337336230623232383963643238353032313336363130663365393034623532353638333366343164303731376531306661306266336a737572766579547849647840646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646b637573746f6d56616c7565a16772616e6b696e67830200016b7370656356657273696f6e65312e302e30
+a111a16e737572766579526573706f6e7365a467616e737765727381a26a7175657374696f6e49646c726f61646d61705f72616e6b6b637573746f6d56616c7565a16772616e6b696e67830200016a737572766579547849647840646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646464646b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656444526570
+```
+
+### Vector 12: Multi-question same-type response
+
+Source file: [examples/response-multi-question-same-type.json](./examples/response-multi-question-same-type.json)
+
+Canonical CBOR payload (hex):
+```text
+a111a16e737572766579526573706f6e7365a467616e737765727382a26a7175657374696f6e4964736d61785f626c6f636b5f626f64795f73697a656c6e756d6572696356616c756518a0a26a7175657374696f6e49646b6d61785f74785f73697a656c6e756d6572696356616c756518206a737572766579547849647840616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616161616b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656b5374616b65686f6c646572
+```
+
+### Vector 13: Multi-question mixed-type response
+
+Source file: [examples/response-multi-question-mixed-type.json](./examples/response-multi-question-mixed-type.json)
+
+Canonical CBOR payload (hex):
+```text
+a111a16e737572766579526573706f6e7365a467616e737765727383a26973656c656374696f6e8200026a7175657374696f6e49646d6369705f73686f72746c697374a26973656c656374696f6e81016a7175657374696f6e49646e72656c656173655f74696d696e67a26a7175657374696f6e49646c626c6f636b5f6275646765746c6e756d6572696356616c7565066a737572766579547849647840616261626162616261626162616261626162616261626162616261626162616261626162616261626162616261626162616261626162616261626162616261626b7370656356657273696f6e65312e302e306d726573706f6e646572526f6c656444526570
 ```
 
 ## Duplicate Resolution Vector
@@ -121,19 +113,199 @@ Sources:
 - Older response: [examples/response-duplicate-older.json](./examples/response-duplicate-older.json)
 - Latest response: [examples/response-duplicate-latest.json](./examples/response-duplicate-latest.json)
 
-Given both responses resolve to the same `(surveyTxId, surveyHash, responseCredential)`:
+Given both responses resolve to the same `(surveyTxId, responderRole, responseCredential)`:
+- Both responses are in the same epoch.
 - Older chain position: `(slot=120100000, txIndexInBlock=2, metadataPosition=0)`.
 - Latest chain position: `(slot=120100005, txIndexInBlock=0, metadataPosition=0)`.
 
 Expected tally behavior:
 - Ignore the older response.
-- Keep only the latest response (`selection = [0]`).
+- Keep only the latest response (`answers = [{"questionId": "cip_0136_inclusion", "selection": [0]}]`).
 
 ## Invalid Binding Vector
 
+Expected validation behavior:
+- A response is invalid when `surveyTxId` does not resolve to a `surveyDetails` transaction under label `17`.
+- Response MUST be ignored in tallies.
+
+## Governance Action Anchor Linkage Vectors
+
 Source:
-- Invalid response: [examples/response-invalid-mismatch.json](./examples/response-invalid-mismatch.json)
+- [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
 
 Expected validation behavior:
-- Response is invalid because `surveyHash` does not match the canonical hash of the `surveyTxId`-referenced survey definition.
-- Response MUST be ignored in tallies.
+- If top-level `surveyTxId` resolves to a `surveyDetails` transaction, the governance action is linked to that survey.
+- The legacy nested form `surveyRef.surveyTxId` is invalid for this version.
+- Linkage MUST additionally pass compatibility checks:
+  - `linkedRoleWeighting = roleWeighting ∩ actionEligibility` is non-empty.
+  - Survey `endEpoch` exactly matches the governance action active voting end epoch.
+- If validation fails, tooling MUST treat the action-to-survey linkage as invalid and MUST NOT attach that survey to the governance action.
+- Linkage invalidity does not invalidate the survey as standalone metadata.
+
+Current anchor reference:
+- `surveyTxId = bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb`
+
+## Role Weighting and Security Vectors
+
+### Vector 14: Governance-linked response source requirement
+
+Source:
+- Linked tx context: [examples/txctx-linked-valid-single-voter-single-action.json](./examples/txctx-linked-valid-single-voter-single-action.json)
+
+Expected validation behavior:
+- For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
+- For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry.
+- The single `govActionId` MUST equal the linked governance action id.
+- A signer-only response (without transaction-body `voting_procedures`) is invalid for linked surveys.
+
+### Vector 15: Invalid link compatibility (endEpoch or role mismatch)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+
+Expected validation behavior:
+- If `roleWeighting ∩ actionEligibility` is empty, the action-to-survey link is invalid.
+- If survey `endEpoch` does not exactly equal the action voting end epoch, the action-to-survey link is invalid.
+- In both cases, tooling MUST ignore the linkage while keeping the survey valid as standalone metadata.
+
+### Vector 16: CredentialBased role verification
+
+Expected validation behavior:
+- Every response MUST include claimed `responderRole`.
+- In `CredentialBased`, if active role set includes `DRep`, `SPO`, or `CC`, each response MUST be role-verifiable from chain data at response time.
+- Role/credential evidence MUST be re-verified again at tally time (`endEpoch`) before counting.
+- A response is invalid when claimed `responderRole` is not part of the active role set.
+- A response is invalid when claimed `responderRole` disagrees with chain-derived role evidence.
+- Unverifiable role membership is invalid.
+- `Stakeholder` is residual-only:
+  - if exactly one stake credential is derivable after governance-role candidates fail, tooling MUST classify as `Stakeholder`,
+  - if zero or multiple stake credentials are derivable, the response is invalid.
+
+### Vector 17: Role-to-weighting compatibility constraints
+
+Expected validation behavior:
+- `CC: StakeBased` is invalid.
+- `Stakeholder: CredentialBased` is invalid.
+- Canonical tally output is per-role. Tools MAY additionally publish merged/composite outputs with disclosed logic.
+
+### Vector 18: End-epoch and timing semantics
+
+Expected validation behavior:
+- All surveys MUST define `endEpoch`.
+- Responses are valid only when `responseEpoch <= endEpoch`.
+- Role-membership and credential eligibility checks are evaluated at response time and re-verified at tally time using `endEpoch` snapshot state.
+- A response that passed response-time checks but fails `endEpoch` re-verification is excluded from tally results.
+- `StakeBased` and `PledgeBased` weights are read at `endEpoch`.
+- `CredentialBased` weight is `1` per valid latest response.
+
+### Vector 19: roleWeighting is mandatory
+
+Expected validation behavior:
+- A survey definition without `roleWeighting` is invalid.
+- A survey definition without `endEpoch` is invalid.
+- Legacy `eligibility` and `voteWeighting` fields are invalid for this draft model.
+
+### Vector 20: Valid linked mixed-role weighting
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Survey is valid with mixed role weighting (`DRep: StakeBased`, `SPO: PledgeBased`).
+- Linked response identity is derived from the single voter entry in transaction-body `voting_procedures`.
+- Claimed `responderRole` in the response MUST exactly match the role derived from that single voter entry.
+- Canonical output is role-separated tally results.
+
+### Vector 21: Valid standalone mixed-role weighting
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Survey is valid with mixed role weighting and required `endEpoch`.
+- Standalone response must include claimed `responderRole`, and derivation is scoped to that claimed role.
+- Standalone response is valid only if exactly one eligible `responseCredential` is derivable for claimed `responderRole`.
+- Membership checks occur at response time and are re-verified at tally time (`endEpoch`). Weighting uses `endEpoch`.
+
+### Vector 22: Invalid linked response (`voting_procedures` action-id mismatch)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Response is invalid because the single `govActionId` in `voting_procedures` does not match the linked governance action id.
+
+### Vector 23: Invalid linked response (`voting_procedures` cardinality)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+
+Expected validation behavior:
+- Response is invalid because linked responses MUST have exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry.
+
+### Vector 24: Valid linked response (`voting_procedures` strict shape)
+
+Sources:
+- Survey definition: [examples/survey-mixed-role-shared.json](./examples/survey-mixed-role-shared.json)
+- Governance anchor link object: [examples/governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
+- Response: [examples/response-mixed-role-shared.json](./examples/response-mixed-role-shared.json)
+- Linked tx context: [examples/txctx-linked-valid-single-voter-single-action.json](./examples/txctx-linked-valid-single-voter-single-action.json)
+
+Expected validation behavior:
+- Linked response source requirement is satisfied when `voting_procedures` is non-empty, contains exactly one voter entry, contains exactly one inner `(govActionId, votingProcedure)` entry, and that `govActionId` matches the linked governance action id.
+
+### Vector 25: `PledgeBased` zero active pools at snapshot => zero weight
+
+Source:
+- Pledge weighting context: [examples/txctx-pledge-zero-pools-at-end.json](./examples/txctx-pledge-zero-pools-at-end.json)
+
+Expected validation behavior:
+- Response remains valid when SPO credential validity was established at response time and still passes tally-time re-verification at `endEpoch`.
+- If mapped active pool set is empty at `endEpoch`, `PledgeBased` contribution is weight `0`.
+
+### Vector 26: Invalid standalone forged role claim at tally
+
+Expected validation behavior:
+- A standalone response with claimed `responderRole` that is not supported by tx signer/witness and credential evidence MUST be excluded at tally.
+- This exclusion applies even when the payload is syntactically valid and included on-chain.
+
+### Vector 27: Invalid due to role drift by `endEpoch`
+
+Expected validation behavior:
+- If a response passes response-time membership checks but the same role/credential is not eligible at `endEpoch`, it MUST be excluded from tally results.
+- Canonical tallies are computed after this `endEpoch` re-verification filter.
+
+## Invalid Scenarios
+
+Expected validation behavior:
+- `CC: StakeBased` is invalid because `CC` MAY only use `CredentialBased`.
+- `Stakeholder: CredentialBased` is invalid because `Stakeholder` MAY only use `StakeBased`.
+- A response is invalid if `responderRole` is missing.
+- A response is invalid if claimed `responderRole` is not eligible under the survey active role set.
+- A response is invalid if claimed `responderRole` disagrees with chain-derived role evidence.
+- A response is excluded from tally if it fails mandatory `endEpoch` re-verification, even if it passed response-time checks.
+- A standalone response is invalid if more than one eligible `responseCredential` is derivable for the claimed role.
+- A standalone response is invalid if no eligible `responseCredential` is derivable for the claimed role.
+
+## Schema vs Semantic Validation Boundary
+
+Expected implementation behavior:
+- JSON Schema validation SHOULD be used for payload shape validation.
+- Successful JSON Schema validation does not imply semantic validity.
+- Tools MUST additionally enforce semantic rules from CIP text, including:
+  - governance-link resolution by `surveyTxId`
+  - linked role/end-epoch compatibility checks and invalid-link handling
+  - governance-linked response source requirements (non-empty transaction-body `voting_procedures`, exactly-one voter+entry, and linked action-id match)
+  - required `responderRole` claim and claim-vs-chain role consistency checks
+  - mandatory second-pass re-verification at `endEpoch` before tally inclusion
+  - role-membership verification requirements
+  - single eligible `responseCredential` derivation requirement within the claimed role scope
+  - end-epoch response cutoff and snapshot rules
+  - `PledgeBased` signer-to-pool mapping and live-pledge resolution rules

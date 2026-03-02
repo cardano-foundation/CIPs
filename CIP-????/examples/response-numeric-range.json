@@ -6,8 +6,13 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "surveyHash": "5f813108613bc0e6a2edc8537cc20f4fd3c907470622d01e272baa2aa52e20f2",
-      "numericValue": 325
+      "responderRole": "DRep",
+      "answers": [
+        {
+          "questionId": "parameter_x_initial_value",
+          "numericValue": 325
+        }
+      ]
     }
   }
 }

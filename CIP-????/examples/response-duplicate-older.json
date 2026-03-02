@@ -6,9 +6,14 @@
     "surveyResponse": {
       "specVersion": "1.0.0",
       "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      "surveyHash": "3ad7edfb4477e21087ff882f4b9403ab7dfa2dae63e662c5f51397c566d9d7be",
-      "selection": [
-        1
+      "responderRole": "Stakeholder",
+      "answers": [
+        {
+          "questionId": "cip_0136_inclusion",
+          "selection": [
+            1
+          ]
+        }
       ]
     }
   }

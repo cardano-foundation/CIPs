@@ -1,18 +1,17 @@
 {
   "17": {
     "msg": [
-      "Response to Dijkstra hard-fork CIP shortlist"
+      "Shared mixed-role response"
     ],
     "surveyResponse": {
       "specVersion": "1.0.0",
-      "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "surveyTxId": "1515151515151515151515151515151515151515151515151515151515151515",
       "responderRole": "DRep",
       "answers": [
         {
-          "questionId": "cip_shortlist",
+          "questionId": "gov_priority",
           "selection": [
-            1,
-            3
+            0
           ]
         }
       ]

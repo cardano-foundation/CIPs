@@ -1,0 +1,15 @@
+{
+  "contextType": "pledgeBasedWeightingContext",
+  "description": "PledgeBased weighting context where SPO credential is valid at response time but maps to zero active pools at endEpoch.",
+  "surveyTxId": "1515151515151515151515151515151515151515151515151515151515151515",
+  "responseCredential": "22222222222222222222222222222222222222222222222222222222",
+  "responseSlot": 120200050,
+  "responseRoleCheck": {
+    "role": "SPO",
+    "isValidAtResponseTime": true
+  },
+  "endEpoch": 523,
+  "mappedActivePoolIdsAtEndEpoch": [],
+  "livePledgeLovelaceByPoolId": {},
+  "expectedPledgeWeightLovelace": 0
+}
