@@ -29,7 +29,7 @@ incremental construction.
 This proposal specifies the header changes, CBOR encoding updates, consensus-critical computation of
 the root from the block’s transactions, and deployment via a Dijkstra-era hard fork.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 > NOTE (CPS linkage): This proposal originated as a CPS in PR #964 (“CIP-???? | Merkle Root of
 > Transactions in Block Header”). The CIP process recommends that complex proposals link a CPS as
