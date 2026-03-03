@@ -58,20 +58,20 @@ No upper or lower bounds are imposed by this CIP for `netChangeLimit`. Bounds ma
 
 The ledger MUST maintain a logical fixed-size ring buffer with:
 
-- exactly `73` slots,
-- one pointer identifying the slot to be overwritten at the next epoch transition,
-- each slot containing a tuple `(revenue, withdrawn)` for that slot's epoch.
+- exactly `73` entries,
+- one pointer identifying the entry to be overwritten at the next epoch transition,
+- each entry containing a tuple `(revenue, withdrawn)` for that entry's epoch.
 
 Semantically, the window is the current epoch plus the previous 72 completed epochs.
-Immediately before an epoch transition, the pointed slot represents the oldest retained epoch in that 73-epoch window.
+Immediately before an epoch transition, the pointed entry represents the oldest retained epoch in that 73-epoch window.
 
 All monetary values are integer lovelace.
 
-`withdrawn` for a slot is the cumulative treasury amount enacted for that slot's epoch.
+`withdrawn` for an entry is the cumulative treasury amount enacted for that entry's epoch.
 
 Let `treasuryEnd(E)` be the treasury balance at the end of epoch `E`, measured before accounting for Treasury Withdrawals enacted in epoch `E`.
 
-Define slot revenue for epoch `E` as:
+Define entry revenue for epoch `E` as:
 
 `revenue(E) = treasuryEnd(E) - treasuryEnd(E - 1)`
 
@@ -81,12 +81,12 @@ The ledger's required arithmetic for NCL state derivation is limited to this sub
 
 The normative enforcement path for this CIP is the guardrail script check at Treasury Withdrawal enactment.
 
-At an epoch transition, the check MUST use the pre-write snapshot of all 73 slots, including the pointed overwrite slot before it is replaced.
+At an epoch transition, the check MUST use the pre-write snapshot of all 73 entries, including the pointed overwrite entry before it is replaced.
 
 At enactment-time evaluation of a Treasury Withdrawal with amount `w`, the guardrail script MUST compute:
 
-1. `windowRevenue = sum(slot.revenue for all 73 slots)`
-2. `windowWithdrawn = sum(slot.withdrawn for all 73 slots)`
+1. `windowRevenue = sum(entry.revenue for all 73 entries)`
+2. `windowWithdrawn = sum(entry.withdrawn for all 73 entries)`
 3. `effectiveRevenue = max(windowRevenue, 0)`
 4. `cap = floor(netChangeLimit * effectiveRevenue / 100)`
 
@@ -108,29 +108,29 @@ When the check succeeds:
 
 At each epoch transition, the ledger MUST:
 
-1. perform Treasury Withdrawal guardrail checks for boundary enactment against the pre-write 73-slot snapshot,
+1. perform Treasury Withdrawal guardrail checks for boundary enactment against the pre-write 73-entry snapshot,
 2. compute `revenue(E) = treasuryEnd(E) - treasuryEnd(E - 1)` for ending epoch `E`,
-3. overwrite the pointed slot with `(revenue(E), withdrawn(E))` for epoch `E`,
-4. advance the pointer by one position modulo 73 to identify the next overwrite slot.
+3. overwrite the pointed entry with `(revenue(E), withdrawn(E))` for epoch `E`,
+4. advance the pointer to the next overwrite entry in the 73-entry ring; if it is at the last entry, wrap to the first entry.
 
-This ordering ensures guardrail checks always evaluate a full 73-epoch historical window before any slot replacement.
+This ordering ensures guardrail checks always evaluate a full 73-epoch historical window before any entry replacement.
 Pointer advancement and overwrite MUST occur every epoch, including epochs with no treasury withdrawal activity.
 
 ### Bootstrap initialization
 
 When this CIP's mechanism is first activated, the ledger MUST initialize the ring as follows:
 
-- all 73 slots are set to `(bootstrapRevenueSeed, 0)`,
+- all 73 entries are set to `(bootstrapRevenueSeed, 0)`,
 - `bootstrapRevenueSeed = 4,000,000,000,000` lovelace,
-- the pointer is set to the slot that will be overwritten at the first epoch transition after activation.
+- the pointer is set to the entry that will be overwritten at the first epoch transition after activation.
 
-After activation, normal epoch rollover semantics apply, and seeded slots are progressively overwritten by real epoch data.
+After activation, normal epoch rollover semantics apply, and seeded entries are progressively overwritten by real epoch data.
 
 ## Rationale: how does this CIP achieve its goals?
 
 - **Canonical on-chain state with script policy enforcement.** The ledger provides deterministic state and the guardrail script enforces at enactment.
 - **Clear compute split.** The ledger computes per-epoch `revenue(E)` and persists rolling state; the guardrail computes window sums, clamp, cap, and admissibility.
-- **Deterministic rollover and accounting.** Pointer advancement and slot overwrite semantics fully define rolling behavior across epochs.
+- **Deterministic rollover and accounting.** Pointer advancement and entry overwrite semantics fully define rolling behavior across epochs.
 - **Bootstrap continuity.** Fixed seed initialization avoids blocking withdrawals during initial activation while converging automatically to measured data.
 
 ## Path to Active
@@ -139,7 +139,7 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
 
 - **CIP process acceptance** by CIP Editors with complete and unambiguous state and guardrail semantics.
 - **Ledger implementation available** in a released node/ledger version that:
-  - stores the normative 73-slot ring state and pointer,
+  - stores the normative 73-entry ring state and pointer,
   - applies deterministic epoch rollover behavior, and
   - provides the required state for guardrail-script admissibility checks at enactment.
 - **Guardrail enforcement implementation available** in a released node/ledger version such that failed checks prevent enactment and treasury movement.
@@ -149,10 +149,10 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
 - **Conformance tests available** covering at least:
   - under-cap, exact-cap, and over-cap withdrawals,
   - `netChangeLimit = 0`,
-  - guardrail evaluation against the pre-write 73-slot snapshot at epoch transition,
+  - guardrail evaluation against the pre-write 73-entry snapshot at epoch transition,
   - epoch-boundary ordering (check, write, then pointer advance),
   - epoch rollover pointer advancement in zero-activity epochs,
-  - slot overwrite behavior after full 73-epoch rotation,
+  - entry overwrite behavior after full 73-epoch rotation,
   - cap computation with negative aggregate revenue clamped to zero,
   - bootstrap initialization (`73 x (bootstrapRevenueSeed, 0)`) and progressive overwrite with measured data,
   - no treasury movement on failed guardrail checks.
@@ -165,7 +165,7 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
   - Lock terminology against existing governance and ledger documentation.
 - **Ledger and node work**
   - Add/confirm protocol parameter `netChangeLimit`.
-  - Implement normative ring state (`73` slots + pointer), revenue measurement, rollover, and bootstrap initialization behavior.
+  - Implement normative ring state (`73` entries + pointer), revenue measurement, rollover, and bootstrap initialization behavior.
   - Expose required canonical state for guardrail-script admissibility checks at enactment.
 - **Guardrail script work**
   - Implement NCL admissibility logic against canonical ledger state per this CIP.
