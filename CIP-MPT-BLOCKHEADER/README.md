@@ -224,7 +224,7 @@ patterns:
 The on-wire/API encoding of proofs is not consensus-critical, but should be standardized by tooling
 to ensure interoperability.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why a transaction commitment in the header?
 
