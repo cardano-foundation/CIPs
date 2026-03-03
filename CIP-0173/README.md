@@ -75,7 +75,7 @@ Define slot revenue for epoch `E` as:
 
 `revenue(E) = treasuryEnd(E) - treasuryEnd(E - 1)`
 
-This CIP allows signed intermediate revenue values in state. As a safeguard, negative aggregate revenue is clamped as described below when computing the cap.
+The ledger's required arithmetic for NCL state derivation is limited to this subtraction and deterministic state updates.
 
 ### Admissibility and guardrail enforcement
 
@@ -83,7 +83,7 @@ The normative enforcement path for this CIP is the guardrail script check at Tre
 
 At an epoch transition, the check MUST use the pre-write snapshot of all 73 slots, including the pointed overwrite slot before it is replaced.
 
-At enactment-time evaluation of a Treasury Withdrawal with amount `w`:
+At enactment-time evaluation of a Treasury Withdrawal with amount `w`, the guardrail script MUST compute:
 
 1. `windowRevenue = sum(slot.revenue for all 73 slots)`
 2. `windowWithdrawn = sum(slot.withdrawn for all 73 slots)`
@@ -129,6 +129,7 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
 ## Rationale: how does this CIP achieve its goals?
 
 - **Canonical on-chain state with script policy enforcement.** The ledger provides deterministic state and the guardrail script enforces at enactment.
+- **Clear compute split.** The ledger computes per-epoch `revenue(E)` and persists rolling state; the guardrail computes window sums, clamp, cap, and admissibility.
 - **Deterministic rollover and accounting.** Pointer advancement and slot overwrite semantics fully define rolling behavior across epochs.
 - **Bootstrap continuity.** Fixed seed initialization avoids blocking withdrawals during initial activation while converging automatically to measured data.
 
@@ -142,6 +143,9 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
   - applies deterministic epoch rollover behavior, and
   - provides the required state for guardrail-script admissibility checks at enactment.
 - **Guardrail enforcement implementation available** in a released node/ledger version such that failed checks prevent enactment and treasury movement.
+- **Compute-responsibility conformance available** in a released node/ledger version, where:
+  - the ledger computes `revenue(E)` and performs ring-state transitions,
+  - the guardrail computes `windowRevenue`, `windowWithdrawn`, `effectiveRevenue`, `cap`, and admissibility.
 - **Conformance tests available** covering at least:
   - under-cap, exact-cap, and over-cap withdrawals,
   - `netChangeLimit = 0`,
@@ -165,6 +169,7 @@ After activation, normal epoch rollover semantics apply, and seeded slots are pr
   - Expose required canonical state for guardrail-script admissibility checks at enactment.
 - **Guardrail script work**
   - Implement NCL admissibility logic against canonical ledger state per this CIP.
+  - Compute `windowRevenue`, `windowWithdrawn`, `effectiveRevenue`, and `cap` inside guardrail logic.
   - Ensure failure blocks enactment and treasury movement.
 - **Testing and validation**
   - Add deterministic conformance tests for window sums, arithmetic, rollover semantics, and bootstrap behavior.
