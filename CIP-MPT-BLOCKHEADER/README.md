@@ -8,7 +8,7 @@ Authors:
   - Philip DiSarro <philip.disarro@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/964
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/964
 Created: 2025-03-27
 License: CC-BY-4.0
 ---
