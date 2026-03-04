@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 179
 Title: On-Chain Surveys and Polls
 Category: Metadata
 Status: Proposed
