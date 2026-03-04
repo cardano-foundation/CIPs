@@ -31,9 +31,8 @@ the root from the block’s transactions, and deployment via a Dijkstra-era hard
 
 ## Motivation: Why is this CIP necessary?
 
-> NOTE (CPS linkage): This proposal originated as a CPS in PR #964 (“CIP-???? | Merkle Root of
-> Transactions in Block Header”). The CIP process recommends that complex proposals link a CPS as
-> motivation; at the time of writing, the CPS identifier for this work is not finalized in the PR.
+> [!NOTE]
+> This proposal originated as a CPS from a general recommendation that complex proposals should first consider a CPS to contain any solving CIPs: but community review determined that the single-solution nature of this problem suggested the purely practical approach of presentation as a CIP alone.
 
 ### The need for time-bound inclusion proofs
 
