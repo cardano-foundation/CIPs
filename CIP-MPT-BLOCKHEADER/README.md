@@ -1,6 +1,6 @@
 ---
 CIP: TBD
-Title: Merkle Patricia Trie Root of Transactions in Cardano Block Header
+Title: Merkle Root of Transactions in Block Header
 Category: Ledger
 Status: Proposed
 Authors:
