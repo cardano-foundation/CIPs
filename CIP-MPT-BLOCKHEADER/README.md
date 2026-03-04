@@ -1,5 +1,5 @@
 ---
-CIP: TBD
+CIP: 178
 Title: Merkle Root of Transactions in Block Header
 Category: Ledger
 Status: Proposed
