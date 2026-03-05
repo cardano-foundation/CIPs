@@ -7,7 +7,7 @@ Authors:
   - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/?
+  - https://github.com/cardano-foundation/CIPs/pull/1159
 Created: 2026-03-05
 License: CC-BY-4.0
 ---
@@ -47,21 +47,6 @@ A transaction that is otherwise valid and includes a reward withdrawal MUST NOT 
 - the predefined `No Confidence` option.
 
 Post-adoption, reward withdrawals are valid regardless of whether the withdrawing credential has an active voting delegation.
-
-### Scope of change
-
-This CIP changes only the validity condition for reward withdrawals.
-
-This CIP does not change:
-
-- DRep registration or retirement,
-- stake-and-vote delegation certificates,
-- vote delegation to `Abstain` or `No Confidence`,
-- direct voting,
-- vote counting,
-- active voting stake calculations,
-- governance action ratification thresholds, or
-- any other part of [CIP-1694](https://cips.cardano.org/cip/CIP-1694).
 
 ### Implementation notes
 
