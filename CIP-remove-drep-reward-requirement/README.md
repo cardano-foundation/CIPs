@@ -28,8 +28,6 @@ First, it conditions access to earned rewards on a governance choice that many A
 
 Second, making withdrawals contingent on voting delegation creates pressure toward convenience delegation flows in wallets and custodial interfaces. When the user is blocked from withdrawing unless some governance delegation is present, interfaces are incentivized to simplify the step by preselecting, defaulting, auto-populating, or otherwise steering the user toward a delegation outcome. Even when presented as convenience, this creates avoidable pressure that can concentrate voting power and distort representative choice.
 
-Third, the rule has already produced enough compatibility concern that the ledger implementation was narrowed to avoid breaking existing script-withdrawal patterns. Issue [#4092](https://github.com/IntersectMBO/cardano-ledger/issues/4092) in `cardano-ledger` documented the risk that the withdrawal restriction could break established "withdraw 0" staking-script patterns and potentially strand funds or disable existing application flows. PR [#4555](https://github.com/IntersectMBO/cardano-ledger/pull/4555) subsequently narrowed the rule to non-delegated key hashes. That mitigation reduced the compatibility blast radius, but it did not address the underlying policy question of whether reward withdrawal should depend on governance delegation at all.
-
 This CIP adopts a simpler position: reward withdrawal and governance delegation should be decoupled. An ADA holder should be able to withdraw earned rewards without being required to delegate voting power first.
 
 ## Specification
@@ -50,9 +48,7 @@ Post-adoption, reward withdrawals are valid regardless of whether the withdrawin
 
 ### Implementation notes
 
-Implementations should remove the Conway reward-withdrawal validation path that rejects undelegated reward withdrawals. The current implementation reality is already narrower than the original [CIP-1694](https://cips.cardano.org/cip/CIP-1694) prose because [#4555](https://github.com/IntersectMBO/cardano-ledger/pull/4555) limited enforcement to non-delegated key hashes for compatibility reasons. This CIP removes the remaining withdrawal restriction instead of introducing further exceptions.
-
-Wallets, custodians, APIs, and transaction submission layers should update any user-facing logic or documentation that implies reward withdrawal requires prior voting delegation.
+Implementations should remove the Conway reward-withdrawal validation path that rejects undelegated reward withdrawals. Wallets, custodians, APIs, and transaction submission layers should update any user-facing logic or documentation that implies reward withdrawal requires prior voting delegation.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -85,7 +81,6 @@ This improves compatibility for tooling and wallet flows that should not need go
 
 ### Implementation Plan
 
-- [ ] Review with the Ledger team under the expectations described in [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084).
 - [ ] Amend the Conway-era formal specification to remove withdrawal rejection based on missing voting delegation.
 - [ ] Update ledger tests to demonstrate that reward withdrawals from undelegated reward accounts are accepted after the fork.
 - [ ] Update downstream tooling and documentation that currently expect `ConwayWdrlNotDelegatedToDRep` / `ForbiddenWithdrawal` for this case.
@@ -96,8 +91,6 @@ This improves compatibility for tooling and wallet flows that should not need go
 - [CIP-0084: Cardano Ledger Evolution](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084)
 - [Plomin upgrade readiness](https://cardanoupgrades.docs.intersectmbo.org/plomin-upgrade/chang-upgrade-2-readiness)
 - [Intersect Development Update #47 - January 31st](https://www.intersectmbo.org/news/intersect-development-update-47-january-31st)
-- [cardano-ledger issue #4092: Backwards compatibility for ConwayWdrlNotDelegatedToDRep](https://github.com/IntersectMBO/cardano-ledger/issues/4092)
-- [cardano-ledger PR #4555: Disallow withdrawals to non-delegated keyhashes post-bootstrap](https://github.com/IntersectMBO/cardano-ledger/pull/4555)
 - [Ogmios: SubmitTransactionFailureForbiddenWithdrawal](https://ogmios.dev/typescript/api/interfaces/_cardano_ogmios_schema.SubmitTransactionFailureForbiddenWithdrawal.html)
 
 ## Copyright
