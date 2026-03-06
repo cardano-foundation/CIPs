@@ -21,7 +21,7 @@ Unlike centralized verification services that act as trusted intermediaries, thi
 
 This standard supports multiple Cardano smart contract compilers including Aiken, Plutarch, PlutusTx, Scalus, plu-ts, and OpShin, with a mechanism for adding new compilers as they emerge.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### The Problem
 
