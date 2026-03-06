@@ -1,0 +1,20 @@
+{
+  "17": {
+    "msg": [
+      "Response to Dijkstra hard-fork CIP inclusion poll"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "responderRole": "Stakeholder",
+      "answers": [
+        {
+          "questionId": "cip_0136_inclusion",
+          "selection": [
+            0
+          ]
+        }
+      ]
+    }
+  }
+}

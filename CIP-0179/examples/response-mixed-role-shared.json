@@ -1,0 +1,20 @@
+{
+  "17": {
+    "msg": [
+      "Shared mixed-role response"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "1515151515151515151515151515151515151515151515151515151515151515",
+      "responderRole": "DRep",
+      "answers": [
+        {
+          "questionId": "gov_priority",
+          "selection": [
+            0
+          ]
+        }
+      ]
+    }
+  }
+}
