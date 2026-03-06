@@ -124,6 +124,10 @@
     "description": "CIP-0149 - Optional DRep compensation"
   },
   {
+    "transaction_metadatum_label": 6676,
+    "description": "Maya Protocol - Cross-chain swap memo (bifrost observer)"
+  },
+  {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
   },
