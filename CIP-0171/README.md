@@ -210,7 +210,7 @@ Verification tool implementers SHOULD maintain documentation linking to compiler
 
 Verification metadata submitters MUST use the exact compiler version string that produces the matching bytecode. Using approximate versions will result in verification failures.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why Transaction Metadata?
 
