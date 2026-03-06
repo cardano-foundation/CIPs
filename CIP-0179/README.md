@@ -520,12 +520,13 @@ This revision defines version `1.0.0`.
 - [ ] At least two independent tools can create `surveyDetails` payloads with the `questions[]` schema.
 - [ ] At least two independent tools can ingest `surveyResponse` payloads with `answers[]` and produce matching tallies for shared test vectors.
 - [ ] At least one governance-facing tool implements the Info Action profile.
-- [ ] Label `17` is registered in `CIP-0010/registry.json`.
+- [x] Label `17` is registered in `CIP-0010/registry.json`.
+- [ ] At least one cooperative test demonstrates that a `surveyDetails` payload created by one tool can be correctly tallied by a separate, independent tool (cross-tool interoperability).
 
 ### Implementation Plan
 
-- [ ] Finalize CIP text and examples from PR review feedback.
-- [ ] Publish reference test vectors and validation notes.
+- [x] Finalize CIP text and examples from PR review feedback.
+- [x] Publish reference test vectors and validation notes.
 - [ ] Implement and demonstrate end-to-end survey creation + response + tally in at least one toolchain.
 - [ ] Document interoperability results and edge-case handling.
 
