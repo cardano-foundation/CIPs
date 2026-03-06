@@ -7,8 +7,8 @@ Authors:
     - Giovanni Gargiulo <gargiulo.gianni@gmail.com>
 Implementors: []
 Discussions:
-    - https://forum.cardano.org/t/cip-idea-smart-contract-source-code-verification-metadata/152403
-    - https://github.com/cardano-foundation/CIPs/pull/1136
+    - Forum Discussion: https://forum.cardano.org/t/cip-idea-smart-contract-source-code-verification-metadata/152403
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1136
 Created: 2026-01-19
 License: CC-BY-4.0
 ---
