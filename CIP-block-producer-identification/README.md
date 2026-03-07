@@ -187,7 +187,7 @@ ledger era (potentially Dijkstra or later).
 - The new protocol version semantics do not retroactively affect interpretation
   of historical blocks
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Design Decisions
 
