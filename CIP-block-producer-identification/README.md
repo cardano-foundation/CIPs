@@ -328,7 +328,7 @@ implementations with a future ledger era activation (potentially Dijkstra).
     - Update cardano-node to populate the `block_producer_agent` field
     - Modify consensus rules to accept any block version value
     - Add configuration options for a block producer agent string
-- **Rust (Dingo)**:
+- **Go (Dingo)**:
     - Implement block header changes according to Cardano Blueprint
       specification
     - Add support for producing and validating blocks with the new format
