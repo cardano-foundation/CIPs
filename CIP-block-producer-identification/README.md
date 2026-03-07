@@ -1,5 +1,5 @@
 ---
-CIP: CIP-XXXX
+CIP: XXXX
 Title: Block Producer Identification and Protocol Version Signaling
 Category: Ledger
 Status: Proposed
