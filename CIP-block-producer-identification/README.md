@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Samuel Leathers <samuel.leathers@iohk.io>
     - Adam Dean <adam@crypto2099.io>
-Implementors: [ ]
+Implementors: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1157
 Created: 2026-03-04
