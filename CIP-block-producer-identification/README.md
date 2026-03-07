@@ -25,7 +25,7 @@ regarding node diversity and upgrade progress while resolving ambiguities in
 protocol version reporting. This proposal requires a hard fork as it modifies
 the block header CBOR serialization.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Node Diversity Analytics
 
