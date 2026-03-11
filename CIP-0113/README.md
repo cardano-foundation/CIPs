@@ -283,13 +283,42 @@ without the explicit permission of the token owner. Third parties could be any C
 This constructor supports **multiple UTxOs** in a single transaction for batch operations.
 
 When using this constructor:
-1. `registry_node_idx`: The index (in reference inputs) of the RegistryNode for the token being acted upon
-2. `input_idxs`: A list of indices (in transaction inputs) pointing to the UTxOs from programmableLogicBase being acted upon
+1. `registry_node_idx`: The index (in reference inputs) of the `RegistryNode` for the token being acted upon
+2. `input_idxs`: A list of **relative input indices** identifying all the script UTxOs that are spent in this transaction
 3. `outputs_start_idx`: The index where corresponding outputs begin in the transaction outputs
 4. `length_input_idxs`: The expected length of `input_idxs` (used for validation)
 
-**Input/Output Pairing:**
-Each input at `input_idxs[i]` is paired with an output at `outputs_start_idx + i`. This allows batch processing of multiple UTxOs while maintaining a predictable structure.
+**Meaning of `input_idxs`**
+
+`input_idxs` is **not** a list of absolute transaction-input indices.
+
+Instead, it is a relative encoding of an ordered subsequence of `tx.inputs`:
+
+- `input_idxs[0]` is the absolute index of the first acted-upon input in `tx.inputs`
+- For each `i > 0`, `input_idxs[i]` is the number of transaction inputs between the previously acted-upon input and the
+next acted-upon input
+
+Equivalently, if the acted-upon inputs are at absolute positions:
+
+`a0 < a1 < a2 < ... < an`
+
+then the encoded `input_idxs` list is:
+
+`[a0, a1 - a0 - 1, a2 - a1 - 1, ..., an - a(n-1) - 1]`
+
+This encoding allows the validator to traverse `tx.inputs` incrementally, rather than restarting from the beginning for
+each acted-upon input.
+
+**Input/Output Pairing**
+
+Let `a0, a1, ..., an` be the absolute input indices obtained by decoding `input_idxs` as described above.
+
+Then each acted-upon input at `tx.inputs[ai]` is paired with the output at:
+
+`tx.outputs[outputs_start_idx + i]`
+
+This allows batch processing of multiple UTxOs while maintaining a predictable correspondence between selected inputs and
+outputs.
 
 **Validation Requirements:**
 - The RegistryNode at `registry_node_idx` MUST exist and contain the token's configuration
