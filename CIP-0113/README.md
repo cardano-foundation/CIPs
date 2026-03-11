@@ -284,8 +284,7 @@ This constructor supports **multiple UTxOs** in a single transaction for batch o
 
 When using this constructor:
 1. `registry_node_idx`: The index (in reference inputs) of the `RegistryNode` for the token being acted upon
-2. `input_idxs`: A list of non-negative integers encoding the selected transaction inputs as **skip counts** over
-`tx.inputs`
+2. `input_idxs`: A list of integers encoding the selected transaction inputs as **skip counts** over `tx.inputs`
 3. `outputs_start_idx`: The index where corresponding outputs begin in the transaction outputs
 4. `length_input_idxs`: The expected length of `input_idxs` (used for validation)
 
