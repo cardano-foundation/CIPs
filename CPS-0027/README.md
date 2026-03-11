@@ -1,0 +1,249 @@
+---
+CPS: 27
+Title: Post-quantum signatures
+Category: Plutus
+Status: Open
+Authors: Koz Ross <koz@mlabs.city>
+Proposed Solutions: []
+Discussions: 
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1144
+Created: 2026-01-29
+License: Apache-2.0
+---
+
+## Abstract
+
+Post-quantum cryptography, specifically with regard to digital signatures, is
+important at all levels of the Cardano chain, including for script and dApp
+developers. There is no current way to do this short of implementing such
+functionality yourself, which is difficult, inefficient and risky. This is in
+contrast to pre-quantum signature schemes, which exist as easy-to-use and
+efficient builtins.
+
+## Problem
+
+[Quantum computing][quantum-computing] is a realizable approach to computation
+that threatens to turn a lot of existing security-oriented algorithms on their
+heads. In particular, the existence of [Shor's algorithm][shors-algorithm] means
+that a quantum computer with sufficient resources could break any existing
+cryptographic scheme that relies on integer factorization or discrete logarithms 
+for its hardness. As many currently-used public-key cryptography systems rely on
+the hardness of one of these problems, this is a looming concern. In the world
+of blockchain, concerns over quantum computing are also being taken seriously: 
+the Ethereum Foundation has elevated post-quantum
+security to a [top strategic priority][ethereum-top-priority] this year, and
+Algorand have [been taking proactive steps][algorand-steps] around post-quantum 
+security since at least 2022. In the Cardano ecosystem, The Intersect Product 
+Committee's [Cardano 2030 Strategic Framework][2030-strategic-framework]
+describes 'post-quantum readiness' as a focus area for security and resilience.
+
+The number of problems posed by the looming arrival of quantum computing is
+large, and covers many areas relating to the operation of a blockchain: a single
+CPS could not possibly cover them all. Thus, we examine a specific problem, in a
+specific context, which can be scoped precisely. This stems from several
+considerations:
+
+* Avoiding scope creep and death by detail. The multifaceted nature, and sheer
+  size, of the issue of getting Cardano post-quantum-ready has already [caused
+  problems with previous attempts][prior-attempt] leading to their abandonment.
+* The authors are more familiar with the specifics of some problems that would
+  need addressing with regard to post-quantum security in the context of
+  Cardano. Thus, we chose to focus the CPS around such a problem.
+* Any solutions, or discussions, pertaining to a more specific problem in the
+  context of making Cardano post-quantum secure will generalize at least
+  somewhat to other problems in that space as well.
+
+Thus, this CPS will form part of a larger, long-term effort toward making
+Cardano ready for the post-quantum security landscape. Any discussions, or work,
+in a more narrow space or problem will contribute towards future work in other
+areas of Cardano.
+
+One particular area affected
+strongly by quantum computing breaking several previously-hard problems are
+_digital signatures_, for which specific primitive operations exist on Cardano.
+Currently, script developers have access to builtin operations verifying
+signatures using the following schemes:
+
+* Edwards-curve digital signature algorithm over the Ed25519 elliptic curve; 
+* Edwards-curve digital signature algorithm over the SECP256k1 elliptic curve;
+  and
+* Schnorr signatures over the SECP256k1 elliptic curve.
+
+Practical quantum computing using Shor's algorithm would render all of these
+insecure. This is a significant issue for script and dApp developers who want to
+future-proof the security of their work. While extensions such as CIPs
+[121][cip-121], [122][cip-122] and [123][cip-123] make implementing the logic of
+a different signature verification possible, as shown by projects such as
+[Grumplestiltskin][grumplestiltskin] and the [SHA512 hashing][plutus-sha512] and
+[Ed25519 verification][plutus-ed25519] benchmarks in Plutus, even implementing
+the underlying primitives to support such schemes is a challenging task in
+itself, before we consider performance and the old adage about not 'rolling your
+own crypto'. 
+
+Part of the efforts to make Cardano 'post-quantum ready' must extend such
+capabilities to developers of scripts and dApps to be meaningful. Currently, no
+such possibilities exist in a practically usable way.
+
+## Use cases
+
+The chief use case today for such capabilities are script or dApp developers
+whose work currently relies on digital signatures. A good example of this would
+be an auction system, where bids are signed by the bidders. Concretely, consider
+the following validator code snippet:
+
+```haskell
+validBidTerms :: AuctionTerms -> CurrencySymbol -> BidTerms -> Bool
+validBidTerms AuctionTerms {..} auctionID BidTerms {..}
+  | BidderInfo {..} <- bt'Bidder =
+  validBidderInfo bt'Bidder &&
+  -- The bidder pubkey hash corresponds to the bidder verification key.
+  verifyEd25519Signature at'SellerVK
+    (sellerSignatureMessage auctionID bi'BidderVK)
+    bt'SellerSignature &&
+  -- The seller authorized the bidder to participate
+  verifyEd25519Signature bi'BidderVK
+    (bidderSignatureMessage auctionID bt'BidPrice bi'bidderPKH)
+    bt'BidderSignature
+  -- The bidder authorized the bid
+
+bidderSignatureMessage
+  :: CurrencySymbol
+  -> Integer
+  -> PubKeyHash
+  -> BuiltinByteString
+bidderSignatureMessage auctionID bidPrice bidderPKH =
+  toByteString auctionID <>
+  toByteString bidPrice <>
+  toByteString bidderPKH
+
+sellerSignatureMessage
+  :: CurrencySymbol
+  -> BuiltinByteString
+  -> BuiltinByteString
+sellerSignatureMessage auctionID bidderVK =
+  toByteString auctionID <>
+  bidderVK
+```
+
+The snippet uses `verifyEd25519Signature` to check signatures on bids. If a dApp
+developer wanted to make this future-proof against quantum computing attacks
+against the security of these signatures, they currently have no way of doing
+this short of implementing it themselves, with all the downsides previously
+talked about. Even if they had the skills and time to implement a different
+signature scheme verification as part of their script, it would be much less
+efficient than a single builtin call, to say nothing of the security
+implications. The authors have non-trivial experience with regard to all of
+these problems: they are evidenced well by the [Grumplestiltskin
+project][grumplestiltskin], as well as the [SHA512][plutus-sha512] and [Ed25519
+signature verification][plutus-ed25519] benchmark implementations submitted as
+part of work on CIPs 121, 122 and 123, which exhibit _all_ of the above problems
+in spades.
+
+Another important use case is that, in the event of a quantum breakthrough,
+post-quantum smart-contract-driven wallets can secure Cardano without having to
+modify the ledger directly. While this is very much a worst-case scenario,
+having this possibility available would be an additional layer of defence
+against quantum computing compromising the chain. Post-quantum digital
+signatures would be required to make this possible, and having such builtins
+would allow it to be implemented easily if the need ever arose.
+
+## Goals
+
+Ultimately, the goal would be to make one (or possibly several) post-quantum
+signature schemes available to dApp developers as UPLC builtins, similar to the
+existing builtins for pre-quantum schemes. These should be chosen carefully, as
+the space of post-quantum digital signature schemes has received much less
+scrutiny than the pre-quantum schemes they are going to replace. At minimum, the
+following criteria must be considered:
+
+* Proofs or guarantees of their security. Being reviewed as part of a NIST
+  process, or having some published proofs or demonstrations of the scheme's
+  security would be a significant factor.
+* The existence of a reference implementation that can be integrated into
+  `cardano-base` (a necessary requirement for builtins doing digital
+  signatures).
+* Size of signature and verification key representations.
+* Time required to verify a signature.
+* Existing adoption (including by other chains in case of interoperability
+  requirements in the future).
+
+## Open Questions
+
+The biggest open question is precisely _which_ scheme should be chosen for the
+non-trivial effort involved in introducing it as a builtin. A whole
+constellation of different solutions exist, and more are being worked on,
+relying on different problems for their hardness, and with a whole range of
+tradeoffs and implementations. It is quite likely that no single scheme will be
+ideal relative all the criteria given in the Goals section, and some of these
+criteria are quite speculative. It is likely that a non-trivial research effort
+will be required prior to this choice being made, if only to present sufficient
+evidence for the choice.
+
+A related question to the above is whether it might be worthwhile to have
+_multiple_ schemes available. Currently, there are builtins covering three
+different pre-quantum schemes (although two are variants on the same curve),
+which suggests that doing something similar for post-quantum signature
+verification may be a good idea. This could help 'cover our bases' regarding
+questions of performance and existing adoption, but would magnify all of the
+effort involved in getting usable builtins, starting with the research step and
+ending with costing and implementation. A related concern is that of educating
+dApp and script developers about the benefits, and drawbacks, of each scheme in
+such a case, as these are not likely to be clear to someone who isn't a
+cryptography expert.
+
+[Earlier efforts][prior-attempt] at a CIP around this problem highlighted three
+promising candidate algorithms:
+
+* [ML-DSA][ml-dsa], also known as CRYSTALS-Dilithium
+* [Falcon][falcon]
+* [SLH-DSA][slh-dsa], also known as SPHINCS+
+
+The primary reason for these specific algorithms being highlighted is NIST
+standardization. ML-DSA and SLH-DSA have both been standardized as [FIPS
+204][fips-204] and [FIPS 205][fips-205] respectively. Falcon is still in the
+process of review, to potentially become [FIPS 206][fips-206]. This means that
+these algorithms, and their reference implementations, have received significant
+scrutiny, and are specified as a public document and a standard. One concern
+raised by earlier efforts was that of signature sizes, with a described minimum
+of [666 bytes for a signature][signature-sizes]. Furthermore, [early
+benchmarks][early-benchmarks] demonstrated tension between verification key size
+and performance. These may have changed in the interim.
+
+Another recent possibility is [SQIsign][sqisign]. While still in the process of NIST
+standardization, and still being worked on, SQIsign promises very small
+signatures and keys by comparison to the three previous approaches. This could
+be very advantageous onchain, where space limitations are significant. The
+research step of any solution to this problem should at least consider the
+possibility of using it. Its main downside (other than its lack of
+standardization or 'stability') is that verification is relatively slow:
+however, current work may change this.
+
+This shows that these open questions aren't straightforward, and will require at
+minimum a well-researched justification for the choice of any of them.
+
+## Copyright
+
+This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+[quantum-computing]: https://en.wikipedia.org/wiki/Quantum_computing
+[shors-algorithm]: https://en.wikipedia.org/wiki/Shor%27s_algorithm
+[post-quantum-cryptography]: https://en.wikipedia.org/wiki/Post-quantum_cryptography
+[ethereum-top-priority]: https://thequantuminsider.com/2026/01/26/ethereum-foundation-elevates-post-quantum-security-to-top-strategic-priority/
+[algorand-steps]: https://thequantuminsider.com/2026/01/26/ethereum-foundation-elevates-post-quantum-security-to-top-strategic-priority/
+[cip-121]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121
+[cip-122]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122
+[cip-123]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0123
+[grumplestiltskin]: https://github.com/mlabs-haskell/grumplestiltskin/tree/milestone-2
+[plutus-sha512]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/SHA512.hs
+[plutus-ed25519]: https://github.com/IntersectMBO/plutus/blob/master/plutus-benchmark/bitwise/src/PlutusBenchmark/Ed25519.hs
+[2030-strategic-framework]: https://product.cardano.intersectmbo.org/vision/strategy-2030 
+[prior-attempt]: https://github.com/cardano-foundation/CIPs/issues/413
+[ml-dsa]: https://www.pq-crystals.org/dilithium/index.shtml
+[falcon]: https://falcon-sign.info/
+[slh-dsa]: https://sphincs.org/
+[fips-205]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.205.pdf
+[fips-204]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.204.pdf
+[fips-206]: https://www.digicert.com/blog/quantum-ready-fndsa-nears-draft-approval-from-nist
+[signature-sizes]: https://sofiaceli.com/2022/07/05/pq-signatures.html
+[early-benchmarks]: https://github.com/mgajda/CIPs/blob/michal/post-quantum-plutus/CIP-%3F%3F%3F%3F/README.md#plutus-api
+[sqi-sign]: https://sqisign.org/
