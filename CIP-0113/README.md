@@ -284,41 +284,47 @@ This constructor supports **multiple UTxOs** in a single transaction for batch o
 
 When using this constructor:
 1. `registry_node_idx`: The index (in reference inputs) of the `RegistryNode` for the token being acted upon
-2. `input_idxs`: A list of **relative input indices** identifying all the script UTxOs that are spent in this transaction
+2. `input_idxs`: A list of non-negative integers encoding the selected transaction inputs as **skip counts** over
+`tx.inputs`
 3. `outputs_start_idx`: The index where corresponding outputs begin in the transaction outputs
 4. `length_input_idxs`: The expected length of `input_idxs` (used for validation)
 
 **Meaning of `input_idxs`**
 
-`input_idxs` is **not** a list of absolute transaction-input indices.
+`input_idxs` is not a list of absolute transaction-input indices after the first element.
 
-Instead, it is a relative encoding of an ordered subsequence of `tx.inputs`:
+Instead, it encodes an ordered subsequence of `tx.inputs` incrementally:
 
-- `input_idxs[0]` is the absolute index of the first acted-upon input in `tx.inputs`
-- For each `i > 0`, `input_idxs[i]` is the number of transaction inputs between the previously acted-upon input and the
-next acted-upon input
+- `input_idxs[0]` is the absolute index of the first selected input in `tx.inputs`
+- for each `i > 0`, `input_idxs[i]` is the number of inputs to skip after the previously selected input before selecting
+the next one
 
-Equivalently, if the acted-upon inputs are at absolute positions:
+Equivalently, if the selected inputs are at absolute positions
 
 `a0 < a1 < a2 < ... < an`
 
-then the encoded `input_idxs` list is:
+then
 
-`[a0, a1 - a0 - 1, a2 - a1 - 1, ..., an - a(n-1) - 1]`
+`input_idxs = [a0, a1 - a0 - 1, a2 - a1 - 1, ..., an - a(n-1) - 1]`
 
-This encoding allows the validator to traverse `tx.inputs` incrementally, rather than restarting from the beginning for
-each acted-upon input.
+Conversely, the absolute positions can be reconstructed as:
+
+- `a0 = input_idxs[0]`
+- `ai = a(i-1) + input_idxs[i] + 1` for `i > 0`
+
+In particular, for `i > 0`, a value of `0` means that the next selected input is immediately after the previous selected
+input in `tx.inputs` (i.e. there are zero intervening inputs).
+
+This encoding allows the validator to traverse `tx.inputs` incrementally by repeatedly dropping from the remaining suffix,
+rather than restarting from the beginning for each selected input.
 
 **Input/Output Pairing**
 
-Let `a0, a1, ..., an` be the absolute input indices obtained by decoding `input_idxs` as described above.
+Let `a0, a1, ..., an` be the absolute input positions obtained by decoding `input_idxs` as described above.
 
-Then each acted-upon input at `tx.inputs[ai]` is paired with the output at:
+Then the selected input at `tx.inputs[ai]` is paired with the output at:
 
 `tx.outputs[outputs_start_idx + i]`
-
-This allows batch processing of multiple UTxOs while maintaining a predictable correspondence between selected inputs and
-outputs.
 
 **Validation Requirements:**
 - The RegistryNode at `registry_node_idx` MUST exist and contain the token's configuration
