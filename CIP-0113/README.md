@@ -283,13 +283,47 @@ without the explicit permission of the token owner. Third parties could be any C
 This constructor supports **multiple UTxOs** in a single transaction for batch operations.
 
 When using this constructor:
-1. `registry_node_idx`: The index (in reference inputs) of the RegistryNode for the token being acted upon
-2. `input_idxs`: A list of indices (in transaction inputs) pointing to the UTxOs from programmableLogicBase being acted upon
+1. `registry_node_idx`: The index (in reference inputs) of the `RegistryNode` for the token being acted upon
+2. `input_idxs`: A list of integers encoding the selected transaction inputs as **skip counts** over `tx.inputs`
 3. `outputs_start_idx`: The index where corresponding outputs begin in the transaction outputs
 4. `length_input_idxs`: The expected length of `input_idxs` (used for validation)
 
-**Input/Output Pairing:**
-Each input at `input_idxs[i]` is paired with an output at `outputs_start_idx + i`. This allows batch processing of multiple UTxOs while maintaining a predictable structure.
+**Meaning of `input_idxs`**
+
+`input_idxs` is not a list of absolute transaction-input indices after the first element.
+
+Instead, it encodes an ordered subsequence of `tx.inputs` incrementally:
+
+- `input_idxs[0]` is the absolute index of the first selected input in `tx.inputs`
+- for each `i > 0`, `input_idxs[i]` is the number of inputs to skip after the previously selected input before selecting
+the next one
+
+Equivalently, if the selected inputs are at absolute positions
+
+`a0 < a1 < a2 < ... < an`
+
+then
+
+`input_idxs = [a0, a1 - a0 - 1, a2 - a1 - 1, ..., an - a(n-1) - 1]`
+
+Conversely, the absolute positions can be reconstructed as:
+
+- `a0 = input_idxs[0]`
+- `ai = a(i-1) + input_idxs[i] + 1` for `i > 0`
+
+In particular, for `i > 0`, a value of `0` means that the next selected input is immediately after the previous selected
+input in `tx.inputs` (i.e. there are zero intervening inputs).
+
+This encoding allows the validator to traverse `tx.inputs` incrementally by repeatedly dropping from the remaining suffix,
+rather than restarting from the beginning for each selected input.
+
+**Input/Output Pairing**
+
+Let `a0, a1, ..., an` be the absolute input positions obtained by decoding `input_idxs` as described above.
+
+Then the selected input at `tx.inputs[ai]` is paired with the output at:
+
+`tx.outputs[outputs_start_idx + i]`
 
 **Validation Requirements:**
 - The RegistryNode at `registry_node_idx` MUST exist and contain the token's configuration
