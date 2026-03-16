@@ -427,12 +427,11 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 
 Current editors are listed here below:
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
-| ---                            | ---                            | ---                             | ---                                    |
+| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Thomas Vellekoop <br/> [@perturbing][] |
+| ---                            | ---                            | ---                                    |
 
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
-[@Crypto2099]: https://github.com/Crypto2099
 [@perturbing]: https://github.com/perturbing
 
 Emeritus editors:
@@ -440,6 +439,7 @@ Emeritus editors:
 - Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
 - Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
 - Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
+- Adam Dean - [@Crypto2099](https://github.com/Crypto2099)
 
 ## Rationale: how does this CIP achieve its goals?
 
