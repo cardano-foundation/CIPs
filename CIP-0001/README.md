@@ -439,6 +439,7 @@ Emeritus editors:
 - Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
 - Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
 - Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
+- Adam Dean - [@Crypto2099](https://github.com/Crypto2099)
 
 ## Rationale: how does this CIP achieve its goals?
 
