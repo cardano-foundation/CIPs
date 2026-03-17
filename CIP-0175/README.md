@@ -17,16 +17,19 @@ License: CC-BY-4.0
 
 Stake Pool Operators (SPOs) currently sign on-chain governance votes with pool
 cold keys. This CIP introduces a new on-chain certificate that lets a pool cold
-key authorize a hot credential for a stake pool. For
-`StakePoolVoter poolId`, the ledger accepts either:
+key authorize a hot credential for a stake pool. It also makes SPO vote
+authorization explicit in the voter representation:
 
-- the pool cold key witness, or
-- a witness that satisfies the currently authorized hot credential.
+- `StakePoolVoter poolId Nothing` requires the pool cold key witness.
+- `StakePoolVoter poolId (Just hotCred)` requires witnesses that satisfy
+  `hotCred`, and the ledger verifies that `hotCred` matches the pool's
+  currently authorized hot credential.
 
 Hot credentials are defined as `Credential` values (key hash or
-script hash), so native and Plutus script voting paths are supported.
-The proposal preserves the existing `StakePoolVoter` model from CIP-1694 and
-requires a future hard fork for activation.
+script hash), so native and Plutus script voting paths are supported. For each
+`(govActionId, poolId)`, the ledger only needs to track the latest SPO vote and
+whether it was cast as `Cold` or `Hot`. The proposal requires a future hard
+fork for activation.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -36,12 +39,14 @@ remain offline.
 
 Authorization for consensus-critical voting must be ledger-visible and
 ledger-validated. Existing Calidus keys from CIP-0151 rely on transaction
-metadata, but is not the right substrate for on-chain voting.
+metadata, but metadata is not the right substrate for on-chain voting.
 A certificate-based design provides explicit state transitions,
 deterministic validation, and consistent tooling semantics.
 
 This CIP enables day-to-day governance operation through authorized hot
-credentials while preserving cold-key voting as it already works today.
+credentials while preserving cold-key voting. It does so with explicit voter
+contents rather than by inferring authorization mode indirectly during witness
+validation.
 
 ## Specification
 
@@ -52,6 +57,9 @@ credentials while preserving cold-key voting as it already works today.
 - **Hot credential**: A governance `Credential` authorized for a pool's
   governance voting role. It may be either a key hash credential or script hash
   credential.
+- **SPO voter**: `StakePoolVoter !(KeyHash 'StakePool) (Maybe (Credential Hot))`.
+- **Cold vote**: An SPO vote with `StakePoolVoter poolId Nothing`.
+- **Hot vote**: An SPO vote with `StakePoolVoter poolId (Just hotCred)`.
 - **Hot authorization map**: Ledger state map
   `poolGovHotCreds : Map PoolId Credential`.
 - **Vote source**: Authorization source for a recorded SPO vote:
@@ -73,7 +81,7 @@ This CIP introduces one new stake-pool governance certificate:
 ### Certificate CDDL
 
 ```cddl
-; Numeric certificate tag allocation is TBD in Conway ledger CDDL integration.
+; Numeric certificate tag allocation is TBD in Ledger CDDL integration.
 assign_stake_pool_hot_credential_tag = uint
 
 assign_stake_pool_hot_credential_cert = [
@@ -92,11 +100,6 @@ For `AssignStakePoolHotCredential(poolId, hotCredOpt)`:
 3. If multiple `AssignStakePoolHotCredential` certificates for the same
    `poolId` appear in one transaction, they are processed in transaction order;
    the last one determines the final hot credential state for that `poolId`.
-4. A transaction MAY include SPO governance vote(s) for the same `poolId` as
-   one or more `AssignStakePoolHotCredential` certificates.
-5. Same-transaction vote authorization for `poolId` MUST evaluate against the
-   hot credential state resulting from certificates that appear earlier in that
-   transaction's certificate list.
 
 ### Ledger State Extension
 
@@ -125,39 +128,47 @@ Pool retirement lifecycle:
 - When retirement is enacted, the ledger clears that pool's
   `poolGovHotCreds` entry.
 
-### Governance Vote Authorization Change
+### SPO Voter Representation and Authorization
 
-For each vote with `Voter = StakePoolVoter poolId`, authorization succeeds if
-either of the following holds:
+This CIP changes the SPO voter representation to:
 
-1. The transaction includes a valid witness by the pool cold key for `poolId`.
-2. `poolGovHotCreds[poolId] = hotCred` exists and transaction witnesses satisfy
-   `hotCred`.
+```haskell
+StakePoolVoter !(KeyHash 'StakePool) (Maybe (Credential Hot))
+```
+
+Authorization semantics:
+
+1. `StakePoolVoter poolId Nothing` is a cold-authorized SPO vote. The
+   transaction MUST include a valid witness by the pool cold key for `poolId`.
+2. `StakePoolVoter poolId (Just hotCred)` is a hot-authorized SPO vote. The
+   transaction MUST include witnesses that satisfy `hotCred`, and the ledger
+   MUST verify that `poolGovHotCreds[poolId] = hotCred`.
 
 Hot credential satisfaction rules:
 
 - If `hotCred` is a key credential, the corresponding vkey witness is required.
 - If `hotCred` is a script credential, a valid governance voting script witness
-  is required under existing Conway voting-script rules for
-  `StakePoolVoter poolId`.
+  is required under existing governance voting-script rules for
+  `StakePoolVoter poolId (Just hotCred)`.
 - Both native scripts and Plutus scripts are supported.
 
 All other vote semantics (vote options, anchors, role structure, timing windows,
 and tallying model) remain as defined by CIP-1694 unless explicitly modified by
 this CIP.
 
-### Vote Source and Overwrite Rules
+### Vote Type and Overwrite Rules
 
-For each `(govActionId, poolId)` vote slot, the ledger records both vote value
-and `VoteSource` (`Cold` or `Hot`).
+For each active `(govActionId, poolId)` vote slot, the ledger records only the
+latest SPO vote together with its `VoteSource` (`Cold` or `Hot`). Historical
+overwritten SPO votes do not need to be retained.
 
 Overwrite rules:
 
-1. A `Cold` vote MAY overwrite any existing vote (`Cold` or `Hot`) for the same
+1. A `Cold` vote MAY replace the current vote (`Cold` or `Hot`) for the same
    `(govActionId, poolId)`.
-2. A `Hot` vote MAY overwrite an existing `Hot` vote for the same
+2. A `Hot` vote MAY replace the current `Hot` vote for the same
    `(govActionId, poolId)`.
-3. A `Hot` vote MUST NOT overwrite an existing `Cold` vote for the same
+3. A `Hot` vote MUST NOT replace the current `Cold` vote for the same
    `(govActionId, poolId)`.
 
 Effectively, once any cold-authorized vote exists for a given
@@ -166,46 +177,59 @@ Effectively, once any cold-authorized vote exists for a given
 ### Authorization-Change Vote Invalidation
 
 If `AssignStakePoolHotCredential(poolId, hotCredOpt)` results in an actual
-authorization-state change for `poolId`, the ledger MUST clear all previously
-recorded SPO votes for that `poolId` across still-active governance actions.
+authorization-state change for `poolId`, the ledger MUST clear the current SPO
+votes for that `poolId` across still-active governance actions whose recorded
+`VoteSource` is `Hot`.
 
 If `AssignStakePoolHotCredential(poolId, hotCredOpt)` does not change the
 resulting authorization state for `poolId`, no vote invalidation occurs.
 
-### Ledger Rule Integration (Conway)
+Current `Cold` votes remain valid.
 
-This CIP integrates at existing Conway rule boundaries:
+### Ledger Rule Integration
+
+This CIP integrates at existing governance ledger rule boundaries:
 
 - **`UTXO`** applies certificate-driven updates to `poolGovHotCreds` and
   enforces transaction-level constraints for this certificate type.
-- **`UTXOW`** extends SPO vote witness authorization checks to allow either
-  pool cold or authorized hot credential satisfaction.
+- **`UTXOW`** validates the explicit SPO voter form, requiring either the pool
+  cold witness for `StakePoolVoter poolId Nothing` or witnesses satisfying
+  `hotCred` plus `poolGovHotCreds[poolId] = hotCred` for
+  `StakePoolVoter poolId (Just hotCred)`.
 - **`GOV`** (vote state handling) records `VoteSource` for stake-pool votes and
-  applies cold/hot overwrite rules plus vote invalidation on actual
+  stores only the latest current vote per `(govActionId, poolId)`, applying
+  cold/hot overwrite rules plus hot-vote invalidation on actual
   authorization-state changes.
 
-The proposal does not require new voter types and keeps `StakePoolVoter` as the
-canonical SPO governance voter identity.
+The proposal does not introduce a new governance role. It extends
+`StakePoolVoter` so the SPO vote explicitly carries whether it is using cold
+authorization or a specific hot credential.
 
 ## Rationale: How does this CIP achieve its goals?
 
 - **Certificates, not metadata**: Governance authorization must be explicit
   ledger state with deterministic rule evaluation.
+- **Deterministic vote validation**: The SPO vote itself states whether it uses
+  cold authorization or a specific hot credential, and the ledger checks that
+  claim directly.
 - **Operational security**: Day-to-day activity uses hot credentials while cold
   keys remain available for high-assurance override and recovery.
-- **Compatibility**: Cold-key voting and `StakePoolVoter` semantics remain
-  intact.
+- **Compatibility**: The SPO governance role remains `StakePoolVoter`, while
+  its payload is extended to carry hot-credential information explicitly.
 - **Future-proofing**: Credential-based payload supports key and script custody
   models without a second hard-fork change.
 - **MPO support**: Explicitly permitting hot credential reuse across pools
   supports multi-pool operational workflows.
 - **Simplicity**: A single certificate with nullable payload reduces complexity
-  in specification, validation, and tooling.
+  in specification, validation, and tooling, and the ledger only needs the
+  latest vote and its type.
 
 ### Backward Compatibility
 
-- Existing cold-key SPO voting remains valid and unchanged.
-- `StakePoolVoter poolId` remains the SPO voter representation.
+- Existing cold-key SPO voting remains valid through
+  `StakePoolVoter poolId Nothing`.
+- This CIP extends the SPO voter payload to include
+  `Maybe (Credential Hot)` explicitly.
 - This CIP introduces no dependency on transaction metadata.
 - CIP-0151 remains compatible as an off-chain identity/authentication mechanism.
   Operators MAY reuse the same underlying key material for both systems, but it
@@ -215,22 +239,24 @@ canonical SPO governance voter identity.
 
 - **Hot credential compromise near deadline**:
   If hot keys are suspected to be compromised, changing or revoking the
-  authorized hot credential immediately invalidates previously recorded SPO votes
-  for that pool on still-active governance actions. Operators can then recast
-  under current authorization (including with the cold key). Additionally, large
-  stake pool groups can mitigate this risk further by choosing to use a multisig
-  hot credential.
+  authorized hot credential immediately invalidates current hot-authorized SPO
+  votes for that pool on still-active governance actions, while current
+  cold-authorized votes remain valid. Operators can then recast under current
+  authorization (including with the cold key). Additionally, large stake pool
+  groups can mitigate this risk further by choosing to use a multisig hot
+  credential.
 - **Blast radius for shared hot credentials across multiple pools**:
   This is allowed by design. Operators should consider script credentials (for
   example multisig and timelock designs) to reduce single-key compromise risk.
 - **Intentional delegation via shared or third-party hot credentials**:
   A pool cold key can authorize any `Credential`, including one controlled by a
-  different operator or reused across multiple pools. Votes witnessed by that
-  credential then count for each `StakePoolVoter poolId` that has authorized it.
-  This representative behavior is an intentional capability, not a validation
-  flaw, but it can concentrate SPO voting influence. If that outcome is
-  undesirable, pool operators can revoke or replace the hot credential and, for
-  the current governance action, reassert intent with a cold-authorized vote.
+  different operator or reused across multiple pools. Votes cast as
+  `StakePoolVoter poolId (Just hotCred)` then count for each pool that has
+  authorized that `hotCred`. This representative behavior is an intentional
+  capability, not a validation flaw, but it can concentrate SPO voting
+  influence. If that outcome is undesirable, pool operators can revoke or
+  replace the hot credential and, for the current governance action, reassert
+  intent with a cold-authorized vote.
 
 ## Path to Active
 
@@ -239,10 +265,11 @@ canonical SPO governance voter identity.
 - [ ] Ledger implementation merged in at least one node client.
 - [ ] Ledger implementation includes:
       `AssignStakePoolHotCredential`,
-      `poolGovHotCreds` state management, SPO vote authorization extension, and
-      cold/hot vote overwrite and authorization-change invalidation behavior.
+      `poolGovHotCreds` state management, the explicit SPO voter
+      representation, latest-vote-plus-type tracking, and cold/hot overwrite
+      plus authorization-change invalidation behavior.
 - [ ] Compatible tooling available to create/submit new certificates and submit
-      SPO votes using key or script hot credentials.
+      SPO votes using either cold authorization or key/script hot credentials.
 - [ ] Integrated in a hard fork release.
 - [ ] Implementation present within block producing nodes used by 80%+ of stake.
 
@@ -250,11 +277,11 @@ canonical SPO governance voter identity.
 
 - Add certificate constructors and semantic validation for pool hot
   credential assignment/revocation via a nullable payload.
-- Add and maintain `poolGovHotCreds` in Conway ledger state.
-- Extend SPO vote witness verification for authorized hot credentials
-  (key and script forms).
-- Implement vote-source tracking, cold/hot overwrite behavior, and
-  authorization-change vote invalidation.
+- Add and maintain `poolGovHotCreds` in ledger state.
+- Extend the SPO voter representation to carry `Maybe (Credential Hot)` and
+  validate explicit cold/hot vote authorization.
+- Implement latest-vote-plus-type tracking, cold/hot overwrite behavior, and
+  hot-vote invalidation on authorization-state changes.
 - Update tooling and documentation for certificate flows and hot credential
   voting.
 - Deploy in a future hard fork.
