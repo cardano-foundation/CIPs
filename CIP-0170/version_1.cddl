@@ -1,0 +1,35 @@
+cardano_keri_metadata = {
+  ? uint => auth_event
+}
+
+auth_event = 
+  auth_begin /
+  auth_end /
+  attest
+
+auth_begin = {
+  t: "AUTH_BEGIN",
+  s: text,          ; SAID of leaf credential schema
+  i: text,          ; AID of signer
+  c: bytes,         ; Byte stream payload
+  ? m: metadata_map ; Optional metadata
+}
+
+attest = {
+  t: "ATTEST",
+  i: text,          ; AID of signer
+  d: text,          ; Digest
+  s: text           ; Hex-encoded sequence number
+}
+
+auth_end = {
+  t: "AUTH_END",
+  s: text,          ; SAID of leaf credential schema
+  i: text,          ; AID of signer
+  c: bytes,         ; Byte stream payload
+  ? m: metadata_map ; Optional metadata
+}
+
+metadata_map = {
+  * text => any
+}
