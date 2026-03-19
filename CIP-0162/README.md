@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP proposes a new [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `delegate` under `web+cardano` to enable Cardano mobile wallets and wallet extensions to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
+This CIP proposes a new [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `drep` under `web+cardano` to enable Cardano mobile wallets and wallet extensions to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
 
 ## Motivation: why is this CIP necessary?
 
@@ -30,18 +30,18 @@ Especially for real world events this will provide a feasible solution for insta
 
 ## Specification
 
-This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) URN scheme defines the `delegate` authority for Cardano URIs.
+This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) URN scheme defines the `drep` authority for Cardano URIs.
 
 ### URI Format
 
-`web+cardano://delegate/<DRep-Id>`
+`web+cardano://drep/<DRep-Id>`
 
-- Authority (REQUIRED): delegate
+- Authority (REQUIRED): drep
 - DRep-Id (REQUIRED): Bech32 [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) DRep-Id | "always_abstain" | "always_no_confidence"
 
 ### Example URIs
 
-`web+cardano://delegate/always_abstain`
+`web+cardano://drep/always_abstain`
 
 ### Wallet Behavior
 
@@ -57,14 +57,14 @@ This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/m
 
 ## Rationale: how does this CIP achieve its goals?
 
-A dedicated `delegate` authority isolates app navigation from other authorities such as `pay`, `browse` or `stake`, improving clarity and interoperability.
+A dedicated `drep` authority isolates app navigation from other authorities such as `pay`, `browse` or `stake`, improving clarity and interoperability.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
 - [ ] Community Feedback and Review Integrated
-- [ ] One or more wallets support this new `delegate` authority
+- [ ] One or more wallets support this new `drep` authority
 
 ### Implementation Plan
 
@@ -73,4 +73,3 @@ Leveraging existing connections within the ecosystem; the author(s) will find wi
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
-
