@@ -64,7 +64,7 @@ A dedicated `drep` authority isolates app navigation from other authorities such
 ### Acceptance Criteria
 
 - [*] Community feedback with CIP text updated accordingly
-- [ ] One or more wallets support this new `drep` authority
+- [ ] Two or more wallets or public services support this new `drep` authority
 
 ### Implementation Plan
 
