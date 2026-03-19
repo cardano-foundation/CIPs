@@ -1,6 +1,6 @@
 ---
 CPS: TBD
-Title: Approaches to true laziness in UPLC
+Title: Call-by-need in UPLC
 Category: Plutus
 Status: Open
 Authors: Koz Ross <koz@mlabs.city>
@@ -13,39 +13,41 @@ License: Apache-2.0
 
 ## Abstract
 
-UPLC has strict evaluation, and while `Delay` and `Force` can simulate
-non-strictness, it is at the risk of re-evaluation, as a `Delay`ed computation
-has no 'memory' of being `Force`d. This means that 'true' laziness or
-non-strictness doesn't exist in UPLC, limiting performance.
+Arguments are applied strictly in UPLC. While `Delay` and `Force` can simulate
+non-strictness, it is at the risk of repeated evaluation, as a `Delay`ed
+computation has no 'memory' of being `Force`d. This means that call by need
+avaluation is not easily achievable in UPLC, limiting performance.
 
 ## Problem
 
-UPLC has [strict evaluation][strict-evaluation]. Given the specifics of the
-onchain environment, as well as the inherent predictability and familiarity of
-this model, this is a good default choice. However, the ability to delay
-evaluation of arguments can sometimes be an advantage for performance. As a
-result, many languages offer such a possibility, typically as a pair of 'delay'
-and 'force' constructs, which respectively 'wrap up' a computation and 'unwrap'
-and evaluate it. Ideally, any such 'wrapped' computation does not get
-re-evaluated every time it is 'unwrapped': the computation is evaluated once
-when first demanded, then the result is cached. 
+UPLC has [strict evaluation][strict-evaluation], also known as 'call by value'. 
+Given the specifics of the onchain environment, as well as the inherent 
+predictability and familiarity of this model, this is a good default choice. 
+However, the ability to delay evaluation of arguments can sometimes be an 
+advantage for performance. As a result, many languages offer such a 
+possibility, typically as a pair of 'delay' and 'force' constructs, which 
+respectively 'wrap up' a computation and 'unwrap' and evaluate it. Ideally, a
+ny such 'wrapped' computation does not get re-evaluated every time it is 
+'unwrapped': the computation is evaluated once when first demanded, then 
+the result is cached. 
 
-UPLC contains the `Delay` and `Force` as part of its specification, which are
+UPLC contains `Delay` and `Force` as part of its specification, which are
 designed to provide the ability to delay and request evaluation respectively.
 However, there is a significant limitation to these constructs: repeated use of
 `Force` on the same `Delay`ed computation forces its recomputation every time.
 This is a significant limitation, as now, to avoid unnecessary work, developers
 must ensure that `Force` is not used multiple times on the same computation.
 While few script or dApp developers write UPLC directly, this problem translates
-to any framework or language targeting UPLC. Thus, we cannot have 'true'
-laziness (or non-strictness) embedded into UPLC without significant work, if
-it's possible at all.
+to any framework or language targeting UPLC. This makes
+[call by need][call-by-need] (or indeed, any kind of non-strict evaluation)
+difficult to provide within UPLC without significant work, if it is possible at
+all.
 
 ## Use cases
 
-We provide several examples of situations where 'true' laziness would improve
-performance, or the developer experience, in ways that are difficult or
-impossible to achieve today.
+We provide several examples of situations where call by need evaluation being
+available would improve performance, or the developer experience. These are
+difficult, or impossible, to achieve today with UPLC as it exists.
 
 ### Memoization or tabulation algorithms
 
@@ -70,9 +72,8 @@ are Haskellers, a great many are, and Plinth in particular is designed to be as
 transparent as possible to developers familiar with Haskell. However, laziness
 is a large part of Haskell's semantics, and currently, providing anything even
 similar to it in generated UPLC code from any framework (Plinth or not) is
-difficult. This largely stems from `Delay` and `Force` only simulating 'true'
-laziness, as it has no 'memory' of which `Delay`ed computations have been forced
-or not.
+difficult. This largely stems from `Delay` lacking any 'memory' of whether its
+computation has been forced or not.
 
 We give a more specific example below using Plutarch to illustrate just how
 difficult this can become.
@@ -90,8 +91,8 @@ use of arbitrary Galois fields and elliptic curves, operations are forced to be
 non-specific in these 'auxilliary values', despite any given execution of a
 script only using one specific set of such values.
 
-There are two ways to resolve this problem. The first is to force every value of
-interest (finite field element or curve point) to carry these 'auxilliary
+There are two ways to resolve this problem. The first is to force every finite
+field element, curve point, or anything similar, to carry these 'auxilliary
 values'. In Plutarch, this would look like the following:
 
 ```haskell
@@ -99,6 +100,7 @@ data FieldElement (s :: S) =
     FieldElement (Term s PNatural) -- the actual element
                  (Term s PPositive) -- the field order
 
+-- Affine representation
 data CurvePoint (s :: S) = 
     CurvePointInfinity |
     CurvePoint (Term s FieldElement) -- x coordinate
@@ -204,17 +206,17 @@ be used often.
 
 ## Goals
 
-Aside from the essential goal that 'true' laziness must memoize the results of
-evaluations, multiple other goals must be met for any implementation. We define
-these below, along with reasons why they are needed.
+Multiple goals must be met by any implementation of call by need, aside from its
+availability as such. We define these below, along with the reasons for their
+necessity.
 
 ### Existing scripts must not be affected
 
-Due to the large number of scripts already deployed, adding 'true' laziness to
-UPLC should not affect how those scripts run. More specifically, 'true' laziness
-should be an explicitly opt-in capability, and any scripts that do not make use
-of it specifically should not change in how they run. This goal specifically
-precludes 'global' or 'implicit' laziness, as is done in GHC.
+Due to the large number of scripts already deployed, adding call by need to UPLC
+should not affect how these scripts run. More specifically, call by need should
+be an explicitly opt-in capability, and any scripts that do not make use of it
+specifically should not change in how they run. This goal specifically precludes
+'global' or 'implit' call by need, as is done in GHC for example. 
 
 This is essential for stability and developer experience, as 'mandatory
 retrofits' are impractical at best and impossible at worst. In the context of
@@ -229,7 +231,7 @@ Any existing part of UPLC should continue to behave as previously. This
 precludes 'extending' or 'retrofitting' `Delay` and `Force`.
 
 The justification for this is similar to the previous goal: scripts that already
-exist, or that don't require 'true' laziness, should remain unaffected. However,
+exist, or that don't require call by need, should remain unaffected. However,
 there is a secondary reason due to the 'double meaning' of `Force` in UPLC:
 
 * A request to evaluate a `Delay`ed computation; and 
@@ -239,7 +241,7 @@ This would make any 'retrofit' of `Force` both difficult and confusing.
 
 ### Minimal
 
-Adding 'true' laziness to UPLC should change as little as is reasonable. While
+Adding call by need to UPLC should change as little as is reasonable. While
 extending the default universe or adding new builtins are both essentially
 inevitable, changes beyond this should be considered carefully, and ideally
 avoided. Ideally, `Term` should not change if at all possible.
@@ -268,14 +270,14 @@ cases are supported.
 Even within the bounds of the goals listed above, a lot of possibilities remain.
 Two questions in particular need to be addressed:
 
-* How will UPLC make 'true' laziness available to developers?
-* How should 'true lazy' computations be costed?
+* How will UPLC make call by need available to developers?
+* How should call by need computations be costed?
 
 Questions of implementation specifics into Plutus' codebase also arise, but we
 believe that, once the two prior questions are answered, implementation
 specifics should no longer be uncertain.
 
-It's worth noting that the exact semantics of 'true' laziness are not under
+It's worth noting that the exact semantics of call by need are not under
 dispute: the intent is to mimic `Delay` and `Force` as they currently exist, but
 with the possibility of avoiding recomputation. Indeed, it is difficult to
 imagine what other semantics we could choose given the goals stated above,
@@ -286,11 +288,11 @@ really is only one option.
 
 We will discuss the two major open questions in more detail below.
 
-### Making 'true' laziness available
+### Making call by need available
 
 In order for script developers (or perhaps more likely, implementers of
-script-writing frameworks like Plinth or Plutarch) to use 'true' laziness, UPLC
-must provide suitable constructs. Exactly what this should look like is an
+script-writing frameworks like Plinth or Plutarch) to make use of call by need, 
+UPLC must provide suitable constructs. Exactly what this should look like is an
 important consideration. Realistically, one of two possibilities is likely:
 
 * A dedicated type for 'wrapped lazy' computations in the default universe,
@@ -300,21 +302,21 @@ important consideration. Realistically, one of two possibilities is likely:
 There are benefits and drawbacks to both choices. 'Leaving `Term` alone' has the
 advantage of being simpler to implement (and target), but requires some way of
 avoiding the strictness of UPLC evaluation to begin with. More precisely, a
-careless design for a builtin to 'construct' a 'true' lazy computation could end
+careless design for a builtin to 'construct' a call by need computation could end
 up doing nothing: if we end up evaluating the argument to the builtin, we've
 gained nothing. Modifying `Term` prevents this problem ever arising, but
 will lead to 'knock-on' effects throughout both Plutus and the ecosystem. While
 we believe that avoiding modification of `Term` is the better choice, it may
 paradoxically end up being _more_ difficult _not_ to modify `Term`.
 
-### Costing 'true' laziness
+### Costing call by need
 
 [Costing][costing], or more precisely the Plutus cost model, is an important
 feature of Cardano scripts and their execution. A key part of this is the
 costing of builtins, which is based on their arguments. Given that one of the
 suggested interfaces for 'true' laziness is via builtins, how such builtins
 would be costed may require consideration. The most important aspect is that 
-the cost of computing a 'true' lazy computation should only be 'paid' once, as
+the cost of computing a call by need computation should only be 'paid' once, as
 otherwise, the whole construction is somewhat meaningless. While this isn't
 necessarily a huge issue, it must still be considered for any solution based on
 builtins.
@@ -329,3 +331,4 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [costing]: https://plutus.cardano.intersectmbo.org/docs/delve-deeper/cost-model
 [strict-evaluation]: https://en.wikipedia.org/wiki/Evaluation_strategy#Strict_evaluation
 [memoization]: https://en.wikipedia.org/wiki/Memoization
+[call-by-need]: https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_need
