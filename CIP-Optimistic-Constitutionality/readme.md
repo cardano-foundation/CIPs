@@ -35,43 +35,32 @@ This observation is the empirical foundation for Optimistic Constitutionality: i
 
 Under CIP-1694, the CC must reach its approval threshold for every governance action type that requires CC consent (all types except Info actions and No Confidence motions against themselves). This creates several problems:
 
-1. **Late voting.** CC members empirically vote in the final 20% of a governance action's lifetime, after DReps have already cast votes. This wastes DRep effort on proposals that the CC ultimately rejects.
+1. **Late voting.** CC members empirically tend to vote in the final 20% of a governance action's lifetime, after DReps have already cast votes. This wastes DRep effort on proposals that the CC ultimately rejects.
 2. **DRep discouragement.** When CC rejections arrive late, DReps who already spent time evaluating proposals see their work invalidated. Over time, this suppresses DRep participation.
 3. **False urgency.** The requirement that CC members evaluate every proposal creates a baseline workload that scales linearly with governance activity, regardless of whether the proposals are contentious.
-4. **Compensation pressure.** The active-approval model makes the "CC members must be compensated" argument seem self-evident, because their workload is indeed real and ongoing. Optimistic Constitutionality dissolves this framing by dramatically reducing the expected workload.
+4. **Compensation pressure.** The active-approval model makes the "CC members must be compensated" argument seem self-evident, because their workload is indeed real and ongoing. Regardless, since the activation of Conway-era governance, the community has been unable to reach consensus on whether and how Constitutional Committee members should be compensated, despite mentions of this in (all versions so far of the) constitution. Optimistic Constitutionality aids to dissolve this by dramatically reducing the expected workload, and introduces new, more transparent possibilities for CC compensation, should that remain a desire.
 
-### The CC Compensation Dilemma
-
-Since the activation of Conway-era governance, the community has been unable to reach consensus on whether and how Constitutional Committee members should be compensated. The positions are well-documented and deeply held:
-
-**In favor of compensation:**
-
-- CC members bear responsibility for protecting the ecosystem and should not be expected to perform this work for free indefinitely.
-- Without compensation, the quality of CC membership may degrade over time as capable individuals cannot justify the time investment.
-- Compensation paired with a Code of Conduct creates accountability — the community gains a clear basis for removing underperforming members.
-
-**Against compensation:**
-
-- The exposure, reputation, and networking opportunities of CC membership are themselves powerful incentives. Professional service firms, legal practices, and advisory firms benefit from the visibility.
-- Financial compensation at the rates discussed constitutes a full salary in many parts of the world, and will attract candidates motivated by the payment rather than by genuine commitment to Cardano's governance.
-- Once compensation is introduced, it is nearly impossible to reverse. It creates bureaucratic overhead (performance management, disputes over effort, rate renegotiation) without an executive authority to adjudicate conflicts.
-- Paying per governance action incentivizes participation quantity, not quality — a CC member may simply vote yes/no/abstain "for vibes" to collect payment.
-- No empirical evidence yet exists that CC compensation is necessary; candidates continue to step forward, and no CC member has resigned due to lack of payment.
 ## Specification
 
 ### Overview
 
-The core change is to the ratification logic in the Conway ledger rules. Today, a governance action is ratified when:
+The core change is to the ratification logic in the Conway ledger rules. 
+After CIP-1694, and simplified, ignoring the different Action types, a governance action is ratified when all these 3 conditions are met:
 
-1. The CC approves (CC Yes votes ≥ CC threshold), **AND**
-2. DReps approve (DRep Yes stake ≥ DRep threshold), **AND**
-3. SPOs approve (where applicable)
+#### After CIP-1694
+```math
+$$\text{RATIFIED} \iff \left(\frac{V_{\text{CC}}^{\text{yes}}}{|CC|} \geq T_{\text{CC}}\right) \wedge \left(\frac{S_{\text{DRep}}^{\text{yes}}}{S_{\text{DRep}}^{\text{active}}} \geq T_{\text{DRep}}\right) \wedge \left(\frac{S_{\text{SPO}}^{\text{yes}}}{S_{\text{SPO}}^{\text{delegated}}} \geq T_{\text{SPO}}\right)$$
+```
+`RATIFIED = (CC Yes votes ≥ CC threshold) AND (DRep Yes stake ≥ DRep threshold) AND (SPO Yes stake ≥ SPO threshold`
 
-Under Optimistic Constitutionality, condition (1) is replaced:
+#### Under Optimistic Constitutionality, this logic scheme changes to:
 
-1. **No CC challenge exists** (zero CC members have voted `No`), **OR** the CC approves under the existing threshold logic (CC Yes votes ≥ CC threshold), **AND**
-2. DReps approve (unchanged), **AND**
-3. SPOs approve (unchanged, where applicable)
+```math
+$$\text{RATIFIED} \iff \left(V_{\text{CC}}^{\text{no}} = 0 \;\lor\; \frac{V_{\text{CC}}^{\text{yes}}}{|CC|} \geq T_{\text{CC}}\right) \wedge \left(\frac{S_{\text{DRep}}^{\text{yes}}}{S_{\text{DRep}}^{\text{active}}} \geq T_{\text{DRep}}\right) \wedge \left(\frac{S_{\text{SPO}}^{\text{yes}}}{S_{\text{SPO}}^{\text{delegated}}} \geq T_{\text{SPO}}\right)$$
+```
+`RATIFIED = (zero CC no votes exist **OR** (CC Yes votes ≥ CC threshold)) **AND** (DRep Yes stake ≥ DRep threshold) **AND** (SPO Yes stake ≥ SPO threshold)`
+
+Note that a CC 'yes' vote has no effect. Every CC member can voluntarily provide a yes vote, or abstain, to e.g. provide commentary. 
 
 ### Definitions
 
@@ -86,12 +75,12 @@ Under Optimistic Constitutionality, condition (1) is replaced:
 For any governance action type that currently requires CC approval:
 
 - If **zero** CC members have cast a `No` vote, the CC approval condition is satisfied automatically.
-- CC members MAY still vote `Yes` or `Abstain` on unchallenged actions (for signaling purposes), but these votes are not required for ratification.
-- The DRep and SPO thresholds remain unchanged and must still be met.
+- CC members MAY still vote `Yes` or `Abstain` on unchallenged actions, but these votes are not required for ratification.
+- The DRep and SPO thresholds remain unchanged and must still be met for their respective Governance Action types.
 
 #### Challenged Actions (one or more CC `No` votes)
 
-- If **one or more** CC members cast a `No` vote, the governance action transitions to "challenged" status.
+- If **one or more** CC members cast a `No` vote for their respective allowed Governance Action types, the governance action transitions to "challenged" status. 
 - Once challenged, the **existing CIP-1694 CC threshold logic applies in full**: the action requires CC Yes votes ≥ CC threshold to satisfy the CC approval condition.
 - The threshold is evaluated as today: each current committee member has one vote, and the threshold is the governance parameter `committeeMinSize` / `committeeThreshold`.
 - The DRep and SPO thresholds remain unchanged.
@@ -112,10 +101,10 @@ The guardrails script (proposal policy) continues to apply to Protocol Parameter
 
 | CC Vote | Current Meaning | New Meaning Under This CIP |
 |---------|----------------|---------------------------|
-| `Yes` | Approve constitutionality | Approve constitutionality (optional unless challenged) |
+| `Yes` | Approve constitutionality | Approve constitutionality (optional) |
 | `No` | Reject as unconstitutional | **File a constitutionality challenge**; triggers full CC evaluation |
-| `Abstain` | Explicit abstention | Explicit abstention (does not trigger challenge) |
-| (no vote) | Treated as `No` for threshold calculation | **Treated as implicit approval** (does not trigger challenge) |
+| `Abstain` | Explicit abstention | Explicit abstention  |
+| (no vote) | Treated as `No` for threshold calculation | **Treated as implicit approval** |
 
 > **Critical change:** Under CIP-1694, a CC member who does not vote is effectively counted against the action (since the threshold requires a sufficient number of `Yes` votes). Under this CIP, a CC member who does not vote is counted as implicitly approving. Only an explicit `No` vote signals disapproval.
 
@@ -192,7 +181,7 @@ Optimistic Constitutionality does not prescribe a compensation model, but it fun
   - Sufficient Redundancy: One single Constitutinality Challenge is enough to stop the optimistic approval - with 5 to 7 CC member seats, the risk of everyone missing their call for intervention becomes marginal, but definitely even lower than today's chance of not enough CCs voting in time. 
   - A Code of Conduct (developed in parallel) can establish minimum monitoring expectations.
 - **Compensation models become lighter.** If compensation is still desired, it can be structured as a modest retainer for monitoring duty rather than a per-action payment, dramatically reducing costs to the treasury.
-- **Alternative incentive models become viable.** With reduced expected effort, models such as proposer-funded constitutionality review (where a governance action proposer optionally pays for expedited CC review) become more practical.
+- **Alternative incentive models become viable.** With reduced expected effort, models such as proposer-funded constitutionality (where a governance action proposer pays for expedited CC review, in case it gets rejected) become more practical.
 - **CIP-0149 (Optional DRep Compensation)** already establishes a metadata-based, opt-in, no-ledger-change compensation standard for DReps. A similar lightweight mechanism could be explored for CC members if compensation is desired, without burdening the treasury.
 
 ### Addressing Community Concerns
@@ -214,6 +203,13 @@ Governance actions submitted before the activation epoch follow the pre-existing
 
 All existing CC credentials, hot/cold key infrastructure (CIP-0105), governance metadata standards (CIP-0100, CIP-0108, CIP-0136), and wallet integrations (CIP-0030, CIP-0095) remain compatible. The change is entirely within the ledger's `RATIFY` rule and does not affect transaction formats, certificate types, or on-chain data structures.
 
+## Remaining Risk
+
+### Power Abuse
+
+Under Optimistic Constitutionality, CC members could single-handedly block all DRep- and SPO-approved, near-ratified Governance Actions by voting No up until the last block of an epoch, which would leave no time for the remaining CC to overrule the Constitutional Challenge. This risk is real, and currently known possible mitigations for it, such as introducing approval window extensions upon the first CC no vote are only increasing complexity, introduce new more complicated issues and are practically infeasible.
+At the moment, the best mitigation for such power abuse would be to acknowledge this risk and rely on the possibilty to call out a state of no confidence - after a Governance Action got maliciously CC-blocked last minute.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -224,14 +220,17 @@ All existing CC credentials, hot/cold key infrastructure (CIP-0105), governance 
 4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
 5. The local-state-query protocol exposes challenge status for governance actions.
 
+### Info Action
+A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
+
 ### Implementation Plan
 
 This CIP requires a **hard fork** to activate, as it changes the ledger's ratification semantics.
 
 #### Phase 1: Specification & Review
 
-- Formal specification update to the Conway ledger rules (Agda/Haskell in `IntersectMBO/cardano-ledger`).
-- Community review period (minimum 3 months).
+- Formal specification update to the Conway ledger rules (Agda/Haskell in `IntersectMBO/cardano-ledger`, `pragma-org/amaru`, `blinklabs-io/dingo` and others).
+- Community review period (minimum 3 months) + .
 - CIP editors and Ledger team review.
 
 #### Phase 2: Testnet Deployment
@@ -244,7 +243,7 @@ This CIP requires a **hard fork** to activate, as it changes the ledger's ratifi
 #### Phase 3: Mainnet Activation
 
 - Hard fork governance action submitted, requiring approval from the CC, DReps, and SPOs under the *current* (pre-Optimistic) rules.
-- Upon ratification and enactment at the subsequent epoch boundary, Optimistic Constitutionality becomes active.
+- Upon ratification and enactment at the subsequent epoch boundary, Optimistic Constitutionality becomes active with `ccOptimisticEnabled :: Bool` set to `TRUE`.
 
 #### Optional: Off-Chain Convention (Pre-Hard-Fork)
 
@@ -253,8 +252,6 @@ Before the hard fork, the current CC could voluntarily adopt an "optimistic" con
 - CC members agree (via off-chain coordination or an Info Action) to vote `Yes` on all governance actions unless they intend to challenge constitutionality.
 - CC members who identify a constitutional concern vote `No` and publish a rationale (per CIP-0136 metadata).
 - This convention achieves the behavioral outcome of Optimistic Constitutionality without ledger changes, serving as a live experiment to validate the model.
-
-> **Risk:** A voluntary convention is not enforceable. A CC member could defect by not voting, effectively blocking actions under the current "non-vote = implicit No" semantics. The hard fork is required for the full guarantee.
 
 ## References
 
