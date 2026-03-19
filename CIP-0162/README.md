@@ -30,7 +30,7 @@ Especially for real world events this will provide a feasible solution for insta
 
 ## Specification
 
-This extension to the [CIP-13](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) URN scheme defines the `drep` authority for Cardano URIs.
+This extension to the [CIP-0013](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) URN scheme defines the `drep` authority for Cardano URIs.
 
 ### URI Format
 
