@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This CIP proposes a new [CIP-0013](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013) extension: A new URI scheme authority named `drep` under `web+cardano` to enable Cardano mobile wallets and wallet extensions to create and submit a DRep delegation transaction for a given DRep-Id, using a standardized, interoperable URI format.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 With Cardano Governance now in full effect a high level of participation / DRep delegation is needed to solidify and secure the consensus mechanisms put in place and ensure decentralisation of power. Delegating to a DRep however - especially on mobile devices - can be a cumbersome task involving multiple steps from copying or typing a complicated DRep-Id or visiting a dedicated website, search for DRep by Id or Name, create and sign a transaction - or use in-app DRep explorers which some wallets offer right now, others don’t.
 
