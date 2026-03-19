@@ -36,8 +36,8 @@ This extension to the [CIP-0013](https://github.com/cardano-foundation/CIPs/tree
 
 `web+cardano://drep/<DRep-Id>`
 
-- Authority (REQUIRED): drep
-- DRep-Id (REQUIRED): Bech32 [CIP-129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) DRep-Id | "always_abstain" | "always_no_confidence"
+- Authority (REQUIRED): `drep`
+- DRep-Id (REQUIRED): Bech32 [CIP-0129](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129) `<DRep-Id>` | `always_abstain` | `always_no_confidence`
 
 ### Example URIs
 
