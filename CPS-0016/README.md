@@ -15,6 +15,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/559
   - https://github.com/cardano-foundation/CIPs/pull/635
   - https://github.com/cardano-foundation/CIPs/pull/841
+  - https://github.com/cardano-foundation/CIPs/pull/843
   - https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-06-15
 License: CC-BY-4.0
@@ -23,7 +24,7 @@ License: CC-BY-4.0
 ## Abstract
 
 Cardano URI schemes ([CIP-13]) have been defined since early 2021. However, some
-of the proposed standards have languished and struggled for adoption event as
+of the proposed standards have languished and struggled for adoption even as
 the amount of wallet developers in the ecosystem has skyrocketed. This CPS aims
 to create a centralized point of reference for those interested in creating new
 standards or publishing integration solutions.
