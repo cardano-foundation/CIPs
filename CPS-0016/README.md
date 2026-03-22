@@ -72,6 +72,22 @@ this section for further discussion, development, and adoption by the community.
    Assets_ assuming that both the wallet and the project server were correctly
    configured to follow the protocol.
 
+#### Open URLs in the in-app browser
+
+1. In 2026 [CIP-158] introduced a new `//browse` **authority** defining a URI
+   with versioning to allow opening a percent-encoded https:// or http:// address
+   including forwarded parameters in the in-app browser of mobile wallets with
+   the intent to gain easier access to the full wallet functionality and improve
+   the overall mobile user experience.
+
+#### DRep links
+
+1. Also in 2026 [CIP-162] introduced a new `//drep` **authority** defining a new
+   URI and wallet behaviour for frictionless DRep delegation, taking in a [CIP-129]
+   DRep-Id with the intent to open the wallet-app, validate the DRep-Id against
+   on-chain data and - if a valid Id of a registered DRep has been provided -
+   create a governance delegation transaction for the user to sign and submit.
+
 ### Easy Historical Reference
 
 #### Blocks and Transactions
@@ -101,8 +117,8 @@ The goals of this CPS are as follows:
    providers to support `web+cardano:` URIs?
 2. What software or best practices exist to aid developers in deploying support
    for `web+cardano:` URIs?
-2. What new authorities or protocols could be built to leverage these URIs?
-3. What does the process look like to register a new `web+cardano:` URI
+3. What new authorities or protocols could be built to leverage these URIs?
+4. What does the process look like to register a new `web+cardano:` URI
    authority or protocol?
 
 ### Proposal Process
@@ -139,6 +155,8 @@ CIPs:
 * `//transaction`: supports versioning (?), registered in [CIP-107]
 * `//block`: supports versioning (?), registered in [CIP-107]
 * `//addr/`: registered in [CIP-134]
+* `//browse/`: registered in [CIP-158]
+* `//drep/`: registered in [CIP-162]
 
 ## Copyright
 
@@ -154,7 +172,13 @@ This CPS is licensed under [CC-BY-4.0].
 
 [CIP-107]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
 
+[CIP-129]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129
+
 [CIP-134]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
+
+[CIP-158]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0158
+
+[CIP-162]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0162
 
 [CC-BY-4.0]:https://creativecommons.org/licenses/by/4.0/legalcode
 
