@@ -5,6 +5,7 @@ Status: Open
 Category: Tools
 Authors:
   - Adam Dean <adam@crypto2099.io>
+  - Mad Orkestra <mad@madorkestra.com>
 Proposed Solutions:
   - CIP-0013: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013
   - CIP-0099: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
@@ -22,7 +23,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano URI schemes ([CIP-13]) have been defined since early 2021. However, some
+Cardano URI schemes ([CIP-0013]) have been defined since early 2021. However, some
 of the proposed standards have languished and struggled for adoption event as
 the amount of wallet developers in the ecosystem has skyrocketed. This CPS aims
 to create a centralized point of reference for those interested in creating new
@@ -46,7 +47,7 @@ this section for further discussion, development, and adoption by the community.
 
 #### Payments
 
-1. The original specification of [CIP-13][CIP-13-payment] defined only the
+1. The original specification of [CIP-0013][CIP-0013-payment] defined only the
    base `web+cardano:` **scheme** and an **authority**-less path consisting of a
    payment address and an optional `amount` query parameter to specify via QR
    code or deep-link an address and amount of Lovelace to send.
@@ -56,7 +57,7 @@ this section for further discussion, development, and adoption by the community.
 
 #### Staking/Delegation
 
-1. The first extension to [CIP-13][CIP-13-staking] added the `//stake`
+1. The first extension to [CIP-0013][CIP-0013-staking] added the `//stake`
    **authority** and some query parameter options to specify a Cardano Stake
    Pool. The goal of these URIs would be to make it easy for a user to switch
    their wallet's stake delegation to the pool in question. This could be
@@ -66,7 +67,7 @@ this section for further discussion, development, and adoption by the community.
 
 #### Onboarding/Airdrops
 
-1. In 2023 [CIP-99] was introduced, adding a `//claim` **authority** and
+1. In 2023 [CIP-0099] was introduced, adding a `//claim` **authority** and
    defining a URI + wallet interaction protocol that would allow a user with
    only access to a URI to "claim" an airdrop of _Lovelace_ and/or _Native
    Assets_ assuming that both the wallet and the project server were correctly
@@ -74,7 +75,7 @@ this section for further discussion, development, and adoption by the community.
 
 #### Open URLs in the in-app browser
 
-1. In 2026 [CIP-158] introduced a new `//browse` **authority** defining a URI
+1. In 2026 [CIP-0158] introduced a new `//browse` **authority** defining a URI
    with versioning to allow opening a percent-encoded https:// or http:// address
    including forwarded parameters in the in-app browser of mobile wallets with
    the intent to gain easier access to the full wallet functionality and improve
@@ -82,8 +83,8 @@ this section for further discussion, development, and adoption by the community.
 
 #### DRep links
 
-1. Also in 2026 [CIP-162] introduced a new `//drep` **authority** defining a new
-   URI and wallet behaviour for frictionless DRep delegation, taking in a [CIP-129]
+1. Also in 2026 [CIP-0162] introduced a new `//drep` **authority** defining a new
+   URI and wallet behaviour for frictionless DRep delegation, taking in a [CIP-0129]
    DRep-Id with the intent to open the wallet-app, validate the DRep-Id against
    on-chain data and - if a valid Id of a registered DRep has been provided -
    create a governance delegation transaction for the user to sign and submit.
@@ -92,7 +93,7 @@ this section for further discussion, development, and adoption by the community.
 
 #### Blocks and Transactions
 
-1. In 2023 [CIP-107] was proposed, this CIP introduced the `//block` and
+1. In 2023 [CIP-0107] was proposed, this CIP introduced the `//block` and
    `//transaction` **authorities** along with relevant **path** and **query**
    parameters. This novel use of URI structures allows for easy reference to
    specific events and points in time of the blockchain ledger's history. This
@@ -141,7 +142,7 @@ URI = scheme ":" ["//" authority] path ["?" query] ["#" fragment]
 ```
 
 Given that the shared scheme of `web+cardano:` is known and accepted and the
-original version of [CIP-13] declared an authority-less, path-only structure:
+original version of [CIP-0013] declared an authority-less, path-only structure:
 **All future `web+cardano:` URI extensions MUST register a new, unique authority
 or SHOULD define a new version of an existing **authority** that has explicitly
 allowed for versioning in its definition.
@@ -149,36 +150,36 @@ allowed for versioning in its definition.
 The following are the currently registered URI **authorities** mentioned in
 CIPs:
 
-* `null`: (Blank/no Authority) registered in [CIP-13][CIP-13-payment]
-* `//stake`: registered in [CIP-13][CIP-13-staking]
-* `//claim`: supports versioning, registered in [CIP-99]
-* `//transaction`: supports versioning (?), registered in [CIP-107]
-* `//block`: supports versioning (?), registered in [CIP-107]
-* `//addr/`: registered in [CIP-134]
-* `//browse/`: registered in [CIP-158]
-* `//drep/`: registered in [CIP-162]
+* `null`: (Blank/no Authority) registered in [CIP-0013][CIP-0013-payment]
+* `//stake`: registered in [CIP-0013][CIP-0013-staking]
+* `//claim`: supports versioning, registered in [CIP-0099]
+* `//transaction`: supports versioning (?), registered in [CIP-0107]
+* `//block`: supports versioning (?), registered in [CIP-0107]
+* `//addr/`: registered in [CIP-00134]
+* `//browse/`: registered in [CIP-0158]
+* `//drep/`: registered in [CIP-0162]
 
 ## Copyright
 
 This CPS is licensed under [CC-BY-4.0].
 
-[CIP-13]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013
+[CIP-0013]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013
 
-[CIP-13-payment]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013#for-payment-uris
+[CIP-0013-payment]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013#for-payment-uris
 
-[CIP-13-staking]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013#for-stake-pool-uris
+[CIP-0013-staking]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0013#for-stake-pool-uris
 
-[CIP-99]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
+[CIP-0099]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0099
 
-[CIP-107]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
+[CIP-0107]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0107
 
-[CIP-129]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129
+[CIP-0129]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0129
 
-[CIP-134]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
+[CIP-00134]:https://github.com/cardano-foundation/CIPs/tree/master/CIP-0134
 
-[CIP-158]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0158
+[CIP-0158]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0158
 
-[CIP-162]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0162
+[CIP-0162]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0162
 
 [CC-BY-4.0]:https://creativecommons.org/licenses/by/4.0/legalcode
 
