@@ -159,9 +159,9 @@ CIPs:
 * `//claim`: supports versioning, registered in [CIP-0099]
 * `//transaction`: supports versioning (?), registered in [CIP-0107]
 * `//block`: supports versioning (?), registered in [CIP-0107]
-* `//addr/`: registered in [CIP-00134]
-* `//browse/`: registered in [CIP-0158]
-* `//drep/`: registered in [CIP-0162]
+* `//addr`: registered in [CIP-00134]
+* `//browse`: registered in [CIP-0158]
+* `//drep`: registered in [CIP-0162]
 
 ## Copyright
 
