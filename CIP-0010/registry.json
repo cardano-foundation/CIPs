@@ -132,6 +132,10 @@
     "description": "cardahub.io services metadata"
   },
   {
+    "transaction_metadatum_label": 3165,
+    "description": "CPE - Cardano Proposal Examiner"
+  },
+  {
     "transaction_metadatum_label": 3692,
     "description": "CIP-0149 - Optional DRep compensation"
   },
