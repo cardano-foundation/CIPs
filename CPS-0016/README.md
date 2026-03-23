@@ -80,7 +80,7 @@ this section for further discussion, development, and adoption by the community.
 #### Open URLs in the in-app browser
 
 1. In 2026 [CIP-0158] introduced a new `//browse` **authority** defining a URI
-   with versioning to allow opening a percent-encoded https:// or http:// address
+   with versioning to allow opening a percent-encoded `https://` or `http://` address
    including forwarded parameters in the in-app browser of mobile wallets with
    the intent to gain easier access to the full wallet functionality and improve
    the overall mobile user experience.
