@@ -75,7 +75,7 @@ Note that we propose keeping invalid transaction indices separately, because:
 
 Also, note that `invalid_transactions` indices precede `transactions` in the proposed layout, so that consumers can determine the validity of transactions without having to scan through the entire transaction list.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Serializing transactions in sequence directly supports more complex constructs - such as nested transactions - by eliminating the need to coordinate disjointed segments across different levels of structure.
 
