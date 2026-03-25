@@ -109,7 +109,9 @@ technical resources, visit the Leios Innovation R&D site at
 - [Figure 3: Leios chain structure showing Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
 - [Figure 4: Detailed timing mechanism showing timing constraints for EB certification](#figure-4)
 - [Figure 5: Up- and downstream interactions of a node](#figure-5)
-- [Figure 6: LeiosNotify mini-protocol state machine](#figure-6)
+- [Figure 6: LeiosAnnounce mini-protocol state machine](#figure-6a)
+- [Figure 6: LeiosVotes mini-protocol state machine](#figure-6b)
+- [Figure 6: LeiosBlockNotify mini-protocol state machine](#figure-6c)
 - [Figure 7: LeiosFetch mini-protocol state machine](#figure-7)
 - [Figure 8: SPO profitability forecast under Leios](#figure-8)
 - [Figure 9: Time for transaction to reach the ledger](#figure-9)
@@ -1215,7 +1217,7 @@ $L_\text{diff}$ even during a burst of withheld-but-valid messages.
 
 **Concrete Proposal and its Feasibility**
 
-The following two new mini-protocols are proposed for the Leios implementation.
+The following four new mini-protocols are proposed for the Leios implementation.
 This is not the only feasible solution, but this CIP should be amended as
 implementors refine these mini-protocols.
 
@@ -1235,29 +1237,131 @@ topology results in each relay having many more downstream peers than upstream
 peers. Syncing peers will be discussed below.
 
 <div align="center">
-<a name="figure-6" id="figure-6"></a>
+<a name="figure-6a" id="figure-6a"></a>
 
 ```mermaid
 ---
-title: LeiosNotify
+title: LeiosAnnounce
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
    style StBusy fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
-   StIdle -->|MsgLeiosNotificationRequestNext| StBusy
-   StBusy -->|MsgLeiosBlockAnnouncement| StIdle
-   StBusy -->|MsgLeiosBlockOffer| StIdle
-   StBusy -->|MsgLeiosBlockTxsOffer| StIdle
-   StBusy -->|MsgLeiosVotesOffer| StIdle
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosAnnounceRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens = 1 }"| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
 
-<em>Figure 6: LeiosNotify mini-protocol state machine</em>
+<em>Figure 6a: LeiosAnnounce mini-protocol state machine</em>
 
 </div>
+
+The purpose of this first protocol is to diffuse block announcements as fast as
+possible throughout the network. Since these announcements are small and
+latency is the primary concern, a [reactive streams](https://www.reactive-streams.org)
+style request batching is used to ensure that under normal conditions the
+responder can always send without having to wait for a request (intended usage
+for LeiosVotes (below) is to request 1000 initially, then request 100 more
+after each 100 received). Sending the next request before the previous one has
+been fully responded to is not modeled explicitly but supported implicitly via
+protocol pipelining as usual, see below for a definition.
+
+<div align="center">
+<a name="figure-6b" id="figure-6b"></a>
+
+```mermaid
+---
+title: LeiosVotes
+---
+graph LR
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
+
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosVotesRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosVote<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosVote<br>{ if tokens = 1 }"| StIdle
+
+   StIdle -->|MsgDone| StDone
+```
+
+<em>Figure 6b: LeiosVotes mini-protocol state machine</em>
+
+</div>
+
+Analog to LeiosAnnounce, LeiosVotes serves the purpose of diffusing votes as
+quickly as possible throughout the network. Since votes are small, no
+separate round-trip for requesting them is needed, downstream just keeps
+supplying the upstream with tokens so that under normal conditions the upstream
+can typically send immediately.
+
+<div align="center">
+<a name="figure-6c" id="figure-6c"></a>
+
+```mermaid
+---
+title: LeiosBlockNotify
+---
+graph LR
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
+
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosBlockNotifyRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens > 1; tokens −= 1}<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens = 1 }<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens = 1 }"| StIdle
+
+   StIdle -->|MsgDone| StDone
+```
+
+<em>Figure 6c: LeiosBlockNotify mini-protocol state machine</em>
+
+</div>
+
+The last forward information diffusion protocol is LeiosBlockNotify, which
+signals downstream that a previously announced block is now ready for download
+or that its set of referenced transactions is now fully available. Both of
+these may trigger the downstraem to fetch information from the upstream using
+the next protocol below.
+
+It is important to note that the protocols above should be combined with
+pipelining, meaning that the request for the next batch of responses should be
+sent before the previous batch has been delivered. This is instrumental in
+eliminating wait times (and therefore dissemination delays) due to round-trip
+latency between peers.
+
+> **Definition of pipelining:**
+>
+> Protocol pipelining with a factor N conceptually runs N instances of a mini-protocol on a
+> single multiplexer subchannel for the given protocol ID. Each instance tracks
+> its own state and agency as per the specification. One protocol state is
+> marked as the switch state; the switch state must be one in which the
+> initiator has agency. The subchannel is governed by a pair of multiplexers,
+> one for sending and one for receiving, that behave in round-robin fashion
+> across the N instances, starting at the first instance. Requests from the
+> node are forwarded by the sending multiplexer to the currently selected
+> instance and sending the resulting protocol message to the network; whenever
+> having sent a message from the switch state, the send multiplexer selects the
+> next instance. The receive multiplexer forwards received messages from the
+> network to the currently selected protocol instance; whenever receiving a
+> message that transitions that instance into the switch state, the receive
+> multiplexer selects the next instance.
+
+In the three mini-protocols above, StIdle is the switch state. In case maximum
+buffering commitment shall be made for 1000 responses, one could e.g. choose a
+pipelining depth of 2 with a request count of 500 each or a depth of 10 with a
+request count of 100 each; the latter would keep the worst-case demand level
+higher than the former at the price of sending slightly more data towards the
+responder.
 
 <div align="center">
 <a name="figure-7" id="figure-7"></a>
@@ -1268,16 +1372,12 @@ title: LeiosFetch
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
-   style StBlock fill:PowderBlue,stroke:DarkBlue;
+   style StMultiBlock fill:PowderBlue,stroke:DarkBlue;
    style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
-   style StVotes fill:PowderBlue,stroke:DarkBlue;
-   style StBlockRange fill:PowderBlue,stroke:DarkBlue;
 
-   StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
+   StIdle -->|MsgLeiosMultiBlockRequest| StMultiBlock -->|MsgLeiosBlock| StMultiBlock -->|MsgLeiosNoMoreBlocks| StIdle
    StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
-   StIdle -->|MsgLeiosVotesRequest| StVotes -->|MsgLeiosVotes| StIdle
-   StIdle -->|MsgLeiosBlockRangeRequest| StBlockRange -->|MsgLeiosNextBlockAndTxsInRange| StBlockRange -->|MsgLeiosLastBlockAndTxsInRange| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1286,13 +1386,28 @@ graph LR
 
 </div>
 
-The primary messages will carry information that is directly required by the
-Leios description above: headers, blocks, transactions referenced by blocks, and
-votes for blocks. However, some lower-level information must also be carried by
-secondary messages, e.g. indicating when the peer is first able to send the
-block.
+The LeiosFetch protocol is used to request large responses from upstream and
+therefore uses the established request-response pattern, possibly with
+mini-protocol pipelining. Note that such bulk transfers will be multiplexed on
+the underlying TCP connection in a fair manner based on 64kB segments, hence
+the transfer latency is determined by the bandwidth-RTT-product as well as the
+size of the configured TCP send and receive buffers.
 
-The required exchanges between two neighboring nodes is captured by the
+While the node is catching up with the chain after a restart, it will see Praos
+blocks referencing EBs and use the MsgLeiosMultiBlockRequest to get not only
+the EB but also all transactions referenced therein. When following the current
+state of the chain, it will instead use the MsgLeiosBlockTxsRequest, which
+allows it to fetch either the EB itself (with an empty transaction ID list)
+or a list of transactions referenced by the EB (identified by their sequence
+index in the EB and transmitted in compressed bitmap format). The initial
+proposal for the bitmap representation is inspired by roaring bitmaps:
+
+- a bitmap is a CBOR byte string with the following internal format
+- it is a concatenation of 9-octet slices, where the first octet C names the
+  chunk (for values `C*64..(C+1)*64`) and the following eight octets contain
+  a bitmap of which values of this chunk are in the requested set
+
+The required exchange between two neighboring nodes is captured by the
 following Information Exchange Requirements table (IER table). For the sake of
 minimizing this proposal, each row is a mini-protocol message, but that
 correspondence does not need to remain one-to-one as the mini-protocols evolve
@@ -1306,28 +1421,26 @@ not yet received MsgLeiosBlockTxsOffer.
 <div align="center">
 <a name="table-4" id="table-4"></a>
 
-| Sender  | Name                            | Arguments                                                    | Semantics                                                                                                                                                                                                                             |
-| ------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Client→ | MsgLeiosNotificationRequestNext | $\emptyset$                                                  | Requests one Leios notifications, the announcement of an EB or delivery offers for blocks, transactions, and votes.                                                                                                                   |
-| ←Server | MsgLeiosBlockAnnouncement       | RB header that announces an EB                               | The server has seen this EB announcement.                                                                                                                                                                                             |
-| ←Server | MsgLeiosBlockOffer              | slot and Leios hash                                          | The server can immediately deliver this block.                                                                                                                                                                                        |
-| ←Server | MsgLeiosBlockTxsOffer           | slot and Leios hash                                          | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
-| ←Server | MsgLeiosVotesOffer              | list of slot and vote-issuer-id pairs                        | The server can immediately deliver votes with these identifiers.                                                                                                                                                                      |
-| Client→ | MsgLeiosBlockRequest            | slot and Leios hash                                          | The server must now deliver this block.                                                                                                                                                                                               |
-| ←Server | MsgLeiosBlock                   | EB block                                                     | The block from an earlier MsgLeiosBlockRequest.                                                                                                                                                                                       |
-| Client→ | MsgLeiosBlockTxsRequest         | slot, Leios hash, and map from 16-bit index to 64-bit bitmap | The server must now deliver these transactions. The given bitmap identifies which of 64 contiguous transactions are requested, and the offset of the transaction corresponding to the bitmap's first bit is 64 times the given index. |
-| ←Server | MsgLeiosBlockTxs                | list of transactions                                         | The transactions from an earlier MsgLeiosBlockTxsRequest.                                                                                                                                                                             |
-| Client→ | MsgLeiosVotesRequest            | list of slot and vote-issuer-id                              | The server must now deliver these votes.                                                                                                                                                                                              |
-| ←Server | MsgLeiosVoteDelivery            | list of votes                                                | The votes from an earlier MsgLeiosVotesRequest.                                                                                                                                                                                       |
-| Client→ | MsgLeiosBlockRangeRequest       | two slots and two RB header hashes                           | The server must now deliver the EBs certified by the given range of RBs, in order.                                                                                                                                                    |
-| ←Server | MsgLeiosNextBlockAndTxsInRange  | an EB and all of its transactions                            | The next certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
-| ←Server | MsgLeiosLastBlockAndTxsInRange  | an EB and all of its transactions                            | The last certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
+| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
+| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
+| ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
+| Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
+| ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
+| Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
+| ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
+| ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
+| Client→ | MsgLeiosMultiBlockRequest       | list of EB hashes              | Requests the EBs and all referenced transactions for the given EB hashes                                 |
+| ←Server | MsgLeiosBlock                   | EB block, list of transactions | A block requested in the previous MsgLeiosMultiBlockRequest                                              |
+| ←Server | MsgLeiosNoMoreBlocks            | $\emptyset$                    | All blocks from the previous MsgLeiosMultiBlockRequest have been delivered                               |
+| Client→ | MsgLeiosBlockTxsRequest         | EB hash, list of integers      | For the referenced EB, request a list of transactions identified by their sequence number within that EB |
+| ←Server | MsgLeiosBlockTxs                | list of transactions           | The transactions from an earlier MsgLeiosBlockTxsRequest                                                 |
 
 <em>Table 4: Leios Information Exchange Requirements table (IER table)</em>
 
 </div>
 
-This mini-protocol pair satisfies the above requirements in the following ways.
+This set of mini-protocols satisfies the above requirements in the following ways.
 
 - These mini-protocols have less width than the LocalStateQuery mini-protocol
   and less depth than the TxSubmission mini-protocol. Thus, its structure is not
@@ -1338,12 +1451,9 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   mini-protocols.
 - Depending on how severely the node must prioritize Praos over Leios, the
   separation of their mini-protocols may simplify the prioritization mechanism.
-  However, urgency inversion means that at least MsgLeiosBlockRangeRequest,
-  MsgLeiosNextBlockAndTxsInRange, and MsgLeiosLastBlockAndTxsInRange may
-  occasionally need to have the same priority as Praos. If it would benefit the
-  prioritization implementation, those three messages could be isolated in a
-  third Leios mini-protocol that has equal priority as the Praos mini-protocols.
-- LeiosNotify and LeiosFetch can also progress independently, because they are
+  However, urgency inversion means that LeiosFetch may
+  occasionally need to have the same priority as Praos.
+- LeiosAnnounce, LeiosVotes and LeiosFetch can also progress independently, because they are
   separate mini-protocols. A client can therefore receive notifications about
   new Leios data and when it could be fetched from this peer even while a large
   reply is arriving via LeiosFetch. This avoids unnecessary increases in the
@@ -1351,38 +1461,45 @@ This mini-protocol pair satisfies the above requirements in the following ways.
 - The client can prioritize the youngest of outstanding offers from the peer
   when deciding which LeiosFetch request to send next, as freshest-first
   delivery requires.
-- Because the client only has agency in one state, it can pipeline its requests
-  for the sake of latency hiding.
+- For LeiosFetch, latency can be optimized by using the established pipelining
+  technique; for the other three protocols an explicit and more powerful
+  approach is chosen in order to avoid any blocking of the sending under
+  nominal circumstances while still placing a strict bound on the maximally
+  outstanding response size.
 - The client can request multiple transactions at once, which avoids wasting
   resources on overhead due to the potentially thousands of transactions
   exchanged per EB. (Most EBs' transactions will usually have already arrived
   via the Mempool, but the adversary can prevent that for their EBs.) The
-  bitmap-based addressing scheme allows for compact requests for even thousands
-  of transactions: a few hundred bytes of MsgLeiosBlockTxsRequest can request
+  EB index-based addressing scheme allows for compact requests for even thousands
+  of transactions: a few kB of MsgLeiosBlockTxsRequest can request
   every transaction in even the largest EB, while a MsgLeiosBlockTxsRequest for
   a single transaction would only cost tens of bytes. Without a compact
   addressing scheme, a node that requires every transaction for some EB would
   essentially need to send a request that's the same size as the EB itself,
   which is large enough to be considered an unnecessary risk of increased
   latency.
-- The client can request multiple votes at once, which avoids wasting resources
+- The client can request multiple votes at once without having to wait for
+  the reception of their identifiers, which avoids wasting resources
   on overhead due to the hundreds of votes exchanged per EB. Because the first
   vote in a bundle could have arrived sooner than the last vote in a bundle if
   it had not been bundled, maximal bundling risks unnecessary increases in
   latency. Some heuristic will balance the overhead decrease and latency
   increase, such as the client gradually stops bundling its vote requests as its
   set of received votes approaches a quorum.
-- The server can do the same when bundling vote offers, but it should be more
-  conservative, in case the client is already closer to a quorum than the former
-  is.
-- MsgLeiosBlockRangeRequest lets syncing nodes avoid wasting resources on
+- The server can bundle votes when submitting them to the multiplexer during
+  the early phase of voting on a given block in order to achieve better
+  bandwidth utilization, and it can switch to individual submissions during the
+  phase where the quorum is close to optimize for minimal latency.
+- MsgLeiosMultiBlockRequest lets syncing nodes avoid wasting resources on
   overhead due to the (hopefully) high rate of EBs per RB. BlockFetch already
   bundles its RB requests when syncing, and this message lets LeiosFetch do the
   same. The starvation detection and avoidance mechanism used by Ouroboros
   Genesis' Devoted BlockFetch variant can be easily copied for
-  MsgLeiosBlockRangeRequest if Ouroboros Genesis is enabled.
+  MsgLeiosMultiBlockRequest if Ouroboros Genesis is enabled. Since this request
+  type is meant to be used during sync, the response also contains all
+  referenced transactions — the client won't have them in its mempool anyway.
 - Recall that the `certified_eb` bit enables the client to correctly predict the
-  total payload size of the valid replies to a MsgLeiosBlockRangeRequest. This
+  total payload size of the valid replies to a MsgLeiosMultiBlockRequest. This
   enables the client to manage its receive buffers, balance load across peers,
   etc.
 - A server should disconnect if the client requests an EB (or its transactions)
@@ -1393,10 +1510,10 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   be able to serve it. Whether additional restrictions would be useful is not
   yet clear. For example, it seems natural to restrict MsgLeiosBlockRequest and
   MsgLeiosBlockTxsRequest to young EBs (and perhaps also
-  MsgLeiosBlockRangeRequest to old EBs), but it's not already clear what the
+  MsgLeiosMultiBlockRequest to old EBs), but it's not already clear what the
   benefit would be.
-- If MsgLeiosBlockRequest and MsgLeiosBlockTxsRequest were restricted to young
-  EBs, then MsgLeiosBlockRangeRequest would not only enable syncing nodes but
+- If MsgLeiosBlockTxsRequest were restricted to young
+  EBs, then MsgLeiosMultiBlockRequest would not only enable syncing nodes but
   also the unfortunate node that suffers from a $\Delta^\text{W}_\text{EB}$
   violation. The protocol design requires that that event is rare or at least
   confined to a small portion of honest stake at a time. But it will
@@ -1411,7 +1528,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   election and Praos elections have a stochastically low arrival rate, this
   memory bound is low enough to admit existing Cardano infrastructure.
 
-The mini-protocol pair does not already address the following challenges, but
+The mini-protocols do not already address the following challenges, but
 the corresponding enrichments — if necessary — would not contradict the
 Tolerable Implementation Complexity requirement.
 
@@ -1430,17 +1547,6 @@ Tolerable Implementation Complexity requirement.
   infrastructure, but only by splitting the mini-protocol's requests and
   responses into different mini-protocols, which might be prohibitively
   obfuscated.
-- With server-side reordering, LeiosFetch could also be free to interleave small
-  replies to vote requests with large replies to block/transaction requests.
-  Without it, however, the collocation of small replies and large replies in a
-  single mini-protocol with granular states incurs head-of-line blocking. That
-  risks occasionally increasing some key latencies, thereby threatening
-  freshest-first delivery or even motivating inflations of $L_\text{vote}$
-  and/or $L_\text{diff}$. One easy mitigation would run two instances of
-  LeiosFetch and reserve one for requests that are small and urgent (e.g., small
-  blocks, a few missing transactions, or perhaps any vote); the existing
-  infrastructure would naturally interleave those with the larger and/or less
-  urgent requests.
 
 ### Incentives
 
@@ -1794,13 +1900,11 @@ see [^sim-recreation].
 [^mini]:
     [Leios mini-mainnet topology](https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/data/simulation/pseudo-mainnet/topology-v2.md)
 
-[^ripe]: [RIPE Atlas](https://atlas.ripe.net/)
-
 [^mncp]:
-    https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/analysis/sims/2025w30b/analysis.ipynb
+    <https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/analysis/sims/2025w30b/analysis.ipynb>
 
 [^praosp]:
-    https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md
+    <https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md>
 
 The simulation results in the remainder of this section use the Rust simulator
 with a set of protocol parameters suitable for running Leios at 200 kB/s of
@@ -2795,12 +2899,6 @@ usual mechanisms of governing a hard-fork will be employed.
 [apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0 "Apache License 2.0"
 
 <!-- Footnotes -->
-
-[^fasort]: The Fait Accompli sortition scheme
-
-[^2]: Leios: Dynamic Availability for Blockchain Sharding (2025)
-
-[^leioscrypto]: Leios cryptography prototype implementation
 
 [^profitability]:
     Analysis documented in the
