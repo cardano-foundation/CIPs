@@ -54,7 +54,7 @@ There are many use cases for partner chains, including:
  * Applications or user groups requiring an assurance of no transaction front running
  * Bridging to foreign non-Cardano blockchains or other systems (e.g. Bitcoin or Ethereum-based chains)
  * Different legal or governance arrangements required for particular applications or user groups (including DAOs)
- * Different choices of protocol parameters than Cardano mainnet (both static parameters from the blockchain Genesis and dynamic parameters)
+ * Different choices of protocol parameters than Cardano mainnet (both static parameters from the blockchain Genesis and updateable parameters)
 
 The stakeholders for this proposal are individuals, organisations or consortia that wish to gain value from the use of a partner chain or isolated chain. The software engineers who help to maintain the existing Cardano node reference implementation are also stakeholders. This is not because Ouroboros Tachýs would ever be used on mainnet, but because to maximise Cardano community benefit and to minimise long term maintenance costs, the Tachýs protocol would be integrated into Cardano node reference implementation, to provide an option for users.
 
@@ -139,7 +139,9 @@ The ledger rules need to be amended to support multiple consensus algorithms. Th
 
 The global constant takes a value representing a tag for Praos or Tachýs, or unspecified. When unspecified (as will be the case for existing blockchains such as Cardano mainnet), the rules interpret it as Praos.
 
-Note that this is a global or static protocol parameter, not a dynamic one that can be updated by on-chain governance. Making it a dynamic protocol parameter may be desirable in future: it would allow changing the algorithm after the chain has already been started. Like all dynamic protocol parameters, it could be changed by a governance action, with the effect taking place at an epoch boundary. Introducing a new dynamic protocol parameter would require a hard fork however.
+Note that this is a global protocol parameter, not an updateable one that can be adjusted by on-chain governance. The notion of global constant comes from the existing [Shelley ledger specification], specifically section 5.2. The meaning and interpretation of this new global parameter should be undersood in the context of and to be consistent with the existing Shelley ledger specification document, and the practice of introducing new global constants in subsequent specification updates.
+
+Making this parameter an updateable protocol parameter may be desirable in future: it would allow changing the algorithm after the chain has already been started. Like all updateable protocol parameters, it could be changed by a governance action, with the effect taking place at an epoch boundary. Introducing a new updateable protocol parameter would require a hard fork however.
 
 #### Authorisation via the slot leader schedule
 
