@@ -8,8 +8,8 @@ Authors:
 Implementors: N/A
 Status: Proposed
 Discussions:
-  - https://github.com/IntersectMBO/cardano-ledger/issues/5046
-  - https://github.com/cardano-foundation/CIPs/pull/1084
+  - Ledger issue: https://github.com/IntersectMBO/cardano-ledger/issues/5046
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1084
 Created: 2025-07-30
 License: CC-BY-4.0
 ---
