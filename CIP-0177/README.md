@@ -193,6 +193,128 @@ This is the only consensus change, and it changes only in that it must use the u
 
 Everything else is the same. The block header construction is the same, using a KES signature and VRF proof. It is just the condition when the node decides to forge a block that changes.
 
+### Security Considerations
+
+Security in blockchain systems emerges from the combined effect of protocol-level guarantees, engineering choices, and operational practices. No single layer is sufficient on its own. Tachýs makes a conscious set of trade-offs relative to Praos. In particular, it prioritises lower latency and higher throughput, and drops some protocol-level protections that arise from leader unpredictability. This section documents these trade-offs and their implications.
+
+Implementers and operators would like clarity on which security properties the protocol guarantees and which it does not. With this clarity they can understand which risks must be addressed through engineering or operational measures, and which risks are already mitigated or eliminated at the protocol level. In this CIP we do not provide security proofs, however we set out the [scenarios and models](#proposed-security-models) in which we believe it is worth analysing the protocol.
+
+#### Trade-offs relative to Praos
+
+Compared to Praos, Tachýs has a few key trade-offs. We detail them in subsequent sub-sections, but in summary the trade-offs are as follows.
+
+ 1. Tachýs is not secure against an [adaptive adversary](#adaptive-corruption), but we conjecture that it is secure against a non-adaptive adversary (as in Ouroboros Classic). We [argue below](#adaptive-corruption) that an adaptive adversary is an unrealistic assumption (in the operational setting of mainnet or a partner chain), and that assuming a non-adaptive adversary is more realistic.
+ 2. Tachýs certainly has no more protection against grinding than Praos, and further analysis may show it has strictly less protection. We [conjecture below](#epoch-randomness-and-grinding-resistance) that, just as with Praos, this can be mitigated when Tachýs is deployed in combination with an effective anti-grinding mechanism, such as Phalanx.
+ 3. Tachýs gives up the protocol-level mitigation against network-volumetric denial-of-service attacks. We [explain below](#denial-of-service-considerations) how existing engineering choices and operational practices can provide the same or better levels of DDoS mitigation.
+
+#### Existing Ouroboros security models
+
+A security model, in this context, is a formalised set of assumptions that characterises the scenario of a blockchain deployment: both the environment and the assumed power of any adversaries trying to disrupt the system.
+
+Two relevant related security models are those used by [Ouroboros Classic], and [Ouroboros Praos]. Assumptions from these security models include:
+
+ * In both models, the adversary may reorder messages sent between parties.
+ * In the Praos model, the adversary may also delay messages by up to Delta slots.
+ * In the Classic model, the adversary may corrupt parties at the start of the protocol, or it may corrupt parties later, with a delay of two epochs after choosing the parties to corrupt.
+ * In the Praos model, the adversary may choose to corrupt parties at any time and can corrupt them immediately.
+ * In both models, the adversary may corrupt up to (but not including) 50% of the stake share.
+
+In this context, corruption means that a party is corrupted by the adversary and now acts as the adversary. Practically, one can imagine this to mean the adversary takes over the host machine(s) and credentials of the corrupted party, but it can also include anything short of this, such as simply getting the party to reveal information such as leader slot eligibility. The theory makes no distinction between such full and partial control: and all count towards the corruption 50% limit. In this CIP we use the term corruption with the same meaning as in the Ouroboros papers.
+
+#### Adaptive corruption
+
+The Praos model has the assumption that the adversary may corrupt parties immediately. The term of art for this is "adaptive": *adaptive corruption*, performed by an *adaptive adversary*, while security against this is described as being *adaptively secure*.
+
+The Praos assumption of an adaptive adversary is a strictly stronger assumption than the Ouroboros Classic assumption of a non-adaptive adversary. The Praos private slot leader schedule effectively neutralises this extra power of the adversary. To quote from the Praos paper introduction:
+
+> "Due to the fact that the adversary cannot predict the eligibility of a stakeholder to issue a block prior to corrupting it, she cannot gain an advantage by directing its corruption quota to specific stakeholders."
+
+For example, imagine an adversary that wants to create a short winning fork, during a chosen short period of time. The adversary may wish to corrupt the parties that are due to create blocks during the chosen period, to either suppress them or subvert them to create the blocks the adversary wants. An adaptive adversary can corrupt parties at will. So if the adversary knows which parties are due to create blocks during the period of interest then the adversary can corrupt exactly those parties. It can do this without violating the assumption that no more than 50% of stake can be corrupted. It could corrupt 100% of the stake producing blocks for the short chosen period, but it would not have corrupted anywhere near 50% of stake globally.
+
+By contrast, an adversary than can corrupt arbitrarily many parties but that does so with an epoch or two's delay, cannot selectively target the parties within the chosen period. It could target every party, but this would violate the assumption that the adversary cannot corrupt more than 50% of stake. It could corrupt nearly 50% of stake, chosen arbitrarily, and then expect to get only around 50% of the blocks in the chosen period.
+
+In summary, an adaptive adversary assumption and a public leader schedule appear to be incompatible.
+
+It is our belief however that an adaptive adversary is not a realistic assumption. The formal assumptions are supposed to be abstractions of aspects of the real world: the deployment environment and adversaries. For example, the assumption that the adversary cannot corrupt more than 50% of stake corresponds to the practical belief that corrupting parties is actually *hard*. That is, it takes time, effort, expense and/or luck to corrupt parties, e.g. by breaking into their computers, or buying or bribing stake. By contrast, there appears to be no practical correspondence to the theoretical assumption that the adversary can corrupt parties at will, but only within a 50% quota. An adversary that has the power to corrupt parties as they choose, and when they choose is one for which corruption is easy. This is inconsistent with the idea that corruption is so hard that achieving 50% corruption is unrealistic. One can imagine doomsday scenarios such as critical "zero day" bugs, but these also do not respect any corruption quota. A realistic adversary will target parties that they believe are the easiest to corrupt and that control the most stake (balancing the expectation that that the higher stake parties will typically be better resourced and harder to corrupt). We believe this corresponds more closely to a non-adaptive adversary, as in Ouroboros Classic. We therefore adopt a non-adaptive adversary assumption in our model.
+
+#### Epoch randomness and grinding resistance
+
+Praos made another important change compared to Classic: it uses a simpler and cheaper method for generating the random epoch nonce. [CPS-0021] has a well-written explanation of the issues involved in generating the epoch nonce. Readers are encouraged to read it. In this section we will only attempt to provide an intuitive and summary explanation.
+
+The epoch nonce is crucial in all Ouroboros protocol flavours (including Classic, Praos and Tachýs) for determining the leader schedule. It is important for the protocol security that adversaries have limited influence over the choice of epoch nonce, and thus limited influence over the choice of leader schedule. Otherwise, adversaries can choose schedules that favour themselves. In Ouroboros Classic, the epoch nonce is constructed using a multi-party computation (MPC). The intuition for this is that the block producers all contribute a bit of privately-chosen entropy without getting to see the entropy from other block producers, and then all of the entropy is combined. This allows all parties to contribute entropy but prevents any party from determining the outcome themselves. This solution produces good entropy (and is not subject to grinding), but comes at a cost: the MPC algorithm scales poorly with the number of participants, and so using it requires constructing a (fairly chosen) committee of block producers to participate in the MPC (and for an adaptive adversary, these committee members are a prime target).
+
+Praos uses a simpler and cheaper method to mix entropy to make the epoch nonce. It uses a running nonce and each block contributes entropy to the running nonce using a VRF. The intuition is that the VRF output is pseudo-random and crucially: the VRF output cannot be chosen by participants. The only choice participants have is to make a block or not to make a block: to either contribute to the entropy or not.
+
+It turns out however that the limited choice to make a block or not make a block still gives an opportunity to "grind" the epoch nonce. In Praos, at a certain slot within the current epoch, the running nonce is finalised to become the next epoch nonce. The ability to choose to make or not make the last N blocks before the epoch nonce is finalised gives $2^N$ choices of nonce and thus $2^N$ choices of leader schedule. The term grinding in this context refers to evaluating all $2^N$ choices of leader schedule and evaluating which one provides the adversary with the greatest advantage in the next epoch.
+
+Praos is proved secure even when the adversary can choose from a set of (fairly sampled random) nonces. The size of this set is given a parameter name $r$. This corresponds to the maximum assumed grinding power of the adversary: they have enough computational power to evaluate up to $r$ alternatives. The Praos security proof however requires that other Ouroboros security parameters be scaled up to account for $r$. [CPS-0021] provides a quantified analysis of this, illustrating that it is a non-trivial problem for various plausible levels of computational power available to the adversary. Essentially this is because substantial computational power is available at reasonable prices.
+
+Using a public slots schedule may make it easier for the adversary to know when they are going to get lucky and be leader for N blocks before the epoch nonce is finalised. The Praos security proof does not depend on limiting opportunities for grinding but on the adversary's limited grinding power. A public slot leader schedules make no difference to that. So it is not immediately clear that a public slot leader schedule makes grinding worse in theory.
+
+Grinding in Praos is already bad enough however, as the analysis in [CPS-0021] details. We therefore propose two alternative assumptions for our security model(s).
+
+1. In the first alternative we assume an effective anti-grinding mechanism that constrains the Praos grinding parameter $r$. We would hope and expect that this assumption can be later discharged by using Phalanx ([CIP-0161]), or similar future Phalanx refinements or alternatives.
+
+2. In the second alternative we assume that the adversarial stake is less than 20% (rather than the usual assumption of less than 50%).
+
+The proof sketch for the first alternative is to reuse, with minor tweaks, the Praos proof of security (Theorem 11) that uses a $r$-reset leaky beacon ideal functionality. This proof does not directly depend on private slot leader schedules: it depends on chain properties (CP and CG). While the Praos versions of these properties (CP and CG) use a private leader schedule and assume an adaptive adversary, their Ouroboros Classic equivalents use a public slot leader schedule and assume a non-adaptive adversary. So we expect that suitable equivalents could be plugged in to Theorem 11. The Praos paper proves that the VRF-based epoch nonce mechanism is a valid implementation of the $r$-reset leaky beacon ideal functionality. We would modify this: we use the same mechanism but to obtain $r$ resets we would rely on the assumption of the effective anti-grinding mechanism. We would then expect that Phalanx parameters could be chosen to match up the limit on grinding attempts with the Praos parameter $r$.
+
+In the second alternative, the idea stems from the analysis in [CPS-0021] that 20% adversarial stake is a crucial threshold for being able to mount an effective grinding attack. We refer to [CPS-0021] CPD section 3.2 for details, but the gist is that analysis of the opportunity for grinding shows that its functional form is exponential, and that the exponent base crosses 1 when the adversarial stake crosses 20%. As a consequence, even if the adversary has substantial grinding power, if they control less than 20% of stake then they are very unlikely to be able to have the opportunity to deploy that grinding power and conduct an effective grinding attack. For example, quoting from the table in [CPS-0021] CPD section 3.2:
+
+ * with 5% stake, it would take 1785 years on average for an adversary to obtain an advantage of of exactly 4 blocks at the critical juncture (when the epoch nonce is finalised); while
+ * with 20% stake, it would take 3.5 years to get 4 blocks, or 898 years to get 8 blocks.
+
+These numbers are for Cardano mainnet parameters. It should be noted that partner chains may run a lot faster and so the time scales above would be compressed correspondingly.
+
+#### Denial-of-service considerations
+
+The private leader schedule has another practical benefit, which is to make denial of service attacks harder and more expensive. In a denial of service attack an adversary targets liveness. They do so *not* by corrupting nodes and changing their behaviour, but rather by preventing block producers from sending their blocks through the network (or severely delaying the delivery). There are three main kinds of denial of service attack of interest: network level volumetric attacks, OS level attacks and application level protocol attacks.
+
+ 1. A volumetric attack is just flooding the victim machine and/or its network infrastructure with network traffic to try to consume enough of its resources that the victim cannot communicate with honest parties. This is a relatively generic attack, in that it does not depend on the details of the Cardano protocols or node implementation. To achieve enough volume and to make blocking it harder this kind of attack is almost always distributed, so that the traffic is sent from many source locations. This is a DDoS attack: a distributed denial of service attack.
+ 2. An OS level attack targets the operating system or other system software. This can include exploiting known bugs in system software to degrade service. This does not depend on the details of the Cardano protocols or node implementation. It exploits poorly configured or secured systems, and  systems running out-of-date software with known vulnerabilities.
+ 3. An application level or protocol level attack is one that is designed specifically knowing the details of the Cardano protocols and/or node implementation. An attack at this level will likely speak the Cardano network protocols. It will try to exploit bugs to cause the node to reduce its service level (e.g. triggering a panic and restart) or to asymmetrically cause the victim node to use substantially more resources than the attacker. A successful attack of this kind can use relatively little hardware (especially compared to a volumetric DDoS attack) but on the other hand requires a lot more time and/or luck to set up. Such attacks may be DDoS or may be just a DoS if the attacker does not require many machines.
+
+The benefit of the private leader schedule here is practical, not theoretical: the Praos security model allows the adversary to reorder or delay messages by up to Delta slots, but does not allow the adversary to block message delivery (or delay by more than Delta). In practice however a DoS on a node could overwhelm it and could perhaps prevent it from relaying blocks, while the attack persists. It is in this context that a private slot leader schedule is useful. An attacker that does not know which block producer will produce blocks, or when, is one that cannot selectively target their attacks. Instead they must target the nodes of a large fraction of stake, which increases the cost of the attack substantially in a large network. This is essentially the same idea as the adaptive adversary, but for liveness attacks on nodes rather than corruption. We argued above that [adaptive corruption](#adaptive-corruption) is not realistic, however adaptive denial of service attacks are quite realistic.
+
+In summary, the private leader schedule increases the cost for an attacker attempting a denial of service attack: they must target all (or the great majority of) nodes rather than only having to target a few at any moment.
+
+The same effect can be achieved however using a combination of measures at the engineering and operational levels. At the engineering level, the design of the network layer does not assume a private schedule, and is very deliberate in shielding block producing nodes from DoS attacks.
+
+ 1. The network protocols are designed such that in all interactions the resources used by the defending node should not exceed the resources used by the attacking node. This denies the attackers an asymmetric advantage and forces the attackers to at least match the resources of the defenders.
+ 2. The design of the peer-to-peer (P2P) network is such that the vast majority of network links must be suppressed to prevent propagation of valid blocks. Simulation evidence of this has been backed up by real-world events: during an unfortunate unscheduled hard fork, the nodes in the minority partition of the network were able to maintain connectivity with each other until the fraction of stake in the partition became very small.
+ 3. The P2P network design allows for nodes to participate that are entirely firewalled from the internet and accept no incoming connections at all. This enables operational measures.
+
+At the operational level, the advice to SPOs has always been to hide their block-producing nodes, i.e. not reveal their IP addresses. Since the deployment of the node P2P features, the advice has also been to firewall block producing nodes from the internet so that only outgoing TCP connections are allowed. This makes it difficult to target the block producing nodes themselves with volumetric or other DoS attacks. The relays can still be targeted. There are more relays nodes than block producing nodes however, and not all relays need be advertised. SPOs also operate hidden relays that are not advertised on the P2P network and can use them to establish additional connections with other SPOs. With sufficient links, this means that even successfully suppressing all the relay nodes that can be found via the P2P network discovery protocols is not enough to prevent block producing nodes from sharing blocks with each other.
+
+In smaller networks (such as most partner chains) where greater coordination between SPOs is practical, it also becomes practical for the network of block producing nodes to be protected even further: for example, the nodes can be connected through an additional network that is not routable by default (AWS offers this through their virtual private cloud; on-premise installations can use services that exploit Carrier Grade NAT to get similar functionality). Under these conditions, a volumetric DDoS attack requires attacking not many individual nodes but attacking and overwhelming the network infrastructure of the data center(s) or cloud provider. The attack volume needed to overwhelm such infrastructure will be substantial (e.g. taking down a whole AWS availability zone). A deployment somewhat like this was used successfully on the Cardano mainnet for some years while the network was federated, before the phased introduction of SPOs in the months after the Shelley hard fork. That deployment did not use a virtual private network, but did keep "core" nodes and "core" relays hidden and firewalled, so there was full connectivity without going via exposed public relays.
+
+Again in summary, a private leader schedule forces a DDoS attacker to target all (or almost all) nodes, but with a private leader schedule alone, such attacks could still prevent honest chain growth. On the other hand a combination of engineering and operational measures can also force a DDoS attacker to target all accessible nodes and in this case, even when all accessible nodes are suppressed, honest chain growth would continue. At best, such large scale attacks can temporarily prevent users from submitting transactions or receiving blocks but does not prevent consensus or honest chain growth. In conclusion, a private leader schedule is neither sufficient on its own, nor necessary to protect against attacks on liveness through DDoS attacks.
+
+#### Proposed security models
+
+We propose two scenarios, and corresponding assumptions for analysing Ouroboros Tachýs.
+
+Both sets of assumptions are based on Ouroboros Classic and thus have a non-adaptive adversary. We also include the Praos assumption that messages can be delayed by up to Delta slots (as this poses no difficulties).
+
+1. A large scale public deployment. For this scenario we propose:
+   * the assumptions of the Ouroboros Classic model;
+   * the Praos assumption that messages can be delayed by up to Delta slots;
+   * that there is an effective anti-grinding mechanism or that the adversary has very limited grinding power.
+
+2. A small scale permissioned or semi-permissioned deployment. For this scenario we propose:
+   * the assumptions of the Ouroboros Classic model;
+   * the Praos assumption that messages can be delayed by up to Delta slots;
+   * that the adversary cannot corrupt more than 20% of stake.
+   * that the adversary may corrupt up to (but not including) 20% of the stake share.
+
+The alternative anti-grinding assumptions are [discussed in more detail above](#epoch-randomness-and-grinding-resistance).
+
+#### Observability and future mitigations
+
+It is worth noting that while a public leader schedule weakens certain protocol-level protections, it also increases the observability of leader behaviour. In particular, intentional non-production of blocks such as strategic withholding near epoch boundaries (or nonce finalisation points) is unobservable under private schedules, but becomes observable ex post when the expected leader is publicly known.
+
+This increased observability does not, by itself, prevent any kind of attacks and does not restore the security properties of Praos. However, it enables classes of countermeasures that are otherwise unavailable, including monitoring, accountability mechanisms, governance responses, or future protocol extensions. Such measures are out of scope for this CIP, but the public leader schedule provides a foundation on which such mitigations could be built in future complementary specifications.
+
 ### No hard fork
 
 No hard fork is required.
@@ -237,6 +359,8 @@ Ouroboros Praos uses a private slot leader schedule. What this means is that eac
 An attacker can use a network level attack on nodes in the system to try to overload them. This may be a simple IP-level flooding attack or potentially a more sophisticated attack at the level of the network protocols. If the attacker knows which nodes are due to make blocks and when they are due to make them, then the attacker can target just a few SPO's relays at a time. On the other hand, if the attacker does not know which nodes will make blocks and when, then the attacker has to target all the relays, or at least enough relays to suppress SPOs controlling a substantial portion of stake. In large networks like Cardano mainnet there is a big difference between targeting a handful of relays and having to target most or all of them. It's the difference between e.g. 10 relays and 1,000 or several thousand (depending on how comprehensive the attacker wants to be). The key point is that the resources needed by the attacker is orders of magnitude more in the case of the private slot leader schedule. This makes the attack much harder and more expensive to pull off.
 
 By contrast with Cardano mainnet, an L2 or a partner chain may have only a small handful of active participants. In this case, the difference between targeting one node and targeting them all is not great in absolute terms. And thus the DDoS resistance benefit of Praos is limited. In these "small" use cases, different approaches are needed to resist DDoS attacks. On the other hand, traditional arrangements for DDoS resistance are also easier to implement where there are fewer participants to coordinate.
+
+A theoretical benefit is that the Praos private slot leader schedule helps Praos to resist a more powerful adversary that can perform "adaptive corruption". We elaborate on this in a [section below](#adaptive-corruption).
 
 ### The cost of a private slot leader schedule
 
@@ -366,6 +490,7 @@ This CIP can be expected to stabilise after a period of review and feedback, fol
 [CIP-0001]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001
 [CPS-0017]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017
 [CPS-0018]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0018
+[CPS-0021]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021
 [CIP-0084]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084
 [CIP-0140]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0140
 [CIP-0161]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0161
@@ -377,10 +502,12 @@ This CIP can be expected to stabilise after a period of review and feedback, fol
 [Babbage era update]: https://github.com/intersectmbo/cardano-ledger/releases/latest/download/babbage-ledger.pdf
 
 [Ouroboros Classic]: https://eprint.iacr.org/2016/889.pdf
+[Ouroboros Praos]: https://eprint.iacr.org/2017/573.pdf
 [Ouroboros BFT]: https://eprint.iacr.org/2018/1049.pdf
 
  * Cardano problem statement [CPS-0017] Settlement Speed
  * Cardano problem statement [CPS-0018] Greater Transaction Throughput
+ * Cardano problem statement [CPS-0021] Ouroboros Randomness Manipulation
 
  * [CIP-0084] Cardano Ledger Evolution
  * [CIP-0140] Ouroboros Peras - Faster Settlement
@@ -390,6 +517,7 @@ This CIP can be expected to stabilise after a period of review and feedback, fol
  * The [Shelley ledger specification]
  * The [Babbage era update] to the ledger specification
  * [Ouroboros Classic]
+ * [Ouroboros Praos]
  * [Ouroboros BFT]
  * [Davies et al] 2025, an analysis of finality on the Vector blockchain
 
