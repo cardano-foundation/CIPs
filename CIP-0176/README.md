@@ -20,7 +20,7 @@ We propose changing the CBOR encoding of a block body from a segregated layout t
 Current layout: all transaction bodies are concatenated and encoded first, followed by their witness sets, then followed by auxiliary-data hashes, and finally followed by validity flags.
 Proposed layout: each transaction is serialized in full before the next transaction is written to the stream.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Segregated serialization of [CIP-0118? | Nested Transactions](https://github.com/cardano-foundation/CIPs/pull/862) would be challenging both to specify and implement.
 Separating and concatenating components across nested and non-nested transactions introduces complexity that is error-prone and potentially inefficient, as it may require tracking offsets and performing additional buffering and copying at runtime.
