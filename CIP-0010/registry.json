@@ -32,6 +32,10 @@
     "description": "Proof of Existence record"
   },
   {
+    "transaction_metadatum_label": 544,
+    "description": "TapDano - Proof Platform"
+  },
+  {
     "transaction_metadatum_label": 620,
     "description": "seedtrace.org - supply chain & fair payment tracing"
   },
