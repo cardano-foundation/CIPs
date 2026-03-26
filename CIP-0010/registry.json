@@ -4,6 +4,10 @@
     "description": "Clarity - DAO creation metadata"
   },
   {
+    "transaction_metadatum_label": 54,
+    "description": "TapDano - Proof Platform"
+  },
+  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
@@ -18,6 +22,10 @@
   {
     "transaction_metadatum_label": 123,
     "description": "shareslake.com - Bridge routing information"
+  },
+  {
+    "transaction_metadatum_label": 170,
+    "description": "CIP-0170 - KERI-backed metadata attestations"
   },
   {
     "transaction_metadatum_label": 309,
@@ -114,6 +122,10 @@
   {
     "transaction_metadatum_label": 1983,
     "description": "cardanohosts.com hosting metadata"
+  },
+  {
+    "transaction_metadatum_label": 1984,
+    "description": "CIP-0171 - On-chain Smart Contract Bytecode Verification"
   },
   {
     "transaction_metadatum_label": 1988,
