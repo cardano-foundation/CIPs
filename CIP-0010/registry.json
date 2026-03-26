@@ -4,10 +4,6 @@
     "description": "Clarity - DAO creation metadata"
   },
   {
-    "transaction_metadatum_label": 54,
-    "description": "TapDano - Proof Platform"
-  },
-  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
@@ -26,6 +22,10 @@
   {
     "transaction_metadatum_label": 309,
     "description": "Proof of Existence record"
+  },
+  {
+    "transaction_metadatum_label": 544,
+    "description": "TapDano - Proof Platform"
   },
   {
     "transaction_metadatum_label": 620,
