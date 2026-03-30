@@ -148,6 +148,10 @@
     "description": "commitproof.com lets you prove what you knew and when"
   },
   {
+    "transaction_metadatum_label": 8414,
+    "description": "claimpaign.com campaigns"
+  },
+  {
     "transaction_metadatum_label": 10297,
     "description": "fida.finance transaction metadata"
   },
