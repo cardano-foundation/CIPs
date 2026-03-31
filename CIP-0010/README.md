@@ -53,7 +53,7 @@ These are the reserved `transaction_metadatum_label` values:
 0 - 15                        | reserved
 65536 - 131071                | reserved - private use
 
-For the registry itself, please see [registry.json](./registry.json). To add or modify a label definition, please open a pull request against this file (include background information about your project and tag number if possible).
+For the registry itself, please see [registry.json](./registry.json). To add or modify a label definition, please open a pull request against this file. For new label numbers, include background information about your project and/or documentation of the label if available (and state your intended usage if not).
 
 You can check if a label number is already in use with an API query.  For instance: to check if label `8414` is in use via Koios (no API key needed for `curl`):
 
