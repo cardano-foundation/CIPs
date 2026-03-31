@@ -46,7 +46,7 @@ transaction_metadata =
 
 ### Structure
 
-These are the reserved `transaction_metadatum_label` values
+These are the reserved `transaction_metadatum_label` values:
 
 `transaction_metadatum_label` | description
 ----------------------------  | -----------------------
