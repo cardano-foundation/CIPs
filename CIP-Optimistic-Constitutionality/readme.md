@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 182
 Title: Optimistic Constitutionality
 Category: Ledger, Governance
 Status: Proposed
