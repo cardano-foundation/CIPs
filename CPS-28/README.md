@@ -1,6 +1,6 @@
 ---
-CPS: TBD
-Title: Call-by-need in UPLC
+CPS: 28
+Title: Approaches to call-by-need in UPLC
 Category: Plutus
 Status: Open
 Authors: Koz Ross <koz@mlabs.city>
