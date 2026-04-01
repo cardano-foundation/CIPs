@@ -3,7 +3,7 @@ CPS: 28
 Title: Approaches to call-by-need in UPLC
 Category: Plutus
 Status: Open
-Authors: Koz Ross <koz@mlabs.city>
+Authors: [Koz Ross <koz@mlabs.city>]
 Proposed Solutions: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1150
@@ -43,7 +43,7 @@ to any framework or language targeting UPLC. This makes
 difficult to provide within UPLC without significant work, if it is possible at
 all.
 
-## Use cases
+## Use Cases
 
 We provide several examples of situations where call by need evaluation being
 available would improve performance, or the developer experience. These are
