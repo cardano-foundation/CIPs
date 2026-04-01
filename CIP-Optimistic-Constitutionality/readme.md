@@ -19,7 +19,7 @@ This CIP proposes **Optimistic Constitutionality**, a modification to the govern
 
 This change reduces the CC's operational burden from active interaction with every governance action to reactive oversight "on demand". The approach aligns with the empirical reality that DReps already filter harmful proposals effectively through their votes of preference. As a second-order effect, Optimistic Constitutionality substantially changes the cost of constitutionality verification for the network, and provides relief to the contentious question of CC compensation, which could still be enabled separately - but under different assumptions for effort spent. 
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 **A structural observation:**
 
