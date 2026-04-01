@@ -3,16 +3,12 @@ CIP: 182
 Title: Optimistic Constitutionality
 Category: Ledger
 Status: Proposed
-
 Authors:
   - Alex Moser <alexander.moser@cardanofoundation.org>
-    
 Implementors:
   - N/A
-    
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/XXXX
-    
 Created: 2026-03-18
 License: CC-BY-4.0
 ---
