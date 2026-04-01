@@ -1,7 +1,7 @@
 ---
 CIP: 182
 Title: Optimistic Constitutionality
-Category: Ledger, Governance
+Category: Ledger
 Status: Proposed
 
 Authors:
