@@ -3,7 +3,8 @@ CPS: 28
 Title: Approaches to call-by-need in UPLC
 Category: Plutus
 Status: Open
-Authors: [Koz Ross <koz@mlabs.city>]
+Authors: 
+    - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1150
