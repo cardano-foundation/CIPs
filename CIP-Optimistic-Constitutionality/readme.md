@@ -160,7 +160,7 @@ This parameter provides a safety valve: if the community determines that Optimis
 
 This specification is versioned by the CIP document itself. Changes to the specification require an amendment to this CIP or a superseding CIP.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 ### Why Not Just Remove the CC?
 
