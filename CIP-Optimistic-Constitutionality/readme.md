@@ -199,7 +199,7 @@ Governance actions submitted before the activation epoch follow the pre-existing
 
 All existing CC credentials, hot/cold key infrastructure (CIP-0105), governance metadata standards (CIP-0100, CIP-0108, CIP-0136), and wallet integrations (CIP-0030, CIP-0095) remain compatible. The change is entirely within the ledger's `RATIFY` rule and does not affect transaction formats, certificate types, or on-chain data structures.
 
-## Remaining Risk
+### Remaining Risk
 
 ### Power Abuse
 
