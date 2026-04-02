@@ -3,7 +3,14 @@ name: CPS Validation
 on:
   pull_request:
     paths:
-      - 'CPS-*/README.md'
+      - 'CPS*/README.md'
+      - 'cps*/README.md'
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate'
+        required: true
+        type: string
 
 jobs:
   validate:
@@ -13,6 +20,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Fetch PR branch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch origin pull/${{ github.event.inputs.pr_number }}/head:pr-branch
+          git checkout pr-branch
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -26,8 +39,13 @@ jobs:
       - name: Get CPS files to validate
         id: get-files
         run: |
-          # Get changed CPS files from the push (exclude deleted files)
-          FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD | grep -E '^CPS-[^/]+/README\.md$' || true)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual run: diff PR branch against master
+            FILES=$(git diff --name-only --diff-filter=ACMR origin/master...HEAD | grep -iE '^CPS-[^/]+/README\.md$' || true)
+          else
+            # PR trigger: diff against base branch
+            FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD | grep -iE '^CPS-[^/]+/README\.md$' || true)
+          fi
 
           if [ -z "$FILES" ]; then
             echo "No CPS README.md files to validate"
