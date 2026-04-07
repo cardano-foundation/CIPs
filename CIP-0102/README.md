@@ -6,6 +6,7 @@ Authors:
 Implementors:
   - Grabbit <https://grabbit.market/>
   - Nebula <https://github.com/spacebudz/nebula/>
+  - Mintun <https://mintun.io/>
 Discussions:
   - https://github.com/ikigai-github/CIPs/pull/1
   - https://github.com/cardano-foundation/CIPs/pull/551
@@ -246,7 +247,7 @@ See the [CIP-0068 Extension Boilerplate](https://github.com/cardano-foundation/C
 
 - [x] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved with NFT projects to review any weaknesses or areas of improvement.
 - [x] Guidelines and examples of publication of data as well as discovery and validation should be included as part of of criteria for acceptance.
-- [x] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Reference Implementation](https://github.com/SamDelaney/CIP_102_Reference).
+- [x] Minimal reference implementation including both onchain & offchain components: [Reference Implementation](https://github.com/SamDelaney/CIP_102_Reference).
 - [ ] Implementation and use demonstrated by the community: NFT Projects, Blockchain Explorers, Wallets, Marketplaces.
 
 ### Implementation Plan
