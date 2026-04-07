@@ -1,13 +1,15 @@
 ---
 CPS: 13
 Title: Better builtin data structures in Plutus
-Status: Proposed
 Category: Plutus
+Status: Open
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Philip DiSarro <philip.disarro@iohk.io>
     - Pi Lanningham <pi@sundaeswap.finance>
+Proposed Solutions: []
 Discussions:
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/638
 Created: 2023-12-14
 License: CC-BY-4.0
 ---
@@ -32,7 +34,7 @@ Both of these are difficult to implement in Plutus Core:
 1. Arrays are (we believe) impossible without some kind of primitive with constant-time lookup
 2. Maps are possible but are typically moderately complex data structures which require a lot of code, and this has not been done in practice
 
-## Use cases
+## Use Cases
 
 ### Arrays
 
@@ -85,7 +87,7 @@ Since map operations currently have much worse complexity than a good map data s
 1. Reduce the cost of operations on `Value` by a factor of 2-10
 2. Reduce the cost of a matching algorithm such that we can handle hundreds of matches for the same cost it currently takes to do 30.
 
-## Open questions
+## Open Questions
 
 - Can we implement a set/map data structure in Plutus Core code that has acceptable performance and doesn’t require too much size overhead?
 - Do we need generic maps or is a map-from-bytestring sufficient? What about map-from-integer?

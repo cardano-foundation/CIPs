@@ -2,7 +2,7 @@
 CIP: 1694
 Source: https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md
 Title: Un premier pas vers une gouvernance décentralisée on-chain
-Revision: 2516876
+Revision: 5a2fc66
 Translators:
     - Mike Hornan <mike.hornan@able-pool.io>
     - Alexandre Lafleur <alexandre.lafleur@able-pool.io>
@@ -304,6 +304,9 @@ qui voteront en leur nom. De plus, deux options de vote prédéfinies sont dispo
 > Tout détenteur d'Ada peut s'inscrire en tant que DRep et se déléguer s'il souhaite participer activement à
 > vote.
 
+> **Note**
+> Tout portefeuille servant de portefeuille de récompenses enregistré pour un pool de participation peut être délégué à l'une de ces options de vote prédéfinies et servira ainsi d'option de vote par défaut sélectionnée par le SPO pour tous les votes d'action de gouvernance, à l'exception des actions de gouvernance de hard fork. En raison de la nécessité d'un consensus robuste autour des initiations de hard fork, ces votes doivent être respectés en pourcentage de la participation détenue par tous les pools de participation.
+
 #### DReps enregistrés
 
 Dans Voltaire, les références de mise existantes seront
@@ -470,7 +473,7 @@ Selon le type d’action de gouvernance, une action sera donc ratifiée lorsqu�
 
 * le comité constitutionnel approuve l’action (le nombre de membres qui votent `Yes` atteint le seuil du comité constitutionnel)
 * les DReps approuvent l’action (la participation contrôlée par les DReps qui votent `Yes` atteint un certain seuil de la mise totale active des votes)
-* les SPO approuvent l’action (la participation contrôlée par les SPO qui votent `Yes` atteint un certain seuil par rapport à la mise active totale déléguée pour l'époque)
+* les SPO approuvent l'action (la participation contrôlée par les SPO qui votent « Oui » atteint un certain seuil de la participation totale de vote active, à l'exception des actions de gouvernance Hard Fork)
 
 > **Warning**
 > Comme expliqué ci-dessus, différentes distributions de mise s’appliquent aux DReps et aux SPO.
@@ -494,10 +497,10 @@ Le tableau suivant détaille les exigences de ratification pour chaque scénario
  Une valeur de - signifie que les votes du comité constitutionnel ne s’appliquent pas.
 
 * **DReps**<br/>
-Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation de vote active*.
+ Le seuil de vote DRep qui doit être atteint en pourcentage de la *participation de vote active*.
 
 * **SPO**<br/>
- Le seuil de vote SPO qui doit être atteint en pourcentage de la mise détenue par tous les pools de mise.<br/>
+ Le seuil de vote SPO doit être atteint en tant que certain seuil de la participation totale active au vote, à l'exception des actions de gouvernance Hard Fork. En raison de la nécessité d'un consensus solide autour des initiations Hard Fork, ces votes doivent être atteints en tant que pourcentage de la participation détenue par tous les pools de participation.<br/>
  Une valeur de - signifie que les votes SPO ne s’appliquent pas.
 
 | Type d’action de gouvernance                                                    | CC  | DReps    | SPOs     |
@@ -1015,7 +1018,8 @@ Nous résolvons le problème de la participation à long terme en n’autorisant
 ### Critères d’acceptation
 
 - [x] Une nouvelle ère du grand livre est activée sur le réseau principal Cardano, qui implémente la spécification ci-dessus.
- - Activé via le hardfork Chang #1
+- Gouvernance de la phase d'amorçage via le hardfork Chang #1
+- Gouvernance complète via le hardfork Plomin
 
 ### Plan de mise en oeuvre
 

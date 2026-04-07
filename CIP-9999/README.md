@@ -1,8 +1,8 @@
 ---
 CIP: 9999
 Title: Cardano Problem Statements
-Status: Active
 Category: Meta
+Status: Active
 Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
@@ -13,13 +13,12 @@ Created: 2022-10-14
 License: CC-BY-4.0
 ---
 
-# CIP-9999: Cardano Problem Statements
-
 ## Abstract
 
 A Cardano Problem Statement (CPS) is a formalized document for the Cardano ecosystem and the name of the process by which such documents are produced and listed. CPSs are meant to complement CIPs and live side-by-side in the CIP repository as first-class citizens.
 
-> **Note** Read this CIP's number as "CIP minus 1"
+> [!NOTE]
+> Read this CIP's number as "CIP minus 1" (in [tens' complement](https://en.wikipedia.org/wiki/Method_of_complements#Decimal_example))
 
 ## Motivation: why is this CIP necessary?
 
@@ -58,11 +57,11 @@ Field                | Description
 ---                  | ---
 `CPS`                | CPS number (without leading 0), or "\?" before being assigned
 `Title`              | A succinct and descriptive title
-`Status`             | Open \| Solved \| Inactive (..._reason_...)
 `Category`           | One registered or well-known category covering one area of the ecosystem.
+`Status`             | Open \| Solved \| Inactive (..._reason_...)
 `Authors`            | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
-`Proposed Solutions` | A list of CIPs addressing the problem, if any
-`Discussions`        | A list of links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
+`Proposed Solutions` | A list of labelled CIPs addressing the problem, if any
+`Discussions`        | A list of labelled links where major technical discussions regarding this CPS happened. Links should include any discussion before submission, a link to the pull request that created the CPS, and any pull request that modifies it.
 `Created`            | Date created on, in ISO 8601 (YYYY-MM-DD) format
 `License`            | Abbreviation of an approved license(s)
 
@@ -72,16 +71,18 @@ For example:
 ---
 CPS: 1
 Title: The Blockchain Trilemma
-Status: Open
 Category: Consensus
+Status: Open
 Authors:
     - Alice <alice@domain.org>
     - Bob <bob@domain.org>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-1234 | Solve the Trilemma: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1234
 Discussions:
-    - https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
-    - https://github.com/cardano-foundation/cips/pulls/9999
+    - Forum discussion: https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
+    - Original pull request: https://github.com/cardano-foundation/cips/pulls/9999
 Created: 2009-02-14
+License: CC-BY-4.0
 ---
 ```
 
@@ -111,7 +112,8 @@ Open         | Any problem statement that is fully formulated but for which ther
 Solved       | Problems for which a complete solution has been found[^1] and implemented. When solved via one or multiple CIPs, the solved status should indicate it as such: `Solved: by <CIP-XXXX>[,<CIP-YYYY>,...]`.
 Inactive    | The statement is deemed obsolete or withdrawn for another reason. A short reason must be given between parentheses. For example: `Inactive (..._reason_...).
 
-> **Note** There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CPS. Draft CPSs should include the status they aim for on acceptance, typically but not always; this will be _'Open'_.
+> [!NOTE]
+> There is no "draft" status: a proposal which has not been merged (and hence exists in a PR) is a draft CPS. Draft CPSs should include the status they aim for on acceptance, typically but not always; this will be _'Open'_.
 
 #### Categories
 
@@ -126,8 +128,7 @@ CPSs are licensed in the public domain. More so, they must be licensed under one
 | For software / code | Apache-2.0 - [Apache License, version 2.0][Apache-2.0]                                 |
 | For documentation   | CC-BY-4.0 - [Creative Commons Attribution 4.0 International Public License][CC-BY-4.0] |
 
-> **Warning**
->
+> [!WARNING]
 > All licenses not explicitly included in the above lists are not acceptable terms for a Cardano Problem Statement unless a later CIP extends this one to add them.
 
 ### The CPS Process
@@ -172,7 +173,7 @@ Goals make it easier to assess whether a solution solves a problem. Goals also g
 
 Use cases are essential to understanding a problem and showing that a problem addresses a need. Without use cases, there is, in fact, no problem, and merely disliking a design doesn't make it problematic. A use case is also generally user-driven, which encourages the ecosystem to open a dialogue with users to build a system that is useful to others and not only well-designed for the mere satisfaction of engineers.
 
-### Open questions
+### Open Questions
 
 This section is meant to _save time_, especially for problem statement authors who will likely be the ones who end up reviewing proposed solutions. Open questions allow authors to state upfront elements they have already thought of and that any solution should consider in its design. Moreso, it is an opportunity to mention, for example, security considerations or common pitfalls that solutions should avoid.
 
@@ -187,7 +188,7 @@ This section is meant to _save time_, especially for problem statement authors w
 
 ### Implementation Plan
 
-- [ ] Schedule a retrospective in 2-3 months to assess the effectiveness of the process
+- [x] Confirm after repeated cycles of CPS submissions, reviews, and merges that the CPS process is both effective and accessible to the community.
 
 ## Copyright
 

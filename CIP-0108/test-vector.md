@@ -34,7 +34,7 @@ Blake2b-256 hash digest of canonicalized body: `68d6fe27087457acf0164e65414238c4
 ### Motion of No-Confidence
 
 Example metadata document file: [no-confidence.jsonld](./examples/no-confidence.jsonld).
-Blake2b-256 of the file content (to go onchain): `6c27e5bd0d7cdec7ddb30956be0b5eac892a8330e00689692d18f3815a71bf9f`
+Blake2b-256 of the file content (to go onchain): `87ba5c10c89484c52265b50d669b4acf116aaeb8a6fa35fbf06e5ec67cda9270`
 
 #### Intermediate files
 
@@ -91,7 +91,7 @@ For [Treasury Withdrawal](#treasury-withdrawal), this will result in: `68d6fe270
 
 ### 4. Authors witness over the hash of canonicalized `body`
 
-Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `cip-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
+Use the hash produced in [3.](#3-hash-the-canonicalized-body) as the payload for the witnessing. For a `witnessAlgorithm` of `ed25519` refer to [CIP-100 Hashing and Signatures](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#hashing-and-signatures), for `CIP-0008` refer to [CIP-108 New Witness Type](./README.md#new-witness-type).
 
 One tool for Ed25519 signatures is [Ed25519 Online Tool](https://cyphr.me/ed25519_tool/ed.html).
 

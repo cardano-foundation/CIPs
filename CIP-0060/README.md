@@ -130,7 +130,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "<songName>",
                             "song_duration": "PT<minutes>M<seconds>S",
-                            "track_number": "<track#>",
+                            "track_number": 1,
                             "mood": "<mood>",
                             "artists": [
                                 {
@@ -294,7 +294,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Void",
                             "song_duration": "PT4M21S",
-                            "track_number": "1",
+                            "track_number": 1,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -306,7 +306,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Bellywub",
                             "song_duration": "PT5M31S",
-                            "track_number": "2",
+                            "track_number": 2,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -318,7 +318,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Lullaby for My Demons",
                             "song_duration": "PT3M11S",
-                            "track_number": "3",
+                            "track_number": 3,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -330,7 +330,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Meliorism",
                             "song_duration": "PT4M21S",
-                            "track_number": "4",
+                            "track_number": 4,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -342,7 +342,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Zipline From Outerspace",
                             "song_duration": "PT3M36S",
-                            "track_number": "5",
+                            "track_number": 5,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -354,7 +354,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT2M12S",
-                            "track_number": "6",
+                            "track_number": 6,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -366,7 +366,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "7",
+                            "track_number": 7,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -378,7 +378,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "8",
+                            "track_number": 8,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -390,7 +390,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "9",
+                            "track_number": 9,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -402,7 +402,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "10",
+                            "track_number": 10,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -414,7 +414,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "11",
+                            "track_number": 11,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -426,7 +426,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "12",
+                            "track_number": 12,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -438,7 +438,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "13",
+                            "track_number": 13,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -450,7 +450,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "14",
+                            "track_number": 14,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -462,7 +462,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "15",
+                            "track_number": 15,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -474,7 +474,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "16",
+                            "track_number": 16,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -486,7 +486,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "17",
+                            "track_number": 17,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -498,7 +498,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "18",
+                            "track_number": 18,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -510,7 +510,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "19",
+                            "track_number": 19,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -522,7 +522,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                         "song": {
                             "song_title": "Another Cool Song",
                             "song_duration": "PT3M36S",
-                            "track_number": "20",
+                            "track_number": 20,
                             "isrc": "US-SKG-22-12345",
                             "iswc": "T-123456789-Z"
                         }
@@ -572,7 +572,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
                                                                     "map": [
                                                                         {"k": {"bytes": "736F6E675F7469746C65"}, "v": {"bytes": "<encoded songName>"}},
                                                                         {"k": {"bytes": "736F6E675F6475726174696F6E"}, "v": {"bytes": "<encoded PT<minutes>M<seconds>S>"}},
-                                                                        {"k": {"bytes": "747261636B5F6E756D626572"}, "v": {"int": "<track#>"}},
+                                                                        {"k": {"bytes": "747261636B5F6E756D626572"}, "v": {"int": track#}},
                                                                         {"k": {"bytes": "6D6F6F64"}, "v": {"bytes": "<encoded mood>"}},
                                                                         {"k": {"bytes": "61727469737473"}, "v": 
                                                                             {

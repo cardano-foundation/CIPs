@@ -2,12 +2,15 @@
 CIP: 88
 Title: Token Policy Registration
 Category: Tokens
-Status: Proposed
+Status: Active
 Authors:
-- Adam Dean <adam@crypto2099.io>
-Implementors: []
+    - Adam Dean <adam@crypto2099.io>
+Implementors: 
+    - VeriGlyph Nexus: https://nexus.veriglyph.io
+    - VeriGlyph Seninel: https://seninel.veriglyph.io
+    - Cardano Signer: https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode
 Discussions:
-- https://github.com/cardano-foundation/cips/pull/467
+    - https://github.com/cardano-foundation/cips/pull/467
 Created: 2023-02-27
 License: CC-BY-4.0
 ---
@@ -544,15 +547,15 @@ utility, and standards evolve.
 
 - [X] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved
   with token projects (both NFT and FT) to review any weaknesses or areas of improvement.
-- [ ] Guidelines and examples of publication of data as well as discovery and validation should be included as part of
+- [x] Guidelines and examples of publication of data as well as discovery and validation should be included as part of
   criteria for acceptance.
 - [X] Specifications should be updated to be written in both JSON Schema and CBOR CDDL format for maximum compatibility.
-- [ ] Implementation and use demonstrated by the community: Token Projects, Blockchain Explorers, Wallets,
+- [x] Implementation and use demonstrated by the community: Token Projects, Blockchain Explorers, Wallets,
   Marketplaces/DEXes.
 
 #### TO-DO ACCEPTANCE ACTIONS ####
 
-- [ ] Publish instructions and tooling for publication and verification of certificates
+- [x] Publish instructions and tooling for publication and verification of certificates
 - [ ] Develop standard for validation of Smart Contract minted tokens
 
 ### Implementation Plan

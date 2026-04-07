@@ -1,14 +1,14 @@
 ---
 CPS: 8
 Title: Domain Name Resolution
-Status: Open
 Category: Tools
+Status: Open
 Authors:
   - Hinson Wong <hinson@cns.space>
-Proposed Solution: []
+Proposed Solutions: []
 Discussions: 
-- https://github.com/cns-space/CIPs
-- https://github.com/cardano-foundation/CIPs/pull/605
+  - Cardano Name Service CIPs fork: https://github.com/cns-space/CIPs
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/605
 Created: 2023-10-14
 License: CC-BY-4.0
 ---
@@ -29,7 +29,7 @@ As the ecosystem emerges, more and more domain service projects entering Cardano
 
 Both `adadomains` and `CNS` has chosen `.ada` as domain suffix. When proceeding with resolving integration, one common issue faced is the ambiguity in resolving approach, which could lead to user confusion at the minimal impact. On some specific information resolving, it might even cause serious loss of fund when sending tokens with monetary value to unexpected recipients.
 
-## Use cases
+## Use Cases
 
 Let's illustrate the potential issues with a hypothetical example in wallet address resolving area.
 

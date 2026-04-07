@@ -1,0 +1,160 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/GovPParams.hs
+
+;  Specification for parameters
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: gov_pparams
+;
+;  types:
+;    gov_pparams:
+;      seq:
+;        - id: value
+;          type: strz
+;          size: 4
+;          encoding: ASCII
+;        - id: valiant
+;          size: 0
+;          type:
+;            switch-on: value
+;            cases:
+;              '"prev"': kprev
+;              '"curr"': kcurr
+;              '"fut0"': kfut0
+;              '"fut1"': kfut1
+;    kprev:
+;      doc: previous values
+;    kcurr:
+;      doc: current values
+;    kfut0:
+;      doc: possible future
+;    kfut1:
+;      doc: definitive future
+;  ```
+;
+;  fut0 with missig parameters should be omitted.
+record_entry = gov_pparams_out
+
+;  Governance protocol parameters
+gov_pparams_out =
+  { 0  : coin
+                            ; min_fee_a: the linear factor for the minimum fee calculation
+  , 1  : coin
+                            ; min_fee_b: the constant factor for the minimum fee calculation
+  , 2  : uint .size 4
+                    ; max_block_size: maximal block body size in bytes
+  , 3  : uint .size 4           ; max_tx_size: maximal transaction size in bytes
+  , 4  : uint .size 2
+                    ; max_block_header_size: maximal block header size in bytes
+  , 5  : coin
+                            ; key_deposit: The amount of a key registration deposit
+  , 6  : coin
+                            ; pool_deposit: The amount of a pool registration deposit
+  , 7  : epoch_interval         ; maximum_epoch: maximum epoch
+  , 8  : uint .size 2           ; n_opt: desired number of pools
+  , 9  : nonnegative_interval   ; a0: pool pledge influence factor
+  , 10 : unit_interval          ; rho: monetary expansion rate
+  , 11 : unit_interval          ; tau: treasury expansion
+  , 16 : coin                   ; min_pool_cost: minimum pool cost
+  , 17 : coin
+                            ; ada_per_utxo_byte: Cost in ada per 1 byte of UTxO storage instead of _coinsPerUTxOWord
+  , 18 : cost_models
+                     ; cost_models: Cost models for non-native script languages
+  , 19 : ex_unit_prices
+                  ; prices: Prices of execution units for non-native script languages
+  , 20 : ex_units
+                        ; max_tx_ex_units: Max total script execution resources units allowed per tx
+  , 21 : ex_units
+                        ; max_block_ex_units: Max total script execution resources units allowed per block
+  , 22 : uint .size 4
+                    ; max_value_size: Max size of a Value in an output
+  , 23 : uint .size 2
+                    ; collateral_percentage: The scaling percentage of the collateral relative to the fee
+  , 24 : uint .size 2
+                    ; max_collateral_inputs: Maximum number of collateral inputs allowed in a transaction
+  , 25 : pool_voting_thresholds ; pool voting thresholds
+  , 26 : drep_voting_thresholds ; drep voting thresholds
+  , 27 : uint .size 2           ; min committee size
+  , 28 : epoch_interval         ; committee term limit
+  , 29 : epoch_interval         ; goveranance action validity period
+  , 30 : coin                   ; governance action deposit
+  , 31 : coin                   ; drep deposit
+  , 32 : epoch_interval         ; drep inactivity period
+  , 33 : nonnegative_interval
+            ; min_fee_ref_script_cost_per_byte: Reference scripts fee for the minimum fee calculation
+  }
+
+nonnegative_interval = #6.30([uint, positive_int])
+
+positive_int = 1 .. 18446744073709551615
+
+; NOTE: The real unit_interval is: #6.30([uint, uint])
+;
+;  A unit interval is a number in the range between 0 and 1, which
+;  means there are two extra constraints:
+;     1. numerator <= denominator
+;     2. denominator > 0
+unit_interval =
+  #6.30([uint .le 18446744073709551615, uint .le 18446744073709551615])
+
+ex_unit_prices =
+  [mem_price : nonnegative_interval, step_price : nonnegative_interval]
+
+epoch_interval = uint .size 4
+
+coin = uint
+
+; The format for cost_models is flexible enough to allow adding
+; Plutus built-ins and language versions in the future.
+;
+; Plutus v1: only 166 integers are used, but more are accepted (and ignored)
+; Plutus v2: only 175 integers are used, but more are accepted (and ignored)
+; Plutus v3: only 223 integers are used, but more are accepted (and ignored)
+;
+; Any 8-bit unsigned number can be used as a key.
+cost_models =
+  {? 0 : [* int64], ? 1 : [* int64], ? 2 : [* int64], * 3 .. 255 => [* int64]}
+
+int64 = -9223372036854775808 .. 9223372036854775807
+
+ex_units = [mem : uint, steps : uint]
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - hard fork initiation
+;  4 - security relevant parameter voting threshold
+pool_voting_thresholds =
+  [unit_interval, unit_interval, unit_interval, unit_interval, unit_interval]
+
+;
+;  0 - motion no confidence
+;  1 - committee normal
+;  2 - committee no confidence
+;  3 - update constitution
+;  4 - hard fork initiation
+;  5 - PP network group
+;  6 - PP economic group
+;  7 - PP technical group
+;  8 - PP governance group
+;  9 - treasury withdrawal
+drep_voting_thresholds =
+  [ unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  , unit_interval
+  ]
+
+

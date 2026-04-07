@@ -1,0 +1,85 @@
+{
+  "@context": {
+    "@language": "en-us",
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "CIP136": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
+    "body": {
+        "@id": "CIP136:body",
+        "@context": {
+            "references": {
+                "@id": "CIP100:references",
+                "@container": "@set",
+                "@context": {
+                    "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                    "Other": "CIP100:OtherReference",
+                    "label": "CIP100:reference-label",
+                    "uri": "CIP100:reference-uri",
+                    "RelevantArticles": "CIP136:RelevantArticles"
+                }
+            },
+            "summary": "CIP136:summary",
+            "rationaleStatement": "CIP136:rationaleStatement",
+            "precedentDiscussion": "CIP136:precedentDiscussion",
+            "counterargumentDiscussion": "CIP136:counterargumentDiscussion",
+            "conclusion": "CIP136:conclusion",
+            "internalVote": {
+                "@id": "CIP136:internalVote",
+                "@container": "@set",
+                "@context": {
+                    "constitutional": "CIP136:constitutional",
+                    "unconstitutional": "CIP136:unconstitutional",
+                    "abstain": "CIP136:abstain",
+                    "didNotVote": "CIP136:didNotVote",
+                    "againstVote": "CIP136:againstVote"
+                }
+            }
+        }
+    },
+    "authors": {
+        "@id": "CIP100:authors",
+        "@container": "@set",
+        "@context": {
+            "did": "@id",
+            "name": "http://xmlns.com/foaf/0.1/name",
+            "witness": {
+                "@id": "CIP100:witness",
+                "@context": {
+                    "witnessAlgorithm": "CIP100:witnessAlgorithm",
+                    "publicKey": "CIP100:publicKey",
+                    "signature": "CIP100:signature"
+                }
+            }
+        }
+    }
+  },
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "summary": "We believing that the CC should abstain from voting on `committeeMaxTermLength` changes.",
+    "rationaleStatement": "By changing the `committeeMaxTermLength` we are changing the maximum length of time that a committee member can serve. This is a change that should be made with caution, as it can affect the stability and continuity of the committee. Voting on `committeeMaxTermLength` would be a conflict of interest for us.",
+    "internalVote": {
+      "constitutional": 0,
+      "unconstitutional": 0,
+      "abstain": 1,
+      "didNotVote": 0,
+      "againstVote": 0
+    },
+    "references": [
+      {
+        "@type": "Other",
+        "label": "A cool island for Ryan",
+        "uri": "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"
+      }
+    ]
+  },
+  "authors": [
+    {
+      "name": "Ryan Williams",
+      "witness": {
+        "witnessAlgorithm": "CIP-0008",
+        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
+        "signature": "84582aa201276761646472657373581d600fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42a166686173686564f45820f1a20900160c3516d9cfb9b6db2d75d8f06bc167b751d285dc8532e45ce29eaf5840418b2f2a7009ee6f4c25aec4e3cf90859a315d51467a82686c112bea340581965b330e218e8820df12de6e821ff2be9cdb4da902f4fcea642e828f426fc71409"
+      }
+    }
+  ]
+}

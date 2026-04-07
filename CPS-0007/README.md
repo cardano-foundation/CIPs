@@ -1,25 +1,26 @@
 ---
 CPS: 7
 Title: Voltaire era Governance
-Status: Open
 Category: Ledger
+Status: Open
 Authors: 
   - Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions:
-  - CIP-1694
+  - CIP-1694: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694
 Discussions:
-  - https://discord.gg/hdqHwSgWvG
+  - Discussions on CIPs discord: https://discord.gg/hdqHwSgWvG
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/481
 Created: 2023-03-14
 License: CC-BY-4.0
 ---
 
-## **Abstract**
+## Abstract
 
 It has long been part of Cardano's vision for the "final" roadmap era to be one of Governance: allowing the community of ADA token holders to meaningfully own the decision making process by which the chain evolves.
 
 To frame this discussion, it's important to outline a set of goals and baseline truths. Some of these will be neutral and uncontroversial, while others are in need of community discussion.
 
-### **Acknowledgements**
+### Acknowledgements
 <details>
 <summary> Thank you to the following people who helped review this draft before it was published: </summary>
 
@@ -30,7 +31,7 @@ To frame this discussion, it's important to outline a set of goals and baseline 
 
 </details>
 
-## **Problem**
+## Problem
 
 At the core of it, a system of governance boils down to how decisions are made and enforced.  Cardano currently has 3 core decisions that greatly impact the operation of the chain:
 
@@ -51,7 +52,10 @@ IOG in particular has continued to provide skill and resources for years longer 
 
 However, diluting that power to the community comes with substantial risks and challenges, not the least of which is ensuring that the will of the community is captured *accurately*. For example, one barrier to that accuracy is the possibility of "sybil attacks", wherein the anonymity of the blockchain allows someone to cast their vote many times.
 
-## **Goals**
+## Use Cases
+<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
+
+## Goals
 
 Synthesizing from the above, and with input from the broader Cardano community, the following goals, constraints, considerations, or ground truths for any governance system arise:
 
@@ -75,7 +79,7 @@ Additionally, here is a more opinionated (and potentially controversial) list of
 6. While it may be useful to draw inspiration from existing real-world systems, it should also be understood that blockchain governance will have an entirely different set of constraints.  For example, the ADA community does not share one culture or geographic locality. Additionally, the decisions being made are not the same kinds of decisions that a world government needs to make.
 7. The uncontrolled hard fork described above is dangerous (from a safety standpoint) and disruptive (from an economic standpoint); it will likely seriously undermine the cohesion of the Cardano community. For this reason, it should be considered a tool of absolute last resort.
 
-### Open Questions
+## Open Questions
 
 Based on the goals above, an incomplete set of questions arises that any proposed solution likely ought to answer:
 

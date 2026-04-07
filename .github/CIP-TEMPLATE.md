@@ -14,14 +14,15 @@ License: CC-BY-4.0
 
 <!-- Existing categories:
 
-- Meta     | For meta-CIPs which typically serves another category or group of categories.
-- Wallets  | For standardisation across wallets (hardware, full-node or light).
-- Tokens   | About tokens (fungible or non-fungible) and minting policies in general.
-- Metadata | For proposals around metadata (on-chain or off-chain).
-- Tools    | A broad category for ecosystem tools not falling into any other category.
-- Plutus   | Changes or additions to Plutus
-- Ledger   | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
-- Catalyst | For proposals affecting Project Catalyst / the Jörmungandr project
+- Meta      | For meta-CIPs which typically serves another category or group of categories.
+- Wallets   | For standardisation across wallets (hardware, full-node or light).
+- Tokens    | About tokens (fungible or non-fungible) and minting policies in general.
+- Metadata  | For proposals around metadata (on-chain or off-chain).
+- Tools     | A broad category for ecosystem tools not falling into any other category.
+- Plutus    | Changes or additions to Plutus
+- Ledger    | For proposals regarding the Cardano ledger (including Reward Sharing Schemes)
+- Consensus | For proposals affecting implementations of the Cardano Consensus layer and algorithms
+- Network   | Specifications and implementations of Cardano's network protocols and applications
 
 -->
 
@@ -45,13 +46,20 @@ It must also explain how the proposal affects the backward compatibility of exis
 ### Acceptance Criteria
 <!-- Describes what are the acceptance criteria whereby a proposal becomes 'Active' -->
 
+<!-- For core categories (Ledger, Plutus, Network, Consensus) the following SHOULD be included:
+- [ ] Implementation present within block producing nodes used by 80%+ of stake
+-->
+
 ### Implementation Plan
 <!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
 <!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
 
 ## Copyright
-<!-- The CIP must be explicitly licensed under acceptable copyright terms.  Uncomment the one you wish to use (delete the other one) and ensure it matches the License field in the header: -->
+<!-- The CIP must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
+
+If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal.
+-->
 
 <!-- This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
 <!-- This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0). -->

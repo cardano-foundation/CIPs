@@ -1,0 +1,66 @@
+name: CPS Validation
+
+on:
+  pull_request:
+    paths:
+      - 'CPS*/README.md'
+      - 'cps*/README.md'
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch PR branch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          git fetch origin pull/${{ github.event.inputs.pr_number }}/head:pr-branch
+          git checkout pr-branch
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Get CPS files to validate
+        id: get-files
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual run: diff PR branch against master
+            FILES=$(git diff --name-only --diff-filter=ACMR origin/master...HEAD | grep -iE '^CPS-[^/]+/README\.md$' || true)
+          else
+            # PR trigger: diff against base branch
+            FILES=$(git diff --name-only --diff-filter=ACMR HEAD~1 HEAD | grep -iE '^CPS-[^/]+/README\.md$' || true)
+          fi
+
+          if [ -z "$FILES" ]; then
+            echo "No CPS README.md files to validate"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Convert newlines to spaces for passing as arguments
+          FILES_SPACE=$(echo "$FILES" | tr '\n' ' ')
+          echo "has_files=true" >> $GITHUB_OUTPUT
+          echo "files=$FILES_SPACE" >> $GITHUB_OUTPUT
+
+      - name: Validate CPS files
+        if: steps.get-files.outputs.has_files == 'true'
+        run: |
+          FILES="${{ steps.get-files.outputs.files }}"
+          echo "Validating CPS files: $FILES"
+          python3 .github/scripts/validate-cps.py $FILES

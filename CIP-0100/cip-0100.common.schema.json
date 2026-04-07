@@ -86,7 +86,7 @@
                     "title": "Comment",
                     "type": "string"
                 },
-                "externalUpdatess": {
+                "externalUpdates": {
                     "title": "ExternalUpdates",
                     "type": "array",
                     "items": {
