@@ -28,6 +28,7 @@ This proposal makes use of the onchain metadata pattern established in [CIP-0068
    1. [Expected Behaviour](#expected-behavior)
    1. [Royalty Datum](#500-royalty-datum-standard)
    1. [Reference Datum](#reference-datum-standard)
+   1. [CIP-88 Integration](#cip-88-integration)
 1. [Examples](#examples)
    1. [Royalty Token Construction](#constructing-the-royalty-token)
    1. [Reading Metadata](#retrieving-metadata)
@@ -157,6 +158,12 @@ The correct datum may then be reliably found by searching for a Royalty Token wi
 
 In the case of ambiguity, users/dapps may choose whichever policy they wish to honor.
 
+### CIP-88 Integration
+
+Collections using [CIP-0088][] registration certificates **should** advertise their royalty token(s) by including the `102` key in the `cip-details` section of their registration. The value is an array of the asset names (as bytes) of all royalty NFTs minted under the collection's policy ID, as specified in the [CIP-88 extension for CIP-0102](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088/CIPs/0102).
+
+This provides an additional discovery path for off-chain tooling: rather than constructing the royalty token name from a reference datum lookup, implementors may read it directly from the CIP-88 registration.
+
 ## Examples
 
 In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference). (Up to v1 - v2 coming soon)
@@ -255,3 +262,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [CIP-0027]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027
 [CIP-0067]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
 [CIP-0068]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068
+[CIP-0088]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088
