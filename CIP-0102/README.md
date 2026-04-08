@@ -20,25 +20,6 @@ License: CC-BY-4.0
 
 This proposal makes use of the onchain metadata pattern established in [CIP-0068][] to provide a way to store royalties with greater assurance and customizability.
 
-## Table of Contents
-
-1. [Abstract](#abstract)
-1. [Table of Contents](#table-of-contents)
-1. [Motivation](#motivation-why-is-this-cip-necessary)
-1. [Specification](#specification)
-   1. [Expected Behaviour](#expected-behavior)
-   1. [Royalty Datum](#500-royalty-datum-standard)
-   1. [Reference Datum](#reference-datum-standard)
-   1. [CIP-88 Integration](#cip-88-integration)
-1. [Examples](#examples)
-   1. [Royalty Token Construction](#constructing-the-royalty-token)
-   1. [Reading Metadata](#retrieving-metadata)
-   1. [Variable Fee Calculation](#example-of-onchain-variable-fee-calculation)
-1. [Rationale](#rationale-how-does-this-cip-achieve-its-goals)
-1. [Extending & Modifying this CIP](#extending--modifying-this-cip)
-1. [Path to Active](#path-to-active)
-1. [Copyright](#copyright)
-
 ## Motivation: why is this CIP necessary?
 
 The inability to create trustless onchain royalty validation with [CIP-0027][] is a major drawback to Cardano NFTs. The pattern defined in CIP-68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
