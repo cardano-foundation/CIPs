@@ -1,14 +1,15 @@
 ---
 CIP: 102
 Title: Royalty Datum Metadata
-Authors: 
- - Sam Delaney <sdelaney@ikigaitech.org>
-Implementors: 
-- Grabbit <https://grabbit.market/>
-- Nebula <https://github.com/spacebudz/nebula/>
+Authors:
+  - Sam Delaney <sdelaney@ikigaitech.org>
+Implementors:
+  - Grabbit <https://grabbit.market/>
+  - Nebula <https://github.com/spacebudz/nebula/>
+  - Mintun <https://mintun.io/>
 Discussions:
- - https://github.com/ikigai-github/CIPs/pull/1
- - https://github.com/cardano-foundation/CIPs/pull/551
+  - https://github.com/ikigai-github/CIPs/pull/1
+  - https://github.com/cardano-foundation/CIPs/pull/551
 Status: Proposed
 Category: Tokens
 Created: 2023-08-08
@@ -23,17 +24,39 @@ This proposal makes use of the onchain metadata pattern established in [CIP-0068
 
 The inability to create trustless onchain royalty validation with [CIP-0027][] is a major drawback to Cardano NFTs. The pattern defined in CIP-68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
 
-In addition, this standard allows royalties to be split between multiple addresses, another limitation of the CIP-27 royalty schema. Future versions of this standard could  also easily support multiple royalty policies defined for a single collection, applied at the level of individual tokens.
+In addition, this standard allows royalties to be split between multiple addresses, another limitation of the CIP-27 royalty schema.
+
+Version 2 this standard also supports:
+
+- Multiple royalty policies defined for a single collection, applied at the level of individual tokens.
+- CIP-88 Integration - integrate with the latest standard for NFT collection metadata, defining how they ought to work in tandem.
+- Non-ada currencies - royalties **must** be paid in the same monetary unit as the sale.
 
 ## Specification
 
+### Expected Behavior
+
+Marketplaces **must** expect royalty information according to the [500 Royalty Datum Standard](#500-royalty-datum-standard) & extract that information if provided.
+
+Marketplaces **must** calculate & pay a fee to the recipient(s) specified, calculated as
+
+```
+max(min_fee, min(max_fee, pct)) // check against minimum & maximum fees
+
+where
+
+pct = (10 / fee) * sale_price // variable fee percentage of sale
+```
+
+Royalties **must** be paid in the same monetary unit as the sale.
+
 ### 500 Royalty Datum Standard
 
-The following defines the `500` Royalty NFT standard with the registered `asset_name_label` prefix value
+The following defines the `500` Royalty NFT standard with the registered `asset_name_label` prefix value, and optionally, an integer postfix. This postfix is included to allow for multiple Royalty NFTs, specifying multiple royalty policies.
 
-| asset_name_label            | class        | description                                                          |
-| --------------------------- | ------------ | -------------------------------------------------------------------- |
-| 500                         | NFT          | Royalty NFT stored in a UTxO containing a datum with royalty information |
+| asset_name_label | class | description                                                              |
+| ---------------- | ----- | ------------------------------------------------------------------------ |
+| 500              | NFT   | Royalty NFT stored in a UTxO containing a datum with royalty information |
 
 #### Class
 
@@ -43,10 +66,16 @@ The `royalty NFT` is an NFT (non-fungible token).
 
 The `royalty NFT` **must** have an identical `policy id` as the collection.
 
-The `asset name` **must** be `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067][] label `500` followed by the word "Royalty".
+The `asset name` **must** begin with `001f4d70526f79616c7479` (hex encoded), it contains the [CIP-0067][] label `500` followed by the word "Royalty".
+
+The `asset name` **may** end with a postfixed integer to distinguish this `royalty NFT` from others minted under the same policy ID. The integer is appended as its UTF-8 encoded decimal digit(s).
 
 Example:\
 `royalty NFT`: `(500)Royalty`\
+`reference NFT`: `(100)Test123`
+
+`royalty NFT #1`: `(500)Royalty1`: `001f4d70526f79616c747931`\
+`royalty NFT #2`: `(500)Royalty2`: `001f4d70526f79616c747932`\
 `reference NFT`: `(100)Test123`
 
 #### 500 Datum Metadata
@@ -61,7 +90,7 @@ big_nint = #6.3(bounded_bytes)
 optional_big_int = #6.121([big_int]) / #6.122([])
 
 royalty_recipient = #6.121([
-              address,                    ; definition can be derived from: 
+              address,                    ; definition can be derived from:
                                           ; https://github.com/input-output-hk/plutus/blob/master/plutus-ledger-api/src/PlutusLedgerApi/V1/Address.hs#L31
               int,                        ; variable fee ( calculation: ⌊1 / (fee / 10)⌋ ); integer division with precision 10
               optional_big_int,           ; min fee (absolute value in lovelace)
@@ -71,7 +100,7 @@ royalty_recipient = #6.121([
 royalty_recipients = [ * royalty_recipient ]
 
 ; version is of type int, we start with version 1
-version = 1  
+version = 1 / 2
 
 ; Custom user defined plutus data.
 ; Setting data is optional, but the field is required
@@ -81,7 +110,75 @@ extra = plutus_data
 royalty_info = #6.121([royalty_recipients, version, extra])
 ```
 
-#### Example of onchain variable fee calculation:
+#### Version Semantics
+
+- **Version 1** — Basic royalty datum. A single `(500)Royalty` token per policy ID. No intrapolicy royalty support.
+- **Version 2** — Supports intrapolicy royalties. The royalty token may carry a numeric postfix (e.g., `(500)Royalty2`), and the corresponding [Reference Datum](#reference-datum-standard) `extra` field may include a `royalty_included` flag identifying which royalty policy applies to a given NFT.
+
+Datums using postfixed royalty tokens **must** use `version = 2`. Datums without a postfix **may** use either version; `version = 1` is preferred for backwards compatibility with v1 tooling.
+
+### Reference Datum Standard
+
+As indicated in the [500 Royalty Datum Standard's Pattern section](#pattern), multiple royalty policies may be defined by postfixing the `asset name`s of the associated Royalty Tokens with numeric identifiers.
+
+If not specified elsewhere in the token's datums, a malicious or mistaken user could send transactions to a protocol which do not reference the royalty datum, or which reference the wrong datum. For full assurances & clarity, an optional flag should be included in the reference datum
+
+```cddl
+extra =
+	{
+		...
+
+		? royalty_included : big_int
+	}
+```
+
+- If the field is present and > 0, validators must require a royalty input. The value itself is the numeric postfix identifying which Royalty Token applies to this NFT (e.g., `royalty_included = 2` → look for `(500)Royalty2`).
+- If the field is present and set to 0, validators don't need to search for a royalty input.
+- If the field is not present, validators should accept a royalty input but not require one (compatible with v1 collections using `(500)Royalty` with no postfix).
+
+The correct datum may then be reliably found by searching for a Royalty Token with a matching prefix (& postfix). Examples of how to do so are provided below.
+
+In the case of ambiguity, users/dapps may choose whichever policy they wish to honor.
+
+### CIP-88 Integration
+
+Collections using [CIP-0088][] registration certificates **should** advertise their royalty token(s) by including the `102` key in the `cip-details` section of their registration. The value is an array of the asset names (as bytes) of all royalty NFTs minted under the collection's policy ID, as specified in the [CIP-88 extension for CIP-0102](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088/CIPs/0102).
+
+This provides an additional discovery path for off-chain tooling: rather than constructing the royalty token name from a reference datum lookup, implementors may read it directly from the CIP-88 registration.
+
+## Examples
+
+In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference). (Up to v1 - v2 coming soon)
+
+### Constructing the Royalty Token
+
+A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalty token. The steps are:
+
+1. Retrieve the reference datum of the utxo containing the reference token `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(100)TestToken`
+2. Check the `extra` field of the reference datum for a `royalty_included` flag - denoted here as [flag].
+3. Construct `royalty NFT` from `user token` and `royalty_included`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty[flag?]`
+
+### Retrieving metadata
+
+#### Retrieve metadata as 3rd party
+
+A third party has a CIP-102 compliant NFT and they want to look up the royalties. The steps are
+
+1. Construct `royalty NFT` from `user token` as indicated [above](#constructing-the-royalty-token)
+2. Look up `royalty NFT` and find the output it's locked in.
+3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
+4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+
+#### Retrieve metadata in a Plutus validator
+
+We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus validator context. To do this we
+
+1. Construct `royalty NFT` from `user token` as indicated [above](#constructing-the-royalty-token) (off-chain)
+2. Look up `royalty NFT` and find the output it's locked in. (off-chain)
+3. Reference the output in the transaction. (off-chain)
+4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
+
+### Example of onchain variable fee calculation:
 
 ```cddl
 ; Given a royalty fee of 1.6% (0.016)
@@ -92,48 +189,10 @@ royalty_info = #6.121([royalty_recipients, version, extra])
 ; To read it back
 10 / 625 => 0.016
 ```
+
 Because the computational complexity of Plutus primitives scales with size, this approach significantly minimizes resource consumption.
 
 To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
-
-### Reference Datum Royalty Flag
-
-If not specified elsewhere in the token's datums, a malicious user could send transactions to a protocol which do not reference the royalty datum. For full assurances, a new optional flag should be added to the reference datum
-
-```cddl
-extra = 
-	{
-		...
-
-		? royalty_included : big_int
-	}
-```
-
-- If the field is present and > 1 the validators must require a royalty input.
-- If the field is present and set to 0 the validators don't need to search for a royalty input.
-- If the field is not present, validators should accept a royalty input, but not require one.
-
-### Examples
-
-In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference).
-
-#### Retrieve metadata as 3rd party
-
-A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalties. The steps are
-
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty`
-2. Look up `royalty NFT` and find the output it's locked in.
-3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
-4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
-
-#### Retrieve metadata from a Plutus validator
-
-We want to bring the royalty metadata of the NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` in the Plutus validator context. To do this we
-
-1. Construct `royalty NFT` from `user token`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty` (off-chain)
-2. Look up `royalty NFT` and find the output it's locked in. (off-chain)
-3. Reference the output in the transaction. (off-chain)
-4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -143,7 +202,7 @@ The specification here is made to be as minimal as possible. This is done with e
 
 This specification is largely based on [the royalty specification in Nebula](https://github.com/spacebudz/nebula/tree/main#royalty-info-specification), with a couple key departures:
 
-- The royalty token is recommended to be locked at a script address, rather than stored in the user's wallet. This encourages projects to guarantee royalties won't change by sending their royalties to an always-fails (or similar) script address, but still allows for creative royalty schemes and minimizes disruption to existing projects.
+- The Royalty Token is recommended to be locked at a script address, rather than stored in the user's wallet. This encourages projects to guarantee royalties won't change by sending their royalties to an always-fails (or similar) script address, but still allows for creative royalty schemes and minimizes disruption to existing projects.
 
 - The policyId of the royalty NFT must match that of the reference NFT. This enables lookups based on the user token in the same way as is done for the tokens specified in the original CIP-68 standard.
 
@@ -151,22 +210,25 @@ This specification is largely based on [the royalty specification in Nebula](htt
 
 In addition to providing a way to create guaranteed royalties, this has several advantages:
 
-- Backwards Compatibility - Existing royalty implementations will still work, just not have the same assurances.
-- Minimal Storage Requirement - An optional boolean has about the smallest memory impact possible. This is especially important because it's attached to the - Reference NFT and will be set for each individual NFT.
-- Intra-Collection Utility - This already allows for minting a collection with some NFTs with royalties and some without. A future version of this standard will likely make use of this field to allow for multiple versions of royalties for even more granular control.
+- Backwards Compatibility - Existing royalty implementations will still work, just not have the same assurances/flexibility.
+- Minimal Storage Requirement - An optional big_int has about the smallest memory impact possible. This is especially important because it's attached to the - Reference NFT and will be set for each individual NFT.
+- Intra-Collection Utility - This already allows for minting a collection with some NFTs with royalties and some without. V2 of this standard now makes use of this field to allow for multiple versions of royalties for even more granular control.
 
 ### Backward Compatibility
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
+
 ## Extending & Modifying this CIP
+
 See the [CIP-0068 Extension Boilerplate](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068/extension_boilerplate.md)
+
 ## Path to Active
 
 ### Acceptance Criteria
 
 - [x] This CIP should receive feedback, criticism, and refinement from: CIP Editors and the community of people involved with NFT projects to review any weaknesses or areas of improvement.
 - [x] Guidelines and examples of publication of data as well as discovery and validation should be included as part of of criteria for acceptance.
-- [x] Minimal reference implementation making use of [Lucid](https://github.com/spacebudz/lucid) (off-chain), [PlutusTx](https://github.com/input-output-hk/plutus) (on-chain): [Reference Implementation](https://github.com/SamDelaney/CIP_102_Reference).
+- [x] Minimal reference implementation including both onchain & offchain components: [Reference Implementation](https://github.com/SamDelaney/CIP_102_Reference).
 - [ ] Implementation and use demonstrated by the community: NFT Projects, Blockchain Explorers, Wallets, Marketplaces.
 
 ### Implementation Plan
@@ -182,3 +244,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [CIP-0027]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027
 [CIP-0067]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0067
 [CIP-0068]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068
+[CIP-0088]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0088
