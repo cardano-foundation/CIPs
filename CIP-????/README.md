@@ -85,14 +85,28 @@ transaction, making the parent artificially expensive to replace. Mitigating thi
 incremental design: descendant package tracking, eviction-weight calculations, cluster mempool
 redesigns, and topology restrictions like TRUC/V3 transactions.
 
-Cardano's mempool does not allow spending unconfirmed outputs. Every transaction input must reference
-a UTxO that is already confirmed on-chain. There are no parent-child chains in the mempool, and
-therefore nothing to pin. The entire class of complexity that dominates Bitcoin's RBF design simply
-does not exist on Cardano.
+Cardano also allows spending unconfirmed outputs, so dependency chains can form in the mempool. In
+principle, this creates the same pinning opportunity: an adversary could attach low-fee descendants
+to a transaction to inflate its replacement cost. In practice, two structural properties of Cardano
+neutralize this attack, eliminating the need for Bitcoin's elaborate countermeasures.
 
-The replacement rule can therefore be stated in a single sentence: if a new transaction conflicts
-with one already in the mempool, keep whichever pays a higher fee (plus a small increment to cover
-network costs). That's it. The full specification follows below.
+**No depth cap needed.** Bitcoin's mempool can hold ~300 MB of transactions, giving an attacker room
+to build deep dependency chains. Bitcoin had to introduce artificial chain depth limits (and
+eventually a full cluster mempool redesign) to bound the damage. Cardano's mempool holds roughly two
+blocks of transactions. The small mempool naturally limits how deep any dependency chain can grow —
+there is simply not enough room for the kind of deep pinning chains that motivated Bitcoin's
+complexity.
+
+**No topology restriction needed.** Bitcoin's ~10-minute block time gives an attacker a wide window
+to construct and propagate a pinning chain before the contest is resolved. This motivated topology
+restrictions like TRUC/V3 transactions, which constrain how descendants can be attached. Cardano's
+~20-second block time means dependency chains are confirmed or expired quickly, giving an attacker a
+narrow window to build a meaningful pin before the next block resolves the situation.
+
+These structural differences mean the replacement rule only needs one addition beyond the basic
+conflict case: when a transaction is evicted, its descendants are evicted with it, and the
+replacement must pay more than the total fees of everything it displaces. The full specification
+follows below.
 
 ### Composability with network-level fee markets
 
@@ -148,6 +162,37 @@ This revenue has three useful properties.
 3. It scales naturally with DeFi activity — the more contention the ecosystem produces, the more fee
    revenue it generates.
 
+### Retail users are not priced out
+
+A natural concern is that fee-based replacement will lead to runaway bidding wars where only
+well-capitalized bots can compete. In practice, the mechanics of the localized fee market work in
+retail's favor.
+
+**Retail users control their bid.** A user who urgently needs a contested UTxO can overpay upfront —
+say 5–10x the standard fee, turning a 0.5 ADA fee into 2.5–5.0 ADA. Outside of high-value
+arbitrage or liquidation opportunities, bots tend to penny-pinch to preserve their margins. Because
+bots can easily retry transactions, they are mathematically better off keeping their bids small and
+winning over many contests rather than overpaying for any single one. A retail user who jumps the
+bid by a large increment is like an auction bidder who raises by $100 when the room is incrementing
+by $1 — the room usually folds.
+
+**Continuing UTxOs defuse escalation.** Many contested DeFi resources are continuing UTxOs: the
+resource is immediately recreated at a new UTxO after the current transaction. When a bot sees a
+large retail bid, the rational, margin-optimizing choice is not to start a bidding war — it is to
+let that UTxO go and grab the next one in the subsequent block for a fraction of the cost. The
+contest resets every ~20 seconds.
+
+**Localized fees mean no collateral damage.** On chains with global fee markets, bidding wars are
+toxic because normal transactions get caught in the crossfire — everyone must bid for the same block
+space. This CIP confines the bidding to the specific UTxO under contention. Instead of one giant
+auction, there are many small independent auctions: one UTxO might see a 15 ADA bid while another
+sees 1.5 ADA, and every uncontested transaction pays its standard fee as if the bidding wars did not
+exist.
+
+Paying 2.5–5.0 ADA for guaranteed priority on a specific contested resource is not "only the rich
+can play." It is a modest, voluntary premium — comparable to choosing expedited shipping — available
+to anyone who values that particular UTxO highly enough.
+
 ### Impact on MEV
 
 On account-based chains, fee markets are associated with harmful MEV extraction — specifically
@@ -157,13 +202,33 @@ are fully deterministic: a user knows exactly what inputs will be consumed and w
 produced before they sign. There is no shared global state that an adversary's transaction could
 modify to change the outcome of yours.
 
-This CIP does not introduce any new attack vectors. It does facilitate competitive extraction of
-existing value — when bots bid against each other to capture a mispriced limit order, the surplus
-between the order price and the market price is a form of MEV. But this extraction is non-adversarial:
-it cannot worsen any user's execution, the limit order creator receives exactly the price they
-specified, and the bidding war converts extractable value into fee revenue for the network rather
-than leaving it as pure profit for whichever bot happened to propagate fastest. This is MEV
-redistribution, not MEV harm.
+This CIP does not introduce any new MEV. The extractable value in a contested UTxO — the surplus
+between a mispriced limit order and the market price — exists regardless of mempool policy. Under
+FIFO, bots already race to capture it. The only question is how the contest is decided and how the
+surplus is split.
+
+| Regime   | Contest decided by         | Surplus split                                |
+|:---------|:--------------------------|:---------------------------------------------|
+| FIFO     | Network propagation speed | 100% to bot; minimum fee to network          |
+| This CIP | Fee bid                   | Split between bot profit and network revenue  |
+
+Under FIFO, the advantage goes to infrastructure: co-location with block producers, dedicated relay
+networks, optimized propagation paths. These are capital-intensive, opaque advantages that retail
+users cannot match. A retail user and a bot submitting at the same instant will not arrive at the
+same set of nodes — the bot's transaction propagates faster because the bot has invested in topology.
+The contest is decided before the user's transaction even arrives.
+
+This CIP replaces that infrastructure race with a fee auction. A retail user cannot deploy a global
+relay network, but they can overpay by 5 ADA — and as the retail section above explains, that blunt
+instrument is often sufficient because bots penny-pinch to preserve margins and can cheaply retry on
+the next continuing UTxO. Fee bidding democratizes access to contested resources by converting the
+contest from one where only infrastructure matters to one where willingness to pay matters.
+
+The extraction itself remains non-adversarial: it cannot worsen any user's execution, the limit
+order creator receives exactly the price they specified, and the bidding war converts extractable
+value into fee revenue for the network. The total MEV is unchanged. What changes is who captures it
+and through what mechanism — from topology-advantaged bots keeping the full surplus, to a
+permissionless auction that redirects a portion into the treasury and staking rewards.
 
 ### Probabilistic guarantees are sufficient
 
@@ -226,38 +291,41 @@ transaction *spends* a UTxO that the other spends or references.
 When a node receives a new transaction `B`, and its mempool already contains a transaction `A` such
 that `A` and `B` conflict:
 
-- **If `fee(B) > fee(A) + delta`:** Evict `A` from the mempool. Admit `B`.
-- **Otherwise:** Reject `B`. Retain `A`.
+Let `evicted(A)` denote `A` together with all transactions in the mempool that transitively depend
+on `A`'s outputs (its **descendants**). Evicting `A` necessarily evicts every descendant, because
+their inputs would become invalid.
+
+- **If `fee(B) > totalFee(evicted(A)) + delta`:** Evict `A` and all its descendants from the
+  mempool. Admit `B`.
+- **Otherwise:** Reject `B`. Retain `A` and its descendants.
 
 The `delta` term is a **minimum replacement increment** that prevents spam replacements. It is
 defined as:
 
 ```
-delta = txFeePerByte × size(B) + priceMem × mem(B) + priceSteps × steps(B)
+delta = minFee(B)
 ```
 
-where `txFeePerByte`, `priceMem`, and `priceSteps` are existing protocol parameters, `size(B)` is
-the size of the replacement transaction in bytes, and `mem(B)` and `steps(B)` are the execution
-unit budgets declared by `B`. The delta covers the full cost that the replacement imposes on the
-network: bandwidth for propagation and CPU/memory for script validation. The evicted transaction's
+where `minFee(B)` is the standard minimum fee for transaction `B` as defined by the current protocol
+parameters (i.e., the same formula the ledger uses to determine whether a transaction's fee is
+sufficient). The delta covers the full cost that the replacement imposes on the network: bandwidth
+for propagation and CPU/memory for script validation. The evicted transactions'
 propagation and execution costs are already covered by the fee sum requirement: since `fee(B)` must
-exceed `fee(A)`, and `fee(A)` was already sufficient to compensate for A's costs, no separate term
-is needed. See the Rationale section for a full discussion of the delta design.
+exceed the total fees of all evicted transactions, and those fees were already sufficient to
+compensate for their costs, no separate term is needed. See the Rationale section for a full
+discussion of the delta design.
 
 ### Multi-conflict replacement
 
 If `B` conflicts with multiple mempool transactions `A₁, A₂, ..., Aₙ`, then `B` must pay strictly
-more than the **sum** of all conflicting transactions' fees, plus the replacement delta:
+more than the **sum** of all evicted transactions' fees (each conflicting transaction plus its
+descendants), plus the replacement delta:
 
 ```
-fee(B) > fee(A₁) + fee(A₂) + ... + fee(Aₙ) + delta
+fee(B) > totalFee(evicted(A₁)) + totalFee(evicted(A₂)) + ... + totalFee(evicted(Aₙ)) + delta
 ```
 
-where
-
-```
-delta = txFeePerByte × size(B) + priceMem × mem(B) + priceSteps × steps(B)
-```
+where `delta = minFee(B)` as defined above.
 
 The mempool invariant guarantees that no two co-resident transactions conflict with each other — if
 they did, the conflict would have been resolved at admission time. This means all the transactions
@@ -275,6 +343,11 @@ From the user's perspective, detecting eviction is straightforward: monitor the 
 submitted transaction attempted to spend. If those UTxOs are consumed by a different transaction
 on-chain, the user's transaction was outbid. Wallets can surface this as a clear "outbid" status
 rather than an opaque timeout.
+
+> [!NOTE]
+> Node implementations may optionally expose eviction events through their local transaction
+> submission API. This would be a quality-of-life improvement for users but is not required by
+> this CIP and can be implemented separately.
 
 ### Backward compatibility
 
@@ -350,35 +423,37 @@ without modifying any consensus rules — it is a local mempool policy parameter
 ### Minimum replacement delta
 
 Each replacement imposes real costs on the network. There are two: the wasted propagation of the
-evicted transaction (which the network already downloaded, validated, and forwarded, but whose fee
+evicted transactions (which the network already downloaded, validated, and forwarded, but whose fees
 will never be collected) and the new propagation of the replacement transaction. Without a minimum
 increment, an attacker could spam replacements at +1 lovelace, imposing these costs for negligible
 economic commitment.
 
-The delta only needs to cover the *second* cost — propagating B. The first cost — A's wasted
-propagation — is already covered by the fee sum requirement. The replacement rule requires
-`fee(B) > fee(A) + delta`, and `fee(A)` is at least `txFeePerByte × size(A)` (the minimum fee
-required for A to have entered the mempool in the first place). So B's fee already exceeds A's
-propagation cost before the delta is even added. The delta therefore compensates only for the
-genuinely new burden: downloading, validating, and propagating B itself.
+The delta only needs to cover the *second* cost — propagating B. The first cost — the wasted
+propagation of evicted transactions — is already covered by the fee sum requirement. The replacement
+rule requires `fee(B) > totalFee(evicted) + delta`, and the total evicted fees are at least the sum
+of each evicted transaction's minimum fee (which covered its propagation and execution costs). So
+B's fee already exceeds the evicted transactions' costs before the delta is even added. The delta
+therefore compensates only for the genuinely new burden: downloading, validating, and propagating B
+itself.
 
-The delta is defined as `txFeePerByte × size(B) + priceMem × mem(B) + priceSteps × steps(B)`,
-tying the cost directly to the full burden B imposes on the network. Each term reuses an existing
-protocol parameter rather than introducing new ones. The size term covers bandwidth for
-propagation. The execution unit terms cover CPU and memory costs for script validation — without
-them, an attacker could force nodes to repeatedly validate script-heavy transactions for a
-negligible size-only increment, imposing disproportionate computational cost.
+The delta is defined as `minFee(B)` — the standard minimum fee for B as computed by the existing
+protocol parameters. This reuses the ledger's own cost model rather than introducing new parameters.
+The minimum fee formula already accounts for the full burden a transaction imposes: bandwidth
+(via the size-based term) and CPU/memory (via the execution unit terms). Using it directly ensures
+that the replacement increment scales correctly with transaction complexity — a script-heavy
+replacement requires a proportionally larger increment, reflecting the real cost it imposes on every
+validating node.
 
-In the multi-conflict case, the same logic applies at scale. The sum
-`fee(A₁) + fee(A₂) + ... + fee(Aₙ)` already includes each evicted transaction's minimum fee,
-which already covered each evicted transaction's propagation and execution costs. The delta adds
-only B's costs because B is the only transaction whose costs are not yet accounted for.
+In the multi-conflict case, the same logic applies at scale. The total evicted fee sum already
+includes each evicted transaction's minimum fee (both directly conflicting transactions and their
+descendants), which already covered each transaction's propagation and execution costs. The delta
+adds only B's costs because B is the only transaction whose costs are not yet accounted for.
 
 **Magnitude.** For a typical 500-byte transaction with no scripts, the delta is approximately
-0.022 ADA. For a script-heavy transaction consuming 10 billion ExUnit steps and 5 million ExUnit
-memory, the execution cost terms add approximately 2.6 ADA. This scaling is desirable: replacing a
-computationally expensive transaction should require a proportionally larger increment, reflecting
-the real cost each replacement imposes on every validating node.
+0.18 ADA (the standard minimum fee). For a script-heavy transaction consuming 10 billion ExUnit
+steps and 5 million ExUnit memory, the delta rises to approximately 2.8 ADA. This scaling is
+desirable: replacing a computationally expensive transaction should require a proportionally larger
+increment, reflecting the real cost each replacement imposes on every validating node.
 
 > [!IMPORTANT]
 > The delta is a mempool policy default, not a consensus rule. Node operators can adjust it without
