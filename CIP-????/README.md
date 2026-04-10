@@ -23,7 +23,7 @@ overlapping UTxO, the node keeps the one paying a higher fee. No ledger rules, f
 transaction formats change — only the mempool's admission heuristic for handling conflicting
 transactions.
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 ### eUTxO enables per-resource fee markets
 
