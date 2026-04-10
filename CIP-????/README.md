@@ -292,7 +292,7 @@ conflicts via FIFO, foregoing the fee-priority optimization. Each node benefits 
 adopting the policy, creating a natural incentive for organic adoption without requiring coordinated
 activation.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 ### Fee comparison metric: absolute fee vs. fee rate
 
