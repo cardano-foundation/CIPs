@@ -27,10 +27,12 @@ against sufficiently capable quantum attackers.
 
 ### Context: why this matters now
 
-Quantum hardware continues to progress. More importantly, the estimated
-resources needed to attack currently deployed public-key cryptography continue
-to decrease. This reduces confidence in long safety margins and suggests that
-practical attacks may arrive earlier than previously expected.
+Quantum hardware continues to advance. More importantly, recent work continues
+to reduce published resource estimates for quantum attacks on elliptic-curve
+cryptography ([Ha, Lee, and Heo, 2024](https://www.nature.com/articles/s41598-024-54434-w);
+[Babbush et al., 2026](https://research.google/pubs/securing-elliptic-curve-cryptocurrencies-against-quantum-vulnerabilities-resource-estimates-and-mitigations/)).
+This reduces the margin between the time needed for migration and the time at
+which such attacks may become feasible.
 
 This matters at the Cardano settlement layer because migration of base-layer
 cryptography is slow and coordination-heavy. Any change in this area affects
@@ -39,10 +41,10 @@ exchanges, and other ecosystem participants. It also requires broad community
 alignment and careful rollout planning. As a result, Cardano cannot wait until
 the risk becomes immediate before preparing a migration path.
 
-Cardano also exposes many public keys on-chain, and some of them remain valid
-for long periods of time. This creates a "harvest now, exploit later" risk:
-keys visible today may become useful targets if current cryptographic
-assumptions weaken in the future.
+Cardano exposes many public keys on-chain, and some of them remain in use for
+long periods of time. This increases the risk that long-exposed public keys
+become attractive targets if quantum attacks on their corresponding private
+keys become practical.
 
 ### Threat model: what breaks first in Cardano
 
