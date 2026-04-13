@@ -19,7 +19,62 @@ License: CC-BY-4.0
 <!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
 
 ## Problem
-<!-- A more elaborate description of the problem and its context. This section should explain what motivates the writing of the CPS document. -->
+Cardano relies on public-key cryptography for transaction authorization,
+delegation, stake pool operations, and consensus-critical functions. The
+security of the settlement layer therefore depends on cryptographic primitives
+that were designed against classical attackers and may not remain secure
+against sufficiently capable quantum attackers.
+
+### Context: why this matters now
+
+Quantum hardware continues to advance. More importantly, recent work continues
+to reduce published resource estimates for quantum attacks on elliptic-curve
+cryptography ([Ha, Lee, and Heo, 2024](https://www.nature.com/articles/s41598-024-54434-w);
+[Babbush et al., 2026](https://research.google/pubs/securing-elliptic-curve-cryptocurrencies-against-quantum-vulnerabilities-resource-estimates-and-mitigations/)).
+This reduces the margin between the time needed for migration and the time at
+which such attacks may become feasible.
+
+This matters at the Cardano settlement layer because migration of base-layer
+cryptography is slow and coordination-heavy. Any change in this area affects
+ledger rules, consensus, node implementations, wallets, stake pool operators,
+exchanges, and other ecosystem participants. It also requires broad community
+alignment and careful rollout planning. As a result, Cardano cannot wait until
+the risk becomes immediate before preparing a migration path.
+
+Cardano exposes many public keys on-chain, and some of them remain in use for
+long periods of time. This increases the risk that long-exposed public keys
+become attractive targets if quantum attacks on their corresponding private
+keys become practical.
+
+### Threat model: what breaks first in Cardano
+
+The impact of a cryptographic break would not be the same across the system, so
+the problem must be framed in terms of priority and system impact.
+
+Signature schemes are the highest priority because they protect the root of
+trust for transaction authorization and operational control. In Cardano, this
+includes payment and staking keys, stake pool cold keys, and KES-based
+block-signing keys. If they are broken, an adversary could forge
+authorizations, move funds, or take control of critical operations. Since
+public keys are exposed on-chain, long-lived keys are especially important
+targets.
+
+Verifiable Random Functions (VRFs) are critical for consensus security because
+they are used for leader election and protocol randomness. If they are broken,
+an adversary could bias or influence slot leadership and weaken the fairness
+and security of consensus.
+
+Delegation and stake authority are also critical because they determine how
+stake is assigned and which stake pools act on its behalf. In Cardano, this
+includes delegation certificates, stake credentials, and stake pool control
+data. If they are broken, an adversary could redirect stake, alter control over
+pool operations, or distort which pools are eligible to produce blocks.
+
+The problem addressed by this CPS is therefore not only the future selection of
+post-quantum primitives. It is the need to identify, prioritize, and frame the
+cryptographic exposures of the Cardano settlement layer so that the ecosystem
+can prepare a safe and coordinated migration path before it is forced into a
+rushed response.
 
 ## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
