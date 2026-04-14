@@ -7,7 +7,9 @@ Authors:
     - Simon Thompson <simon.thompson@marlowe-lang.org>
     - Tomasz Rybarczyk <tomasz.rybarczyk@marlowe-lang.org>
     - Nicolas Henin <nicolas.henin@marlowe-lang.org>
-Implementors: Tomasz Rybarczyk, Simon Thompson
+Implementors:
+    - Tomasz Rybarczyk
+    - Simon Thompson
 Discussions:
     - https://github.com/marlowe-lang/marlowe-oracle-protocol/pulls?q=is%3Apr+is%3Aclosed
 Created: 2026-04-12
