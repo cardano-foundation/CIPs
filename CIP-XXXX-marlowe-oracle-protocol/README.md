@@ -365,6 +365,6 @@ This v0.3.0 reorganization separates core functionality from extensions to impro
 
 ## Copyright
 
-The CIP must be explicitly licensed under acceptable copyright terms (see below).
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
 > **TODO**
