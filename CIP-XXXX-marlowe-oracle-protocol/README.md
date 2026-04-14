@@ -324,7 +324,7 @@ In other words any UTxO which contains Marlowe state with a choice `X` provided 
 
 By using the described approach we can imagine that a separate smart contract can dynamically request data from the oracle by creating a UTxO with the Marlowe contract which requests the data and enforces a delay before closing. The data consumer contract can then expect that a UTxOs with the results can be found and provided as a reference input.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 >> CIP section spec:
 > The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion.
 > It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a CPS, the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
