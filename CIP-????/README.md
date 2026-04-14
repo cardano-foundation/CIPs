@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Conflict-Based Fee Priority in Mempool Policy
+Title: Conflict-Based Fee Priority in Mempool
 Category: Network
 Status: Proposed
 Authors:
