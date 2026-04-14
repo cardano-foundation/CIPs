@@ -9,7 +9,7 @@ Authors:
     - Nicolas Henin <nicolas.henin@marlowe-lang.org>
 Implementors: Tomasz Rybarczyk, Simon Thompson
 Discussions:
-  - https://github.com/marlowe-lang/marlowe-oracle-protocol/pulls?q=is%3Apr+is%3Aclosed
+    - https://github.com/marlowe-lang/marlowe-oracle-protocol/pulls?q=is%3Apr+is%3Aclosed
 Created: 2026-04-12
 Version: 0.3.0
 License: CC-BY-4.0
