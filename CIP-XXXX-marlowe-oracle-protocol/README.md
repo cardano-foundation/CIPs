@@ -39,7 +39,7 @@ For this approach to work in practice, this CIP needs to address the following h
 
 These high-level questions are answered in the next section, together with a discussion of implementation-related issues such as timeouts and error handling, and potential extensions of the protocol, such as access mechanisms.
 
-## Core protocol
+## Specification
 
 This section describes the minimal core of the Marlowe Oracle Protocol, focusing on essential mechanisms for requesting and delivering oracle data via Marlowe's `Choice` construct. Optional features and extensions are detailed in the subsequent section.
 
