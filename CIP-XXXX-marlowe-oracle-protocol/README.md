@@ -23,7 +23,7 @@ Smart contracts running on Cardano require access to external data of various ki
 
 This CIP describes a more flexible, transparent and composable oracle solution for Cardano, based on the Marlowe smart contract language, using the `Choice` and `Pay` constructs in Marlowe to deliver the oracle value within a running smart contract and perform a fee payment for the service. This data point can be available to other Cardano other smart contacts, whether written in Marlowe, Aiken, Plutus or other languages.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 External data is used within the vast majority of smart contracts running on blockchain, and provision of this data by oracle providers is essential to these contracts running effectively and securely. The “push” model of data provides an ~80:20 solution: 80% of needs are satisfied by a limited set of data feeds, particularly those based on DeFi information of various kinds; it is, however, unable to service the “long tail” of potential demands for data of a more specialized kind, and to do this in practice a “pull” model of data provision is required. In here by "pull" we mean a model where the smart contract can request on-chain a specific data point from an oracle provider.
 
