@@ -1,6 +1,6 @@
 ---
 CIP: 181
-Title: Remove dRep Requirement for Reward Withdrawals
+Title: Remove DRep Requirement for Reward Withdrawals
 Category: Ledger
 Status: Proposed
 Authors:
