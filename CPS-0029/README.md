@@ -3,7 +3,8 @@ CPS: 29
 Title: Approaches to Higher-Order Costing
 Category: Plutus
 Status: Open
-Authors: Koz Ross <koz@mlabs.city>
+Authors: 
+    - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions:
     - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1146
@@ -72,7 +73,7 @@ they also return a function. These could be costed for the following reasons:
 While these builtins no longer exist, they represent the maximum capability for
 higher-order builtin costing available to us currently.
 
-## Use cases
+## Use Cases
 
 Higher-order functions are ubiquitous in functional programming, and thus, use
 cases abound. While UPLC (and any higher-level language targeting it) gives us
