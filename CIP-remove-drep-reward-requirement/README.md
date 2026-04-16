@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This CIP removes the requirement that a reward withdrawal be conditioned on governance voting delegation. Under the current Conway governance regime introduced by [CIP-1694](https://cips.cardano.org/cip/CIP-1694), rewards continue to accrue normally, but after the bootstrap phase a reward account may be prevented from withdrawing unless its stake credential is delegated for voting to a registered DRep or one of the predefined voting options. This proposal changes the ledger so reward withdrawals are accepted regardless of governance delegation status. The goal is to stop using access to earned staking rewards as a governance-participation lever.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 [CIP-1694](https://cips.cardano.org/cip/CIP-1694) introduced a deliberate incentive: after the bootstrap phase, reward accounts are blocked from withdrawing rewards unless their associated stake credential is also delegated for voting. The stated rationale was to help ensure high governance participation and therefore legitimacy.
 
