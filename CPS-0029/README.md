@@ -1,5 +1,5 @@
 ---
-CPS: TBD
+CPS: 29
 Title: Approaches to Higher-Order Costing
 Category: Plutus
 Status: Open
