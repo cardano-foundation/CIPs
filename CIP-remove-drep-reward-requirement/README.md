@@ -50,7 +50,7 @@ Post-adoption, reward withdrawals are valid regardless of whether the withdrawin
 
 Implementations should remove the Conway reward-withdrawal validation path that rejects undelegated reward withdrawals. Wallets, custodians, APIs, and transaction submission layers should update any user-facing logic or documentation that implies reward withdrawal requires prior voting delegation.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP achieves its goal by removing the coercive coupling between reward access and governance delegation while leaving the governance system otherwise unchanged.
 
