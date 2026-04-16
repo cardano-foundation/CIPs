@@ -1,6 +1,6 @@
 ---
 CPS: ?
-Title: Quantum secure Cardano settlement layer
+Title: Quantum-Secure Cardano settlement layer
 Category: Consensus
 Status: Open
 Authors:
@@ -17,8 +17,20 @@ License: CC-BY-4.0
 
 ## Abstract
 <!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
+The prospect of a quantum-capable adversary is becoming increasingly credible, and with that, the Cardano blockchain should prepare for it.
+This CPS describes the problems this QC adversary brings to Cardano. It has in scope all the cryptographic
+primitives that are used in the base settlement layer of Cardano. The goal of this problem statement
+is to describe the technical weaknesses in detail and pose a non-exhaustive overview of some replacement
+primitives to show the impact and give a sense of the design space.
+
+This CPS does not have the on-chain smart contract language Plutus in scope, as this is constrained by another set
+of design principles that would clutter this discussion. That does not mean that this is not at risk against a QC adversary!
+Quite the contrary, as described in [this pull request](https://github.com/cardano-foundation/CIPs/pull/1144).
+Moreover, the impact of some of the design constraints in this CPS also constrains the Plutus context. But given that the
+security of Plutus breaks if consensus is attacked, the priority of this broad discussion should focus on that first.
 
 ## Problem
+
 Cardano relies on public-key cryptography for transaction authorization,
 delegation, stake pool operations, and consensus-critical functions. The
 security of the settlement layer therefore depends on cryptographic primitives
@@ -34,7 +46,7 @@ cryptography ([Ha, Lee, and Heo, 2024](https://www.nature.com/articles/s41598-02
 This reduces the margin between the time needed for migration and the time at
 which such attacks may become feasible.
 
-This matters at the Cardano settlement layer because migration of base-layer
+This matters at the Cardano settlement layer because migration of the base layer
 cryptography is slow and coordination-heavy. Any change in this area affects
 ledger rules, consensus, node implementations, wallets, stake pool operators,
 exchanges, and other ecosystem participants. It also requires broad community
@@ -88,6 +100,11 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
+Below a non-exhaustive list of open questions that come at this stage:
+
+- Given that we switch to newer PQ cryptography with sizable artifacts, how will this impact block propagation and general diffusion of messages?
+- Given that we need to make room for sizable network messages, what flexibility remains in parameters such as `activeSlotsCoeff`?
+- Given that the current PQ schemes are not battle tested, how can we remain flexible and agile in our design?
 
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
