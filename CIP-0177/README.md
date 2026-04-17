@@ -9,7 +9,8 @@ Authors:
 Implementors:
  - Well-Typed LLP
  - Ensurable Systems Ltd
-Discussions: https://github.com/cardano-foundation/CIPs/pull/1149
+Discussions:
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/1149
 Created: 2026-02-06
 License: CC-BY-4.0
 ---
