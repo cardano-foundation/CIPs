@@ -88,6 +88,54 @@ cryptographic exposures of the Cardano settlement layer so that the ecosystem
 can prepare a safe and coordinated migration path before it is forced into a
 rushed response.
 
+### What quantum attacks break
+
+Quantum attacks do not affect all cryptographic primitives in the same way.
+For this discussion, the two most important quantum algorithms are Shor's
+algorithm and Grover's algorithm. They target different classes of
+cryptographic assumptions and therefore lead to different kinds of migration
+pressure.
+
+Shor's algorithm is the most serious threat to the current Cardano settlement
+layer because it attacks the mathematical assumptions behind widely deployed
+public-key cryptography, including elliptic-curve cryptography. In practice,
+this means that schemes based on these assumptions do not merely become weaker:
+their security can collapse once a sufficiently capable quantum attacker
+exists. In such a setting, public keys may become enough to recover the
+corresponding private keys or to forge valid signatures.
+
+At a high level, Shor's algorithm threatens public-key primitives such as
+digital signatures, VRFs, aggregate signatures, and elliptic-curve-based proof
+systems. In Cardano, this affects signature-based authorization,
+VRF-based leader election, and protocols that rely on aggregated certificates
+or elliptic-curve-based proofs.
+
+Grover's algorithm affects a different class of primitives. It applies to
+symmetric cryptography and hash-based constructions, such as hash functions
+used throughout the protocol. Its impact is usually not a full break in the
+same sense as Shor's algorithm. Instead, it reduces effective security levels,
+which can often be addressed by stronger parameters, such as larger keys,
+longer digests.
+
+| Quantum algorithm | Mainly affects | High-level impact | Typical response |
+| --- | --- | --- | --- |
+| Shor's algorithm | Public-key cryptography | Can break the underlying security assumption | Replace vulnerable primitives with post-quantum alternatives |
+| Grover's algorithm | Symmetric cryptography and hash-based constructions | Reduces effective security levels rather than fully breaking them | Increase security parameters such as key sizes or digest sizes |
+
+This helps explain why the threat model above gives higher priority to the
+parts of the system that depend directly on public-key cryptography.
+
+The same concern also appears in other important parts of the Cardano system.
+Mithril relies on BLS-based aggregate signatures, while Ouroboros Leios, as
+the next major consensus upgrade for Cardano, introduces aggregate-signature
+certificates for endorser-block voting and certification. Zero-knowledge
+systems that are already being integrated in the ecosystem may also rely on
+elliptic-curve cryptography and would therefore be vulnerable to Shor's
+algorithm. These examples show that the quantum threat is not limited to
+today's settlement layer, but also affects important Cardano services and
+future consensus designs.
+
+
 ## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
 
