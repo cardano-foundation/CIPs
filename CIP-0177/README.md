@@ -25,7 +25,7 @@ The main disadvantage of Tachýs compared to Praos would be not having the DDoS 
 
 This CIP addresses the problems of settlement speed and transaction throughput for the use case of partner chains. These are related to the problems of settlement speed and transaction throughput for the Cardano mainnet identified in [CPS-0017] and [CPS-0018].
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Either partner chains or layer 2 (L2) protocols are plausible solutions for a range of use cases. They both provide a way to scale Cardano without increasing throughput at the Layer 1, i.e. the Cardano mainnet. Partner chains can also act as bridges to other systems, and can provide a range of other special services and benefits.
 
