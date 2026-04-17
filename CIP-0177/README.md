@@ -332,7 +332,7 @@ Tools that do independent validation of blocks, and specifically block headers w
 
 At the stage of initial publication of this CIP, the proposed design has only been reviewed by a handful of experts (acknowledged below). We invite review and discussion of this proposed CIP on (or referenced from) the CIP PR itself, and we will endeavour to address reasonable objections, concerns and suggestions.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Consider the main motivations:
 
