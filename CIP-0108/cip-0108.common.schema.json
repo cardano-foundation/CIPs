@@ -48,6 +48,7 @@
             "title": "Witness",
             "description": "A witness proving that the author endorses the content of the metadata",
             "type": "object",
+            "required": ["witnessAlgorithm", "publicKey", "signature"],
             "properties": {
                 "witnessAlgorithm": {
                     "title": "WitnessAlgorithm",
