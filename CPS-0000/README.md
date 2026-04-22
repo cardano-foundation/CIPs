@@ -166,6 +166,7 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 Quantum attacks and post-quantum cryptography are very active fields of study. The finalization of the first set of standards by the NIST happened less than two years ago and those schemes and their implementations are still under analysis by the community. The NIST is also continuing their standardization process to expend the number of standards, both for signatures and KEM. This poses the question of how and when to select the scheme that will be used to replace the current ones in Cardano.
+
 With the advances in hardware and attacks, the move to post-quantum crytography cannot be delayed much longer but we need a thorough analysis of the existing schemes, standardized or not, to be sure to use the ones that fit our needs the most while being tested enough to give us confidence in using it.
 Ultimately, the best solution for now would be to improve the cryptographic agility of Cardano and not commit to any particular scheme as the building block of the blockchain.
 
@@ -174,6 +175,8 @@ Below a non-exhaustive list of open questions that come at this stage:
 - Given that we switch to newer PQ cryptography with sizable artifacts, how will this impact block propagation and general diffusion of messages?
 - Given that we need to make room for sizable network messages, what flexibility remains in parameters such as `activeSlotsCoeff`?
 - Given that the current PQ schemes are not battle tested, how can we remain flexible and agile in our design?
+
+
 
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
