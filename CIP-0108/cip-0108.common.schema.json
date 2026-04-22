@@ -72,11 +72,13 @@
             "properties": {
                 "title": {
                     "type": "string",
+                    "maxLength": 80,
                     "title": "Title",
                     "description": "A brief introduction to the motivation for the governance action"
                 },
                 "abstract": {
                     "type": "string",
+                    "maxLength": 2500,
                     "title": "Abstract",
                     "description": "A concise summary of the motivation and rationale for the governance action"
                 },
