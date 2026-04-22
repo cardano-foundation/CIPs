@@ -116,7 +116,8 @@
                 },
                 "label": {
                     "type": "string",
-                    "title": "Label"
+                    "title": "Label",
+                    "description": "A human-readable label describing the reference"
                 },
                 "uri": {
                     "type": "string",
