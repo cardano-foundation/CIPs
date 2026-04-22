@@ -96,6 +96,7 @@
                 "references": {
                     "type": "array",
                     "title": "References",
+                    "uniqueItems": true,
                     "items": {
                         "$ref": "#/definitions/reference"
                     }
