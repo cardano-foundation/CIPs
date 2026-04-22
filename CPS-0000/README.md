@@ -16,7 +16,9 @@ License: CC-BY-4.0
 ---
 
 ## Abstract
+
 <!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
+
 The prospect of a quantum-capable adversary is becoming increasingly credible, and with that, the Cardano blockchain should prepare for it.
 This CPS describes the problems this QC adversary brings to Cardano. It has in scope all the cryptographic
 primitives that are used in the base settlement layer of Cardano. The goal of this problem statement
@@ -117,9 +119,9 @@ same sense as Shor's algorithm. Instead, it reduces effective security levels,
 which can often be addressed by stronger parameters, such as larger keys,
 longer digests.
 
-| Quantum algorithm | Mainly affects | High-level impact | Typical response |
-| --- | --- | --- | --- |
-| Shor's algorithm | Public-key cryptography | Can break the underlying security assumption | Replace vulnerable primitives with post-quantum alternatives |
+| Quantum algorithm  | Mainly affects                                      | High-level impact                                                 | Typical response                                               |
+| ------------------ | --------------------------------------------------- | ----------------------------------------------------------------- | -------------------------------------------------------------- |
+| Shor's algorithm   | Public-key cryptography                             | Can break the underlying security assumption                      | Replace vulnerable primitives with post-quantum alternatives   |
 | Grover's algorithm | Symmetric cryptography and hash-based constructions | Reduces effective security levels rather than fully breaking them | Increase security parameters such as key sizes or digest sizes |
 
 This helps explain why the threat model above gives higher priority to the
@@ -135,6 +137,20 @@ algorithm. These examples show that the quantum threat is not limited to
 today's settlement layer, but also affects important Cardano services and
 future consensus designs.
 
+## Overview of existing schemes
+NIST has recently standardized several signature schemes that could be relevant to the migration of Cardano to PQC:
+
+- ML-DSA: based on lattice problems (MLWE and MSIS). Rather large signatures (2.4KB) and key sizes (1.3KB) growing larger at more secure levels. Good efficiency both for signing (~0.65ms) and verification (~0.53ms) on average hardware. Prone to side-channel attacks due to its rejection sampling.
+- FN-DSA: Based on NTRU lattices. Compact signatures (~690 bytes) and key sizes (~897 bytes), most size-efficient standardized PQC signature scheme. Moderate signing speed (~3.28ms) due to its Gaussian sampling. Gaussian sampling is also its main security weakness against side-channel attacks in the context of high-volume signing of Cardano stake pool operations.
+- SLH-DSA: Based on hash function security (no new mathematical assumptions). Very large signatures (8KB to 50KB depending on parameters) with small key sizes (~32 bytes). Slow signing (~131.9ms) but fast verification. The most conservative and side-channel-friendly of the three schemes, as its security reduces entirely to well-understood hash function properties. Impractical for regular transaction signing in Cardano but well-suited to infrequently-used high-value keys such as governance credentials.
+
+None of those standardized schemes offer a general solution which emphasize the need for agility when implementing the transition to PQC.
+
+Some of the candidates for the second round of standardization:
+
+- SQIsign: Based on isogenies, designed as a sigma protocol using Fiat-Shamir. Small signatures (~177 bytes) and public keys (~64 bytes). Signing remains slow despite recent improvements but the verification is fast. Good long-term candidate thanks to its size and native ZK structure, but need more study and improvements.
+- FAEST: Security based on AES via a VOLEitH zero-knowledge proof of knowledge of an AES key. Signatures ~5–6 KB. Susceptible to side-channel attacks. Good candidate but still needs development and study.
+- MAYO: Multivariate scheme based on the UOV (Unbalanced Oil and Vinegar) construction. Compact signatures (~300–500 bytes), constant-time-friendly implementation available. Strong non-lattice candidate with good sizes and low implementation complexity. Potential risk of breaks that happened before with multivariate schemes.
 
 ## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
@@ -148,6 +164,11 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
+
+Quantum attacks and post-quantum cryptography are very active fields of study. The finalization of the first set of standards by the NIST happened less than two years ago and those schemes and their implementations are still under analysis by the community. The NIST is also continuing their standardization process to expend the number of standards, both for signatures and KEM. This poses the question of how and when to select the scheme that will be used to replace the current ones in Cardano.
+With the advances in hardware and attacks, the move to post-quantum crytography cannot be delayed much longer but we need a thorough analysis of the existing schemes, standardized or not, to be sure to use the ones that fit our needs the most while being tested enough to give us confidence in using it.
+Ultimately, the best solution for now would be to improve the cryptographic agility of Cardano and not commit to any particular scheme as the building block of the blockchain.
+
 Below a non-exhaustive list of open questions that come at this stage:
 
 - Given that we switch to newer PQ cryptography with sizable artifacts, how will this impact block propagation and general diffusion of messages?
@@ -157,6 +178,7 @@ Below a non-exhaustive list of open questions that come at this stage:
 <!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
 
 ## Copyright
+
 <!-- The CPS must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
 
 If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal.
