@@ -144,13 +144,13 @@ NIST has recently standardized several signature schemes that could be relevant 
 - FN-DSA: Based on NTRU lattices. Compact signatures (~690 bytes) and key sizes (~897 bytes), most size-efficient standardized PQC signature scheme. Moderate signing speed (~3.28ms) due to its Gaussian sampling. Gaussian sampling is also its main security weakness against side-channel attacks in the context of high-volume signing of Cardano stake pool operations.
 - SLH-DSA: Based on hash function security (no new mathematical assumptions). Very large signatures (8KB to 50KB depending on parameters) with small key sizes (~32 bytes). Slow signing (~131.9ms) but fast verification. The most conservative and side-channel-friendly of the three schemes, as its security reduces entirely to well-understood hash function properties. Impractical for regular transaction signing in Cardano but well-suited to infrequently-used high-value keys such as governance credentials.
 
-None of those standardized schemes offer a general solution which emphasize the need for agility when implementing the transition to PQC.
-
 Some of the candidates for the second round of standardization:
 
 - SQIsign: Based on isogenies, designed as a sigma protocol using Fiat-Shamir. Small signatures (~177 bytes) and public keys (~64 bytes). Signing remains slow despite recent improvements but the verification is fast. Good long-term candidate thanks to its size and native ZK structure, but need more study and improvements.
 - FAEST: Security based on AES via a VOLEitH zero-knowledge proof of knowledge of an AES key. Signatures ~5–6 KB. Susceptible to side-channel attacks. Good candidate but still needs development and study.
 - MAYO: Multivariate scheme based on the UOV (Unbalanced Oil and Vinegar) construction. Compact signatures (~300–500 bytes), constant-time-friendly implementation available. Strong non-lattice candidate with good sizes and low implementation complexity. Potential risk of breaks that happened before with multivariate schemes.
+
+The standardized schemes offer interesting and different trade-offs between the size of signatures, signing and verification keys as well as efficiency of signing and verification. Currently there is no one size fits all which means PQC solutions will mostly likely involve a combination of those schemes. This, in part, justifies the need for agility when implementing the transition to PQC together with the recency of the standardization which leaves room for a better assessment of the security of the standardized schemes.
 
 ## Use Cases
 <!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
@@ -165,10 +165,11 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
-Quantum attacks and post-quantum cryptography are very active fields of study. The finalization of the first set of standards by the NIST happened less than two years ago and those schemes and their implementations are still under analysis by the community. The NIST is also continuing their standardization process to expend the number of standards, both for signatures and KEM. This poses the question of how and when to select the scheme that will be used to replace the current ones in Cardano.
+Quantum attacks and post-quantum cryptography are very active fields of study. The finalization of the first set of standards by the NIST happened less than two years ago and those schemes and their implementations are still under analysis by the community. The NIST is also continuing their standardization process to expend the number of standards, both for signatures and KEM. This poses the question of how and when to select the schemes that will be used to replace the current ones in Cardano.
 
-With the advances in hardware and attacks, the move to post-quantum crytography cannot be delayed much longer but we need a thorough analysis of the existing schemes, standardized or not, to be sure to use the ones that fit our needs the most while being tested enough to give us confidence in using it.
+With the advances in hardware and attacks, the move to post-quantum crytography cannot be delayed much longer but we need a thorough analysis of the existing schemes, standardized or not, to select the ones that fit our needs the most while being tested enough to give us confidence in using it.
 Ultimately, the best solution for now would be to improve the cryptographic agility of Cardano and not commit to any particular scheme as the building block of the blockchain.
+
 
 Below a non-exhaustive list of open questions that come at this stage:
 
