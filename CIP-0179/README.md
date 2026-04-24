@@ -449,10 +449,10 @@ Validation rules:
 
 For governance-linked surveys:
 - Response transactions MUST include a `voting_procedures` entry.
-- `voting_procedures` MUST contain exactly one voter entry, and that voter entry MUST contain exactly one `(gov_action_id, voting_procedure)` pair.
-- The `gov_action_id` MUST equal `linkedActionId`. Otherwise the response is invalid.
+- `voting_procedures` MUST contain a voter entry whose credential matches the response's `credential`.
+- That voter entry MUST include a vote on `linkedActionId`. Otherwise the response is invalid.
 - The claimed role MUST exist in `linkedRoleWeighting`.
-- The role derived from the voter entry (per the voter tag mapping above) MUST match the claimed role.
+- The role derived from the matching voter entry (per the voter tag mapping above) MUST match the claimed role.
 
 ### Epoch Semantics
 
