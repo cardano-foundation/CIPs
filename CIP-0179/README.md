@@ -208,6 +208,7 @@ answer_item = single_choice_answer
 survey_response = [
   survey_ref,                  ; reference to the survey definition
   role,                        ; claimed responder role
+  credential,                  ; responder's credential
   [+ answer_item]              ; answers (at least one; partial allowed)
 ]
 
@@ -344,14 +345,15 @@ YES/NO/ABSTAIN semantics: this CIP does not reserve special option codes. Author
 A survey response is a positional array:
 
 ```
-[survey_ref, role, answers]
+[survey_ref, role, credential, answers]
 ```
 
 | Position | Type | Description |
 |:---------|:-----|:------------|
 | 0 | survey_ref | Reference to the survey: `[tx_id, survey_index]`. |
 | 1 | role | Claimed responder role (integer). |
-| 2 | array | Non-empty array of answer items. |
+| 2 | credential | Responder's credential: `[0, addr_keyhash]` or `[1, script_hash]`. |
+| 3 | array | Non-empty array of answer items. |
 
 There is no `specVersion` in the response. The version is determined by the referenced survey definition.
 
@@ -373,25 +375,16 @@ Validation:
 
 ### Responder Identity and Deduplication
 
-Identity verification leverages Cardano's existing transaction-level mechanisms.
+Identity verification leverages Cardano's existing transaction-level mechanisms. The responder's `credential` is included directly in the survey response, and the transaction proves ownership of that credential.
 
-#### Response credential
+#### Credential proof
 
-The `response_credential` is a `credential` as defined in the Conway ledger CDDL (`[0, addr_keyhash]` for key-based or `[1, script_hash]` for script-based). It is not included in the survey response metadata; it is derived from chain data by tooling.
+The `credential` in the response is a Conway ledger `credential`: `[0, addr_keyhash]` for key-based or `[1, script_hash]` for script-based.
 
-Derivation rules:
-- **Standalone surveys**: `response_credential` is `[0, k]` where `k` is the `addr_keyhash` from the transaction body's `required_signers` (field 14) that matches a registered credential for the claimed role.
-- **Governance-linked surveys**: `response_credential` is derived from the `voter` entry in the transaction body's `voting_procedures` (field 19), following the Conway `voter` type mapping:
-
-| Conway `voter` tag | Role | Credential |
-|:--------------------|:-----|:-----------|
-| 0 (`addr_keyhash`) | CC (2) | `[0, addr_keyhash]` |
-| 1 (`script_hash`) | CC (2) | `[1, script_hash]` |
-| 2 (`addr_keyhash`) | DRep (0) | `[0, addr_keyhash]` |
-| 3 (`script_hash`) | DRep (0) | `[1, script_hash]` |
-| 4 (`addr_keyhash`) | SPO (1) | `[0, addr_keyhash]` |
-
-The response transaction MUST include exactly one `addr_keyhash` in `required_signers` (standalone) or exactly one `voter` entry in `voting_procedures` (governance-linked) that matches the claimed role. When multiple candidates exist, the response is ambiguous and MUST be rejected.
+Verification rules:
+- **Key-based credential** `[0, addr_keyhash]`: the `addr_keyhash` MUST be present in the transaction body's `required_signers` (field 14). The ledger enforces that the corresponding signature witness is present, proving ownership.
+- **Script-based credential** `[1, script_hash]`: for governance-linked surveys, the `voter` entry in `voting_procedures` identifies the script and the ledger evaluates it. For standalone surveys, tooling MUST resolve the native script from the `script_hash` (via chain indexing) and verify that the keys present in the transaction's `required_signers` satisfy the script's conditions.
+- **Governance-linked surveys** additionally require a `voting_procedures` entry whose voter credential matches the `credential` in the response (see [Linked survey response rules](#linked-survey-response-rules)).
 
 #### Role validation
 
@@ -399,10 +392,10 @@ The claimed role MUST be validated against ledger state:
 
 | Role | Ledger requirement |
 |:-----|:-------------------|
-| DRep (0) | `response_credential` MUST be a registered DRep credential. |
-| SPO (1) | `response_credential` MUST be the cold credential of a registered pool operator. |
-| CC (2) | `response_credential` MUST be the hot credential of an active Constitutional Committee member. |
-| Stakeholder (3) | `response_credential` MUST be a stake credential with delegated stake. |
+| DRep (0) | `credential` MUST be a registered DRep credential. |
+| SPO (1) | `credential` MUST be the cold credential of a registered pool operator. |
+| CC (2) | `credential` MUST be the hot credential of an active Constitutional Committee member. |
+| Stakeholder (3) | `credential` MUST be a stake credential with delegated stake. |
 
 Tools MUST NOT trust role claims without validation. A response is invalid when the claimed role does not match ledger-derived role evidence.
 
@@ -418,7 +411,7 @@ Only responses that pass both phases are counted in tallies.
 
 #### Deduplication
 
-The identity tuple for deduplication is `(survey_ref, role, response_credential)`.
+The identity tuple for deduplication is `(survey_ref, role, credential)`.
 
 If multiple responses from the same tuple pass both validation phases, the latest valid response wins.
 
@@ -469,21 +462,21 @@ For governance-linked surveys:
 
 ### Duplicate and Ordering Semantics
 
-For a given identity tuple `(survey_ref, role, response_credential)`:
+For a given identity tuple `(survey_ref, role, credential)`:
 - If multiple responses pass both validation phases, the latest valid response wins.
 - Latest is determined by the chain ordering tuple `(slot, txIndexInBlock, responseIndex)`, where `responseIndex` is the position within the responses array in the label `17` payload.
 - Latest-response semantics replace the full prior response for that tuple.
 
 ### Weighting Semantics
 
-For each role key in `linkedRoleWeighting` (linked surveys) or `roleWeighting` (standalone surveys), one valid latest response per `(survey_ref, role, response_credential)` contributes to that role's tally.
+For each role key in `linkedRoleWeighting` (linked surveys) or `roleWeighting` (standalone surveys), one valid latest response per `(survey_ref, role, credential)` contributes to that role's tally.
 
 - **CredentialBased** (0): weight is `1` per valid latest response. Transaction fees are the primary spam cost.
 - **StakeBased** (1): weight is role-domain stake at the `endEpoch` snapshot:
-  - DRep: governance voting power of `response_credential`.
-  - SPO: active stake controlled by `response_credential` across mapped active registered pools.
-  - Stakeholder: ADA stake controlled by `response_credential`.
-- **PledgeBased** (2): SPO-only. Weight is the sum of live pledge over active registered pools mapped to `response_credential` at the `endEpoch` snapshot. Declared pledge MUST NOT be used. If `response_credential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
+  - DRep: governance voting power of `credential`.
+  - SPO: active stake controlled by `credential` across mapped active registered pools.
+  - Stakeholder: ADA stake controlled by `credential`.
+- **PledgeBased** (2): SPO-only. Weight is the sum of live pledge over active registered pools mapped to `credential` at the `endEpoch` snapshot. Declared pledge MUST NOT be used. If `credential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
 
 Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs only if:
 - The output is explicitly labeled as non-canonical.
@@ -495,7 +488,7 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 - Tools MUST expose canonical per-role tallies as primary outputs whenever multiple roles are configured.
 - Tools MUST NOT present merged/composite totals as canonical role results.
 - Any merged/composite display MUST explicitly disclose its merge policy and weighting interpretation.
-- Audit/export output MUST include role, `response_credential`, counted/excluded status, and exclusion reason when applicable.
+- Audit/export output MUST include role, `credential`, counted/excluded status, and exclusion reason when applicable.
 
 ### Transaction-level Constraints
 
@@ -542,6 +535,7 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
   [                                             / survey_response /
     [h'efefefef...ef', 0],                      / survey_ref: (TxId, index 0) /
     0,                                          / role: DRep /
+    [0, h'abababab...ab'],                      / credential: key-based /
     [                                           / answers /
       [1, 0, [1, 3]],                           / multi-select: q0, options 1 & 3 /
       [2, 1, [3, 1, 0]]                         / ranking: q1, prefer opt 3 > 1 > 0 /
@@ -568,10 +562,10 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 6. Resolve each response to its survey via `survey_ref`.
 7. Reject responses to cancelled surveys.
 8. Validate each answer against the corresponding question type and constraints.
-9. Derive `response_credential` from `required_signers` (standalone) or `voting_procedures` (linked) and validate role membership against ledger state.
+9. Verify each response's `credential`: check presence in `required_signers` (key-based) or script witness satisfaction (script-based), and validate role membership against ledger state.
 10. Filter responses by `responseEpoch <= endEpoch`.
 11. At or after `endEpoch`, re-verify each response using `endEpoch` snapshot state; exclude failures.
-12. Apply latest-valid-response-wins per `(survey_ref, role, response_credential)`.
+12. Apply latest-valid-response-wins per `(survey_ref, role, credential)`.
 13. Derive weights from `endEpoch` snapshot state per configured weighting mode.
 14. Produce canonical per-role tallies.
 
@@ -603,9 +597,9 @@ Multiple survey definitions or responses per transaction reduce the number of tr
 
 A survey with errors wastes respondent effort. A simple cancellation mechanism (referencing the survey and proving creator identity via `required_signers`) lets creators invalidate a broken survey without waiting for `endEpoch`.
 
-### Identity via required_signers and voting_procedures
+### Explicit credential in response
 
-The Cardano ledger already enforces that `required_signers` entries (Conway `transaction_body` field 14) require a matching signature witness. For standalone surveys, including the responder's `addr_keyhash` in `required_signers` provides a ledger-level identity guarantee. For governance-linked surveys, the `voting_procedures` entry (field 19) serves the same purpose while simultaneously recording the governance vote. This eliminates the need for complex chain-evidence derivation rules.
+The responder's `credential` is included directly in the survey response metadata. Verification is straightforward: for key-based credentials, the `addr_keyhash` must be in `required_signers` (ledger-enforced signature check); for script-based credentials, the native script must be witnessed and satisfied. For governance-linked surveys, `voting_procedures` provides the same guarantee. Including the credential in the response eliminates ambiguity (no need to guess which signer is the responder) and supports native multisig scripts in standalone surveys.
 
 ### Multi-question surveys with partial responses
 
@@ -629,13 +623,13 @@ The governance action anchor references the survey (not the other way around). T
 
 Version 1 treats all questions as answerable at the respondent's discretion (partial responses are valid). A future version could add a required flag per question, allowing survey creators to enforce that responses include answers to certain questions.
 
-### Script-based credentials for standalone surveys
+### Plutus script credentials for standalone surveys
 
-The `required_signers` field in the Conway transaction body only supports `addr_keyhash` values (key hashes), not script hashes. This means script-based DReps, SPOs, CC members, or stakeholders cannot prove identity in standalone survey responses.
+Native multisig scripts are supported in standalone surveys: the script is included in the transaction witness set, and tooling verifies that its conditions are satisfied by the transaction context.
 
-Governance-linked surveys do not have this limitation: the Conway `voter` type in `voting_procedures` supports both key-based (tags 0, 2, 4) and script-based (tags 1, 3) credentials.
+Plutus script credentials in standalone surveys are not supported. Plutus scripts require a redeemer to be evaluated, and there is no redeemer tag for metadata. Governance-linked surveys do not have this limitation: the Conway `voter` type in `voting_procedures` supports Plutus script-based voters (tags 1, 3), and the ledger provides a voting redeemer tag.
 
-A future version could define an alternative identity proof mechanism for script-based credentials in standalone surveys (for example, requiring a specific script witness or output pattern).
+A future version could define an alternative mechanism for Plutus script credentials in standalone surveys.
 
 ### Versioning granularity
 
