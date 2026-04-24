@@ -25,234 +25,64 @@ transactions.
 
 ## Motivation: Why is this CIP necessary?
 
-### eUTxO enables per-resource fee markets
+### FIFO is not fair
 
-On account-based chains like Ethereum, transactions interact with shared global state. When the
-network is congested, there is no way to attribute that congestion to specific resources — it is an
-emergent property of total demand against total block capacity. Fee markets on these chains are
-therefore *global*: when demand rises, fees rise for everyone, whether or not a particular user's
-transaction is contributing to the congestion.
-
-| Model             | Contention scope     | Who pays more                        |
-|:------------------|:---------------------|:-------------------------------------|
-| Bitcoin RBF       | Global (block space) | Everyone in that block               |
-| Ethereum EIP-1559 | Global (base fee)    | Everyone on the network              |
-| This CIP          | Per-UTxO             | Only parties competing for that UTxO |
-
-Cardano's eUTxO model is structurally different. Every transaction declares exactly which UTxOs it
-will consume. When two transactions conflict — meaning they attempt to spend an overlapping UTxO —
-the conflict is visible, local, and attributable. This makes it possible to resolve contention at
-the level of the individual resource, without any collateral impact on unrelated transactions.
-
-This CIP is the first fee market to exploit that structural property.
-
-### UTxO contention is real and FIFO is arbitrary
-
-On eUTxO, each DeFi intent — a limit order, a liquidity position, a loan offer — lives at its own
-UTxO. When multiple parties want to interact with the same UTxO, their transactions conflict and
-only one can be included in a block.
+On eUTxO, each DeFi intent (e.g., a limit order) lives at its own UTxO. When multiple parties want
+to interact with the same UTxO, their transactions conflict and only one can be included in a block.
 
 Under the current mempool policy, conflicts are resolved by arrival order: whichever transaction
-reaches a node's mempool first is kept, and later arrivals are rejected. From the participants'
-perspective, this is effectively random — the outcome depends on network propagation timing, not on
-anything within their control.
+reaches a node's mempool first is kept, and later arrivals are rejected. **But arrival order is not
+neutral.** The advantage goes to infrastructure: co-location with block producers, dedicated relay
+networks, and optimized propagation paths. These are capital-intensive, opaque advantages that
+retail users cannot match. If a retail user and a bot submit conficting transactions at the same
+time, the bot's transaction will propagate faster because the bot has invested in topology.
 
-FIFO is not a deliberate design choice. It is the absence of a policy. It discards information (how
-much each party is willing to pay) and replaces it with noise (who happened to propagate faster).
-The value that participants would willingly pay to secure a contested UTxO is dissipated entirely.
+*FIFO is rigged against retail.*
 
-### The obvious solution: an auction
+### FIFO leaves money on the table
+
+Every contested UTxO has multiple parties who want it. Some would pay substantially more than others
+to secure it. But under FIFO, there is no mechanism to express that willingness — the winner is
+whoever propagated fastest, and they pay the minimum fee regardless. The losers, no matter how much
+more they would have paid, are simply rejected.
+
+Consider two bots competing for the same mispriced limit order. Bot A found an arbitrage route worth
+15 ADA in profit; Bot B found one worth 5 ADA. Bot A would happily pay a 5 ADA fee to guarantee the
+fill — it still profits 10 ADA. But under FIFO, Bot A has no way to outbid Bot B. If Bot B
+propagated faster, it wins and pays the minimum 0.5 ADA fee. The network collects 0.5 ADA instead of
+5. The 4.5 ADA difference is value the network simply forfeits.
+
+### The solution: a per-UTxO auction
 
 The correct mechanism for allocating a scarce resource to the party who values it most is an
-auction. This is not a novel insight — it is backed by thousands of years of economic practice and
-centuries of formal theory.
-
-When two transactions conflict over the same UTxO, the mempool runs a trivial auction: keep the
+auction. When two transactions conflict over the same UTxO, the mempool runs a trivial one: keep the
 higher-fee transaction, drop the lower-fee one. The winner pays their bid to the network via
 transaction fees. The loser's transaction fails cleanly — on eUTxO, a transaction that references a
-spent UTxO simply fails validation at no cost to the submitter. It does not execute with a worse
-outcome.
+spent UTxO simply fails Phase 1 validation at no cost to the submitter. It does not execute with a
+worse outcome.
 
-This is the entire mechanism. Its simplicity is a feature.
+Returning to the earlier example: Bot A, with 15 ADA of profit at stake, submits a transaction
+paying a 5 ADA fee. Bot B's 0.5 ADA transaction is already in the mempool, but the node sees that
+Bot A's fee is higher and replaces it. Bot A wins, the network collects 5 ADA instead of 0.5, and
+the 4.5 ADA difference flows into the treasury and staking rewards. The bot that valued the resource
+more wins, and the network shares in the profit.
 
-### Why Cardano's implementation is simple
+What makes this auction local — and unlike fee markets on any other chain — is that eUTxO contention
+is structurally attributable. Every transaction declares exactly which UTxOs it will consume, so
+when two transactions conflict, the contested resource is identified and the conflict is confined.
+Only the parties competing for that specific UTxO bear any cost. **Everyone else is unaffected.**
 
-Bitcoin's Replace-By-Fee (RBF) mechanism solves a similar problem but requires substantially more
-complexity. The reason is **transaction pinning**: Bitcoin allows spending unconfirmed outputs, so a
-"child" transaction can reference an output that exists only in the mempool, creating dependency
-chains among pending transactions. An adversary can attach a large, low-feerate child to a parent
-transaction, making the parent artificially expensive to replace. Mitigating this required years of
-incremental design: descendant package tracking, eviction-weight calculations, cluster mempool
-redesigns, and topology restrictions like TRUC/V3 transactions.
+Fee markets on other chains are addressing a different scarcity problem — total demand exceeding
+block capacity — and their fee markets are necessarily global because congestion cannot be
+attributed to specific resources:
 
-Cardano also allows spending unconfirmed outputs, so dependency chains can form in the mempool. In
-principle, this creates the same pinning opportunity: an adversary could attach low-fee descendants
-to a transaction to inflate its replacement cost. In practice, two structural properties of Cardano
-neutralize this attack, eliminating the need for Bitcoin's elaborate countermeasures.
+| Scarcity problem       | Mechanism         | Fee impact scope                     |
+|:-----------------------|:------------------|:-------------------------------------|
+| Block space (Bitcoin)  | RBF               | Everyone in that block               |
+| Block space (Ethereum) | EIP-1559          | Everyone on the network              |
+| UTxO contention        | This CIP          | Only parties competing for that UTxO |
 
-**No depth cap needed.** Bitcoin's mempool can hold ~300 MB of transactions, giving an attacker room
-to build deep dependency chains. Bitcoin had to introduce artificial chain depth limits (and
-eventually a full cluster mempool redesign) to bound the damage. Cardano's mempool holds roughly two
-blocks of transactions. The small mempool naturally limits how deep any dependency chain can grow —
-there is simply not enough room for the kind of deep pinning chains that motivated Bitcoin's
-complexity.
-
-**No topology restriction needed.** Bitcoin's ~10-minute block time gives an attacker a wide window
-to construct and propagate a pinning chain before the contest is resolved. This motivated topology
-restrictions like TRUC/V3 transactions, which constrain how descendants can be attached. Cardano's
-~20-second block time means dependency chains are confirmed or expired quickly, giving an attacker a
-narrow window to build a meaningful pin before the next block resolves the situation.
-
-These structural differences mean the replacement rule only needs one addition beyond the basic
-conflict case: when a transaction is evicted, its descendants are evicted with it, and the
-replacement must pay more than the total fees of everything it displaces. The full specification
-follows below.
-
-### Composability with network-level fee markets
-
-This CIP and a hypothetical block space congestion mechanism address different scarce resources at
-different stages of the transaction lifecycle.
-
-This CIP operates at **mempool admission** and resolves a specific kind of scarcity: multiple
-parties wanting the same UTxO. It determines which transaction *survives a conflict*. A network-level
-congestion mechanism would operate at **block construction** and resolve a different kind of
-scarcity: more total transactions than block capacity. It would determine which transactions *get
-included in a block*.
-
-The two compose cleanly. The mempool uses this CIP's conflict resolution to ensure the highest-value
-transaction survives each UTxO conflict. The block producer then uses whatever congestion pricing
-mechanism is in place to pack the most valuable set of surviving transactions into the available
-space. Each layer optimizes for the scarce resource it manages, without interfering with the other.
-
-Neither mechanism substitutes for the other. Conflict resolution cannot solve block-level congestion
-(it only handles UTxO-specific conflicts). Block-level congestion pricing cannot solve UTxO
-contention (it has no way to compare two transactions that want the same input). They are
-complementary tools for complementary problems.
-
-### Composability with the application-layer contention market
-
-DeFi order books provide a separate contention management layer at the application level: users
-choose *which* order to interact with, and can pay a price premium to target a less contested one.
-Choosing a limit order priced 3% above market may reduce the number of competing parties from dozens
-to zero.
-
-This CIP adds a second layer underneath. Together, they form a two-dimensional contention market:
-
-| Dimension     | Mechanism                   | What it controls                            |
-|:--------------|:----------------------------|:--------------------------------------------|
-| Price premium | Choose a worse-priced order | Probability of contention occurring          |
-| Fee premium   | Pay higher transaction fees | Probability of winning if contention occurs  |
-
-The first dimension thins the field. The second resolves whatever competition remains. Neither is
-sufficient alone — avoiding the crowd doesn't help if someone else picks the same order, and
-outbidding doesn't help if dozens of bots are driving fees skyward. But combined, they give users
-fine-grained control over their chance of success.
-
-### Sustainability
-
-Under FIFO, contention-driven value — the surplus that participants would willingly pay to secure a
-contested UTxO — is left on the table. Winners are chosen randomly and pay minimum fees. This CIP
-redirects that surplus into the network: higher fees from contested transactions flow into the
-treasury and staking rewards.
-
-This revenue has three useful properties.
-1. It is generated precisely when network resources are scarce.
-2. It comes exclusively from participants who are voluntarily competing for profitable
-   opportunities.
-3. It scales naturally with DeFi activity — the more contention the ecosystem produces, the more fee
-   revenue it generates.
-
-### Retail users are not priced out
-
-A natural concern is that fee-based replacement will lead to runaway bidding wars where only
-well-capitalized bots can compete. In practice, the mechanics of the localized fee market work in
-retail's favor.
-
-**Retail users control their bid.** A user who urgently needs a contested UTxO can overpay upfront —
-say 5–10x the standard fee, turning a 0.5 ADA fee into 2.5–5.0 ADA. Outside of high-value
-arbitrage or liquidation opportunities, bots tend to penny-pinch to preserve their margins. Because
-bots can easily retry transactions, they are mathematically better off keeping their bids small and
-winning over many contests rather than overpaying for any single one. A retail user who jumps the
-bid by a large increment is like an auction bidder who raises by $100 when the room is incrementing
-by $1 — the room usually folds.
-
-**Continuing UTxOs defuse escalation.** Many contested DeFi resources are continuing UTxOs: the
-resource is immediately recreated at a new UTxO after the current transaction. When a bot sees a
-large retail bid, the rational, margin-optimizing choice is not to start a bidding war — it is to
-let that UTxO go and grab the next one in the subsequent block for a fraction of the cost. The
-contest resets every ~20 seconds.
-
-**Localized fees mean no collateral damage.** On chains with global fee markets, bidding wars are
-toxic because normal transactions get caught in the crossfire — everyone must bid for the same block
-space. This CIP confines the bidding to the specific UTxO under contention. Instead of one giant
-auction, there are many small independent auctions: one UTxO might see a 15 ADA bid while another
-sees 1.5 ADA, and every uncontested transaction pays its standard fee as if the bidding wars did not
-exist.
-
-Paying 2.5–5.0 ADA for guaranteed priority on a specific contested resource is not "only the rich
-can play." It is a modest, voluntary premium — comparable to choosing expedited shipping — available
-to anyone who values that particular UTxO highly enough.
-
-### Impact on MEV
-
-On account-based chains, fee markets are associated with harmful MEV extraction — specifically
-sandwich attacks, where an adversary inserts transactions before and after a victim's transaction to
-manipulate shared state and extract value. This attack vector does not exist on eUTxO. Transactions
-are fully deterministic: a user knows exactly what inputs will be consumed and what outputs will be
-produced before they sign. There is no shared global state that an adversary's transaction could
-modify to change the outcome of yours.
-
-This CIP does not introduce any new MEV. The extractable value in a contested UTxO — the surplus
-between a mispriced limit order and the market price — exists regardless of mempool policy. Under
-FIFO, bots already race to capture it. The only question is how the contest is decided and how the
-surplus is split.
-
-| Regime   | Contest decided by         | Surplus split                                |
-|:---------|:--------------------------|:---------------------------------------------|
-| FIFO     | Network propagation speed | 100% to bot; minimum fee to network          |
-| This CIP | Fee bid                   | Split between bot profit and network revenue  |
-
-Under FIFO, the advantage goes to infrastructure: co-location with block producers, dedicated relay
-networks, optimized propagation paths. These are capital-intensive, opaque advantages that retail
-users cannot match. A retail user and a bot submitting at the same instant will not arrive at the
-same set of nodes — the bot's transaction propagates faster because the bot has invested in topology.
-The contest is decided before the user's transaction even arrives.
-
-This CIP replaces that infrastructure race with a fee auction. A retail user cannot deploy a global
-relay network, but they can overpay by 5 ADA — and as the retail section above explains, that blunt
-instrument is often sufficient because bots penny-pinch to preserve margins and can cheaply retry on
-the next continuing UTxO. Fee bidding democratizes access to contested resources by converting the
-contest from one where only infrastructure matters to one where willingness to pay matters.
-
-The extraction itself remains non-adversarial: it cannot worsen any user's execution, the limit
-order creator receives exactly the price they specified, and the bidding war converts extractable
-value into fee revenue for the network. The total MEV is unchanged. What changes is who captures it
-and through what mechanism — from topology-advantaged bots keeping the full surplus, to a
-permissionless auction that redirects a portion into the treasury and staking rewards.
-
-### Probabilistic guarantees are sufficient
-
-Cardano does not have a single, global mempool. Each node maintains its own local set of pending
-transactions. When two transactions conflict, different nodes may hold different ones. Paying a
-higher fee does not guarantee victory — it increases the probability.
-
-The mechanism is straightforward: whenever a node holding the lower-fee transaction hears about the
-higher-fee one, it switches. The higher-fee transaction spreads across the network, displacing its
-competitor node by node. By the time a block producer selects transactions for the next block, the
-higher-fee transaction is more likely to be in its mempool — but not certain to be.
-
-This probabilistic nature is a feature, not a limitation. A deterministic guarantee would require a
-single global ordering authority — a centralizing force. Probabilistic resolution still enables
-rational decision-making: a participant who consistently pays more than their competitors will
-consistently win more contests, and can model their expected success rate based on network topology
-and competitor behavior. Over many contests, the law of large numbers ensures that the fee signal
-is reliable even though any individual outcome is uncertain.
-
-The effectiveness of the fee signal scales with adoption. Each node that adopts the policy benefits
-unilaterally — it earns more fees from contested UTxOs by always holding the higher-fee transaction.
-As adoption increases, the network-wide probability of the higher-fee transaction winning rises
-monotonically. There is no critical threshold below which the mechanism fails; there is only a
-gradient of increasing effectiveness.
+This CIP is the first fee market to exploit eUTxO's structural attributability.
 
 ## Specification
 
@@ -282,72 +112,50 @@ spentInputs(A) ∩ allInputs(B) ≠ ∅   ∨   spentInputs(B) ∩ allInputs(A) 
 where `spentInputs(T)` is the set of UTxO references consumed by transaction `T`, and
 `allInputs(T) = spentInputs(T) ∪ referenceInputs(T)` includes both consumed and referenced UTxOs.
 
-Two transactions that both *reference* the same UTxO without spending it do not conflict — they can
-coexist in the same block regardless of ordering. A conflict arises only when at least one
-transaction *spends* a UTxO that the other spends or references.
-
 ### Replacement rule
 
-When a node receives a new transaction `B`, and its mempool already contains a transaction `A` such
-that `A` and `B` conflict:
+When a node receives a new transaction `B`, and its mempool already contains transactions
+`A₁, A₂, ..., Aₙ` that each conflict with `B`:
 
-Let `evicted(A)` denote `A` together with all transactions in the mempool that transitively depend
-on `A`'s outputs (its **descendants**). Evicting `A` necessarily evicts every descendant, because
-their inputs would become invalid.
-
-- **If `fee(B) > totalFee(evicted(A)) + delta`:** Evict `A` and all its descendants from the
-  mempool. Admit `B`.
-- **Otherwise:** Reject `B`. Retain `A` and its descendants.
-
-The `delta` term is a **minimum replacement increment** that prevents spam replacements. It is
-defined as:
+Let `descendants(A)` denote all transactions in the mempool that transitively depend on `A`'s
+outputs. Evicting `A` necessarily evicts every descendant, because their inputs would become invalid.
+Define the **chain cost** of a conflicting transaction as:
 
 ```
-delta = minFee(B)
+chainCost(A) = fee(A) + totalMinFee(descendants(A))
 ```
 
-where `minFee(B)` is the standard minimum fee for transaction `B` as defined by the current protocol
-parameters (i.e., the same formula the ledger uses to determine whether a transaction's fee is
-sufficient). The delta covers the full cost that the replacement imposes on the network: bandwidth
-for propagation and CPU/memory for script validation. The evicted transactions'
-propagation and execution costs are already covered by the fee sum requirement: since `fee(B)` must
-exceed the total fees of all evicted transactions, and those fees were already sufficient to
-compensate for their costs, no separate term is needed. See the Rationale section for a full
-discussion of the delta design.
+where `fee(A)` is the fee paid by the directly contested transaction, and
+`totalMinFee(descendants(A))` is the sum of *minimum* fees for each of its evicted descendants
+rather than their actual fees — see the Rationale section for why.
 
-### Multi-conflict replacement
-
-If `B` conflicts with multiple mempool transactions `A₁, A₂, ..., Aₙ`, then `B` must pay strictly
-more than the **sum** of all evicted transactions' fees (each conflicting transaction plus its
-descendants), plus the replacement delta:
+The replacement rule is:
 
 ```
-fee(B) > totalFee(evicted(A₁)) + totalFee(evicted(A₂)) + ... + totalFee(evicted(Aₙ)) + delta
+fee(B) > minFee(B) + chainCost(A₁) + ... + chainCost(Aₙ)
 ```
 
-where `delta = minFee(B)` as defined above.
+- **If the inequality holds:** Evict `A₁, ..., Aₙ` and all their descendants. Admit `B`.
+- **Otherwise:** Reject `B`.
 
-The mempool invariant guarantees that no two co-resident transactions conflict with each other — if
-they did, the conflict would have been resolved at admission time. This means all the transactions
-that `B` would evict are mutually compatible: they could all be included in the same block. The
-network's opportunity cost of admitting `B` is the total fee revenue from all of them, not just the
-most expensive one. The sum rule captures this correctly.
+where `minFee(B)` is the minimum fee for `B` as defined by the current protocol parameters (i.e.,
+the same formula the ledger uses to determine whether a transaction's fee is sufficient).
+
+> [!IMPORTANT]
+> The current Cardano mempool does not track dependency relationships between transactions. This CIP
+> likely requires auxiliary mempool data structures so that descendants can be identified and
+> evicted efficiently. The details are left to implementors.
 
 ### Evicted transaction behavior
 
 When a transaction is evicted due to replacement, it is simply dropped. It is not re-propagated to
 peers. The evicted transaction may still exist in other nodes' mempools across the network; whether
-it survives depends on whether the replacement reaches those nodes before the next block.
+it survives depends on whether the replacement transaction reaches those nodes before the next
+block.
 
-From the user's perspective, detecting eviction is straightforward: monitor the UTxOs that the
-submitted transaction attempted to spend. If those UTxOs are consumed by a different transaction
-on-chain, the user's transaction was outbid. Wallets can surface this as a clear "outbid" status
-rather than an opaque timeout.
-
-> [!NOTE]
-> Node implementations may optionally expose eviction events through their local transaction
-> submission API. This would be a quality-of-life improvement for users but is not required by
-> this CIP and can be implemented separately.
+Node implementations may optionally expose eviction events through their local transaction
+submission API. This would be a major quality-of-life improvement, but it is not required by this
+CIP.
 
 ### Backward compatibility
 
@@ -358,106 +166,239 @@ This change is fully backward compatible:
 - **Existing transactions** that pay minimum fees continue to work. They are only at risk of
   eviction if a conflicting transaction paying higher fees arrives — which is the intended behavior.
 - **No transaction format changes.** Fee overpayment is already supported by the ledger.
-- **No consensus changes.** Block validity rules are unchanged. This is purely a mempool policy.
+- **No consensus changes.** Block validity rules are unchanged. This is purely a mempool change.
 
-Nodes that do not adopt the new policy will continue to operate correctly. They will resolve
-conflicts via FIFO, foregoing the fee-priority optimization. Each node benefits unilaterally from
-adopting the policy, creating a natural incentive for organic adoption without requiring coordinated
-activation.
+Nodes that do not adopt the new policy will continue to operate correctly — they will simply resolve
+conflicts via FIFO. The mechanism's effectiveness scales with adoption: the more nodes that
+implement this auction, the higher the probability that the higher-fee transaction survives to block
+inclusion.
+
+> [!IMPORTANT]
+> The majority of nodes need to adopt this CIP for it to work. If bidding higher does not
+> predictably result in a transaction being included, people will not bid. See the Rationale section
+> on probabilistic guarantees for a fuller discussion.
 
 ## Rationale: How does this CIP achieve its goals?
 
-### Fee comparison metric: absolute fee vs. fee rate
+### Probabilistic guarantees are sufficient
 
-The replacement rule uses **absolute fee** (total lovelace paid) rather than **fee rate** (fee per
-byte). This is the recommended approach, but the tradeoffs are worth examining since block
-conditions may evolve.
+Cardano does not have a single, global mempool. Each node maintains its own local set of pending
+transactions. When two transactions conflict, different nodes may hold different ones. Paying a
+higher fee does not guarantee victory, but it does increases the probability.
+
+The mechanism is straightforward: whenever a node holding the lower-fee transaction hears about the
+higher-fee one, it switches. The higher-fee transaction spreads across the network, displacing its
+competitor node by node. By the time a block producer selects transactions for the next block, the
+higher-fee transaction is more likely to be in its mempool — but not certain to be.
+
+This probabilistic nature is "good enough". A deterministic guarantee would require a single global
+ordering authority — a centralizing force. Probabilistic resolution still enables rational
+decision-making: a participant who consistently pays more than their competitors will consistently
+win more contests, and can model their expected success rate based on network topology and
+competitor behavior. Over many contests, the law of large numbers ensures that the fee signal is
+reliable even though any individual outcome is uncertain.
+
+This mechanism requires a minimum viable level of network-wide adoption. If paying a higher fee does
+not reliably result in transaction inclusion, participants will stop bidding. The exact threshold is
+hard to quantify, but a reasonable estimate is that a majority of nodes — and especially block
+producers — need to adopt the policy before the fee signal becomes trustworthy enough to sustain a
+functioning market.
+
+Adoption is collectively incentivized: the more nodes that adopt the policy, the more consistently
+the higher-fee transaction wins inclusion, and the more total fee revenue flows into the treasury
+and staking rewards for the entire network.
+
+### Last-minute sniping is self-defeating
+
+A natural concern is that bots will hold their transactions back, attempting to submit just before a
+block is produced — hoping to snipe the contested UTxO without giving competitors time to respond.
+If most participants adopted this strategy, the result would be bursts of network activity
+concentrated right before each block, with little bidding in between.
+
+This strategy is self-defeating because of two properties that combine to make last-minute
+submission unreliable.
+
+First, Cardano's slot leader schedule is private. Only the elected slot leader knows it is their
+turn to produce a block. No other participant knows which node to target or when the next block will
+arrive.
+
+Second, the mempool is sharded — each node maintains its own local set of pending transactions.
+Because the block producer's identity is unknown, a transaction cannot be sent directly to them. It
+must propagate through the peer-to-peer network, hopping node by node until it reaches the producer
+by chance. This takes time, and the propagation path is not deterministic.
+
+Together, these properties mean a bot that waits has no way to predict whether its transaction will
+reach the next block producer before a competitor's does. The late submitter is gambling on
+propagation luck against an opponent who is already established across the network. By contrast, the
+early submitter's transaction is already sitting in mempools and very likely already in the unknown
+producer's. A late-arriving transaction must both reach the producer in time *and* pay a higher fee
+to displace the incumbent.
+
+The optimal strategy is therefore to establish position early and force competitors to pay the
+replacement premium — not to wait for a moment that cannot be predicted.
+
+### Descendants use minimum fee, not actual fee
+
+The replacement formula charges descendants at their required *minimum* fee rather than their actual
+fee. This is a deliberate design choice grounded in auction theory: each contested UTxO should be
+priced by its own independent auction, not bundled with unrelated activity.
+
+**Actual fees misprice demand.** This fee market prices contention for a *specific UTxO*. Descendant
+transactions interact with that continuing UTxO's future states — distinct resources that should be
+priced by their own auctions when contention arises. Requiring a challenger to outbid fees paid for
+unrelated resources is not pricing demand for the contested UTxO — it is creating a market
+inefficiency by conflating independent goods.
+
+**Bundling auctions reduces revenue.** The entire premise of this CIP is that eUTxO enables
+per-resource fee markets. Counting descendant fees at actual value merges independent auctions into
+one, undermining that property. Consider a continuing UTxO that cycles four times. Without chaining
+in the fee comparison, each cycle gets its own auction. If each attracts a 15 ADA bid, the network
+earns 60 ADA. With chaining, all four cycles are bundled under a single replacement threshold. A
+chain paying 20 ADA total across all four beats out individual 15 ADA bids on each — the network
+earns 20 ADA instead of 60. Separate auctions over independent resources yield at least as much
+total revenue as bundled ones. This is a standard result in auction theory, and continuing UTxOs are
+the dominant case for DeFi contention.
+
+> [!IMPORTANT]
+> Bots are likely the dominant entity building transaction chains. They can quickly detect the root
+> of a chain has been replaced and rebuild against the new chain. No revenue is actually lost by
+> replacing the current transaction chain. Even if the chain is slow to rebuild, those UTxOs will
+> still be available and waiting for new bids. The "cost" of eviction is reconstruction effort; not
+> permanent revenue loss.
+
+**Actual fees enable pinning and disadvantage retail.** Under a rule that counts descendant fees at
+actual value, a transaction can be made artificially expensive to replace by attaching descendants
+that inflate the replacement threshold. Bots can build up a chain within seconds of the first
+transaction landing in the mempool — retail users cannot. Using actual fees for descendants would
+allow bots to pin a contested transaction simply by being first and chaining on top of it,
+converting a speed advantage into an insurmountable fee barrier. This recreates the unfairness that
+FIFO already suffers from. Charging descendants at minimum fee neutralizes pinning entirely — the
+only way to defend a position is to raise the fee on the directly contested transaction, which is
+exactly the behavior the auction should incentivize. No depth caps, topology restrictions, or
+cluster tracking are needed because the design choice itself eliminates the attack vector.
+
+**Why consider descendant fees at all?** The minimum fee charge covers the real cost eviction
+imposes on the network: the bandwidth, CPU, and memory already spent validating and propagating
+transactions whose fees will never be collected. This protects against DoS while minimizing any
+distortion of the auctions.
+
+### Minimum bid increment
+
+The replacement formula requires `fee(B) > minFee(B) + chainCost(A₁) + ...`. The `minFee(B)` term
+is the minimum bid increment — the challenger must not only outbid the incumbents, but exceed them
+by at least its own minimum fee. This prevents an attacker from spamming replacements at +1
+lovelace, forcing every node on the network to download, validate, and propagate a new transaction
+for negligible economic commitment.
+
+The increment is `minFee(B)` rather than a fixed constant because the ledger's minimum fee formula
+already prices the real burden a new transaction imposes. A script-heavy replacement transaction
+costs the network more to process, so it requires a proportionally larger increment.
+
+### Fee comparison metric: total fee vs. fee rate
+
+The replacement rule relies on **total fee** rather than **fee rate** as seen on Bitcoin. 
 
 **When do the two metrics differ?**
 
 The metrics agree when competing transactions are roughly the same size — the transaction paying
 more in total also pays more per byte. They diverge when transaction sizes differ significantly:
 
-| Scenario | Tx A (incumbent) | Tx B (challenger) | Absolute fee winner | Fee rate winner |
-|:---------|:-----------------|:------------------|:--------------------|:---------------|
-| Similar size | 500 bytes, 0.5 ADA | 520 bytes, 0.8 ADA | B | B |
-| Different size | 2000 bytes, 1.0 ADA | 500 bytes, 0.6 ADA | A | B |
+| Scenario       | Tx A (incumbent)    | Tx B (challenger)   | Total fee winner | Fee rate winner |
+|:---------------|:--------------------|:--------------------|:-----------------|:----------------|
+| Similar size   | 500 bytes, 0.5 ADA  | 520 bytes, 0.8 ADA  | B                | B               |
+| Different size | 2000 bytes, 1.0 ADA | 500 bytes, 0.6 ADA  | A                | B               |
 
-In the second scenario, the two metrics give opposite answers. Absolute fee keeps the 1.0 ADA
+In the second scenario, the two metrics give opposite answers. Total fee keeps the 1.0 ADA
 transaction. Fee rate keeps the 0.6 ADA transaction because its per-byte efficiency is higher.
 
-**The case for absolute fee.**
+**The case for total fee.**
 
 Conflict resolution is a binary choice: exactly one of two mutually exclusive transactions
 survives, and the network earns whichever fee the survivor pays. Fee rate's advantage — that
 freed-up space can be filled with other revenue — depends on blocks being consistently full. When
 they are not, the freed space generates no revenue and the network simply earns less. On Cardano
-today, blocks are typically not full, so absolute fee produces more revenue in the common case.
-
-Absolute fee also avoids penalizing users for transaction size, which is largely outside their
-control. Two users may value a UTxO equally, but one holds fragmented wallet UTxOs requiring more
-inputs. Fee rate would penalize that user for an accident of wallet state, not a difference in
-willingness to pay.
+today, blocks are typically not full, so total fee produces more revenue in the common case.
 
 **The case for fee rate.**
 
 If Cardano blocks become consistently full in the future, fee rate becomes more compelling. In a
 full-block regime, every byte of block space has an opportunity cost — the revenue from the next
-best transaction that could have used it. Fee rate captures this opportunity cost; absolute fee
-does not. A large transaction that wins every mempool conflict on absolute fee could be
-systematically deprioritized at block construction time if its fee rate doesn't justify the space,
-creating a disconnect between mempool and block outcomes.
+best transaction that could have used it. Fee rate captures this opportunity cost; total fee does
+not. A large transaction that wins every mempool conflict on total fee could be systematically
+deprioritized at block construction time if its fee rate doesn't justify the space, creating a
+disconnect between mempool and block outcomes.
 
 **Recommendation.**
 
-This CIP recommends absolute fee for two reasons. First, it is the correct metric for Cardano's
-current operating conditions. Second, conflict resolution and block construction are separate
-stages with separate optimization criteria — the mempool asks "which transaction should survive?"
-(binary choice → absolute fee) while the block producer asks "which transactions should I pack?"
-(knapsack problem → fee rate). Using different metrics at different stages is not a conflict; it is
-each layer using the metric appropriate to its purpose.
+This CIP recommends total fee. It generates more revenue under Cardano's current operating
+conditions where blocks are not consistently full. If block utilization changes materially, the
+metric can be switched to fee rate without a hard fork — it's just a local mempool configuration.
 
-If Cardano's block utilization changes materially, the fee comparison metric can be revisited
-without modifying any consensus rules — it is a local mempool policy parameter.
+### Composability with the application-layer contention market
 
-### Minimum replacement delta
+DeFi order books provide a separate contention management layer at the application level: users
+choose *which* order to interact with, and can pay a price premium to target a less contested one.
+Choosing a limit order priced 3% above market may reduce the number of competing parties from dozens
+to zero.
 
-Each replacement imposes real costs on the network. There are two: the wasted propagation of the
-evicted transactions (which the network already downloaded, validated, and forwarded, but whose fees
-will never be collected) and the new propagation of the replacement transaction. Without a minimum
-increment, an attacker could spam replacements at +1 lovelace, imposing these costs for negligible
-economic commitment.
+This CIP adds a second layer underneath. Together, they form a two-dimensional contention market:
 
-The delta only needs to cover the *second* cost — propagating B. The first cost — the wasted
-propagation of evicted transactions — is already covered by the fee sum requirement. The replacement
-rule requires `fee(B) > totalFee(evicted) + delta`, and the total evicted fees are at least the sum
-of each evicted transaction's minimum fee (which covered its propagation and execution costs). So
-B's fee already exceeds the evicted transactions' costs before the delta is even added. The delta
-therefore compensates only for the genuinely new burden: downloading, validating, and propagating B
-itself.
+| Dimension     | Mechanism                   | What it controls                               |
+|:--------------|:----------------------------|:-----------------------------------------------|
+| Price premium | Choose a worse-priced order | Probability of contention occurring            |
+| Fee premium   | Pay higher transaction fees | Probability of winning *if* contention occurs  |
 
-The delta is defined as `minFee(B)` — the standard minimum fee for B as computed by the existing
-protocol parameters. This reuses the ledger's own cost model rather than introducing new parameters.
-The minimum fee formula already accounts for the full burden a transaction imposes: bandwidth
-(via the size-based term) and CPU/memory (via the execution unit terms). Using it directly ensures
-that the replacement increment scales correctly with transaction complexity — a script-heavy
-replacement requires a proportionally larger increment, reflecting the real cost it imposes on every
-validating node.
+The first dimension thins the field. The second resolves whatever competition remains. Combined,
+they give users fine-grained control over their transaction's chance of success.
 
-In the multi-conflict case, the same logic applies at scale. The total evicted fee sum already
-includes each evicted transaction's minimum fee (both directly conflicting transactions and their
-descendants), which already covered each transaction's propagation and execution costs. The delta
-adds only B's costs because B is the only transaction whose costs are not yet accounted for.
+### Retail users are not priced out
 
-**Magnitude.** For a typical 500-byte transaction with no scripts, the delta is approximately
-0.18 ADA (the standard minimum fee). For a script-heavy transaction consuming 10 billion ExUnit
-steps and 5 million ExUnit memory, the delta rises to approximately 2.8 ADA. This scaling is
-desirable: replacing a computationally expensive transaction should require a proportionally larger
-increment, reflecting the real cost each replacement imposes on every validating node.
+A natural concern is that fee-based replacement will lead to runaway bidding wars where only
+well-capitalized bots can compete. In practice, the mechanics of the localized fee market work in
+retail's favor.
 
-> [!IMPORTANT]
-> The delta is a mempool policy default, not a consensus rule. Node operators can adjust it without
-> a hard fork.
+**Retail users control their bid.** A user who urgently needs a contested UTxO can overpay upfront —
+say 5–10x the standard fee, turning a 0.5 ADA fee into 2.5–5.0 ADA. Outside of high-value
+arbitrage or liquidation opportunities, bots tend to penny-pinch to preserve their margins. Because
+bots can easily retry transactions, they are mathematically better off keeping their bids small and
+winning over many contests rather than overpaying for any single one. A retail user who jumps the
+bid by a large increment is like an auction bidder who raises by $100 when the room is incrementing
+by $1 — the room usually folds.
+
+**Continuing UTxOs defuse escalation.** Many contested DeFi resources are continuing UTxOs: the
+resource is immediately recreated at a new UTxO after the current transaction. When a bot sees a
+large retail bid, the rational, margin-optimizing choice is not to start a bidding war — it is to
+let that UTxO go and grab the next one for a fraction of the cost. The contest resets after each
+usage.
+
+**Localized fees mean no collateral damage.** On chains with global fee markets, bidding wars are
+toxic because normal transactions get caught in the crossfire — everyone must bid for the same block
+space. This CIP confines the bidding to the specific UTxO under contention. Instead of one giant
+auction, there are many small independent auctions: one UTxO might see a 15 ADA bid while another
+sees 1.5 ADA, and every uncontested transaction pays its standard fee as if the bidding wars did not
+exist.
+
+Paying 2.5–5.0 ADA for guaranteed priority on a specific contested resource is not "only the rich
+can play." It is a modest, voluntary premium — comparable to choosing expedited shipping — available
+to anyone who values that particular UTxO highly enough.
+
+### Impact on MEV
+
+MEV protection on Cardano is handled at the dApp level, not the mempool level. DApps today fall
+into two broad categories, and neither is exposed to MEV by this CIP.
+
+**Batcher-based dApps** (most contemporary dApps) manage contention through off-chain batchers that
+sequence user intents and submit a single transaction per batch. Contention for individual UTxOs is
+resolved within the batcher's own pipeline. *These dApps are unaffected by this CIP.*
+
+**Direct-interaction dApps** (p2p dApps) have users submit transactions that consume UTxOs directly.
+These dApps leverage eUTxO's determinism to eliminate MEV by construction: every transaction
+declares its exact inputs and outputs before signing, so there is no shared mutable state an
+adversary could manipulate to alter another user's outcome. Sandwich attacks are structurally
+impossible. *This group is the target audience for this CIP, and they are already MEV-safe.*
+
+This CIP changes how conflicts among already-safe transactions are resolved; it does not alter the
+MEV properties of either category. 
 
 ## Path to Active
 
