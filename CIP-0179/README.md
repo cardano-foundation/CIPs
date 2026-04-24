@@ -21,11 +21,11 @@ The format supports:
 - One or more survey definitions per transaction.
 - One or more survey responses per transaction.
 - Five built-in question types (single-choice, multi-select, ranking, numeric-range, custom) via a tagged sum type.
-- Optional linkage to governance actions via governance action anchor metadata.
+- Optional linkage to governance Info Actions via anchor metadata.
 - Deterministic response binding using a survey reference `(TxId, index)` pair.
 - Survey cancellation by the original creator.
 
-The standard is general-purpose and can be used for governance and non-governance sentiment gathering. It also defines an Info Action profile for tools that want strict behavior when a survey is attached to a governance Info Action.
+The standard is general-purpose and can be used for governance and non-governance sentiment gathering.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -79,8 +79,9 @@ Transaction IDs and hashes use raw `bytes .size 32` rather than hex-encoded text
 pos_uint = uint .gt 0
 tx_id = bytes .size 32
 blake2b_256 = bytes .size 32
-chunked_text = [+ tstr]              ; each element <= 64 bytes
-survey_ref = [tx_id, uint]           ; (TxId, index in definitions array)
+bounded_text = text .size (0..64)     ; Cardano metadata text limit
+chunked_text = [+ bounded_text]       ; concatenated to reconstruct full value
+survey_ref = [tx_id, uint .size 2]    ; (TxId, index in definitions array)
 
 ; Standard Cardano transaction metadatum.
 transaction_metadatum =
@@ -88,7 +89,7 @@ transaction_metadatum =
   / [ * transaction_metadatum ]
   / int
   / bytes .size (0..64)
-  / text .size (0..64)
+  / bounded_text
 
 ; ---------- Types reused from Conway ledger CDDL ----------
 ; Included for reference; authoritative definitions are in the ledger spec.
@@ -136,19 +137,19 @@ numeric_constraints = [
 ; Tag 0: Single-choice.
 ;   Exactly one option must be selected in the response.
 ;   Options array MUST contain at least 2 items.
-single_choice_question = [0, chunked_text, [2* tstr]]
+single_choice_question = [0, chunked_text, [2* bounded_text]]
 
 ; Tag 1: Multi-select.
 ;   Between 0 and maxSelections options may be selected.
 ;   Options array MUST contain at least 2 items.
 ;   maxSelections MUST be >= 1 and <= len(options).
-multi_select_question = [1, chunked_text, [2* tstr], pos_uint]
+multi_select_question = [1, chunked_text, [2* bounded_text], pos_uint]
 
 ; Tag 2: Ranking.
 ;   Respondent ranks between 1 and maxRanked options in preference order.
 ;   Options array MUST contain at least 2 items.
 ;   maxRanked MUST be >= 1 and <= len(options).
-ranking_question = [2, chunked_text, [2* tstr], pos_uint]
+ranking_question = [2, chunked_text, [2* bounded_text], pos_uint]
 
 ; Tag 3: Numeric-range.
 ;   Answer is an integer satisfying the constraints.
@@ -296,8 +297,8 @@ Questions use a tagged sum type. The first element is the type tag. All question
 [0, question_prompt, options]
 ```
 
-- `options`: array of `tstr`, at least 2 items. Each option label MUST fit in a single 64-byte text value.
-- Response MUST select exactly one option index.
+- `options`: array of `bounded_text`, at least 2 items.
+- Response MUST select exactly one option index. The index MUST be a valid position in the options array.
 
 #### Multi-select (tag 1)
 
@@ -305,9 +306,9 @@ Questions use a tagged sum type. The first element is the type tag. All question
 [1, question_prompt, options, maxSelections]
 ```
 
-- `options`: array of `tstr`, at least 2 items.
+- `options`: array of `bounded_text`, at least 2 items.
 - `maxSelections`: positive integer, `>= 1` and `<= len(options)`.
-- Response MUST select between 0 and `maxSelections` option indices (inclusive). An empty selection is valid and indicates no options selected.
+- Response MUST select between 0 and `maxSelections` option indices (inclusive). An empty selection is valid and indicates no options selected. All indices MUST be valid positions in the options array. Indices MUST NOT contain duplicates.
 
 #### Ranking (tag 2)
 
@@ -315,7 +316,7 @@ Questions use a tagged sum type. The first element is the type tag. All question
 [2, question_prompt, options, maxRanked]
 ```
 
-- `options`: array of `tstr`, at least 2 items.
+- `options`: array of `bounded_text`, at least 2 items.
 - `maxRanked`: positive integer, `>= 1` and `<= len(options)`.
 - Response MUST provide between 1 and `maxRanked` option indices in preference order (most preferred first). Indices MUST NOT contain duplicates. All indices MUST be valid positions in the options array.
 
@@ -373,8 +374,9 @@ A cancellation payload contains one or more `survey_ref` values, each identifyin
 Validation:
 - The `survey_ref` MUST resolve to a previously published survey definition.
 - The cancellation transaction MUST prove ownership of the survey definition's `owner` credential (same rules as for definition transactions: key-based via `required_signers`, script-based via native script satisfaction).
-- Once cancelled, tooling MUST treat the survey as inactive. Existing responses remain on-chain but MUST NOT be included in tallies.
-- Cancellation does not invalidate the survey definition data itself; it signals that the survey should not be used.
+- A cancellation MUST be submitted before or during the survey's `endEpoch`. Cancellations with `cancellationEpoch > endEpoch` are invalid.
+- Once cancelled, the survey is inactive as a whole. Tooling MUST NOT tally any responses for a cancelled survey.
+- Cancellation does not remove the survey definition data from the chain; it signals that the survey should not be used.
 
 ### Responder Identity and Deduplication
 
@@ -420,9 +422,9 @@ If multiple responses from the same tuple pass both validation phases, the lates
 
 ### Governance Action Linkage
 
-Survey-to-action linkage is canonicalized as **Action -> Survey**. This linkage is optional and only applies when a governance action wants to attach a survey context.
+Survey-to-action linkage is canonicalized as **Action -> Survey** and is restricted to **Info Actions**. Info Actions are the only governance action type guaranteed to run their full validity period without on-chain side effects, making them suitable for structured sentiment gathering.
 
-When a governance action links to a survey, the governance action anchor metadata MUST include:
+When an Info Action links to a survey, the governance action anchor metadata MUST include:
 
 ```json
 {
@@ -436,14 +438,26 @@ When a governance action links to a survey, the governance action anchor metadat
 (The anchor metadata is an off-chain document; `surveyTxId` is hex-encoded per JSON convention.)
 
 Validation rules:
+- The governance action MUST be an Info Action. Linkage to any other governance action type is invalid.
 - The `(surveyTxId, surveyIndex)` pair MUST resolve to a transaction that includes label `17` with a survey definitions payload, and the survey at the given index MUST exist.
-- For linked surveys, `actionEligibility` MUST be derived from the linked governance action's voter classes.
-- Tooling MUST derive the linked governance action id (`linkedActionId`) from the governance action that carries the survey-link anchor.
-- `linkedRoleWeighting` is the intersection of the survey's `roleWeighting` keys with `actionEligibility`, preserving configured weighting modes for surviving roles.
-- If `linkedRoleWeighting` is empty, the governance-action-to-survey link is invalid.
-- Survey `endEpoch` MUST exactly match the governance action's active voting end epoch. If they differ, the link is invalid.
-- If linkage validation fails, tooling MUST NOT attach that survey to the governance action.
+- Tooling MUST derive the linked governance action id (`linkedActionId`) from the Info Action that carries the survey-link anchor.
+- `linkedRoleWeighting` is the intersection of the survey's `roleWeighting` keys with `{DRep (0), SPO (1), CC (2)}`, preserving configured weighting modes for surviving roles. The Stakeholder role (3) has no Conway voter type and cannot participate in governance-linked surveys.
+- If `linkedRoleWeighting` is empty, the link is invalid.
+- Survey `endEpoch` MUST exactly match the Info Action's active voting end epoch. If they differ, the link is invalid.
+- If linkage validation fails, tooling MUST NOT attach that survey to the Info Action.
 - Linkage invalidity does not invalidate the survey as standalone metadata.
+
+#### Conway voter tag to CIP-179 role mapping
+
+For governance-linked surveys, the Conway `voter` type in `voting_procedures` maps to CIP-179 roles as follows:
+
+| Conway voter tag | Conway meaning | CIP-179 role |
+|:-----------------|:---------------|:-------------|
+| 0 | CC hot key credential | CC (2) |
+| 1 | CC hot script credential | CC (2) |
+| 2 | DRep key credential | DRep (0) |
+| 3 | DRep script credential | DRep (0) |
+| 4 | SPO pool cold key credential | SPO (1) |
 
 #### Linked survey response rules
 
@@ -452,11 +466,11 @@ For governance-linked surveys:
 - `voting_procedures` MUST contain a voter entry whose credential matches the response's `credential`.
 - That voter entry MUST include a vote on `linkedActionId`. Otherwise the response is invalid.
 - The claimed role MUST exist in `linkedRoleWeighting`.
-- The role derived from the matching voter entry (per the voter tag mapping above) MUST match the claimed role.
+- The role derived from the matching voter entry (per the Conway voter tag mapping above) MUST match the claimed role.
 
 ### Epoch Semantics
 
-- `endEpoch` is mandatory in every survey definition.
+- `endEpoch` is mandatory in every survey definition and MUST be greater than the current epoch at the time of the definition transaction.
 - `responseEpoch` is derived from the response transaction's inclusion slot via ledger epoch mapping.
 - Responses with `responseEpoch > endEpoch` are invalid.
 - Role-membership and credential eligibility checks are evaluated at response time and re-verified at tally time using the `endEpoch` snapshot.
@@ -497,7 +511,7 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 
 - A single label `17` payload MUST contain exactly one of: definitions, responses, or cancellations.
 - A response transaction MUST NOT reference itself.
-- If governance-action linkage is provided, it MUST be encoded in governance action anchor metadata, not in the survey definition.
+- If Info Action linkage is provided, it MUST be encoded in the Info Action's anchor metadata, not in the survey definition.
 
 ### CBOR Diagnostic Examples
 
@@ -560,8 +574,8 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 
 1. Discover survey definitions by scanning label `17` for payloads with tag `0`.
 2. Discover cancellations (tag `2`) and mark cancelled surveys as inactive.
-3. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
-4. If present, validate governance-action-to-survey linkage by `(surveyTxId, surveyIndex)`, role compatibility, and exact `endEpoch` equality; derive `linkedActionId`.
+3. Optionally discover Info Actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
+4. If present, validate that the governance action is an Info Action, then validate linkage by `(surveyTxId, surveyIndex)`, role compatibility, and exact `endEpoch` equality; derive `linkedActionId`.
 5. Discover responses by scanning label `17` for payloads with tag `1`.
 6. Resolve each response to its survey via `survey_ref`.
 7. Reject responses to cancelled surveys.
@@ -603,7 +617,7 @@ A survey with errors wastes respondent effort. A simple cancellation mechanism (
 
 ### Explicit credential in response
 
-The responder's `credential` is included directly in the survey response metadata. Verification is straightforward: for key-based credentials, the `addr_keyhash` must be in `required_signers` (ledger-enforced signature check); for script-based credentials, the native script must be witnessed and satisfied. For governance-linked surveys, `voting_procedures` provides the same guarantee. Including the credential in the response eliminates ambiguity (no need to guess which signer is the responder) and supports native multisig scripts in standalone surveys.
+The responder's `credential` is included directly in the survey response metadata. Verification is straightforward: for key-based credentials, the `addr_keyhash` must be in `required_signers` (ledger-enforced signature check); for script-based credentials, tooling resolves the native script via chain indexing and verifies that the transaction's required signers satisfy its conditions. For governance-linked surveys, `voting_procedures` provides the same guarantee. Including the credential in the response eliminates ambiguity (no need to guess which signer is the responder) and supports native multisig scripts in standalone surveys.
 
 ### Multi-question surveys with partial responses
 
@@ -617,9 +631,9 @@ Participants may want to change their answer before `endEpoch`. Accepting the la
 
 Different roles have different weighting units (credential count, stake, pledge). Mixing them in a single tally obscures interpretation. Canonical per-role tallies keep results clear; optional merged views are permitted only when explicitly labeled as non-canonical.
 
-### Action -> Survey linkage direction
+### Info Action linkage
 
-The governance action anchor references the survey (not the other way around). This avoids circular transaction dependencies: the survey is published first, then the governance action references it by `survey_ref`.
+Governance linkage is restricted to Info Actions because they are the only governance action type guaranteed to complete their full validity period without on-chain side effects. The action anchor references the survey (not the other way around), avoiding circular transaction dependencies: the survey is published first, then the Info Action references it by `survey_ref`.
 
 ## Limitations and Future Extensions
 
@@ -629,7 +643,7 @@ Version 1 treats all questions as answerable at the respondent's discretion (par
 
 ### Plutus script credentials for standalone surveys
 
-Native multisig scripts are supported in standalone surveys: the script is included in the transaction witness set, and tooling verifies that its conditions are satisfied by the transaction context.
+Native multisig scripts are supported in standalone surveys: tooling resolves the native script from the `script_hash` via chain indexing and verifies that the keys in the transaction's `required_signers` satisfy the script's conditions.
 
 Plutus script credentials in standalone surveys are not supported. Plutus scripts require a redeemer to be evaluated, and there is no redeemer tag for metadata. Governance-linked surveys do not have this limitation: the Conway `voter` type in `voting_procedures` supports Plutus script-based voters (tags 1, 3), and the ledger provides a voting redeemer tag.
 
