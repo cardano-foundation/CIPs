@@ -338,7 +338,9 @@ Questions use a tagged sum type. The first element is the type tag. All question
 - `methodSchemaHash`: blake2b-256 hash (`bytes .size 32`) of the raw bytes at that URI.
 - Response uses `transaction_metadatum`, interpreted according to the referenced schema.
 
-YES/NO/ABSTAIN semantics: this CIP does not reserve special option codes. Authors MAY express YES/NO/ABSTAIN by placing those labels in `options`.
+#### YES/NO/ABSTAIN semantics
+
+This CIP does not reserve special option codes. Authors MAY express YES/NO/ABSTAIN by placing those labels in the `options` array of any option-based question type (single-choice, multi-select, ranking).
 
 ### Survey Response
 
