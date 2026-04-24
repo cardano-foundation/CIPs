@@ -58,7 +58,7 @@ A survey is identified by a `survey_ref`: the pair `(tx_id, survey_index)` where
 
 All map keys and enumeration values use integers for compact CBOR encoding, consistent with how the Cardano ledger encodes transaction bodies, certificates, and voting procedures.
 
-Text fields that may exceed the 64-byte Cardano metadata text limit use chunked text: an array of text strings, each at most 64 bytes, concatenated to reconstruct the full value. This is the same approach used by CIP-20 for the `msg` field.
+Text fields that may exceed the 64-byte Cardano metadata text limit use chunked text: either a single `bounded_text` string (when it fits within 64 bytes) or an array of text strings, each at most 64 bytes, concatenated to reconstruct the full value. The array form follows the same chunking approach used by CIP-20. Implementations MUST accept both forms.
 
 Transaction IDs and hashes use raw `bytes .size 32` rather than hex-encoded text strings, halving the per-hash cost.
 
@@ -80,7 +80,7 @@ pos_uint = uint .gt 0
 tx_id = bytes .size 32
 blake2b_256 = bytes .size 32
 bounded_text = text .size (0..64)     ; Cardano metadata text limit
-chunked_text = [+ bounded_text]       ; concatenated to reconstruct full value
+chunked_text = bounded_text / [+ bounded_text]  ; single string or chunked array
 survey_ref = [tx_id, uint .size 2]    ; (TxId, index in definitions array)
 
 ; Standard Cardano transaction metadatum.
@@ -522,19 +522,19 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
   [                                            / survey_definition /
     1,                                         / specVersion /
     [0, h'cdcdcdcd...cd'],                     / owner: key-based /
-    ["Dijkstra hard-fork CIP shortlist"],      / title /
+    "Dijkstra hard-fork CIP shortlist",         / title (fits in 64 bytes) /
     ["Select candidate CIPs for potential",    / description (chunked) /
      " inclusion in the Dijkstra hard fork."],
     [                                          / questions /
       [1,                                      / multi-select (tag 1) /
-        ["Which CIPs should be shortlisted",   / question prompt (chunked) /
+        ["Which CIPs should be shortlisted",   / prompt (chunked) /
          " for Dijkstra?"],
         ["CIP-0108", "CIP-0119",               / options /
          "CIP-0136", "CIP-0149"],
         4                                      / maxSelections /
       ],
       [2,                                      / ranking (tag 2) /
-        ["Rank shortlisted CIPs by priority"], / question prompt /
+        "Rank shortlisted CIPs by priority",   / prompt (fits in 64 bytes) /
         ["CIP-0108", "CIP-0119",               / options /
          "CIP-0136", "CIP-0149"],
         3                                      / maxRanked: rank top 3 /
@@ -597,7 +597,7 @@ On-chain metadata is paid for per byte in transaction fees and stored permanentl
 
 ### Chunked text for human-readable fields
 
-Cardano metadata limits individual text strings to 64 bytes. Survey titles, descriptions, and question prompts routinely exceed this limit. Chunked text arrays (as established by CIP-20) solve this while keeping option labels as plain `tstr` since they are typically short identifiers.
+Cardano metadata limits individual text strings to 64 bytes. Survey titles, descriptions, and question prompts may exceed this limit. When the value fits within 64 bytes, it is stored as a plain `bounded_text`. When it exceeds 64 bytes, chunked text arrays (as established by CIP-20) are used. Implementations must accept both forms. Option labels remain plain `bounded_text` since they are typically short identifiers.
 
 ### Tagged sum types for questions and answers
 
