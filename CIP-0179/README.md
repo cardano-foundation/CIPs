@@ -169,6 +169,7 @@ survey_question = single_choice_question
 
 survey_definition = [
   uint,                        ; specVersion (this document = 1)
+  credential,                  ; owner (for cancellation authorization)
   chunked_text,                ; title
   chunked_text,                ; description
   [+ survey_question],         ; questions (at least one)
@@ -215,9 +216,8 @@ survey_response = [
 ; ---------- Survey cancellation ----------
 
 ; Cancels a previously published survey.
-; Transaction required_signers MUST include an addr_keyhash
-; that was also in the original survey definition transaction's
-; required_signers.
+; The cancellation transaction MUST prove ownership of the
+; survey definition's owner credential.
 survey_cancellation = survey_ref
 
 ; ---------- Top-level payload under metadata label 17 ----------
@@ -271,19 +271,20 @@ An answer's tag MUST match the tag of the referenced question.
 A survey definition is a positional array:
 
 ```
-[specVersion, title, description, questions, roleWeighting, endEpoch]
+[specVersion, owner, title, description, questions, roleWeighting, endEpoch]
 ```
 
 | Position | Type | Description |
 |:---------|:-----|:------------|
 | 0 | uint | Schema version. This document defines version `1`. |
-| 1 | chunked_text | Human-readable survey title. |
-| 2 | chunked_text | Human-readable survey context or rationale. |
-| 3 | array | Survey questions. MUST contain at least one item. |
-| 4 | role_weighting | Map from role to weighting mode. MUST contain at least one entry. |
-| 5 | uint | Inclusive epoch cutoff for response validity and tally snapshot. |
+| 1 | credential | Survey owner. Used to authorize cancellation. |
+| 2 | chunked_text | Human-readable survey title. |
+| 3 | chunked_text | Human-readable survey context or rationale. |
+| 4 | array | Survey questions. MUST contain at least one item. |
+| 5 | role_weighting | Map from role to weighting mode. MUST contain at least one entry. |
+| 6 | uint | Inclusive epoch cutoff for response validity and tally snapshot. |
 
-Survey definition transactions SHOULD include the creator's `addr_keyhash` in `required_signers` to enable cancellation verification.
+The survey definition transaction MUST prove ownership of the `owner` credential: for key-based credentials, the `addr_keyhash` MUST be in `required_signers`; for script-based credentials, tooling MUST verify the native script is satisfied (same rules as for response credentials).
 
 ### Question Types
 
@@ -371,7 +372,7 @@ A cancellation payload contains one or more `survey_ref` values, each identifyin
 
 Validation:
 - The `survey_ref` MUST resolve to a previously published survey definition.
-- The cancellation transaction's `required_signers` MUST include an `addr_keyhash` that was also in the original survey definition transaction's `required_signers`.
+- The cancellation transaction MUST prove ownership of the survey definition's `owner` credential (same rules as for definition transactions: key-based via `required_signers`, script-based via native script satisfaction).
 - Once cancelled, tooling MUST treat the survey as inactive. Existing responses remain on-chain but MUST NOT be included in tallies.
 - Cancellation does not invalidate the survey definition data itself; it signals that the survey should not be used.
 
@@ -506,6 +507,7 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 {17: [0, [                                    / tag 0 = definitions /
   [                                            / survey_definition /
     1,                                         / specVersion /
+    [0, h'cdcdcdcd...cd'],                     / owner: key-based /
     ["Dijkstra hard-fork CIP shortlist"],      / title /
     ["Select candidate CIPs for potential",    / description (chunked) /
      " inclusion in the Dijkstra hard fork."],
@@ -597,7 +599,7 @@ Multiple survey definitions or responses per transaction reduce the number of tr
 
 ### Survey cancellation
 
-A survey with errors wastes respondent effort. A simple cancellation mechanism (referencing the survey and proving creator identity via `required_signers`) lets creators invalidate a broken survey without waiting for `endEpoch`.
+A survey with errors wastes respondent effort. A simple cancellation mechanism (referencing the survey and proving ownership of the `owner` credential) lets creators invalidate a broken survey without waiting for `endEpoch`. The `owner` is explicit in the survey definition, so cancellation authorization is unambiguous.
 
 ### Explicit credential in response
 
