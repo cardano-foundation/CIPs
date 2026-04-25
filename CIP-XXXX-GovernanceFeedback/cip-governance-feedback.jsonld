@@ -1,0 +1,78 @@
+{
+    "@context": {
+        "DraftProposal": "https://cips.cardano.org/cip/CIP-XXXX#DraftProposal",
+        "ProposalFeedback": "https://cips.cardano.org/cip/CIP-XXXX#ProposalFeedback",
+        "ProposalAddendum": "https://cips.cardano.org/cip/CIP-XXXX#ProposalAddendum",
+
+        "body": {
+            "@id": "https://cips.cardano.org/cip/CIP-0100#body",
+            "@context": {
+                "subject": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#subject",
+                    "@context": {
+                        "GovernanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
+                        "GovernanceAction":   "https://cips.cardano.org/cip/CIP-XXXX#GovernanceActionReference",
+                        "DraftProposal":      "https://cips.cardano.org/cip/CIP-XXXX#DraftProposalReference",
+                        "uri":      "https://cips.cardano.org/cip/CIP-0100#reference-uri",
+                        "hash":     "https://cips.cardano.org/cip/CIP-XXXX#subject-hash",
+                        "actionId": "https://cips.cardano.org/cip/CIP-XXXX#subject-actionId",
+                        "label":    "https://cips.cardano.org/cip/CIP-0100#reference-label"
+                    }
+                },
+
+                "content":            "https://cips.cardano.org/cip/CIP-XXXX#content",
+                "proposedActionType": "https://cips.cardano.org/cip/CIP-XXXX#proposedActionType",
+                "revision":           "https://cips.cardano.org/cip/CIP-XXXX#revision",
+                "status":             "https://cips.cardano.org/cip/CIP-XXXX#status",
+                "submittedAs":        "https://cips.cardano.org/cip/CIP-XXXX#submittedAs",
+
+                "feedbackType":  "https://cips.cardano.org/cip/CIP-XXXX#feedbackType",
+                "inReplyTo": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#inReplyTo",
+                    "@container": "@set"
+                },
+                "conditions": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#conditions",
+                    "@container": "@set",
+                    "@context": {
+                        "description":  "https://cips.cardano.org/cip/CIP-XXXX#condition-description",
+                        "criticality":  "https://cips.cardano.org/cip/CIP-XXXX#condition-criticality",
+                        "addressedBy":  "https://cips.cardano.org/cip/CIP-XXXX#condition-addressedBy"
+                    }
+                },
+                "votingIntent": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#votingIntent",
+                    "@context": {
+                        "role":       "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-role",
+                        "identifier": "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-identifier",
+                        "stance":     "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-stance"
+                    }
+                },
+
+                "addendumType": "https://cips.cardano.org/cip/CIP-XXXX#addendumType",
+                "supersedes": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#supersedes",
+                    "@container": "@set"
+                },
+                "bindingStatements": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#bindingStatements",
+                    "@container": "@set",
+                    "@context": {
+                        "field":        "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-field",
+                        "originalText": "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-originalText",
+                        "revisedText":  "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-revisedText",
+                        "rationale":    "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-rationale"
+                    }
+                },
+                "addresses": {
+                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#addresses",
+                    "@container": "@set",
+                    "@context": {
+                        "uri":         "https://cips.cardano.org/cip/CIP-0100#reference-uri",
+                        "disposition": "https://cips.cardano.org/cip/CIP-XXXX#addresses-disposition"
+                    }
+                }
+            }
+        }
+    }
+}

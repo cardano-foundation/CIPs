@@ -1,0 +1,73 @@
+{
+    "@context": [
+        "https://cips.cardano.org/cip/CIP-0100/cip-0100.common.jsonld",
+        "https://cips.cardano.org/cip/CIP-XXXX/cip-governance-feedback.jsonld",
+        { "@language": "en-us" }
+    ],
+    "@type": "ProposalAddendum",
+    "hashAlgorithm": "blake2b-256",
+    "authors": [
+        {
+            "name": "Alice (original co-author)",
+            "witness": {
+                "witnessAlgorithm": "ed25519",
+                "publicKey": "00000000000000000000000000000000000000000000000000000000000000a1",
+                "signature": "<ed25519 signature of canonicalized body>"
+            }
+        },
+        {
+            "name": "Bob (original co-author)",
+            "witness": {
+                "witnessAlgorithm": "ed25519",
+                "publicKey": "00000000000000000000000000000000000000000000000000000000000000a2",
+                "signature": "<ed25519 signature of canonicalized body>"
+            }
+        }
+    ],
+    "body": {
+        "subject": {
+            "@type": "GovernanceAction",
+            "actionId": "<32-byte tx hash hex>#0",
+            "hash": "<blake2b-256 of canonicalized proposal metadata>",
+            "label": "Treasury withdrawal: Example Tooling Grant, Q2 2026"
+        },
+        "addendumType": "Clarification",
+        "content": "In response to DRep feedback, we are publishing the following binding clarifications to Milestones 2 and 3 and to the project timeline. These do not change the amount, recipients, or overall scope of the approved withdrawal.",
+        "bindingStatements": [
+            {
+                "field": "milestones[2].acceptance",
+                "originalText": "Milestone 2: substantial progress on the indexer.",
+                "revisedText": "Milestone 2 is complete when the indexer exposes the documented /blocks, /txs, /addresses, and /assets endpoints against mainnet, with end-to-end tests covering the happy path for each and a public demo endpoint available for reviewer inspection for at least 72 hours prior to milestone review.",
+                "rationale": "Clarifies 'substantial progress' into a measurable acceptance criterion. Tightens rather than widens scope."
+            },
+            {
+                "field": "timeline",
+                "originalText": "The project is expected to take approximately 6 months, with a withdrawal schedule matching that expectation.",
+                "revisedText": "For milestone-enforcement purposes, the binding deadline is the 9-month date implied by the withdrawal schedule. The '6 months' figure is a target, not a deadline.",
+                "rationale": "Resolves an ambiguity raised in DRep feedback. The withdrawal schedule itself is unchanged."
+            }
+        ],
+        "addresses": [
+            {
+                "uri": "ipfs://<feedback-cid>",
+                "disposition": "Accepted"
+            }
+        ],
+        "inReplyTo": [
+            "ipfs://<feedback-cid>"
+        ],
+        "comment": "Issued in response to two pieces of DRep feedback during the voting window; see addresses.",
+        "references": [
+            {
+                "@type": "GovernanceMetadata",
+                "label": "Original proposal metadata",
+                "uri": "ipfs://<original-proposal-cid>"
+            },
+            {
+                "@type": "Other",
+                "label": "CIP-XXXX (this extension)",
+                "uri": "https://cips.cardano.org/cip/CIP-XXXX"
+            }
+        ]
+    }
+}
