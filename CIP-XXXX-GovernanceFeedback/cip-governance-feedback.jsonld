@@ -1,75 +1,75 @@
 {
     "@context": {
-        "DraftProposal": "https://cips.cardano.org/cip/CIP-XXXX#DraftProposal",
-        "ProposalFeedback": "https://cips.cardano.org/cip/CIP-XXXX#ProposalFeedback",
-        "ProposalAddendum": "https://cips.cardano.org/cip/CIP-XXXX#ProposalAddendum",
+        "DraftProposal": "https://314pool.com/cips/governance-feedback#DraftProposal",
+        "ProposalFeedback": "https://314pool.com/cips/governance-feedback#ProposalFeedback",
+        "ProposalAddendum": "https://314pool.com/cips/governance-feedback#ProposalAddendum",
 
         "body": {
             "@id": "https://cips.cardano.org/cip/CIP-0100#body",
             "@context": {
                 "subject": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#subject",
+                    "@id": "https://314pool.com/cips/governance-feedback#subject",
                     "@context": {
                         "GovernanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
-                        "GovernanceAction":   "https://cips.cardano.org/cip/CIP-XXXX#GovernanceActionReference",
-                        "DraftProposal":      "https://cips.cardano.org/cip/CIP-XXXX#DraftProposalReference",
+                        "GovernanceAction":   "https://314pool.com/cips/governance-feedback#GovernanceActionReference",
+                        "DraftProposal":      "https://314pool.com/cips/governance-feedback#DraftProposalReference",
                         "uri":      "https://cips.cardano.org/cip/CIP-0100#reference-uri",
-                        "hash":     "https://cips.cardano.org/cip/CIP-XXXX#subject-hash",
-                        "actionId": "https://cips.cardano.org/cip/CIP-XXXX#subject-actionId",
+                        "hash":     "https://314pool.com/cips/governance-feedback#subject-hash",
+                        "actionId": "https://314pool.com/cips/governance-feedback#subject-actionId",
                         "label":    "https://cips.cardano.org/cip/CIP-0100#reference-label"
                     }
                 },
 
-                "content":            "https://cips.cardano.org/cip/CIP-XXXX#content",
-                "proposedActionType": "https://cips.cardano.org/cip/CIP-XXXX#proposedActionType",
-                "revision":           "https://cips.cardano.org/cip/CIP-XXXX#revision",
-                "status":             "https://cips.cardano.org/cip/CIP-XXXX#status",
-                "submittedAs":        "https://cips.cardano.org/cip/CIP-XXXX#submittedAs",
+                "content":            "https://314pool.com/cips/governance-feedback#content",
+                "proposedActionType": "https://314pool.com/cips/governance-feedback#proposedActionType",
+                "revision":           "https://314pool.com/cips/governance-feedback#revision",
+                "status":             "https://314pool.com/cips/governance-feedback#status",
+                "submittedAs":        "https://314pool.com/cips/governance-feedback#submittedAs",
 
-                "feedbackType":  "https://cips.cardano.org/cip/CIP-XXXX#feedbackType",
+                "feedbackType":  "https://314pool.com/cips/governance-feedback#feedbackType",
                 "inReplyTo": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#inReplyTo",
+                    "@id": "https://314pool.com/cips/governance-feedback#inReplyTo",
                     "@container": "@set"
                 },
                 "conditions": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#conditions",
+                    "@id": "https://314pool.com/cips/governance-feedback#conditions",
                     "@container": "@set",
                     "@context": {
-                        "description":  "https://cips.cardano.org/cip/CIP-XXXX#condition-description",
-                        "criticality":  "https://cips.cardano.org/cip/CIP-XXXX#condition-criticality",
-                        "addressedBy":  "https://cips.cardano.org/cip/CIP-XXXX#condition-addressedBy"
+                        "description":  "https://314pool.com/cips/governance-feedback#condition-description",
+                        "criticality":  "https://314pool.com/cips/governance-feedback#condition-criticality",
+                        "addressedBy":  "https://314pool.com/cips/governance-feedback#condition-addressedBy"
                     }
                 },
                 "votingIntent": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#votingIntent",
+                    "@id": "https://314pool.com/cips/governance-feedback#votingIntent",
                     "@context": {
-                        "role":       "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-role",
-                        "identifier": "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-identifier",
-                        "stance":     "https://cips.cardano.org/cip/CIP-XXXX#votingIntent-stance"
+                        "role":       "https://314pool.com/cips/governance-feedback#votingIntent-role",
+                        "identifier": "https://314pool.com/cips/governance-feedback#votingIntent-identifier",
+                        "stance":     "https://314pool.com/cips/governance-feedback#votingIntent-stance"
                     }
                 },
 
-                "addendumType": "https://cips.cardano.org/cip/CIP-XXXX#addendumType",
+                "addendumType": "https://314pool.com/cips/governance-feedback#addendumType",
                 "supersedes": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#supersedes",
+                    "@id": "https://314pool.com/cips/governance-feedback#supersedes",
                     "@container": "@set"
                 },
                 "bindingStatements": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#bindingStatements",
+                    "@id": "https://314pool.com/cips/governance-feedback#bindingStatements",
                     "@container": "@set",
                     "@context": {
-                        "field":        "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-field",
-                        "originalText": "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-originalText",
-                        "revisedText":  "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-revisedText",
-                        "rationale":    "https://cips.cardano.org/cip/CIP-XXXX#bindingStatement-rationale"
+                        "field":        "https://314pool.com/cips/governance-feedback#bindingStatement-field",
+                        "originalText": "https://314pool.com/cips/governance-feedback#bindingStatement-originalText",
+                        "revisedText":  "https://314pool.com/cips/governance-feedback#bindingStatement-revisedText",
+                        "rationale":    "https://314pool.com/cips/governance-feedback#bindingStatement-rationale"
                     }
                 },
                 "addresses": {
-                    "@id": "https://cips.cardano.org/cip/CIP-XXXX#addresses",
+                    "@id": "https://314pool.com/cips/governance-feedback#addresses",
                     "@container": "@set",
                     "@context": {
                         "uri":         "https://cips.cardano.org/cip/CIP-0100#reference-uri",
-                        "disposition": "https://cips.cardano.org/cip/CIP-XXXX#addresses-disposition"
+                        "disposition": "https://314pool.com/cips/governance-feedback#addresses-disposition"
                     }
                 }
             }

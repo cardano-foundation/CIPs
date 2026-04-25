@@ -1,7 +1,7 @@
 {
     "@context": [
         "https://cips.cardano.org/cip/CIP-0100/cip-0100.common.jsonld",
-        "https://cips.cardano.org/cip/CIP-XXXX/cip-governance-feedback.jsonld",
+        "https://314pool.com/cips/governance-feedback.jsonld",
         { "@language": "en-us" }
     ],
     "@type": "ProposalFeedback",
