@@ -38,7 +38,7 @@ This CIP resolves those problems by using:
 
 - a fixed 73-epoch rolling window (no mutable period parameter),
 - ledger state for window revenue and withdrawals, and
-- a guardrail-script enactment check against that state.
+- a guardrail-script enactment check against that information in the state, which will have to be included in the transaction
 
 This preserves deterministic on-chain behavior while keeping policy enforcement in the guardrail script path defined by governance.
 
