@@ -1,9 +1,9 @@
 ---
 CPS: 28
-Title: Approaches to call-by-need in UPLC
+Title: Approaches to non-strict UPLC evaluation
 Category: Plutus
 Status: Open
-Authors: 
+Authors:
     - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions:
@@ -14,322 +14,276 @@ License: Apache-2.0
 
 ## Abstract
 
-Arguments are applied strictly in UPLC. While `Delay` and `Force` can simulate
-non-strictness, it is at the risk of repeated evaluation, as a `Delay`ed
-computation has no 'memory' of being `Force`d. This means that call by need
-avaluation is not easily achievable in UPLC, limiting performance.
+UPLC has [call-by-value][call-by-value] as its evaluation strategy. While
+`Delay` and `Force` can be used to adjust when evaluation occurs, it risks
+repeat evaluation: a `Delay`ed computation has no 'memory' of being `Force`d.
+This means that [non-strict evaluation][non-strict-evaluation] is not easily
+implemented in UPLC. This limits convenience, complicates performance, and
+inhibits re-use of code, all of which are significant problems for the
+applications for which UPLC is designed.
 
 ## Problem
 
-UPLC has [strict evaluation][strict-evaluation], also known as 'call by value'. 
-Given the specifics of the onchain environment, as well as the inherent 
-predictability and familiarity of this model, this is a good default choice. 
-However, the ability to delay evaluation of arguments can sometimes be an 
-advantage for performance. As a result, many languages offer such a 
-possibility, typically as a pair of 'delay' and 'force' constructs, which 
-respectively 'wrap up' a computation and 'unwrap' and evaluate it. Ideally, a
-ny such 'wrapped' computation does not get re-evaluated every time it is 
-'unwrapped': the computation is evaluated once when first demanded, then 
-the result is cached. 
+UPLC is the language of the onchain Cardano environment: all scripts ultimately
+must be written (directly or indirectly) in it. The onchain environment is
+strongly resource-constrained, and also has high correctness requirements
+relative other code. For that reason, it is essential that UPLC satisfies the
+following criteria, in the given order:
 
-UPLC contains `Delay` and `Force` as part of its specification, which are
-designed to provide the ability to delay and request evaluation respectively.
-However, there is a significant limitation to these constructs: repeated use of
-`Force` on the same `Delay`ed computation forces its recomputation every time.
-This is a significant limitation, as now, to avoid unnecessary work, developers
-must ensure that `Force` is not used multiple times on the same computation.
-While few script or dApp developers write UPLC directly, this problem translates
-to any framework or language targeting UPLC. This makes
-[call by need][call-by-need] (or indeed, any kind of non-strict evaluation)
-difficult to provide within UPLC without significant work, if it is possible at
-all.
+1. _Predictability:_ Evaluation of UPLC must behave in an easy-to-understand way
+   with regard to performance and resource usage.
+2. _Minimalism:_ Optimizing UPLC to use fewer resources must be both possible
+   and easy.
+3. _Convenience:_ UPLC must not be harder to use to write the sorts of code that
+   script developers want. Due to UPLC's low-level nature, this instead
+   transfers to making the work of developers of higher-level languages and
+   frameworks (such as Plutarch) easier, specifically regarding optimization and
+   code generation.
+
+One of the choices made in service of these criteria was the use of [strict
+evaluation][strict-evaluation], also known as [call-by-value][call-by-value] for
+the SECP machine that runs UPLC programs. This choice as a default is a good one
+given the criteria given above, particularly that of predictability.
+Furthermore, it is a common, and well-understood, choice, made by many other
+languages, satisfying the convenience criterion as well.
+
+At the same time, there are frequently cases where strict evaluation sacrifices
+performance. As a result, many languages contain some means of avoiding strict
+evaluation in specific cases, while using strict evaluation in general. UPLC
+makes some concession to this with the `Force` and `Delay` primitives. More
+precisely, `Delay` forces the SECP machine to not evaluate the UPLC term it is
+applied to until `Force` is applied. This is effectively ['thunking'][thunking].
+However, repeated use of `Force` on the same `Delay`ed term will re-evaluate
+that term each time. Thus, while on the surface, it may appear that UPLC can
+have on-demand [call-by-need][call-by-need] evaluation, it is in fact up to the
+writer of the UPLC (whether a human or a framework) to ensure that `Delay`ed
+computations are not recomputed. This is a known problem, described in multiple
+places in the Cardano ecosystem: for example, the [Plutarch documentation of 
+`Delay` and
+`Force`](https://plutarch-plutus.org/Introduction/DelayAndForce.html). 
+
+This limitation makes it difficult to perform the kinds of optimizations done by
+languages with 'proper' support for call-by-need, whether language-wide (such as
+GHC) or not. This impacts directly on both the minimalism and convenience
+criteria:
+
+* Techniques such as shortcut fusion, deforestation or similar, common to
+  functional programming (and Haskell in particular) are a tedious, repetitive,
+  manual, brittle process, often involving 'dropping out' of a higher-level
+  framework or view of the problem.
+* Compositionality of code suffers due to unnecessary intermediate allocations
+  (if written 'at the high level') or overly-specific re-implementations of more
+  general functionality (if written with performance at the forefront).
+* When combined with the absence of mutability, there is no general or
+  straightforward way to provide the benefits of call-by-need without
+  significant work from the developer of either the script, the framework, or
+  frequently both.
+
+This creates a situation where 'wheel-reinvention' is not just commonplace, but
+practically inevitable, making development longer, more complex, and less
+enjoyable, for all concerned. This counts _especially_ for developers coming
+from Haskell backgrounds: in particular, Plinth, designed as a direct embedding
+_into_ GHC Haskell, ends up forcing its users to re-learn everything they know
+due to the change to strict evaluation without any straightforward way to
+recover call-by-need. While some limited techniques are available in some
+frameworks (for example, [Plutarch pull arrays][plutarch-pull-array]), these
+tend to be one-off or niche methods, that take significant effort to design, and
+often are still lacking relative what a language like GHC Haskell can do 'for
+free'.
 
 ## Use Cases
 
-We provide several examples of situations where call by need evaluation being
-available would improve performance, or the developer experience. These are
-difficult, or impossible, to achieve today with UPLC as it exists.
+We provide several examples where having call-by-need evaluation would be
+beneficial to script developers, framework developers, or both. With UPLC as it
+is today, each of these cases is difficult to address, if not impossible.
 
-### Memoization or tabulation algorithms
+### List (and stream) fusion
 
-[Memoization][memoization] is an important technique, particularly in functional
-programming. It effectively allows us to 'remember' the results of computations
-for later use without necessarily having to 'run' the computation right away. In
-the context of UPLC, this capability is quite important, as the 'easy' method of
-performing memoization involves mutable state, which isn't available. 
-
-Currently, this is difficult to do. While `Delay` and `Force` can provide the
-'delayed execution' effect required for memoization, but as `Force` has no
-'memory' of whether a `Delay`ed computation has been executed, this mechanism
-alone isn't sufficient. While working around this in some settings is possible,
-it is not easy, and in many cases can introduce more problems than it solves.
-
-### Easier to write Haskell-like code
-
-One source of friction when writing scripts or dApps for Cardano, particularly
-when using Plinth, is that UPLC's strict semantics are quite surprising for
-developers familiar with Haskell. While not all developers writing such scripts
-are Haskellers, a great many are, and Plinth in particular is designed to be as
-transparent as possible to developers familiar with Haskell. However, laziness
-is a large part of Haskell's semantics, and currently, providing anything even
-similar to it in generated UPLC code from any framework (Plinth or not) is
-difficult. This largely stems from `Delay` lacking any 'memory' of whether its
-computation has been forced or not.
-
-We give a more specific example below using Plutarch to illustrate just how
-difficult this can become.
-
-### Boehm-Berrarducci encodings and escape continuations
-
-As part of the [Grumplestiltskin project][grumplestiltskin], we often needed
-'auxilliary values' as part of basic operations. Such values may vary _between_
-script executions, but not within them, and without these values, the basic
-operations in question cannot even be defined. Two good examples of such
-'auxilliary values' are finite field order and elliptic curve constants: both
-are needed for almost any operation over Galois field elements and elliptic
-curves respectively. However, as the goal of Grumplestiltskin is to allow the
-use of arbitrary Galois fields and elliptic curves, operations are forced to be
-non-specific in these 'auxilliary values', despite any given execution of a
-script only using one specific set of such values.
-
-There are two ways to resolve this problem. The first is to force every finite
-field element, curve point, or anything similar, to carry these 'auxilliary
-values'. In Plutarch, this would look like the following:
+The list is _the_ first-class data structure in UPLC (as in Haskell): almost
+anything requiring a linear collection in UPLC must be done with lists. To this
+end, GHC Haskell takes significant steps to ensure that intermediate lists are
+not generated. For example, code of the form
 
 ```haskell
-data FieldElement (s :: S) = 
-    FieldElement (Term s PNatural) -- the actual element
-                 (Term s PPositive) -- the field order
-
--- Affine representation
-data CurvePoint (s :: S) = 
-    CurvePointInfinity |
-    CurvePoint (Term s FieldElement) -- x coordinate
-               (Term s FieldElement) -- y coordinate
-               (Term s PInteger) -- curve A constant
-               (Term s PInteger) -- curve B constant
+foldl' f x . map g $ xs
 ```
 
-However, this has numerous downsides:
-
-* The representations for those values become much larger. This is especially
-  bad for field elements, as they go from being (essentially) a single builtin
-  `Integer` to requiring a `Data` or SOP encoding. This means higher script
-  costs.
-* Operations that create new values wouldn't change any of these 'auxilliary
-  values'. This means that we would spend a lot of unnecessary effort on
-  rebuilding data that never changes.
-* Representational reducancy is almost guaranteed. 'CurvePoint' demonstrates
-  this clearly: `FieldElement`s already carry the field order, but as we need
-  _two_ `FieldElement`s for an elliptic curve point, we end up storing the field
-  order twice. Not only is this wasteful, it also can create invalid
-  representations we now have to be careful about.
-
-These downsides are not acceptable in the resource-constrained environment of
-the chain. The alternative solution is to represent field elements and curve
-points as [Boehm-Berrarducci encodings][boehm-berrarducci]. In Plutarch, the
-above examples would look like this:
+would be compiled into effectively
 
 ```haskell
-data FieldElementBB (s :: S) = 
-    FieldElementBB (
-        forall (r :: S -> Type) . Term s ((PNatural :--> PPositive :--> r) :--> r)
-        )
-
-data CurvePointBB (s :: S) = 
-    CurvePointBB (
-        forall (r :: S -> Type) . 
-            Term s (r :--> (FieldElement :--> FieldElement :--> PInteger :--> PInteger :--> r) :--> r)
-            )
+foldl' (\acc y -> f acc (g y)) x xs
 ```
 
-This approach addresses the disadvantages of the previous attempt:
+This kind of optimization, known as _stream fusion_, is taken essentially for
+granted by Haskell developers, who constitute a significant number of Cardano
+script and dApp developers as well. This is made possible in large part by GHC
+Haskell being a call-by-need language: without it, [problems arise][reuse] with
+excessive evaluation. 
 
-* As Boehm-Berrarducci encodings are lambdas, they are much smaller than the
-  equivalent `Data` or SOP representations. Furthermore, construction of new
-  values only requires making a new lambda (which may call the lambdas of other
-  Boehm-Berrarducci forms), which is quite efficient.
-* As we only _must_ call these Boehm-Berrarducci lambdas when we need to produce
-  a result (of a different type), 'fields' of data structures represented this
-  way need only be evaluated once. 
+Furthermore, in the context of UPLC, these kinds of techniques are even more
+important than in a language such as Haskell. This is for two reasons:
 
-However, due to UPLC's inherent strictness, we cannot get the benefit of the
-second of these. In fact, even when _composing_ Boehm-Berrarducci forms, we can
-end up with surprising blowups in execution unit and memory use, which cannot
-always be worked around. 
+* The execution environment for UPLC is far more resource-constrained. Thus,
+  intermediate allocations, or any evaluation over the minimum required,
+  potentially makes a script unviable far more quickly than an analogous program
+  would be in a general computation environment.
+* The other major method of avoiding intermediate allocations (mutability) is
+  not available at all.
 
-For an example of such a situation, consider the group operation for curve 
-points. If either curve point is the point at infinity, we produce the other
-argument, as the point at infinity is the neutral element for the group 
-operation. Ideally, we want to return the argument unchanged, and un-evaluated.
-However, in a Boehm-Berrarducci encoding, to even _establish_ whether a given
-argument is the point at infinity or not, we must call the argument's
-continuation in the new lambda. Ideally, this should only happen when needed.
-However, this doesn't happen in practice. If we assume the result of the group
-operation provides `whenInf` and `whenNot` handlers, and we have argument
-Boehm-Berrarducci encodings `k1` and `k2`, we must write the following:
+This makes fusion-style techniques extremely important for performance. This is
+not a theoretical problem: work done [in Plutarch with pull
+arrays][plutarch-pull-array] using another variant of stream fusion, shows
+significant performance improvements in array computations, especially as the
+'pipeline' of operations becomes larger. 
 
-```haskell
-k1 (k2 whenInf whenNot) $ \x1 y1 curveA curveB -> 
-    k2 (k1 whenInf whenNot) $ \x2 y2 _ _ -> 
-        -- rest of the computation
-```
+While it _is_ possible to implement such optimizations without direct support
+for call-by-need in UPLC, it is both much more difficult, and much less general.
+Solving such problems 'once and for all' is not possible in general, forcing
+either narrow and restrictive frameworks or developers hand-rolling fused loops,
+which do not generalize and cannot be reused. Plutarch pull array code is a good 
+demonstration of this deficiency in action: while it _can_ significantly
+out-perform naive code, it cannot eliminate all intermediates, only works for a
+small class of operations, and does not interact well with indexing operations
+until the array has been 'materialized'. 
 
-As UPLC is strict, the resulting computation ends up evaluating far more than it
-should:
+Furthermore, in some cases, even such a manual approach is of no help. A good,
+if extremely detailed, example of this problem is the [Grumplestiltskin
+project][grumple]. As this project is designed to support cryptographic schemes
+using elliptic curves over finite fields (and their extensions), many operations
+require large numbers of intermediate curve points. These can be fairly
+non-trivial structures, involving multiple auxilliary values, with many
+intermediate operations, and thus, intermediate structures. In other onchain
+languages, this problem is addressed via mutable arrays, an option unavailable
+to UPLC. Furthermore, the [fusion-driven solution][grumple-fusion], while
+better, is still forced to over-evaluate, without a clear way to avoid it, due
+to a lack of true call-by-need. This creates significant performance problems
+that simply do not need to exist, but that cannot be solved without
+significant, repeated, tedious and _highly_ expert developer work.
 
-* `k2 whenInf whenNot` _must_ be evaluated every time, even if `k1` is _not_ the
-  point at infinity; and
-* If `k1` is not the point at infinity, `k1 whenInf whenNot` _must_ be
-  evaluated, even if `k2` is not the point at infinity.
+### Generating efficient UPLC from Haskell-like code
 
-This means that any performance advantage we could have gained is completely
-eliminated, especially if the 'chain of computations' becomes large. Given that
-scalar group multiplication on elliptic curves must be done using
-[exponentiation by squaring][exponentiation-by-squaring], long 'chains of
-computation' are inevitable. 
+[Plinth][plinth] (formerly `plutus-tx`) is the standard framework for writing
+Cardano scripts, included in the Plutus repositories. It is designed to be a direct
+embedding into Haskell: this is in contrast with Plutarch or Aiken, which are
+both standard eDSLs. The goal of this choice is to allow any Haskell developer
+to be able to write Cardano scripts without having to learn a new language, eDSL
+or otherwise.
 
-Using `Delay` and `Force` here is of no help. While making the
-arguments to `k1` (and `k2`) delayed would avoid the over-evaluation problem
-above, it leads to a different problem: re-evaluation. As delayed computations
-in UPLC have no 'memory' of being forced, every force requires re-evaluation. In
-cases where we have repeated uses of the same point in a computation, or the
-point at infinity, this leads to a _lot_ of duplicate evaluation, which once
-again destroys performance. Furthermore, the additional `Delay` and `Force`
-required increases code size, potentially linearly with the 'chain of
-computation' size.
+In practice, however, this goal is not really attained. Plinth is call-by-value,
+even though it is embedded in a language that is call-by-need. This happens
+because call-by-need is difficult to implement in UPLC without either
+significant compiler analysis, or direct user intervention. This is unsatisfying
+for both users _and_ maintainers of Plinth:
 
-Thus, currently, no matter what we do, we are forced to choose inefficiency.
-This is not a theoretical problem: Grumplestiltskin demonstrates that this
-results in significant, and unnecessary, performance penalties. In this
-particular case, this is especially painful, as code like this is 'hot' and will
-be used often.
+* Maintainers are forced to provide a sub-par experience, due to
+  the difficulty of mimicking familiar Haskell semantics.
+* Users are effectively forced to learn a new language _anyway_, as much of what
+  they expect to work a certain way in Haskell does not work that way in Plinth.
+
+This problem is particularly apparent in Plinth, but other frameworks, like
+Plutarch, do not escape it either. Essentially, any maintainer of any framework
+generating UPLC is forced to choose one of the following:
+
+* Completely delegate any responsibility for performance that could be obtained
+  via call-by-need to users, bypassing the benefits of the framework; or
+* Perform costly and complex analysis as part of their framework's compilation
+  pipeline, requiring significant maintenance and testing (as well as subsequent
+  fixes when issues inevitably arise), detracting from other maintenance,
+  documentation etc.
+
+Stream fusion, as well as many similar techniques, could be
+automated, or mostly automated, by such frameworks, just as they are in GHC
+Haskell. However, without a straightforward approach to non-strict evaluation in
+UPLC, this is difficult or outright impossible without requiring a lot of user
+intervention. Furthermore, users are generally not knowledgeable, or interested,
+enough to pursue such goals, to say nothing of the result forcing tedious and
+error-prone re-implementation of the same general techniques.
 
 ## Goals
 
-Multiple goals must be met by any implementation of call by need, aside from its
-availability as such. We define these below, along with the reasons for their
-necessity.
+Any implementation of non-strict evaluation support must meet multiple goals. We
+define these below, along with why we feel they are necessary.
 
-### Existing scripts must not be affected
+### Existing scripts should not become worse
 
-Due to the large number of scripts already deployed, adding call by need to UPLC
-should not affect how these scripts run. More specifically, call by need should
-be an explicitly opt-in capability, and any scripts that do not make use of it
-specifically should not change in how they run. This goal specifically precludes
-'global' or 'implit' call by need, as is done in GHC for example. 
+Due to the large number of scripts already deployed, any solution should not
+make such scripts worse simply by existing. More specifically, existing scripts
+should not consume more resources than they did previously: becoming _more_
+efficient is fine, but _less_ efficient would not be. Moreover, the _results_ of
+those scripts should not change either. This precludes any 'global' or
+'implicit' change in the UPLC evaluation strategy.
 
 This is essential for stability and developer experience, as 'mandatory
-retrofits' are impractical at best and impossible at worst. In the context of
-the chain this is particularly important, as changing an already-deployed script
-is difficult. Furthermore, changing the evaluation semantics of scripts
-'globally' is risky in general, as it may cause subtle changes that affect
-script logic that may be difficult to detect or solve.
+retrofits' are impractical at best, and impossible at worst. In the specific
+context of the chain, this is particularly important, as changing an
+already-deployed script is difficult. Furthermore, changing the evaluation
+semantics of scripts 'globally' is risky in general, as this can cause subtle
+changes that affect script logic while being difficult to solve.
 
-### No changes to existing functionality
+### Minimal and clear
 
-Any existing part of UPLC should continue to behave as previously. This
-precludes 'extending' or 'retrofitting' `Delay` and `Force`.
+Adding non-strict evaluation to UPLC should both change as little as is
+reasonable, and also not introduce unnecessarily many constructions, or
+unnecessarily complex ones. While the _exact_ specifics of 'unnecessarily many'
+or 'unnecessarily complex' are hard to gauge, ideally, the mechanism should not
+be any more complex to implement or understand than `Force` and `Delay`
+currently are.
 
-The justification for this is similar to the previous goal: scripts that already
-exist, or that don't require call by need, should remain unaffected. However,
-there is a secondary reason due to the 'double meaning' of `Force` in UPLC:
-
-* A request to evaluate a `Delay`ed computation; and 
-* A stand-in for a type variable instantiation for a builtin.
-
-This would make any 'retrofit' of `Force` both difficult and confusing.
-
-### Minimal
-
-Adding call by need to UPLC should change as little as is reasonable. While
-extending the default universe or adding new builtins are both essentially
-inevitable, changes beyond this should be considered carefully, and ideally
-avoided. Ideally, `Term` should not change if at all possible.
-
-This goal stems from the desire to reduce the change surface required from
-Plutus. While adding new members of the default universe, and new builtins,
-involves effort, it fundamentally doesn't require changing UPLC's structure
-itself. `Delay` and `Force` in their current form are constructs of `Term`, and
-are thus more 'fundamental': the inclusion of anything similar would have
-significantly larger knock-on effects, and would be best avoided.
+We need this goal to ensure that both the change surface to Plutus, and the
+extra work needed by maintainers of scripts and frameworks is reduced. 
 
 ### Universal
 
-It should be possible to 'lazify' any computation that a developer might want,
-provided it is not parameterized by arguments. Thus, whether the developer wants
-a 'lazified' application of a builtin, a user-defined lambda, or anything
-similar, provided that the arguments cannot vary, it should be possible.
+It should be possible to use non-strict evaluation on any computation that a
+developer might want, provided it is not parameterized by arguments. Thus,
+whether a developer wants a non-strict application of a builtin, a user-defined
+lambda, or anything similar, provided that the arguments cannot vary, it should
+be possible.
 
 This goal stems from developer expectations above all: there should not be any
-practical reason why a computation not dependent on arguments _shouldn't_ be
-'lazifiable'. Furthermore, this would ensure the maximum number of future use
-cases are supported.
+practice reason why a computation not dependent on arguments should be forced to
+be strict. Furthermore, this notion of 'universality' future-proofs us against
+the maximum number of possible use cases.
 
 ## Open Questions
 
 Even within the bounds of the goals listed above, a lot of possibilities remain.
-Two questions in particular need to be addressed:
+One question in particular need to be addressed: should `Delay` and `Force` be 
+retrofitted to behave as on-demand call-by-need? On the surface, this appears
+like an elegant solution, as it is essentially invisible at the user level, 
+whether the user is a script developer or a framework developer. However, given
+that this retrofit would require `Delay` or `Force` to become more complicated,
+the question of performance becomes concerning, especially for existing scripts. 
 
-* How will UPLC make call by need available to developers?
-* How should call by need computations be costed?
+To see why this could be an issue, consider any existing, optimized script. In
+any such script, the developer(s) would have taken care to not `Force` any
+`Delay`ed computation more than once. If `Force` were retrofitted to avoid
+recomputation, the script does not benefit; however, the added complexity of
+`Delay` and `Force` (and associated performance hit) would still be taken by
+that script. 
 
-Questions of implementation specifics into Plutus' codebase also arise, but we
-believe that, once the two prior questions are answered, implementation
-specifics should no longer be uncertain.
-
-It's worth noting that the exact semantics of call by need are not under
-dispute: the intent is to mimic `Delay` and `Force` as they currently exist, but
-with the possibility of avoiding recomputation. Indeed, it is difficult to
-imagine what other semantics we could choose given the goals stated above,
-particularly universality. While in theory, 'laziness' (or 'non-strictness')
-can and do vary in their behaviour, in practice, given the goal of universality
-and the fact that onchain data types are quite varied in their structure, there
-really is only one option.
-
-We will discuss the two major open questions in more detail below.
-
-### Making call by need available
-
-In order for script developers (or perhaps more likely, implementers of
-script-writing frameworks like Plinth or Plutarch) to make use of call by need, 
-UPLC must provide suitable constructs. Exactly what this should look like is an
-important consideration. Realistically, one of two possibilities is likely:
-
-* A dedicated type for 'wrapped lazy' computations in the default universe,
-  together with builtins for building and running such; or
-* A new construction within `Term`, similar to current `Force` and `Delay`.
-
-There are benefits and drawbacks to both choices. 'Leaving `Term` alone' has the
-advantage of being simpler to implement (and target), but requires some way of
-avoiding the strictness of UPLC evaluation to begin with. More precisely, a
-careless design for a builtin to 'construct' a call by need computation could end
-up doing nothing: if we end up evaluating the argument to the builtin, we've
-gained nothing. Modifying `Term` prevents this problem ever arising, but
-will lead to 'knock-on' effects throughout both Plutus and the ecosystem. While
-we believe that avoiding modification of `Term` is the better choice, it may
-paradoxically end up being _more_ difficult _not_ to modify `Term`.
-
-### Costing call by need
-
-[Costing][costing], or more precisely the Plutus cost model, is an important
-feature of Cardano scripts and their execution. A key part of this is the
-costing of builtins, which is based on their arguments. Given that one of the
-suggested interfaces for 'true' laziness is via builtins, how such builtins
-would be costed may require consideration. The most important aspect is that 
-the cost of computing a call by need computation should only be 'paid' once, as
-otherwise, the whole construction is somewhat meaningless. While this isn't
-necessarily a huge issue, it must still be considered for any solution based on
-builtins.
+A [test of this kind of retrofit][lazy-delay-force] supports this conclusion to
+some degree. The given implementation increases the cost of `Delay` and `Force`
+roughly by a factor of 2. However, for existing scripts using `Delay` and
+`Force` optimally (that is, not `Force`ing any `Delay`ed computation more than
+once), the overhead is less than 3%. However, poorly-optimized programs lose
+significantly more, ranging from 10% to as much as 90%. While this suggests that
+retrofitting `Delay` and `Force` isn't free, it may be considered worth it over
+adding new operations.
 
 ## Copyright
 
 This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
-[grumplestiltskin]: https://github.com/mlabs-haskell/grumplestiltskin
-[boehm-berrarducci]: https://okmij.org/ftp/tagless-final/course/Boehm-Berarducci.html
-[exponentiation-by-squaring]: https://en.wikipedia.org/wiki/Exponentiation_by_squaring 
-[costing]: https://plutus.cardano.intersectmbo.org/docs/delve-deeper/cost-model
+[call-by-value]: https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_value
+[non-strict-evaluation]: https://en.wikipedia.org/wiki/Evaluation_strategy#Non-strict_evaluation 
 [strict-evaluation]: https://en.wikipedia.org/wiki/Evaluation_strategy#Strict_evaluation
-[memoization]: https://en.wikipedia.org/wiki/Memoization
+[thunking]: https://en.wikipedia.org/wiki/Thunk#Functional_programming
 [call-by-need]: https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_need
+[plutarch-pull-array]: https://www.mlabs.city/blog/performance-pull-arrays-and-plutarch
+[costing]: https://plutus.cardano.intersectmbo.org/docs/delve-deeper/cost-model
+[lazy-delay-force]: https://github.com/user-attachments/files/26065364/lazy-delay-force.pdf
+[plinth]: https://github.com/IntersectMBO/plutus/tree/master/plutus-tx
+[reuse]: https://augustss.blogspot.com/2011/05/more-points-for-lazy-evaluation-in.html
+[grumple]: https://github.com/mlabs-haskell/grumplestiltskin/tree/milestone-3
+[grumple-fusion]: https://github.com/cardano-foundation/CIPs/pull/1150#issuecomment-4172833957
