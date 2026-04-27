@@ -1,0 +1,21 @@
+{
+  "17": {
+    "msg": [
+      "Response to Dijkstra hard-fork CIP shortlist"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
+      "responderRole": "DRep",
+      "answers": [
+        {
+          "questionId": "cip_shortlist",
+          "selection": [
+            1,
+            3
+          ]
+        }
+      ]
+    }
+  }
+}
