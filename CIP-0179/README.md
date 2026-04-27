@@ -65,7 +65,7 @@ Transaction IDs and hashes use raw `bytes .size 32` rather than hex-encoded text
 ### CDDL Schema
 
 ```cddl
-; CIP-179 On-chain Surveys and Polls (version 1)
+; CIP-179 On-chain Surveys and Polls (version 2)
 ;
 ; Encoding principles:
 ;   - Integer keys and enum values for compact CBOR.
@@ -169,7 +169,7 @@ survey_question = single_choice_question
 ; ---------- Survey definition ----------
 
 survey_definition = [
-  uint,                        ; specVersion (this document = 1)
+  uint,                        ; specVersion (this document = 2)
   credential,                  ; owner (for cancellation authorization)
   chunked_text,                ; title
   chunked_text,                ; description
@@ -277,7 +277,7 @@ A survey definition is a positional array:
 
 | Position | Type | Description |
 |:---------|:-----|:------------|
-| 0 | uint | Schema version. This document defines version `1`. |
+| 0 | uint | Schema version. This document defines version `2`. |
 | 1 | credential | Survey owner. Used to authorize cancellation. |
 | 2 | chunked_text | Human-readable survey title. |
 | 3 | chunked_text | Human-readable survey context or rationale. |
@@ -428,7 +428,7 @@ When an Info Action links to a survey, the governance action anchor metadata MUS
 
 ```json
 {
-  "specVersion": 1,
+  "specVersion": 2,
   "kind": "cardano-governance-survey-link",
   "surveyTxId": "<hex-encoded 32-byte transaction id>",
   "surveyIndex": 0
@@ -520,7 +520,7 @@ Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merge
 ```cbor-diag
 {17: [0, [                                    / tag 0 = definitions /
   [                                            / survey_definition /
-    1,                                         / specVersion /
+    2,                                         / specVersion /
     [0, h'cdcdcdcd...cd'],                     / owner: key-based /
     "Dijkstra hard-fork CIP shortlist",         / title (fits in 64 bytes) /
     ["Select candidate CIPs for potential",    / description (chunked) /
@@ -652,6 +652,8 @@ A future version could define an alternative mechanism for Plutus script credent
 ### Versioning granularity
 
 Version 1 uses a single integer (`specVersion = 1`). If backward-compatible extensions prove necessary (adding optional fields, new question types), a more granular scheme (e.g., `[major, minor]`) could be adopted. For the scope of this standard, a single integer is sufficient: any breaking change would increment the version and define the new array layout.
+
+Version 2 extends version 1 with the following breaking changes. Integer keys and enumeration values replace string-based encoding throughout, addressing Cardano's 64-byte metadata text limit and reducing per-byte cost. A ranking question type (tag 2) is added to the tagged sum type. Survey identification uses (TxId, survey_index) pairs, enabling multiple definitions or responses to be batched in a single transaction. A cancellation payload type (tag 2) allows the survey owner to invalidate a survey before or during its endEpoch. Credential proof moves from explicit hex inclusion to verification via required_signers and native script satisfaction. The step field in numeric_constraints is extended to support decimal values. Ranking questions gain an optional minRanked field, allowing creators to require a minimum number of ranked options alongside the existing maxRanked constraint.
 
 ## Path to Active
 
