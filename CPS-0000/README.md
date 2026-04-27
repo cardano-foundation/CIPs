@@ -137,7 +137,7 @@ algorithm. These examples show that the quantum threat is not limited to
 today's settlement layer, but also affects important Cardano services and
 future consensus designs.
 
-## Overview of existing schemes
+### Overview of existing schemes
 NIST has recently standardized several signature schemes that could be relevant to the migration of Cardano to PQC:
 
 - ML-DSA: Based on lattice problems (MLWE and MSIS). Rather large signatures (2.4KB) and key sizes (1.3KB), growing larger at higher security levels. Good efficiency both for signing (~0.65ms) and verification (~0.53ms) on average hardware. The most mature and well-studied of the standardized PQC signature schemes.
