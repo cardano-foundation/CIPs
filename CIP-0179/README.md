@@ -15,26 +15,27 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This proposal defines a standardized transaction metadata format for creating and responding to on-chain surveys and polls under metadata label `17`.
+This proposal defines a standardized transaction metadata format for creating, responding to, and cancelling on-chain surveys and polls under metadata label `17`.
 
 The format supports:
-- One or more poll questions per survey definition.
-- Optional linkage to governance actions via governance action anchor metadata.
-- Deterministic response binding using survey transaction id.
-- Extensibility for custom voting methods.
+- One or more survey definitions per transaction.
+- One or more survey responses per transaction.
+- Five built-in question types (single-choice, multi-select, ranking, numeric-range, custom) via a tagged sum type.
+- Optional linkage to governance Info Actions via anchor metadata.
+- Deterministic response binding using a survey reference `(TxId, index)` pair.
+- Survey cancellation by the original creator.
 
-The standard is general-purpose and can be used for governance and non-governance sentiment gathering. It also defines an Info Action profile for tools that want strict behavior when a survey is attached to a governance Info Action.
+The standard is general-purpose and can be used for governance and non-governance sentiment gathering.
 
 ## Motivation: Why is this CIP necessary?
 
-Formal governance actions are intentionally constrained. Those constraints are useful for protocol safety, but they are not sufficient for many community workflows that need structured sentiment data. This is particularly true for Info Actions, which are frustratingly limited in their ability to collect information from stakeholders.
+Formal governance actions are intentionally constrained. Those constraints are useful for protocol safety, but they are not sufficient for many community workflows that need structured sentiment data. This is particularly true for Info Actions, which are limited in their ability to collect information from stakeholders.
 
 Examples include:
 - Polling candidate CIPs to decide hard-fork prioritization.
 - Voting on a line item of a budget proposal.
 - Gathering bounded numeric preferences (for example, initialization values for several related parameters).
-
-A core design principle for this CIP is grouping related questions in one survey while keeping shared governance constraints at the survey level. This avoids unnecessary survey proliferation for parameter bundles while preserving deterministic validation and tallying.
+- Ranking candidates or proposals by community preference.
 
 Without a shared on-chain format, these workflows fragment across custom off-chain tools and incompatible schemas. This CIP provides a common metadata interface that wallets, explorers, governance dashboards, and indexers can implement consistently.
 
@@ -42,492 +43,631 @@ Without a shared on-chain format, these workflows fragment across custom off-cha
 
 ### Overview
 
-This CIP reserves metadata label `17` for two payload types:
-- `surveyDetails`: survey definition payload.
-- `surveyResponse`: survey response payload.
+This CIP reserves metadata label `17` for three payload types:
+- Survey definitions (tag `0`): one or more survey definitions.
+- Survey responses (tag `1`): one or more survey responses.
+- Survey cancellations (tag `2`): one or more survey cancellations.
 
-A transaction MUST include exactly one of these payloads under label `17`.
+A transaction MUST include at most one label `17` payload. The three payload types MUST NOT be mixed in a single transaction.
+
 Survey metadata under label `17` is valid as a standalone mechanism and does not require any governance action.
 
-A survey is identified by:
-- `surveyTxId`: transaction id of the transaction that includes the `surveyDetails` payload.
+A survey is identified by a `survey_ref`: the pair `(tx_id, survey_index)` where `tx_id` is the transaction containing the survey definitions payload and `survey_index` is the position of the definition within that payload's definitions array. This follows the Cardano convention used for UTxOs (`transaction_input`), governance actions (`gov_action_id`), and other on-chain references.
 
-### Survey Definition Payload (`surveyDetails`)
+### Encoding Conventions
 
-```json
-{
-  "17": {
-    "msg": ["Dijkstra hard-fork CIP shortlist"],
-    "surveyDetails": {
-      "specVersion": "1.0.0",
-      "title": "Dijkstra hard-fork CIP shortlist",
-      "description": "Select any number of candidate CIPs for potential inclusion in the Dijkstra hard fork.",
-      "questions": [
-        {
-          "questionId": "cip_shortlist",
-          "question": "Which CIPs should be shortlisted for potential inclusion in Dijkstra?",
-          "methodType": "urn:cardano:poll-method:multi-select:v1",
-          "options": ["CIP-0108", "CIP-0119", "CIP-0136", "CIP-0149"],
-          "maxSelections": 4
-        }
-      ],
-      "roleWeighting": {
-        "DRep": "CredentialBased"
-      },
-      "endEpoch": 504
-    }
-  }
-}
-```
+All map keys and enumeration values use integers for compact CBOR encoding, consistent with how the Cardano ledger encodes transaction bodies, certificates, and voting procedures.
 
-#### Survey-level fields
+Text fields that may exceed the 64-byte Cardano metadata text limit use chunked text: either a single `bounded_text` string (when it fits within 64 bytes) or an array of text strings, each at most 64 bytes, concatenated to reconstruct the full value. The array form follows the same chunking approach used by CIP-20. Implementations MUST accept both forms.
 
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `specVersion` | String | Yes | Semantic version for this schema. This document defines `1.0.0`. |
-| `title` | String | Yes | Human-readable survey title. |
-| `description` | String | Yes | Human-readable survey context or rationale. |
-| `questions` | Array of Question Objects | Yes | Survey questions. MUST contain at least one item. |
-| `roleWeighting` | Object | Yes | Map from responder role to weighting mode. Keys MUST be a subset of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"` and define eligibility exactly. |
-| `endEpoch` | Integer | Yes | Inclusive epoch cutoff for response validity, deterministic tally re-verification anchor, and weighting snapshot point for weighted modes. |
-
-#### Question object fields (`questions[]` items)
-
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `questionId` | String | Yes | Unique identifier within a survey. |
-| `question` | String | Yes | Question prompt. |
-| `methodType` | URI String | Yes | Voting method identifier. Built-ins are defined below. |
-| `options` | Array of Strings | Conditional | Required for option-based methods. |
-| `maxSelections` | Positive Integer | Conditional | Required for `multi-select`; absent or `1` for `single-choice`; forbidden for `numeric-range`. |
-| `numericConstraints` | Object | Conditional | Required for `numeric-range` method. |
-| `methodSchemaUri` | URI String | Conditional | Required for custom methods. |
-| `methodSchemaHash` | Hex String | Conditional | Required for custom methods; blake2b-256 hash of raw bytes fetched from `methodSchemaUri`. |
-
-Question objects MUST NOT include `roleWeighting` or `endEpoch`. Those fields are survey-level only and apply uniformly to all questions in the survey.
-
-#### Role weighting configuration rules
-
-- `roleWeighting` MUST be present and MUST include at least one role key.
-- Eligible responder classes are exactly the keys present in `roleWeighting`.
-- Allowed role-to-weighting mappings:
-  - `CC` MAY only use `"CredentialBased"`.
-  - `DRep` MAY use `"CredentialBased"` or `"StakeBased"`.
-  - `SPO` MAY use `"CredentialBased"`, `"StakeBased"`, or `"PledgeBased"`.
-  - `Stakeholder` MAY only use `"StakeBased"`.
-- `endEpoch` MUST be present.
-- Responses are valid only when `responseEpoch <= endEpoch`.
-- Tally inclusion MUST additionally pass mandatory re-verification at `endEpoch`.
-
-### Method Types
-
-Built-in `methodType` values in this version:
-- `urn:cardano:poll-method:single-choice:v1`
-- `urn:cardano:poll-method:multi-select:v1`
-- `urn:cardano:poll-method:numeric-range:v1`
-
-Rules (applied per question):
-- `single-choice`:
-  - `options` MUST be present and contain at least 2 values.
-  - `maxSelections` MUST be absent or set to `1`.
-  - A response answer MUST contain exactly one selected option index in `selection`.
-- `multi-select`:
-  - `options` MUST be present and contain at least 2 values.
-  - `maxSelections` MUST be present, `>= 1`, and `<= len(options)`.
-  - Response selection count MUST be between `0` and `maxSelections`.
-- `numeric-range`:
-  - `numericConstraints` MUST be present.
-  - `numericConstraints` MUST include `minValue` and `maxValue` as integers with `minValue <= maxValue`.
-  - Optional `step` MUST be a positive integer.
-  - `options` and `maxSelections` MUST be absent.
-  - Response answer MUST contain `numericValue` satisfying range and step constraints.
-
-Custom methods:
-- Any URI `methodType` that is not one of the built-ins is a custom method.
-- Custom methods MUST include all of:
-  - `methodSchemaUri`
-  - `methodSchemaHash`
-- `methodSchemaHash` MUST be computed over the exact raw bytes fetched from `methodSchemaUri` (no canonicalization or reformatting).
-- Custom methods MAY use `options`, but their semantics are defined by the referenced schema.
-
-YES/NO/ABSTAIN semantics:
-- This CIP does not reserve special option codes.
-- Authors MAY express YES/NO/ABSTAIN by placing those labels in `options`.
-
-### Survey Response Payload (`surveyResponse`)
-
-```json
-{
-  "17": {
-    "msg": ["Response to Dijkstra hard-fork CIP shortlist"],
-    "surveyResponse": {
-      "specVersion": "1.0.0",
-      "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef",
-      "responderRole": "DRep",
-      "answers": [
-        {
-          "questionId": "cip_shortlist",
-          "selection": [1, 3]
-        }
-      ]
-    }
-  }
-}
-```
-
-#### Response fields
-
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `specVersion` | String | Yes | Semantic version. |
-| `surveyTxId` | Hex String | Yes | Transaction id of the `surveyDetails` transaction. |
-| `responderRole` | String | Yes | Claimed responder role. MUST be one of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`. |
-| `answers` | Array of Answer Objects | Yes | Response answers keyed by `questionId`. MUST be non-empty. |
-
-#### Answer object fields (`answers[]` items)
-
-| Key | Type | Required | Description |
-| :--- | :--- | :--- | :--- |
-| `questionId` | String | Yes | References a question in `surveyDetails.questions[]`. |
-| `selection` | Array of UInt | Conditional | Used by option-based methods (`single-choice`, `multi-select`). |
-| `numericValue` | Integer | Conditional | Used by `numeric-range`. |
-| `customValue` | Transaction Metadatum | Conditional | Used by custom methods. |
-
-Normative response-shape rules:
-- `surveyResponse.responderRole` MUST be present and MUST be one of `"DRep"`, `"SPO"`, `"CC"`, `"Stakeholder"`.
-- For `answers[]`:
-  - Each item MUST include `questionId`.
-  - Each `questionId` MUST reference an existing question in the referenced survey definition.
-  - Each item MUST include exactly one of `selection`, `numericValue`, or `customValue`.
-  - The chosen answer value key MUST be compatible with the referenced question's `methodType`.
-  - `questionId` values MUST be unique within one response payload.
-- For `multi-select`, `selection: []` is valid and indicates no survey options selected.
-
-### Linking and Identity
-
-#### Survey linkage
-
-A response is valid only if:
-- `surveyTxId` resolves to a transaction that includes label `17` with `surveyDetails`.
-- If `surveyTxId` cannot be resolved to such a transaction, the response is invalid.
-
-#### Governance action anchor linkage
-
-Survey-to-action linkage is canonicalized as **Action -> Survey**.
-This linkage is optional and only applies when a governance action wants to attach a survey context.
-
-When a governance action links to a survey, the governance action anchor metadata MUST include:
-- `surveyTxId`
-
-Anchor schema:
-
-```json
-{
-  "specVersion": "1.0.0",
-  "kind": "cardano-governance-survey-link",
-  "surveyTxId": "efefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefef"
-}
-```
-
-Validation rules:
-- `surveyTxId` MUST resolve to a transaction that includes label `17` with `surveyDetails`.
-- Anchor metadata MUST use top-level `surveyTxId`; the legacy nested form `surveyRef.surveyTxId` is invalid for this version.
-- For linked surveys, `actionEligibility` MUST be derived from the linked governance action voter classes.
-- For linked surveys, tooling MUST derive the linked governance action id (`linkedActionId`) from the governance action that carries the survey-link anchor.
-- For linked surveys, `linkedRoleWeighting` is the intersection of `roleWeighting` keys with `actionEligibility`, preserving configured modes for surviving roles.
-- If `linkedRoleWeighting` is empty, the governance-action-to-survey link is invalid.
-- For linked surveys, tooling MUST derive the governance action active voting end epoch from ledger rules and require exact equality with survey `endEpoch`.
-- If survey `endEpoch` does not exactly match the action voting end epoch, the governance-action-to-survey link is invalid.
-- If linkage validation fails, tooling MUST NOT attach that survey to the governance action.
-- Linkage invalidity does not invalidate the survey as standalone metadata.
-
-#### Responder identity for deduplication
-
-A tallying tool MUST treat `surveyResponse.responderRole` as a required role claim and MUST validate it against chain-derived role evidence. `responseCredential` (credential key hash) MUST be derived from chain data.
-Tools MUST NOT blindly trust role claims that appear in on-chain response metadata.
-Validation MUST run in two phases:
-- response-time validation (at response inclusion),
-- tally-time re-verification (at survey `endEpoch` snapshot).
-Only responses that pass both phases are counted.
-
-Deterministic derivation rules:
-1. `surveyResponse.responderRole` is mandatory and is a role claim, not authoritative identity by itself.
-2. Candidate derivation MUST consider all relevant chain evidence sources:
-   - transaction-body `voting_procedures` entries (Conway transaction body field `19`),
-   - required signers,
-   - and stake-credential signals (for example withdrawals/certificates/`voting_procedures` entries carrying stake credentials).
-3. For governance-linked surveys, tooling MUST derive `linkedActionId` from the governance action that links the survey.
-4. For governance-linked surveys, response transactions MUST include a non-empty transaction-body `voting_procedures` element.
-5. For governance-linked surveys, `voting_procedures` MUST contain exactly one voter entry, and that voter entry MUST contain exactly one `(govActionId, votingProcedure)` entry.
-6. For governance-linked surveys, the single `govActionId` in `voting_procedures` MUST equal `linkedActionId`; otherwise the response is invalid.
-7. For governance-linked surveys, a response is valid only if:
-   - the role derived from the single `voting_procedures` voter entry exactly equals claimed `surveyResponse.responderRole`,
-   - claimed `surveyResponse.responderRole` exists in `linkedRoleWeighting`,
-   - exactly one eligible `responseCredential` is derivable from that single voter entry.
-8. For standalone surveys, a response is valid only if:
-   - claimed `surveyResponse.responderRole` exists in `roleWeighting`,
-   - candidate derivation is restricted to claimed `surveyResponse.responderRole`,
-   - exactly one eligible `responseCredential` is derivable for the claimed role.
-9. Stakeholder role derivation (standalone and linked):
-   - `Stakeholder` is valid when claimed `surveyResponse.responderRole = "Stakeholder"` and exactly one eligible stake credential is derivable for the signer.
-   - The presence of governance-role candidates (`DRep`, `SPO`, `CC`) does not by itself invalidate a `Stakeholder` claim.
-   - A signer MAY submit separate responses for different claimed roles, provided each claimed role independently passes all response-time and tally-time checks.
-10. A response is invalid when claimed `surveyResponse.responderRole` does not match chain-derived role evidence.
-11. For `DRep`, `SPO`, and `CC`, role-membership checks are evaluated at response time.
-12. During tallying, tooling MUST re-verify each response at the `endEpoch` snapshot:
-   - re-derive role/credential evidence from the response transaction witnesses/signers and other chain evidence sources,
-   - re-check role-membership and credential eligibility at `endEpoch`.
-13. A response MUST be excluded from tally results when tally-time re-verification fails, even if it passed response-time validation.
-
-### Epoch Semantics
-
-- `endEpoch` is mandatory for every survey definition.
-- `responseEpoch` is derived from the response transaction inclusion via ledger epoch mapping.
-- Responses with `responseEpoch > endEpoch` are invalid.
-- Role-membership and credential eligibility checks are evaluated at response time and MUST be re-verified at tally time.
-- Tally-time re-verification is anchored to the survey `endEpoch` snapshot to preserve deterministic, reproducible tallies.
-- A response is counted only if it passes both response-time validation and `endEpoch` tally-time re-verification.
-- For `StakeBased` and `PledgeBased`, weighting snapshots are taken at `endEpoch` for both linked and standalone surveys.
-
-### Duplicate and Ordering Semantics
-
-For a given tuple `(surveyTxId, responderRole, responseCredential)`:
-- If multiple responses pass both validation phases, the latest valid response wins.
-- Latest is determined by chain ordering tuple: `(slot, txIndexInBlock, metadataPosition)`.
-- `metadataPosition` is the position of label `17` payload in metadata processing order (for this label-specific standard it is typically `0`).
-
-Latest-response semantics replace the full prior response for that tuple.
-
-### Weighting Semantics
-
-- For each role key in:
-  - `linkedRoleWeighting` (for linked surveys), or
-  - `roleWeighting` (for standalone surveys),
-  one valid latest response per `(surveyTxId, responderRole, responseCredential)` contributes to that role's tally.
-- `CredentialBased`:
-  - Weight is `1` per valid latest response.
-  - This mode is not sybil resistant by itself; transaction fees are the primary spam cost.
-- `StakeBased`:
-  - Snapshot point is `endEpoch`.
-  - Weight is role-domain stake at snapshot:
-    - `DRep`: governance voting power of `responseCredential` at snapshot.
-    - `SPO`: active stake controlled by `responseCredential` across mapped active registered pools at snapshot.
-    - `Stakeholder`: ADA stake controlled by `responseCredential` at snapshot.
-- `PledgeBased`:
-  - `SPO`-only mode.
-  - Weight is the sum of live pledge over active registered pools mapped to `responseCredential` at snapshot.
-  - Declared pledge MUST NOT be used.
-  - Snapshot point is `endEpoch`.
-  - If `responseCredential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
-- Canonical outputs MUST be per-role tallies.
-- Tools MAY additionally publish merged/composite outputs only if:
-  - the merged/composite output is explicitly labeled as non-canonical,
-  - merge logic is disclosed alongside the output,
-  - and canonical per-role tallies remain available as primary outputs.
-
-### Tool Output Requirements
-
-- Tools MUST expose canonical per-role tallies as primary outputs whenever multiple roles are configured.
-- Tools MUST NOT present merged/composite totals as canonical role results.
-- Any merged/composite display (for example "All roles") MUST explicitly disclose its merge policy and weighting interpretation.
-- Audit/export output MUST include `responderRole`, `responseCredential`, counted/excluded status, and exclusion reason when applicable.
-
-### Security and Tooling Guidance
-
-- `CredentialBased` can be sybil attacked when governance-role validation is not applied.
-- Mixing weighting units across roles (count/stake/pledge) can obscure interpretation. Tools MUST expose per-role canonical tallies and clearly label any merged output as non-canonical.
-- Governance-linked surveys inherit stronger anti-sybil guarantees when responses come from transaction-body `voting_procedures` and role eligibility is bounded by action voter classes.
-- `PledgeBased` reduces declared-pledge ambiguity by requiring live pledge; tools SHOULD disclose snapshot epoch and mapped pool set used for each weighted response.
-- Required `responderRole` claims do not replace chain validation; tools MUST reject responses when claimed role and chain-derived role evidence disagree.
-- Standalone and linked surveys both require full tx-level identity verification; tooling MUST verify that claimed role/credential evidence matches the actual signer/witness context (for example, the wallet credentials that created the response transaction).
-
-### Info Action Profile
-
-This CIP is general-purpose. For tools implementing the Info Action profile:
-- The Info Action anchor metadata MUST include top-level `surveyTxId` as specified in [Governance action anchor linkage](#governance-action-anchor-linkage).
-- The `surveyTxId` linkage MUST satisfy all linked-survey compatibility checks in [Governance action anchor linkage](#governance-action-anchor-linkage).
-- Responses MUST include claimed `responderRole`.
-- Responses MUST include a non-empty transaction-body `voting_procedures` element.
-- For linked responses, `voting_procedures` MUST contain exactly one voter entry and exactly one `(govActionId, votingProcedure)` entry, and that `govActionId` MUST equal the linked action id.
-- Tally-time re-verification at `endEpoch` remains mandatory for linked responses.
-- `endEpoch` MUST exactly match the ledger-defined active voting end epoch of the referencing Info Action.
-- Responses with `responseEpoch > endEpoch` MUST be ignored.
-- Other governance action types may also link surveys; additional type-specific profiles are out of scope for this CIP version.
-
-### Transaction-level Constraints
-
-- A single label `17` payload MUST be either `surveyDetails` or `surveyResponse`, not both.
-- A response transaction MUST NOT reference itself: `surveyTxId` MUST differ from the response transaction id.
-- If governance-action linkage is provided, it MUST be encoded in governance action anchor metadata, not in `surveyDetails`.
-
-### Block Explorer and dApp Implementation Guide
-
-1. Discover survey definitions by scanning metadata label `17` for `surveyDetails`.
-2. Optionally discover governance actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
-3. If present, validate governance-action-to-survey linkage by `surveyTxId`, linked role compatibility, and exact `endEpoch` equality with the action's canonical voting end epoch; derive `linkedActionId`.
-4. Discover responses by scanning metadata label `17` for `surveyResponse`.
-5. Resolve each response to survey by `surveyTxId`.
-6. Validate each response answer against the corresponding survey question method and constraints.
-7. Validate claimed `responderRole` and derive exactly one eligible `responseCredential` for that claimed role using [Responder identity for deduplication](#responder-identity-for-deduplication), including linked-survey checks for `voting_procedures` cardinality and `linkedActionId` match.
-8. Filter responses by `responseEpoch <= endEpoch`.
-9. Enforce role-membership and credential eligibility checks at response time as required by [Responder identity for deduplication](#responder-identity-for-deduplication) and [Weighting Semantics](#weighting-semantics).
-10. At or after `endEpoch`, re-verify each response using `endEpoch` snapshot state (role-membership, credential eligibility, and claim-vs-chain consistency); exclude failures.
-11. Apply latest-valid-response-wins ordering per `(surveyTxId, responderRole, responseCredential)` over responses that passed both validation phases.
-12. Derive `StakeBased` and `PledgeBased` weights from `endEpoch` snapshot state; for `PledgeBased`, derive active pool set mapped to `responseCredential` and resolve live pledge values.
-13. Apply selected per-role weighting and produce canonical per-role tallies.
-14. If publishing optional merged/composite views, label them as non-canonical and disclose merge logic per [Tool Output Requirements](#tool-output-requirements).
+Transaction IDs and hashes use raw `bytes .size 32` rather than hex-encoded text strings, halving the per-hash cost.
 
 ### CDDL Schema
 
 ```cddl
-; CIP-00XX On-chain Surveys and Polls (Version 1.0.0)
+; CIP-179 On-chain Surveys and Polls (version 1)
+;
+; Encoding principles:
+;   - Integer keys and enum values for compact CBOR.
+;   - Chunked text arrays for strings that may exceed 64 bytes.
+;   - Raw bytes for hashes and transaction IDs.
+;   - Sum types (tagged unions) for question and answer variants.
+;   - (TxId, index) pairs for survey references.
 
-hex_tx_id = tstr .regexp "[0-9a-fA-F]{64}"
-hex_blake2b_256 = tstr .regexp "[0-9a-fA-F]{64}"
-uri = tstr
+; ---------- Primitives ----------
 
-; at least one key is required by normative prose
-role_weighting = {
-  ? DRep: ("CredentialBased" / "StakeBased"),
-  ? SPO: ("CredentialBased" / "StakeBased" / "PledgeBased"),
-  ? CC: "CredentialBased",
-  ? Stakeholder: "StakeBased"
-}
+pos_uint = uint .gt 0
+tx_id = bytes .size 32
+blake2b_256 = bytes .size 32
+bounded_text = text .size (0..64)     ; Cardano metadata text limit
+chunked_text = bounded_text / [+ bounded_text]  ; single string or chunked array
+survey_ref = [tx_id, uint .size 2]    ; (TxId, index in definitions array)
 
-responder_role =
-  "DRep" / "SPO" / "CC" / "Stakeholder"
-
-builtin_method_type =
-  "urn:cardano:poll-method:single-choice:v1" /
-  "urn:cardano:poll-method:multi-select:v1" /
-  "urn:cardano:poll-method:numeric-range:v1"
-
-method_type = builtin_method_type / uri
-
-numeric_constraints = {
-  minValue: int,
-  maxValue: int,
-  ? step: uint
-}
-
-survey_question = {
-  questionId: tstr,
-  question: tstr,
-  methodType: method_type,
-  ? options: [+ tstr],
-  ? maxSelections: uint,
-  ? numericConstraints: numeric_constraints,
-  ? methodSchemaUri: uri,
-  ? methodSchemaHash: hex_blake2b_256
-}
-
-survey_details = {
-  specVersion: tstr,
-  title: tstr,
-  description: tstr,
-  questions: [+ survey_question],
-  roleWeighting: role_weighting,
-  endEpoch: uint
-}
-
+; Standard Cardano transaction metadatum.
 transaction_metadatum =
     { * transaction_metadatum => transaction_metadatum }
   / [ * transaction_metadatum ]
   / int
   / bytes .size (0..64)
-  / text .size (0..64)
+  / bounded_text
 
-answer_item = {
-  questionId: tstr,
-  selection: [* uint]
-} / {
-  questionId: tstr,
-  numericValue: int
-} / {
-  questionId: tstr,
-  customValue: transaction_metadatum
-}
+; ---------- Types reused from Conway ledger CDDL ----------
+; Included for reference; authoritative definitions are in the ledger spec.
 
-survey_response = {
-  specVersion: tstr,
-  surveyTxId: hex_tx_id,
-  responderRole: responder_role,
-  answers: [+ answer_item]
-}
+hash28 = bytes .size 28
+addr_keyhash = hash28
+script_hash = hash28
 
-cip_00xx_label_17_payload = {
-  "surveyDetails" => survey_details,
-  ? "msg" => [+ tstr]
-} / {
-  "surveyResponse" => survey_response,
-  ? "msg" => [+ tstr]
-}
+; A Cardano credential: key-based (tag 0) or script-based (tag 1).
+credential = [0, addr_keyhash // 1, script_hash]
 
-cip_00xx_root = cip_00xx_label_17_payload
+; ---------- Enumerations ----------
 
-; Governance action anchor metadata for Action -> Survey linkage
-governance_action_anchor_survey_link = {
-  specVersion: tstr,
-  kind: "cardano-governance-survey-link",
-  surveyTxId: hex_tx_id
+; Roles
+;   0 = DRep
+;   1 = SPO
+;   2 = CC
+;   3 = Stakeholder
+role = 0 / 1 / 2 / 3
+
+; Weighting modes
+;   0 = CredentialBased
+;   1 = StakeBased
+;   2 = PledgeBased
+weighting_mode = 0 / 1 / 2
+
+; Role-to-weighting map. At least one entry required.
+; Allowed pairings enforced by tooling:
+;   DRep (0)        -> CredentialBased (0) | StakeBased (1)
+;   SPO (1)         -> CredentialBased (0) | StakeBased (1) | PledgeBased (2)
+;   CC (2)          -> CredentialBased (0)
+;   Stakeholder (3) -> StakeBased (1)
+role_weighting = { + role => weighting_mode }
+
+; ---------- Numeric constraints ----------
+
+numeric_constraints = [
+  int,              ; minValue
+  int,              ; maxValue (>= minValue)
+  ? pos_uint        ; step (optional, must be > 0)
+]
+
+; ---------- Question types (tagged sum type) ----------
+
+; Tag 0: Single-choice.
+;   Exactly one option must be selected in the response.
+;   Options array MUST contain at least 2 items.
+single_choice_question = [0, chunked_text, [2* bounded_text]]
+
+; Tag 1: Multi-select.
+;   Between 0 and maxSelections options may be selected.
+;   Options array MUST contain at least 2 items.
+;   maxSelections MUST be >= 1 and <= len(options).
+multi_select_question = [1, chunked_text, [2* bounded_text], pos_uint]
+
+; Tag 2: Ranking.
+;   Respondent ranks between 1 and maxRanked options in preference order.
+;   Options array MUST contain at least 2 items.
+;   maxRanked MUST be >= 1 and <= len(options).
+ranking_question = [2, chunked_text, [2* bounded_text], pos_uint]
+
+; Tag 3: Numeric-range.
+;   Answer is an integer satisfying the constraints.
+numeric_range_question = [3, chunked_text, numeric_constraints]
+
+; Tag 4: Custom method.
+;   Schema at methodSchemaUri defines answer format.
+;   methodSchemaHash is blake2b-256 of raw bytes at that URI.
+custom_question = [4, chunked_text, chunked_text, blake2b_256]
+
+survey_question = single_choice_question
+               / multi_select_question
+               / ranking_question
+               / numeric_range_question
+               / custom_question
+
+; ---------- Survey definition ----------
+
+survey_definition = [
+  uint,                        ; specVersion (this document = 1)
+  credential,                  ; owner (for cancellation authorization)
+  chunked_text,                ; title
+  chunked_text,                ; description
+  [+ survey_question],         ; questions (at least one)
+  role_weighting,              ; eligible roles and weighting modes
+  uint                         ; endEpoch (inclusive cutoff)
+]
+
+; ---------- Answer types (tag matches question type) ----------
+
+; Tag 0: Single-choice answer. Exactly 1 selected option index.
+single_choice_answer = [0, uint, uint]
+
+; Tag 1: Multi-select answer. 0 to maxSelections selected option indices.
+multi_select_answer = [1, uint, [* uint]]
+
+; Tag 2: Ranking answer. 1 to maxRanked option indices, most preferred first.
+;   Indices MUST NOT contain duplicates.
+ranking_answer = [2, uint, [+ uint]]
+
+; Tag 3: Numeric-range answer.
+numeric_answer = [3, uint, int]
+
+; Tag 4: Custom answer.
+custom_answer = [4, uint, transaction_metadatum]
+
+; In all answer variants, the second element is the question index
+; (position in the survey_definition's questions array).
+answer_item = single_choice_answer
+            / multi_select_answer
+            / ranking_answer
+            / numeric_answer
+            / custom_answer
+
+; ---------- Survey response ----------
+
+; No specVersion: version is determined by the referenced survey.
+survey_response = [
+  survey_ref,                  ; reference to the survey definition
+  role,                        ; claimed responder role
+  credential,                  ; responder's credential
+  [+ answer_item]              ; answers (at least one; partial allowed)
+]
+
+; ---------- Survey cancellation ----------
+
+; Cancels a previously published survey.
+; The cancellation transaction MUST prove ownership of the
+; survey definition's owner credential.
+survey_cancellation = survey_ref
+
+; ---------- Top-level payload under metadata label 17 ----------
+
+cip_179_payload = [0, [+ survey_definition]]
+               / [1, [+ survey_response]]
+               / [2, [+ survey_cancellation]]
+```
+
+### Integer Encoding Reference
+
+#### Roles
+
+| Integer | Role |
+|:--------|:-----|
+| 0 | DRep |
+| 1 | SPO |
+| 2 | CC |
+| 3 | Stakeholder |
+
+#### Weighting modes
+
+| Integer | Mode | Eligible roles |
+|:--------|:-----|:---------------|
+| 0 | CredentialBased | DRep, SPO, CC |
+| 1 | StakeBased | DRep, SPO, Stakeholder |
+| 2 | PledgeBased | SPO only |
+
+#### Payload tags
+
+| Tag | Payload type |
+|:----|:-------------|
+| 0 | Survey definitions |
+| 1 | Survey responses |
+| 2 | Survey cancellations |
+
+#### Question and answer type tags
+
+| Tag | Question type | Answer format |
+|:----|:--------------|:--------------|
+| 0 | Single-choice | `[0, qIdx, optionIndex]` |
+| 1 | Multi-select | `[1, qIdx, [optionIndex*]]` |
+| 2 | Ranking | `[2, qIdx, [optionIndex+]]` |
+| 3 | Numeric-range | `[3, qIdx, intValue]` |
+| 4 | Custom | `[4, qIdx, metadatum]` |
+
+An answer's tag MUST match the tag of the referenced question.
+
+### Survey Definition
+
+A survey definition is a positional array:
+
+```
+[specVersion, owner, title, description, questions, roleWeighting, endEpoch]
+```
+
+| Position | Type | Description |
+|:---------|:-----|:------------|
+| 0 | uint | Schema version. This document defines version `1`. |
+| 1 | credential | Survey owner. Used to authorize cancellation. |
+| 2 | chunked_text | Human-readable survey title. |
+| 3 | chunked_text | Human-readable survey context or rationale. |
+| 4 | array | Survey questions. MUST contain at least one item. |
+| 5 | role_weighting | Map from role to weighting mode. MUST contain at least one entry. |
+| 6 | uint | Inclusive epoch cutoff for response validity and tally snapshot. |
+
+The survey definition transaction MUST prove ownership of the `owner` credential: for key-based credentials, the `addr_keyhash` MUST be in `required_signers`; for script-based credentials, tooling MUST verify the native script is satisfied (same rules as for response credentials).
+
+### Question Types
+
+Questions use a tagged sum type. The first element is the type tag. All question types include a `chunked_text` question prompt as their second element.
+
+#### Single-choice (tag 0)
+
+```
+[0, question_prompt, options]
+```
+
+- `options`: array of `bounded_text`, at least 2 items.
+- Response MUST select exactly one option index. The index MUST be a valid position in the options array.
+
+#### Multi-select (tag 1)
+
+```
+[1, question_prompt, options, maxSelections]
+```
+
+- `options`: array of `bounded_text`, at least 2 items.
+- `maxSelections`: positive integer, `>= 1` and `<= len(options)`.
+- Response MUST select between 0 and `maxSelections` option indices (inclusive). An empty selection is valid and indicates no options selected. All indices MUST be valid positions in the options array. Indices MUST NOT contain duplicates.
+
+#### Ranking (tag 2)
+
+```
+[2, question_prompt, options, maxRanked]
+```
+
+- `options`: array of `bounded_text`, at least 2 items.
+- `maxRanked`: positive integer, `>= 1` and `<= len(options)`.
+- Response MUST provide between 1 and `maxRanked` option indices in preference order (most preferred first). Indices MUST NOT contain duplicates. All indices MUST be valid positions in the options array.
+
+#### Numeric-range (tag 3)
+
+```
+[3, question_prompt, [minValue, maxValue, ?step]]
+```
+
+- `minValue <= maxValue`.
+- Optional `step` MUST be a positive integer (> 0). When present, the response value MUST satisfy `(value - minValue) mod step == 0`.
+- Response MUST contain an integer satisfying range and step constraints.
+
+#### Custom method (tag 4)
+
+```
+[4, question_prompt, methodSchemaUri, methodSchemaHash]
+```
+
+- `methodSchemaUri`: chunked text URI pointing to the method schema document.
+- `methodSchemaHash`: blake2b-256 hash (`bytes .size 32`) of the raw bytes at that URI.
+- Response uses `transaction_metadatum`, interpreted according to the referenced schema.
+
+#### YES/NO/ABSTAIN semantics
+
+This CIP does not reserve special option codes. Authors MAY express YES/NO/ABSTAIN by placing those labels in the `options` array of any option-based question type (single-choice, multi-select, ranking).
+
+### Survey Response
+
+A survey response is a positional array:
+
+```
+[survey_ref, role, credential, answers]
+```
+
+| Position | Type | Description |
+|:---------|:-----|:------------|
+| 0 | survey_ref | Reference to the survey: `[tx_id, survey_index]`. |
+| 1 | role | Claimed responder role (integer). |
+| 2 | credential | Responder's credential: `[0, addr_keyhash]` or `[1, script_hash]`. |
+| 3 | array | Non-empty array of answer items. |
+
+There is no `specVersion` in the response. The version is determined by the referenced survey definition.
+
+Respondents MAY answer a subset of questions (partial responses are valid). Each question is tallied independently over responses that include an answer for that question. Question indices in the answers array MUST be unique within one response. Each answer's type tag MUST match the type tag of the referenced question.
+
+A response transaction MUST NOT reference itself: the `tx_id` in `survey_ref` MUST differ from the response transaction's own id.
+
+Multiple responses MAY be batched in a single transaction. Each is validated independently.
+
+### Survey Cancellation
+
+A cancellation payload contains one or more `survey_ref` values, each identifying a survey to cancel.
+
+Validation:
+- The `survey_ref` MUST resolve to a previously published survey definition.
+- The cancellation transaction MUST prove ownership of the survey definition's `owner` credential (same rules as for definition transactions: key-based via `required_signers`, script-based via native script satisfaction).
+- A cancellation MUST be submitted before or during the survey's `endEpoch`. Cancellations with `cancellationEpoch > endEpoch` are invalid.
+- Once cancelled, the survey is inactive as a whole. Tooling MUST NOT tally any responses for a cancelled survey.
+- Cancellation does not remove the survey definition data from the chain; it signals that the survey should not be used.
+
+### Responder Identity and Deduplication
+
+Identity verification leverages Cardano's existing transaction-level mechanisms. The responder's `credential` is included directly in the survey response, and the transaction proves ownership of that credential.
+
+#### Credential proof
+
+The `credential` in the response is a Conway ledger `credential`: `[0, addr_keyhash]` for key-based or `[1, script_hash]` for script-based.
+
+Verification rules:
+- **Key-based credential** `[0, addr_keyhash]`: the `addr_keyhash` MUST be present in the transaction body's `required_signers` (field 14). The ledger enforces that the corresponding signature witness is present, proving ownership.
+- **Script-based credential** `[1, script_hash]`: for governance-linked surveys, the `voter` entry in `voting_procedures` identifies the script and the ledger evaluates it. For standalone surveys, tooling MUST resolve the native script from the `script_hash` (via chain indexing) and verify that the keys present in the transaction's `required_signers` satisfy the script's conditions.
+- **Governance-linked surveys** additionally require a `voting_procedures` entry whose voter credential matches the `credential` in the response (see [Linked survey response rules](#linked-survey-response-rules)).
+
+#### Role validation
+
+The claimed role MUST be validated against ledger state:
+
+| Role | Ledger requirement |
+|:-----|:-------------------|
+| DRep (0) | `credential` MUST be a registered DRep credential. |
+| SPO (1) | `credential` MUST be the cold credential of a registered pool operator. |
+| CC (2) | `credential` MUST be the hot credential of an active Constitutional Committee member. |
+| Stakeholder (3) | `credential` MUST be a stake credential with delegated stake. |
+
+Tools MUST NOT trust role claims without validation. A response is invalid when the claimed role does not match ledger-derived role evidence.
+
+A signer MAY submit separate responses for different roles, provided each role claim independently passes validation.
+
+#### Validation phases
+
+Validation runs in two phases:
+1. **Response-time validation**: at response inclusion, verify credential proof and role membership.
+2. **Tally-time re-verification**: at the survey's `endEpoch` snapshot, re-check role membership and credential eligibility.
+
+Only responses that pass both phases are counted in tallies.
+
+#### Deduplication
+
+The identity tuple for deduplication is `(survey_ref, role, credential)`.
+
+If multiple responses from the same tuple pass both validation phases, the latest valid response wins.
+
+### Governance Action Linkage
+
+Survey-to-action linkage is canonicalized as **Action -> Survey** and is restricted to **Info Actions**. Info Actions are the only governance action type guaranteed to run their full validity period without on-chain side effects, making them suitable for structured sentiment gathering.
+
+When an Info Action links to a survey, the governance action anchor metadata MUST include:
+
+```json
+{
+  "specVersion": 1,
+  "kind": "cardano-governance-survey-link",
+  "surveyTxId": "<hex-encoded 32-byte transaction id>",
+  "surveyIndex": 0
 }
 ```
 
-CDDL provides shape constraints. Method-specific mandatory and forbidden field rules in this document are normative and MUST also be enforced by tooling.
+(The anchor metadata is an off-chain document; `surveyTxId` is hex-encoded per JSON convention.)
 
-### JSON Schema
+Validation rules:
+- The governance action MUST be an Info Action. Linkage to any other governance action type is invalid.
+- The `(surveyTxId, surveyIndex)` pair MUST resolve to a transaction that includes label `17` with a survey definitions payload, and the survey at the given index MUST exist.
+- Tooling MUST derive the linked governance action id (`linkedActionId`) from the Info Action that carries the survey-link anchor.
+- `linkedRoleWeighting` is the intersection of the survey's `roleWeighting` keys with `{DRep (0), SPO (1), CC (2)}`, preserving configured weighting modes for surviving roles. The Stakeholder role (3) has no Conway voter type and cannot participate in governance-linked surveys.
+- If `linkedRoleWeighting` is empty, the link is invalid.
+- Survey `endEpoch` MUST exactly match the Info Action's active voting end epoch. If they differ, the link is invalid.
+- If linkage validation fails, tooling MUST NOT attach that survey to the Info Action.
+- Linkage invalidity does not invalidate the survey as standalone metadata.
 
-This CIP also provides machine-readable JSON Schema files under [`./schemas`](./schemas):
-- [`schemas/common.schema.json`](./schemas/common.schema.json)
-- [`schemas/survey-details.schema.json`](./schemas/survey-details.schema.json)
-- [`schemas/survey-response.schema.json`](./schemas/survey-response.schema.json)
-- [`schemas/governance-action-anchor-survey-link.schema.json`](./schemas/governance-action-anchor-survey-link.schema.json)
+#### Conway voter tag to CIP-179 role mapping
 
-Schema authority and scope:
-- CDDL and normative prose in this document are authoritative.
-- JSON Schema files are interoperability aids for shape validation and MUST be kept consistent with this specification.
-- Cross-transaction and chain-state-dependent semantics (for example governance-link resolution, effective role-weighting derivation, role-membership checks, and stake snapshot/source logic) are normative in prose and test vectors, and are not fully representable in standard JSON Schema.
+For governance-linked surveys, the Conway `voter` type in `voting_procedures` maps to CIP-179 roles as follows:
 
-### Test Vectors
+| Conway voter tag | Conway meaning | CIP-179 role |
+|:-----------------|:---------------|:-------------|
+| 0 | CC hot key credential | CC (2) |
+| 1 | CC hot script credential | CC (2) |
+| 2 | DRep key credential | DRep (0) |
+| 3 | DRep script credential | DRep (0) |
+| 4 | SPO pool cold key credential | SPO (1) |
 
-See [test-vector.md](./test-vector.md) for deterministic examples and canonical CBOR payload vectors.
+#### Linked survey response rules
 
-### Versioning
+For governance-linked surveys:
+- Response transactions MUST include a `voting_procedures` entry.
+- `voting_procedures` MUST contain a voter entry whose credential matches the response's `credential`.
+- That voter entry MUST include a vote on `linkedActionId`. Otherwise the response is invalid.
+- The claimed role MUST exist in `linkedRoleWeighting`.
+- The role derived from the matching voter entry (per the Conway voter tag mapping above) MUST match the claimed role.
 
-This specification uses semantic versioning in `specVersion`.
-This revision defines version `1.0.0`.
+### Epoch Semantics
+
+- `endEpoch` is mandatory in every survey definition and MUST be greater than the current epoch at the time of the definition transaction.
+- `responseEpoch` is derived from the response transaction's inclusion slot via ledger epoch mapping.
+- Responses with `responseEpoch > endEpoch` are invalid.
+- Role-membership and credential eligibility checks are evaluated at response time and re-verified at tally time using the `endEpoch` snapshot.
+- A response is counted only if it passes both response-time validation and `endEpoch` tally-time re-verification.
+- For `StakeBased` and `PledgeBased` weighting modes, weight snapshots are taken at `endEpoch`.
+
+### Duplicate and Ordering Semantics
+
+For a given identity tuple `(survey_ref, role, credential)`:
+- If multiple responses pass both validation phases, the latest valid response wins.
+- Latest is determined by the chain ordering tuple `(slot, txIndexInBlock, responseIndex)`, where `responseIndex` is the position within the responses array in the label `17` payload.
+- Latest-response semantics replace the full prior response for that tuple.
+
+### Weighting Semantics
+
+For each role key in `linkedRoleWeighting` (linked surveys) or `roleWeighting` (standalone surveys), one valid latest response per `(survey_ref, role, credential)` contributes to that role's tally.
+
+- **CredentialBased** (0): weight is `1` per valid latest response. Transaction fees are the primary spam cost.
+- **StakeBased** (1): weight is role-domain stake at the `endEpoch` snapshot:
+  - DRep: governance voting power of `credential`.
+  - SPO: active stake controlled by `credential` across mapped active registered pools.
+  - Stakeholder: ADA stake controlled by `credential`.
+- **PledgeBased** (2): SPO-only. Weight is the sum of live pledge over active registered pools mapped to `credential` at the `endEpoch` snapshot. Declared pledge MUST NOT be used. If `credential` maps to zero active registered pools at snapshot, the response remains valid and contributes weight `0`.
+
+Canonical outputs MUST be per-role tallies. Tools MAY additionally publish merged/composite outputs only if:
+- The output is explicitly labeled as non-canonical.
+- Merge logic is disclosed alongside the output.
+- Canonical per-role tallies remain available as primary outputs.
+
+### Tool Output Requirements
+
+- Tools MUST expose canonical per-role tallies as primary outputs whenever multiple roles are configured.
+- Tools MUST NOT present merged/composite totals as canonical role results.
+- Any merged/composite display MUST explicitly disclose its merge policy and weighting interpretation.
+- Audit/export output MUST include role, `credential`, counted/excluded status, and exclusion reason when applicable.
+
+### Transaction-level Constraints
+
+- A single label `17` payload MUST contain exactly one of: definitions, responses, or cancellations.
+- A response transaction MUST NOT reference itself.
+- If Info Action linkage is provided, it MUST be encoded in the Info Action's anchor metadata, not in the survey definition.
+
+### CBOR Diagnostic Examples
+
+#### Survey definition with ranking question
+
+```cbor-diag
+{17: [0, [                                    / tag 0 = definitions /
+  [                                            / survey_definition /
+    1,                                         / specVersion /
+    [0, h'cdcdcdcd...cd'],                     / owner: key-based /
+    "Dijkstra hard-fork CIP shortlist",         / title (fits in 64 bytes) /
+    ["Select candidate CIPs for potential",    / description (chunked) /
+     " inclusion in the Dijkstra hard fork."],
+    [                                          / questions /
+      [1,                                      / multi-select (tag 1) /
+        ["Which CIPs should be shortlisted",   / prompt (chunked) /
+         " for Dijkstra?"],
+        ["CIP-0108", "CIP-0119",               / options /
+         "CIP-0136", "CIP-0149"],
+        4                                      / maxSelections /
+      ],
+      [2,                                      / ranking (tag 2) /
+        "Rank shortlisted CIPs by priority",   / prompt (fits in 64 bytes) /
+        ["CIP-0108", "CIP-0119",               / options /
+         "CIP-0136", "CIP-0149"],
+        3                                      / maxRanked: rank top 3 /
+      ]
+    ],
+    {0: 0},                                    / roleWeighting: DRep=CredentialBased /
+    504                                        / endEpoch /
+  ]
+]]}
+```
+
+#### Survey response
+
+```cbor-diag
+{17: [1, [                                     / tag 1 = responses /
+  [                                             / survey_response /
+    [h'efefefef...ef', 0],                      / survey_ref: (TxId, index 0) /
+    0,                                          / role: DRep /
+    [0, h'abababab...ab'],                      / credential: key-based /
+    [                                           / answers /
+      [1, 0, [1, 3]],                           / multi-select: q0, options 1 & 3 /
+      [2, 1, [3, 1, 0]]                         / ranking: q1, prefer opt 3 > 1 > 0 /
+    ]
+  ]
+]]}
+```
+
+#### Survey cancellation
+
+```cbor-diag
+{17: [2, [                                     / tag 2 = cancellations /
+  [h'efefefef...ef', 0]                         / survey_ref to cancel /
+]]}
+```
+
+### Block Explorer and dApp Implementation Guide
+
+1. Discover survey definitions by scanning label `17` for payloads with tag `0`.
+2. Discover cancellations (tag `2`) and mark cancelled surveys as inactive.
+3. Optionally discover Info Actions with anchor metadata carrying `kind = "cardano-governance-survey-link"`.
+4. If present, validate that the governance action is an Info Action, then validate linkage by `(surveyTxId, surveyIndex)`, role compatibility, and exact `endEpoch` equality; derive `linkedActionId`.
+5. Discover responses by scanning label `17` for payloads with tag `1`.
+6. Resolve each response to its survey via `survey_ref`.
+7. Reject responses to cancelled surveys.
+8. Validate each answer against the corresponding question type and constraints.
+9. Verify each response's `credential`: check presence in `required_signers` (key-based) or script witness satisfaction (script-based), and validate role membership against ledger state.
+10. Filter responses by `responseEpoch <= endEpoch`.
+11. At or after `endEpoch`, re-verify each response using `endEpoch` snapshot state; exclude failures.
+12. Apply latest-valid-response-wins per `(survey_ref, role, credential)`.
+13. Derive weights from `endEpoch` snapshot state per configured weighting mode.
+14. Produce canonical per-role tallies.
 
 ## Rationale: How does this CIP achieve its goals?
 
-- Multi-question surveys let authors collect related signals (including mixed method types) in one survey object.
-- Survey-level required and governance fields preserve shared end-epoch and role-weighting semantics across all included questions.
-- Question-level method fields keep validation explicit and deterministic per question.
-- Index-based option responses avoid text-matching ambiguity and improve interoperability.
-- Binding responses and action links by `surveyTxId` keeps survey linkage deterministic and interoperable.
-- Requiring explicit `roleWeighting` removes ambiguous defaults and forces clear tally intent per role domain.
-- Governance-linked surveys can inherit governance voter-class constraints while still allowing surveys to narrow configured roles via intersection.
-- Role-aware validation and per-role stake tallies reduce sybil and mixed-domain interpretation risks.
-- `PledgeBased` adds an SPO-specific mode that uses live pledge instead of declared pledge for more defensible weighting.
-- Canonical `Action -> Survey` linkage via governance action anchors avoids circular transaction-reference dependencies.
-- URI-based method identifiers plus schema hash integrity enable safe extensibility for future/custom methods.
-- Latest-valid-response-wins gives participants a correction path while preserving deterministic tally behavior.
-- The Info Action profile gives governance tools strict interoperability while keeping the base standard general-purpose.
+The goal is a compact, deterministic, and interoperable on-chain survey format that integrates naturally with Cardano's existing infrastructure. Each design decision follows from that goal.
+
+### Compact on-chain encoding
+
+On-chain metadata is paid for per byte in transaction fees and stored permanently by every full node. The encoding follows the same conventions as the Cardano ledger CDDL: integer map keys, integer enum tags, and raw bytes for hashes. This avoids the overhead of text-based keys and values, which would multiply the cost of every survey definition and every response.
+
+### Chunked text for human-readable fields
+
+Cardano metadata limits individual text strings to 64 bytes. Survey titles, descriptions, and question prompts may exceed this limit. When the value fits within 64 bytes, it is stored as a plain `bounded_text`. When it exceeds 64 bytes, chunked text arrays (as established by CIP-20) are used. Implementations must accept both forms. Option labels remain plain `bounded_text` since they are typically short identifiers.
+
+### Tagged sum types for questions and answers
+
+Each question type (single-choice, multi-select, ranking, numeric-range, custom) has distinct required fields. A tagged sum type makes invalid combinations unrepresentable in the schema: a single-choice question cannot carry numeric constraints, and a numeric-range question cannot carry options. This moves validation from prose rules into the data model, reducing the burden on implementors.
+
+### Survey references as (TxId, index)
+
+On-chain artifacts in Cardano use `(TxId, index)` pairs for identification: UTxOs use `transaction_input = [transaction_id, index]`, governance actions use `gov_action_id = [transaction_id, gov_action_index]`. Survey references follow the same pattern, which enables batching multiple definitions in a single transaction and aligns with tooling that already handles this identification scheme.
+
+### Batched definitions and responses
+
+Multiple survey definitions or responses per transaction reduce the number of transactions needed, directly lowering fees for survey creators and active respondents.
+
+### Survey cancellation
+
+A survey with errors wastes respondent effort. A simple cancellation mechanism (referencing the survey and proving ownership of the `owner` credential) lets creators invalidate a broken survey without waiting for `endEpoch`. The `owner` is explicit in the survey definition, so cancellation authorization is unambiguous.
+
+### Explicit credential in response
+
+The responder's `credential` is included directly in the survey response metadata. Verification is straightforward: for key-based credentials, the `addr_keyhash` must be in `required_signers` (ledger-enforced signature check); for script-based credentials, tooling resolves the native script via chain indexing and verifies that the transaction's required signers satisfy its conditions. For governance-linked surveys, `voting_procedures` provides the same guarantee. Including the credential in the response eliminates ambiguity (no need to guess which signer is the responder) and supports native multisig scripts in standalone surveys.
+
+### Multi-question surveys with partial responses
+
+Grouping related questions in one survey avoids unnecessary proliferation of survey transactions while keeping shared constraints (`roleWeighting`, `endEpoch`) at the survey level. Allowing partial responses gives respondents flexibility; each question is tallied independently over the responses that include it.
+
+### Latest-valid-response-wins
+
+Participants may want to change their answer before `endEpoch`. Accepting the latest valid response per identity tuple provides a correction path while maintaining deterministic, reproducible tallies.
+
+### Per-role canonical tallies
+
+Different roles have different weighting units (credential count, stake, pledge). Mixing them in a single tally obscures interpretation. Canonical per-role tallies keep results clear; optional merged views are permitted only when explicitly labeled as non-canonical.
+
+### Info Action linkage
+
+Governance linkage is restricted to Info Actions because they are the only governance action type guaranteed to complete their full validity period without on-chain side effects. The action anchor references the survey (not the other way around), avoiding circular transaction dependencies: the survey is published first, then the Info Action references it by `survey_ref`.
+
+## Limitations and Future Extensions
+
+### Optional vs required questions
+
+Version 1 treats all questions as answerable at the respondent's discretion (partial responses are valid). A future version could add a required flag per question, allowing survey creators to enforce that responses include answers to certain questions.
+
+### Plutus script credentials for standalone surveys
+
+Native multisig scripts are supported in standalone surveys: tooling resolves the native script from the `script_hash` via chain indexing and verifies that the keys in the transaction's `required_signers` satisfy the script's conditions.
+
+Plutus script credentials in standalone surveys are not supported. Plutus scripts require a redeemer to be evaluated, and there is no redeemer tag for metadata. Governance-linked surveys do not have this limitation: the Conway `voter` type in `voting_procedures` supports Plutus script-based voters (tags 1, 3), and the ledger provides a voting redeemer tag.
+
+A future version could define an alternative mechanism for Plutus script credentials in standalone surveys.
+
+### Versioning granularity
+
+Version 1 uses a single integer (`specVersion = 1`). If backward-compatible extensions prove necessary (adding optional fields, new question types), a more granular scheme (e.g., `[major, minor]`) could be adopted. For the scope of this standard, a single integer is sufficient: any breaking change would increment the version and define the new array layout.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] At least two independent tools can create `surveyDetails` payloads with the `questions[]` schema.
-- [ ] At least two independent tools can ingest `surveyResponse` payloads with `answers[]` and produce matching tallies for shared test vectors.
+- [ ] At least two independent tools can create survey definition payloads.
+- [ ] At least two independent tools can ingest survey responses and produce matching tallies for shared test vectors.
 - [ ] At least one governance-facing tool implements the Info Action profile.
 - [x] Label `17` is registered in `CIP-0010/registry.json`.
-- [ ] At least one cooperative test demonstrates that a `surveyDetails` payload created by one tool can be correctly tallied by a separate, independent tool (cross-tool interoperability).
+- [ ] At least one cooperative test demonstrates cross-tool interoperability (survey created by one tool, tallied by another).
 
 ### Implementation Plan
 
-- [x] Finalize CIP text and examples from PR review feedback.
-- [x] Publish reference test vectors and validation notes.
-- [ ] Implement and demonstrate end-to-end survey creation + response + tally in at least one toolchain.
+- [ ] Finalize CIP text from PR review feedback.
+- [ ] Publish reference test vectors and validation notes.
+- [ ] Implement end-to-end survey creation + response + tally in at least one toolchain.
 - [ ] Document interoperability results and edge-case handling.
 
 ## Copyright
