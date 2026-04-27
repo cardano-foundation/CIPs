@@ -87,7 +87,7 @@ At enactment-time evaluation of a Treasury Withdrawal with amount `w`, the guard
 
 1. `windowRevenue = sum(entry.revenue for all 73 entries)`
 2. `windowWithdrawn = sum(entry.withdrawn for all 73 entries)`
-3. `effectiveRevenue = max(windowRevenue, 0)`
+3. `effectiveRevenue = max(windowRevenue - windowWithdrawn, 0)`
 4. `cap = floor(netChangeLimit * effectiveRevenue / 100)`
 
 The withdrawal is admissible iff:
