@@ -128,7 +128,7 @@ After activation, normal epoch rollover semantics apply, and seeded entries are 
 
 ## Rationale: how does this CIP achieve its goals?
 
-- **Canonical on-chain state with script policy enforcement.** The ledger provides deterministic state and the guardrail script enforces at enactment.
+- **Ledger state with script policy enforcement.** The ledger provides deterministic state and the guardrail script enforces at enactment.
 - **Clear compute split.** The ledger computes per-epoch `revenue(E)` and persists rolling state; the guardrail computes window sums, clamp, cap, and admissibility.
 - **Deterministic rollover and accounting.** Pointer advancement and entry overwrite semantics fully define rolling behavior across epochs.
 - **Bootstrap continuity.** Fixed seed initialization avoids blocking withdrawals during initial activation while converging automatically to measured data.
