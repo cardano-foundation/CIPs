@@ -140,9 +140,9 @@ future consensus designs.
 ## Overview of existing schemes
 NIST has recently standardized several signature schemes that could be relevant to the migration of Cardano to PQC:
 
-- ML-DSA: based on lattice problems (MLWE and MSIS). Rather large signatures (2.4KB) and key sizes (1.3KB) growing larger at more secure levels. Good efficiency both for signing (~0.65ms) and verification (~0.53ms) on average hardware. Prone to side-channel attacks due to its rejection sampling.
-- FN-DSA: Based on NTRU lattices. Compact signatures (~690 bytes) and key sizes (~897 bytes), most size-efficient standardized PQC signature scheme. Moderate signing speed (~3.28ms) due to its Gaussian sampling. Gaussian sampling is also its main security weakness against side-channel attacks in the context of high-volume signing of Cardano stake pool operations.
-- SLH-DSA: Based on hash function security (no new mathematical assumptions). Very large signatures (8KB to 50KB depending on parameters) with small key sizes (~32 bytes). Slow signing (~131.9ms) but fast verification. The most conservative and side-channel-friendly of the three schemes, as its security reduces entirely to well-understood hash function properties. Impractical for regular transaction signing in Cardano but well-suited to infrequently-used high-value keys such as governance credentials.
+- ML-DSA: Based on lattice problems (MLWE and MSIS). Rather large signatures (2.4KB) and key sizes (1.3KB), growing larger at higher security levels. Good efficiency both for signing (~0.65ms) and verification (~0.53ms) on average hardware. The most mature and well-studied of the standardized PQC signature schemes.
+- FN-DSA: Based on NTRU lattices. The most compact standardized scheme with signatures (~690 bytes) and key sizes (~897 bytes), closest in size to classical schemes. Moderate signing speed (~3.28ms). Its Gaussian sampling mechanism makes secure implementation significantly harder than other candidates, a practical concern in high-volume signing contexts such as stake pool operations.
+SLH-DSA: Based solely on hash function security, no new mathematical assumptions. Very large signatures (8KB to 50KB depending on parameters) with small key sizes (~32 bytes). Slow signing (~131.9ms) but fast verification. Its size makes it impractical for regular transaction signing, but well-suited to infrequently-used high-value keys such as governance credentials.
 
 Some of the candidates for the second round of standardization:
 
@@ -164,12 +164,6 @@ Finally, goals may also serve as evaluation metrics to assess how good a propose
 
 ## Open Questions
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
-
-Quantum attacks and post-quantum cryptography are very active fields of study. The finalization of the first set of standards by the NIST happened less than two years ago and those schemes and their implementations are still under analysis by the community. The NIST is also continuing their standardization process to expend the number of standards, both for signatures and KEM. This poses the question of how and when to select the schemes that will be used to replace the current ones in Cardano.
-
-With the advances in hardware and attacks, the move to post-quantum crytography cannot be delayed much longer but we need a thorough analysis of the existing schemes, standardized or not, to select the ones that fit our needs the most while being tested enough to give us confidence in using it.
-Ultimately, the best solution for now would be to improve the cryptographic agility of Cardano and not commit to any particular scheme as the building block of the blockchain.
-
 
 Below a non-exhaustive list of open questions that come at this stage:
 
