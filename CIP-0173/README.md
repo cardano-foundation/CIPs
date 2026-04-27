@@ -32,7 +32,7 @@ The current NCL process relies on repeated social coordination around Info Actio
 This creates two problems:
 
 - **Ambiguous source of truth.** Different actors can interpret different NCL references as authoritative.
-- **Operational overhead.** Arithmetic admissibility checks remain largely procedural rather than being deterministically derived from canonical state.
+- **Operational overhead.** Arithmetic admissibility checks remain largely procedural rather than being deterministically derived from the ledger state.
 
 This CIP resolves those problems by using:
 
