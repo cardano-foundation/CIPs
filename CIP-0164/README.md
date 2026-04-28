@@ -2460,31 +2460,7 @@ the [Protocol Security](#protocol-security) section and
 
 ### Design Decisions
 
-#### Transaction References in Endorser Blocks
-
-EBs contain transaction references rather than full transaction bodies to avoid
-re-transmitting data already diffused through the network. Nodes fetch only
-transactions they don't possess, reducing bandwidth and avoiding redundant
-validation when transactions are endorsed by multiple EBs. Complete transaction
-data remains available through network diffusion and local storage for immutable
-chain purposes.
-
-### Alternatives & Extensions
-
-The presented Leios specification provides a solid foundation for progressive
-enhancement towards higher throughput while maintaining ecosystem compatibility.
-Several alternative ideas and protocol variants were considered, which are
-listed as possible extensions in this section.
-
-As ecosystem priorities change, any of the following pathways could become more
-attractive to implement, each offering distinct trade-offs in terms of user
-experience, implementation cost, security considerations, and throughput
-potential.
-
-Furthermore, most aspects build incrementally upon the base protocol and may
-form a roadmap of next steps.
-
-#### Voting committee selection alternatives
+#### Voting committee selection
 
 Three committee-selection schemes were evaluated during the development of
 this CIP: **All-vote** (every registered SPO is a committee member),
@@ -2587,6 +2563,30 @@ produce more votes per EB than wFA^LS) does not exceed the $L_{\text{vote}}$
 budget have so far been run on a 750-node topology, where all three schemes
 behave identically. Confirmation at 2000-node scale is in progress; results
 will be linked here before merge.
+
+#### Transaction References in Endorser Blocks
+
+EBs contain transaction references rather than full transaction bodies to avoid
+re-transmitting data already diffused through the network. Nodes fetch only
+transactions they don't possess, reducing bandwidth and avoiding redundant
+validation when transactions are endorsed by multiple EBs. Complete transaction
+data remains available through network diffusion and local storage for immutable
+chain purposes.
+
+### Alternatives & Extensions
+
+The presented Leios specification provides a solid foundation for progressive
+enhancement towards higher throughput while maintaining ecosystem compatibility.
+Several alternative ideas and protocol variants were considered, which are
+listed as possible extensions in this section.
+
+As ecosystem priorities change, any of the following pathways could become more
+attractive to implement, each offering distinct trade-offs in terms of user
+experience, implementation cost, security considerations, and throughput
+potential.
+
+Furthermore, most aspects build incrementally upon the base protocol and may
+form a roadmap of next steps.
 
 **Increase Praos Parameters**
 
