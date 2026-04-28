@@ -43,7 +43,7 @@ security of the settlement layer therefore depends on cryptographic primitives
 that were designed against classical attackers and may not remain secure against
 sufficiently capable quantum attackers.
 
-### Context: why this matters now
+### Context: Why this matters now
 
 Quantum hardware continues to advance. More importantly, recent work continues
 to reduce published resource estimates for quantum attacks on elliptic-curve
@@ -53,15 +53,15 @@ cryptography
 This reduces the margin between the time needed for migration and the time at
 which such attacks may become feasible.
 
-This matters at the Cardano settlement layer because migration of the base layer
-cryptography is slow and coordination-heavy. Any change in this area affects
-ledger rules, consensus, node implementations, wallets, stake pool operators,
-exchanges, and other ecosystem participants. It also requires broad community
-alignment and careful rollout planning. As a result, Cardano cannot wait until
-the risk becomes immediate before preparing a migration path.
+This matters at the Cardano settlement layer because the migration of the base
+layer cryptography is slow and coordination-heavy. Any change in this area
+affects ledger rules, consensus, node implementations, wallets, stake pool
+operators, exchanges, and other ecosystem participants. It also requires broad
+community alignment and careful rollout planning. As a result, Cardano cannot
+wait until the risk becomes immediate before preparing a migration path.
 
 This is not unique to Cardano. Other major blockchain ecosystems are also moving
-from general concern to the public planning phase. Examples of this includes XRP
+from general concern to the public planning phase. Examples of this include XRP
 publishing a post-quantum roadmap and the Ethereum Foundation working on
 post-quantum protocol upgrades.
 
@@ -102,15 +102,15 @@ digests.
 | Grover's algorithm | Symmetric cryptography and hash-based constructions | Reduces effective security levels rather than fully breaking them | Increase security parameters such as key sizes or digest sizes |
 
 This helps explain why the threat model above gives higher priority to the parts
-of the system that depends directly on public-key cryptography.
+of the system that depend directly on public-key cryptography.
 
 The same concern also appears in other important parts of the Cardano system.
 Mithril relies on BLS-based aggregate signatures, while Ouroboros Leios and
-Peras introduces aggregate-signature certificates for voting and certification.
-Zero-knowledge systems that are already being integrated in the ecosystem may
+Peras introduce aggregate-signature certificates for voting and certification.
+Zero-knowledge systems that are already being integrated into the ecosystem may
 also rely on elliptic-curve cryptography and would therefore be vulnerable to
 Shor's algorithm. These examples show that the quantum threat is not limited to
-today's settlement layer, but also affects important Cardano services and future
+today's settlement layer but also affects important Cardano services and future
 consensus designs.
 
 ### Threat model: what breaks in Cardano
@@ -119,20 +119,21 @@ The impact of a cryptographic break would not be the same across the system, so
 the problem must be framed in terms of priority and system impact.
 
 1. **Signature schemes** are the highest priority because they protect the root
-   of trust for transaction authorization and stake pool operational control. In
-   Cardano, this includes payment and staking keys and stake pool cold keys. If
-   they are broken, an adversary could forge authorizations, move funds, or take
-   control of critical or even adveserial operations.
+   of trust for transaction authorization, governance, and stake pool
+   operational control. In Cardano, this includes payment and staking keys and
+   stake pool cold keys. If they are broken, an adversary could forge
+   authorizations, move funds, or take control of critical or even adversarial
+   operations.
 
-2. **Verifiable Random Functions** (VRF's) are used in the consensus layer for
+2. **Verifiable Random Functions** (VRFs) are used in the consensus layer for
    the private slot leader schedule and the fair generation of randomness that
    underpins this. A quantum adversary recovering the private key of a VRF would
    mean that block production by that key is no longer private and that the
    randomness can be biased in the adaptive security model (grinding).
 
-3. **Key Evolving Signature scheme** (KES) are used in the consensus layer to
+3. **Key Evolving Signature schemes** (KES) are used in the consensus layer to
    ensure that block forging is forward secure and thus that private keys that
-   forged blocks in the past, are lost forever. A quantum adversary that can
+   forged blocks in the past are lost forever. A quantum adversary that can
    recover these lost keys from past operation certificates (opcerts) can thus
    trick bootstrapping nodes to follow the wrong chain.
 
@@ -169,7 +170,7 @@ Some of the candidates for the second round of standardization:
 - SQIsign: Based on isogenies, designed as a sigma protocol using Fiat-Shamir.
   Small signatures (~177 bytes) and public keys (~64 bytes). Signing remains
   slow despite recent improvements, but the verification is fast. Good long-term
-  candidate thanks to its size and native ZK structure, but need more study and
+  candidate thanks to its size and native ZK structure, but needs more study and
   improvements.
 - FAEST: Security based on AES via a VOLEitH zero-knowledge proof of knowledge
   of an AES key. Signatures ~5–6 KB. Susceptible to side-channel attacks. Good
@@ -181,17 +182,17 @@ Some of the candidates for the second round of standardization:
   multivariate schemes.
 
 The standardized schemes offer interesting and different trade-offs between the
-size of signatures, signing and verification keys as well as efficiency of
-signing and verification. Currently there is no one size fits all which means
-PQC solutions will mostly likely involve a combination of those schemes. This,
-in part, justifies the need for agility when implementing the transition to PQC
-together with the recency of the standardization which leaves room for a better
+size of signatures, signing and verification keys, as well as efficiency of
+signing and verification. Currently there is no one-size-fits-all, which means
+PQC solutions will most likely involve a combination of those schemes. This in
+part, justifies the need for agility when implementing the transition to PQC
+together with the recency of the standardization, which leaves room for a better
 assessment of the security of the standardized schemes.
 
 ### Post-quantum planning in other ecosystems
 
 Cardano is not the only ecosystem facing this problem. Other major blockchain
-projects are also moving from general concern to active planning and, in some
+projects are also moving from general concern to active planning, and in some
 cases, shipped work. Security models, consensus mechanisms, and governance
 processes differ significantly across ecosystems, so direct comparisons are
 limited. The general direction, however, is consistent: public-key cryptography
@@ -229,11 +230,11 @@ targeting full production transition by 2028. The plan moves through four
 phases: emergency contingency readiness, experimentation with ML-DSA on a test
 network, parallel deployment alongside existing signatures, and a network-wide
 amendment. Its stated design principle is cryptographic agility, supporting
-multiple NIST-standardised algorithms to remain adaptable as the field matures.
+multiple NIST-standardized algorithms to remain adaptable as the field matures.
 
 Bitcoin and Solana are at earlier stages. BIP-360 and BIP-361, formally assigned
 in February 2026, propose a new quantum-resistant output type and a legacy
-address migration plan respectively, though neither has community consensus for
+address migration plan, respectively, though neither has community consensus for
 activation. Solana has tested post-quantum signatures experimentally and
 encountered significant performance overhead, a concrete illustration of the
 engineering tradeoffs that any ecosystem, including Cardano, must account for in
@@ -241,23 +242,23 @@ its migration design.
 
 ## Use Cases
 
-<!-- A concrete set of examples written from a user's perspective, describing what and why they are trying to do. When they exist, this section should give a sense of the current alternatives and highlight why they are not suitable. -->
+A non-exhaustive list of user perspectives that are impacted.
+
+- As an Ada holder, I want the authorization of my funds to be secure.
+- As a staker, I want my staking rewards to be secure.
+- As a stake pool operator, I want a consensus layer that is secure.
+- As a DRep, I want to ensure governance actions are executed fairly.
 
 ## Goals
 
-<!-- A list of goals and non-goals a project is pursuing, ranked by importance. These goals should help understand the design space for the solution and what the underlying project is ultimately trying to achieve.
+The goal of a CIP that addresses this CPS should be to
 
-Goals may also contain requirements for the project. For example, they may include anything from a deadline to a budget (in terms of complexity or time) to security concerns.
+1. Ensure that signatures in transaction, governance, staking, and block forging
+   cannot be forged.
+2. Ensure the blockchain remains forward and adaptive secure.
 
-Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
-
-<!-- long-term ADA holder protects funds,
-wallet migrates users,
-stake pool operator protects operational control,
-delegator protects stake authority,
-consensus remains secure,
-infrastructure handles larger artifacts,
-protocol designers preserve agility. -->
+Again, such a CIP does not have in scope the Plutus language, as it is
+constraint by other design principles and timings.
 
 ## Open Questions
 
@@ -271,7 +272,9 @@ Below a non-exhaustive list of open questions that come at this stage:
   is there to adjust the `activeSlotsCoeff` parameter?
 - Given that the current PQ schemes are not battle tested, how can we remain
   flexible and agile in our design?
-- What alternatives PQ alternatives are there for KES and VRF?
+- What alternative PQ schemes are there for KES and VRF?
+- Do we need to replace the VRF scheme if we opt for a public leadership
+  schedule?
 
 ## Copyright
 
