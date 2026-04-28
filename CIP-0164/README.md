@@ -2937,9 +2937,8 @@ requirements to ensure security, efficiency, and practical deployability:
    certificates and not unduly increase their size.
 
 2. **Key rotation:** The cryptographic keys used to sign Leios votes and
-   certificates _do not_ need to be rotated periodically because the constraints
-   on Leios voting rounds and the key rotation already present in Praos secure
-   the protocol against attacks such as replay and key compromise.
+   certificates should support periodic rotation to strengthen the scheme
+   against adaptive adversaries who may target known committee members.
 
 3. **Deterministic signatures:** While deterministic signatures can provide
    additional protection against attacks that exploit weak randomness in
@@ -2947,13 +2946,14 @@ requirements to ensure security, efficiency, and practical deployability:
    The main requirement for deterministic randomness is in the lottery
    mechanism, which is satisfied by the use of VRFs.
 
-4. **Local lottery:** Selection of the voting committee should not be so
-   deterministic and public as to open attack avenues such as denial-of-service
-   or subversion.
+4. **Committee privacy:** Committee selection may be public and deterministic.
+   Leios is an optimistic overlay protocol: attacking certification does not
+   impact safety of the underlying chain, only liveness of the EB certification
+   path. Key rotation (requirement 2) mitigates targeted attacks on known
+   committee members.
 
-5. **Liveness:** Adversaries with significant stake (e.g., more than 35%) should
-   not be able to thwart an honest majority from reaching a quorum of votes for
-   an EB.
+5. **Liveness:** Adversaries with less than 50% of stake should not be able to
+   thwart an honest majority from reaching a quorum of votes for an EB.
 
 6. **Soundness:** Adversaries with near majority stake (e.g., 49%) should not be
    able to form an adversarial quorum that certifies the EB of their choice.
@@ -2962,10 +2962,11 @@ requirements to ensure security, efficiency, and practical deployability:
    votes themselves should be small. Note that the large size of Praos KES
    signatures precludes their use for signing Leios votes.
 
-8. **Small certificates:** Because Leios certificates are frequent and must fit
-   inside Praos blocks, they should be small enough so there is plenty of room
-   for other transactions in the Praos blocks. Note once again that certificates
-   based on Praos KES signatures are too large for consideration in Leios.
+8. **Small certificates:** Leios certificates are included in ranking blocks and
+   must be small and quick to validate. Compact certificates improve RB
+   diffusion speed and thus the safety margins of the protocol. Note that
+   certificates based on Praos KES signatures are too large for consideration
+   in Leios.
 
 9. **Fast cryptography:** The computational burden of creating and verifying
    voting eligibility, the votes themselves, and the resulting certificate must
