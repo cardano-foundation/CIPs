@@ -17,8 +17,6 @@ License: CC-BY-4.0
 
 ## Abstract
 
-<!-- A short (\~200 word) description of the target goals and the technical obstacles to those goals. -->
-
 The prospect of a quantum-capable adversary is becoming increasingly credible,
 and with that, the Cardano blockchain should prepare for it. This CPS describes
 the problems this QC adversary brings to Cardano. It has in scope all the
@@ -63,43 +61,14 @@ alignment and careful rollout planning. As a result, Cardano cannot wait until
 the risk becomes immediate before preparing a migration path.
 
 This is not unique to Cardano. Other major blockchain ecosystems are also moving
-from general concern to public planning, including XRP Ledger's published
-post-quantum roadmap and Ethereum Foundation work on post-quantum protocol
-upgrades.
+from general concern to the public planning phase. Examples of this includes XRP
+publishing a post-quantum roadmap and the Ethereum Foundation working on
+post-quantum protocol upgrades.
 
 Cardano exposes many public keys on-chain, and some of them remain in use for
 long periods of time. This increases the risk that long-exposed public keys
 become attractive targets if quantum attacks on their corresponding private keys
 become practical.
-
-### Threat model: what breaks first in Cardano
-
-The impact of a cryptographic break would not be the same across the system, so
-the problem must be framed in terms of priority and system impact.
-
-Signature schemes are the highest priority because they protect the root of
-trust for transaction authorization and operational control. In Cardano, this
-includes payment and staking keys, stake pool cold keys, and KES-based
-block-signing keys. If they are broken, an adversary could forge authorizations,
-move funds, or take control of critical operations. Since public keys are
-exposed on-chain, long-lived keys are especially important targets.
-
-Verifiable Random Functions (VRFs) are critical for consensus security because
-they are used for leader election and protocol randomness. If they are broken,
-an adversary could bias or influence slot leadership and weaken the fairness and
-security of consensus.
-
-Delegation and stake authority are also critical because they determine how
-stake is assigned and which stake pools act on its behalf. In Cardano, this
-includes delegation certificates, stake credentials, and stake pool control
-data. If they are broken, an adversary could redirect stake, alter control over
-pool operations, or distort which pools are eligible to produce blocks.
-
-The problem addressed by this CPS is therefore not only the future selection of
-post-quantum primitives. It is the need to identify, prioritize, and frame the
-cryptographic exposures of the Cardano settlement layer so that the ecosystem
-can prepare a safe and coordinated migration path before it is forced into a
-rushed response.
 
 ### What quantum attacks break
 
@@ -117,10 +86,8 @@ In such a setting, public keys may become enough to recover the corresponding
 private keys or to forge valid signatures.
 
 At a high level, Shor's algorithm threatens public-key primitives such as
-digital signatures, VRFs, aggregate signatures, and elliptic-curve-based proof
-systems. In Cardano, this affects signature-based authorization, VRF-based
-leader election, and protocols that rely on aggregated certificates or
-elliptic-curve-based proofs.
+digital signatures, VRFs, KES, aggregate signatures, and elliptic-curve-based
+zero-knowledge proof systems.
 
 Grover's algorithm affects a different class of primitives. It applies to
 symmetric cryptography and hash-based constructions, such as hash functions used
@@ -135,17 +102,45 @@ digests.
 | Grover's algorithm | Symmetric cryptography and hash-based constructions | Reduces effective security levels rather than fully breaking them | Increase security parameters such as key sizes or digest sizes |
 
 This helps explain why the threat model above gives higher priority to the parts
-of the system that depend directly on public-key cryptography.
+of the system that depends directly on public-key cryptography.
 
 The same concern also appears in other important parts of the Cardano system.
-Mithril relies on BLS-based aggregate signatures, while Ouroboros Leios, as the
-next major consensus upgrade for Cardano, introduces aggregate-signature
-certificates for endorser-block voting and certification. Zero-knowledge systems
-that are already being integrated in the ecosystem may also rely on
-elliptic-curve cryptography and would therefore be vulnerable to Shor's
-algorithm. These examples show that the quantum threat is not limited to today's
-settlement layer, but also affects important Cardano services and future
+Mithril relies on BLS-based aggregate signatures, while Ouroboros Leios and
+Peras introduces aggregate-signature certificates for voting and certification.
+Zero-knowledge systems that are already being integrated in the ecosystem may
+also rely on elliptic-curve cryptography and would therefore be vulnerable to
+Shor's algorithm. These examples show that the quantum threat is not limited to
+today's settlement layer, but also affects important Cardano services and future
 consensus designs.
+
+### Threat model: what breaks in Cardano
+
+The impact of a cryptographic break would not be the same across the system, so
+the problem must be framed in terms of priority and system impact.
+
+1. **Signature schemes** are the highest priority because they protect the root
+   of trust for transaction authorization and stake pool operational control. In
+   Cardano, this includes payment and staking keys and stake pool cold keys. If
+   they are broken, an adversary could forge authorizations, move funds, or take
+   control of critical or even adveserial operations.
+
+2. **Verifiable Random Functions** (VRF's) are used in the consensus layer for
+   the private slot leader schedule and the fair generation of randomness that
+   underpins this. A quantum adversary recovering the private key of a VRF would
+   mean that block production by that key is no longer private and that the
+   randomness can be biased in the adaptive security model (grinding).
+
+3. **Key Evolving Signature scheme** (KES) are used in the consensus layer to
+   ensure that block forging is forward secure and thus that private keys that
+   forged blocks in the past, are lost forever. A quantum adversary that can
+   recover these lost keys from past operation certificates (opcerts) can thus
+   trick bootstrapping nodes to follow the wrong chain.
+
+The problem addressed by this CPS is therefore not only the future selection of
+post-quantum primitives. It is the need to identify, prioritize, and frame the
+cryptographic exposures of the Cardano settlement layer so that the ecosystem
+can prepare a safe and coordinated migration path before it is forced into a
+rushed response.
 
 ### Overview of existing schemes
 
@@ -166,14 +161,14 @@ to the migration of Cardano to PQC:
   mathematical assumptions. Very large signatures (8KB to 50KB depending on
   parameters) with small key sizes (~32 bytes). Slow signing (~131.9ms) but fast
   verification. Its size makes it impractical for regular transaction signing,
-  but well-suited to infrequently-used high-value keys such as governance
+  but well-suited to infrequently used high-value keys such as governance
   credentials.
 
 Some of the candidates for the second round of standardization:
 
 - SQIsign: Based on isogenies, designed as a sigma protocol using Fiat-Shamir.
   Small signatures (~177 bytes) and public keys (~64 bytes). Signing remains
-  slow despite recent improvements but the verification is fast. Good long-term
+  slow despite recent improvements, but the verification is fast. Good long-term
   candidate thanks to its size and native ZK structure, but need more study and
   improvements.
 - FAEST: Security based on AES via a VOLEitH zero-knowledge proof of knowledge
@@ -202,7 +197,7 @@ processes differ significantly across ecosystems, so direct comparisons are
 limited. The general direction, however, is consistent: public-key cryptography
 needs to be replaced, and the planning window is now.
 
-Ethereum has the most active public programme. The Ethereum Foundation formed a
+Ethereum has the most active public program. The Ethereum Foundation formed a
 dedicated
 [Post-Quantum Security team in January 2026](https://www.coindesk.com/tech/2026/01/24/ethereum-foundation-makes-post-quantum-security-a-top-priority-as-new-team-forms),
 backed by $2 million in research prizes, and launched a public tracking hub at
@@ -256,6 +251,14 @@ Goals may also contain requirements for the project. For example, they may inclu
 
 Finally, goals may also serve as evaluation metrics to assess how good a proposed solution is. -->
 
+<!-- long-term ADA holder protects funds,
+wallet migrates users,
+stake pool operator protects operational control,
+delegator protects stake authority,
+consensus remains secure,
+infrastructure handles larger artifacts,
+protocol designers preserve agility. -->
+
 ## Open Questions
 
 <!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
@@ -270,14 +273,7 @@ Below a non-exhaustive list of open questions that come at this stage:
   flexible and agile in our design?
 - What alternatives PQ alternatives are there for KES and VRF?
 
-<!-- OPTIONAL SECTIONS: see CIP-9999 > Specification > CPS > Structure table -->
-
 ## Copyright
 
-<!-- The CPS must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
-
-If AI/LLMs were used in the creation of the copyright text, the author may choose to include a disclaimer to describe their application within the proposal.
--->
-
-<!-- This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode). -->
-<!-- This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0). -->
+This CPS is licensed under
+[Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
