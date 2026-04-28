@@ -827,8 +827,11 @@ following before accepting the block:
 5. **EB Consistency**: Certificate references the correct EB hash announced in
    the preceding RB
 
-Detailed specifications, performance, and benchmarks are available in the [BLS
-certificates specification][bls-spec].
+Formal pen-and-paper algorithms for the voting and certificate scheme are
+given in the [ARC voting crypto review][arc-voting-review] (the scheme in
+this CIP corresponds to "Truncation" in that report). Benchmarks and
+implementation details are available in
+[leios-wfa-ls-demo][leios-wfa-ls-demo].
 
 > [!NOTE]
 >
@@ -2508,8 +2511,10 @@ implementation complexity.
 | Adaptive security (with rot.) | Yes (in practice)       | Yes (in practice)                      | Yes (in practice)                | Yes, with NPV non-targetability bonus      |
 | Spec & implementation cost    | Trivial                 | Small                                  | Moderate (per-seat sortition)    | Substantial (sortition, two vote shapes)   |
 
-(Numbers from the [`leios-wfa-ls-demo`](https://github.com/cardano-scaling/leios-wfa-ls-demo)
-benchmarks against mainnet stake data.)
+(Numbers from [leios-wfa-ls-demo][leios-wfa-ls-demo] benchmarks against mainnet
+stake data. A detailed cryptographic analysis of the three schemes is available
+in the [ARC voting crypto review][arc-voting-review]; the scheme specified in
+this CIP corresponds to "Truncation" in that report.)
 
 **Why stake-based truncation was selected:**
 
@@ -2540,7 +2545,7 @@ benchmarks against mainnet stake data.)
 
 **wFA^IID as a forward-looking option.** wFA^IID (Fait Accompli with IID
 stake-proportional sampling for non-persistent seats) is deliberately *not*
-being proposed for adoption in this PR, but is recorded here as the natural
+being proposed for adoption in this CIP, but is recorded here as the natural
 next step should stake-based truncation prove inadequate. It would be
 invoked specifically in the scenario where post-deployment network
 measurements show the absolute vote count under stake-based truncation
@@ -2553,8 +2558,8 @@ sortition draw at epoch start, not by an in-vote eligibility proof — while
 offering a *bounded number of votes per EB* irrespective of how many pools
 are eligible. This trades implementation complexity (the per-seat sortition
 draw and the bookkeeping for multi-seat winners) for tighter network-load
-control without sacrificing the certificate-size win that motivates this
-PR.
+control without sacrificing the certificate-size win that motivates the
+choice of stake-based truncation.
 
 The decision tree for a future revisit therefore reduces to:
 
@@ -2750,24 +2755,26 @@ usual mechanisms of governing a hard-fork will be employed.
 
 - **Leios R&D website** — [leios.cardano-scaling.org][leios-website]
 - **Leios Discord channel** — [IOG Discord][leios-discord]
-- **Leios R&D repository** — [GitHub][leios-github]
-- **Leios formal specification** — [GitHub][leios-formal-spec]
-- **Leios Agda formal specification** — [Agda
-  specification][linear-leios-formal-spec]
-- **Leios cryptography prototype** — [GitHub][leioscrypto]
-
-**Technical Specifications**
-
-- **BLS certificates specification** — [Specification][bls-spec]
-- **BLS certificates benchmarks** — [Benchmarks][bls-benchmarks]
-- **Fait Accompli sortition** — [Specification][fait-accompli-sortition]
+- **Leios R&D repository** — [ouroboros-leios][leios-github]
+- **Leios formal specification** — [ouroboros-leios-formal-spec][leios-formal-spec]
+- **Leios Agda formal specification** — [ouroboros-leios-formal-spec][linear-leios-formal-spec]
 
 **Technical Reports**
 
-- **Committee size and quorum requirement** -
-  [Analysis][committee-size-analysis]
-- **Threat model** — [Report #1][threat-model]
-- **Leios attack surface** — [Report #2][threat-model-report2]
+- **Voting scheme analysis** — [leios-wfa-ls-demo][leios-wfa-ls-demo]: explores
+  wFA^LS on mainnet stake data and includes vote/certificate size and
+  verification benchmarks for the stake-based committee scheme
+- **ARC voting crypto review** — [ouroboros-leios/arc-voting-crypto-review.pdf][arc-voting-review]:
+  cryptographic analysis comparing All-vote, Truncation (the scheme in this
+  CIP), and wFA^LS on adaptive-security and overhead grounds
+- **Older cryptography prototype** — [ouroboros-leios/crypto-benchmarks.rs][leioscrypto]:
+  explores wFA^LS BLS certificates and sortition
+- **Older committee size and quorum requirement** —
+  [Analysis][committee-size-analysis]: establishes lower bounds on committee
+  size and quorum fraction; analysis was conducted in terms of vote counts
+  but the bounds apply equally when the quorum is expressed as a stake
+  threshold
+- **Threat model** — [Report][threat-model]
 - **Node operating costs** — [Cost estimate][cost-estimate]
 - **Impact analysis** - [Impact][impact-analysis]
 
@@ -2808,6 +2815,12 @@ usual mechanisms of governing a hard-fork will be employed.
 [fait-accompli-sortition]:
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/crypto-benchmarks.rs/Specification.md#sortition
   "Fait Accompli sortition specification"
+[leios-wfa-ls-demo]:
+  https://github.com/cardano-scaling/leios-wfa-ls-demo
+  "Voting scheme analysis: wFA^LS exploration and stake-based committee benchmarks"
+[arc-voting-review]:
+  https://github.com/input-output-hk/ouroboros-leios/blob/41cefc99a/docs/arc-voting-crypto-review.pdf
+  "ARC voting crypto review: All-vote, Truncation, and wFA^LS comparison"
 
 <!-- Project resources -->
 
@@ -2843,13 +2856,10 @@ usual mechanisms of governing a hard-fork will be employed.
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-1.md#committee-size-and-quorum-requirement
   "Committee size and quorum requirement"
 [threat-model]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-1.md#threat-model
-  "Threat model"
-[threat-model-report2]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-2.md#notes-on-the-leios-attack-surface
-  "Comments on Leios attack surface"
+  https://github.com/input-output-hk/ouroboros-leios/blob/685cdead10fcd5a790151a7ba3833cff9a888333/docs/threat-model.md
+  "Leios threat model"
 [cost-estimate]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cost-estimate/README.md
+  https://github.com/input-output-hk/ouroboros-leios/blob/685cdead10fcd5a790151a7ba3833cff9a888333/docs/cost-estimate/README.md
   "Leios node operating costs"
 [impact-analysis]:
   https://github.com/input-output-hk/ouroboros-leios/blob/4603cfd0b545cccf3d7c8fddc75e6e0f182f132a/docs/ImpactAnalysis.md
