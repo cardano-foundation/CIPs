@@ -55,6 +55,11 @@ exchanges, and other ecosystem participants. It also requires broad community
 alignment and careful rollout planning. As a result, Cardano cannot wait until
 the risk becomes immediate before preparing a migration path.
 
+This is not unique to Cardano. Other major blockchain ecosystems are also
+moving from general concern to public planning, including XRP Ledger's
+published post-quantum roadmap and Ethereum Foundation work on post-quantum
+protocol upgrades.
+
 Cardano exposes many public keys on-chain, and some of them remain in use for
 long periods of time. This increases the risk that long-exposed public keys
 become attractive targets if quantum attacks on their corresponding private
