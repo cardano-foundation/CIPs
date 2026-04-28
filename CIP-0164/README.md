@@ -2462,107 +2462,79 @@ the [Protocol Security](#protocol-security) section and
 
 #### Voting committee selection
 
-Three committee-selection schemes were evaluated during the development of
-this CIP: **All-vote** (every registered SPO is a committee member),
-**Stake-based truncation** (the scheme specified above), and **wFA^LS**
-(weighted Fait Accompli with Local Sortition; the scheme that appeared in
-earlier drafts of CIP-164). A fourth variant, **wFA^IID** (Fait Accompli
-with IID stake-proportional sampling for non-persistent seats), is held as
-a forward-looking option and discussed at the end of this section.
+A stake cutoff is required: allowing every registered SPO to vote ("All-vote")
+leaves the committee size unbounded and vulnerable to an adversary registering
+pools to inflate vote traffic. Moreover, under realistic Pareto-distributed
+stake the marginal security gain of including additional small pools diminishes
+rapidly: on mainnet at epoch 612, 916 pools already cover 99% of active stake
+while the remaining ~2,000 pools share ~1%. A cumulative-stake threshold
+($\sigma_c$) captures this naturally.
 
-The three schemes differ primarily in three dimensions: certificate size
-and verification cost, voter privacy / non-targetability, and
-implementation complexity.
+Given a stake cutoff, two committee-selection schemes were seriously considered:
+**stake-based truncation** (the scheme specified above) and **wFA^LS** (weighted
+Fait Accompli with Local Sortition; the scheme that appeared in earlier drafts
+of CIP-164). A detailed cryptographic analysis of both schemes is available in
+the [ARC voting crypto review][arc-voting-review]; the scheme specified in this
+CIP corresponds to "Truncation" in that report.
 
-| Dimension                     | All-vote                | Stake-based truncation                 | wFA^IID (forward-looking)        | wFA^LS                                     |
-| ----------------------------- | ----------------------- | -------------------------------------- | -------------------------------- | ------------------------------------------ |
-| Voter set per epoch           | All registered SPOs     | Top-stake committee (bounded)          | Top-stake PVs + IID-sampled NPVs | Persistent voters + per-EB non-persistent  |
-| Certificate format            | Bitfield + agg. sig.    | Bitfield + agg. sig.                   | Bitfield + agg. sig.             | Agg. sig. + per-NPV eligibility proofs     |
-| Committee size (mainnet ep. 612) | ~3000 (all SPOs)     | 916 (top-stake at 99% cumulative)      | 916                              | 481 PV + 94 NPV                            |
-| Certificate size              | ~430 B (⌈3000/8⌉ + sig) | ~203 B                                 | ~203 B                           | ~6.8 kB                                    |
-| Cert verification (worst)     | ~2 ms                   | ~2 ms                                  | ~2 ms                            | ~10 ms                                     |
-| Vote size                     | 94 B                    | 94 B                                   | 94 B                             | 94 B (PV) / 171 B (NPV)                    |
-| Per-vote eligibility check    | None                    | None (membership lookup)               | None (deterministic per-seat)    | BLS check + VRF check for NPVs             |
-| Network traffic at scale      | Linear in pool count    | Bounded by stake-distribution tail     | Bounded by NPV-seat count        | Bounded by PV + NPV count                  |
-| Adaptive security (with rot.) | Yes (in practice)       | Yes (in practice)                      | Yes (in practice)                | Yes, with NPV non-targetability bonus      |
-| Spec & implementation cost    | Trivial                 | Small                                  | Moderate (per-seat sortition)    | Substantial (sortition, two vote shapes)   |
+| Dimension                             | Stake-based truncation             | wFA^LS                                                              |
+|---------------------------------------|------------------------------------|---------------------------------------------------------------------|
+| Voter set per epoch                   | Top-stake committee (bounded)      | Persistent voters + per-EB non-persistent                           |
+| Certificate format                    | Bitfield + aggregated signature    | Bitfield of PVs + per-NPV eligibility proofs + aggregated signature |
+| Committee size (mainnet ep. 612)      | 916 (top-stake at 99% cumulative)  | 481 PV + 94 NPV                                                     |
+| Certificate size                      | ~203 B                             | ~6.8 kB                                                             |
+| Cert verification                     | ~2 ms                              | ~10 ms                                                              |
+| Vote size                             | 94 B                               | 94 B (PV) / 171 B (NPV)                                             |
+| Per-vote eligibility check            | None (membership lookup)           | BLS check + VRF check for NPVs                                      |
+| Network traffic at scale              | Bounded by stake-distribution tail | Bounded by PV + NPV count                                           |
+| Adaptive security (with key rotation) | Yes (in practice)                  | Yes, with NPV non-targetability bonus                               |
+| Implementation complexity             | Small                              | Substantial (sortition, two vote shapes)                            |
 
 (Numbers from [leios-wfa-ls-demo][leios-wfa-ls-demo] benchmarks against mainnet
-stake data. A detailed cryptographic analysis of the three schemes is available
-in the [ARC voting crypto review][arc-voting-review]; the scheme specified in
-this CIP corresponds to "Truncation" in that report.)
+stake data.)
 
 **Why stake-based truncation was selected:**
 
-- **Certificate size dominates the design pressure.** Certificates are
-  perpetual on-chain overhead and certificate verification sits on the
-  $\Delta_{\text{RB}}$ critical path. The ~40× certificate-size reduction
-  and ~5× verification-time reduction relative to wFA^LS is a substantial
-  ongoing protocol-level saving.
-- **It is the natural mitigation against All-vote's traffic attack.**
-  Under All-vote, an adversary can register additional pools to inflate
-  legitimate vote traffic. A stake cutoff naturally bounds the committee
-  size irrespective of pool-count manipulation.
-- **Simplicity.** No per-EB sortition, one vote shape, one eligibility
-  check. This is "harder to get wrong" across multiple node
-  implementations (cardano-node, amaru, and others). The conformance test
-  surface is correspondingly smaller.
-- **Adaptive security gap is small in practice.** Without BLS key
-  rotation, no scheme is genuinely adaptively secure. With rotation, the
-  one feature wFA^LS uniquely retains is non-targetability of NPVs, but
-  the persistent voters under wFA^LS are exactly the largest pools that
-  an adaptive attacker would target anyway.
+- **Certificate size dominates the design pressure.** Certificates are perpetual
+  on-chain overhead and certificate verification sits on the
+  $\Delta_{\text{RB}}$ critical path. The ~33× certificate-size reduction and
+  ~5× verification-time reduction relative to wFA^LS is a substantial ongoing
+  protocol-level saving.
+- **Simplicity.** No per-EB sortition, one vote shape, one eligibility check.
+  This is "harder to get wrong" across multiple node implementations
+  (cardano-node, amaru, and others). The conformance test surface is
+  correspondingly smaller.
+- **Adaptive security gap is small in practice.** Without BLS key rotation, no
+  scheme is genuinely adaptively secure. With rotation, the one feature wFA^LS
+  uniquely retains is non-targetability of NPVs — but NPVs are drawn from the
+  long tail of small pools, so compromising them yields very little stake per
+  target. A rational adaptive attacker would focus on the large persistent
+  voters regardless, where both schemes are equally exposed.
 - **Reversibility.** The committee scheme can be changed in an intra-era
   hard-fork via a protocol parameter, provided the parameter is chosen to
-  generalize across schemes (the cumulative-stake / maximum-error
-  parameter proposed here does). Locking in stake-based truncation now
-  does not foreclose future revisitation if simulation or operational
-  data warrant it.
+  generalize across schemes (the cumulative-stake / maximum-error parameter
+  proposed here does). Locking in stake-based truncation now does not foreclose
+  future revisitation if simulation or operational data warrant it.
 
-**wFA^IID as a forward-looking option.** wFA^IID (Fait Accompli with IID
-stake-proportional sampling for non-persistent seats) is deliberately *not*
-being proposed for adoption in this CIP, but is recorded here as the natural
-next step should stake-based truncation prove inadequate. It would be
-invoked specifically in the scenario where post-deployment network
-measurements show the absolute vote count under stake-based truncation
-placing unacceptable pressure on vote diffusion within $L_{\text{vote}}$.
+**wFA^IID as a forward-looking option.** A variant **wFA^IID** (Fait Accompli
+with IID stake-proportional sampling for non-persistent seats) is recorded here
+as the natural next step should stake-based truncation prove inadequate. It
+would be invoked specifically in the scenario where post-deployment network
+measurements show the absolute vote count under stake-based truncation placing
+unacceptable pressure on vote diffusion within $L_{\text{vote}}$. wFA^IID
+produces certificates and votes of the **same size** as stake-based truncation.
+Eligibility of a non-persistent seat is established by re-running a
+deterministic public sortition draw at epoch start, not by an in-vote
+eligibility proof, while offering a *bounded number of votes per EB*
+irrespective of how many pools are eligible. This trades implementation
+complexity (the per-seat sortition draw and the bookkeeping for multi-seat
+winners) for tighter network-load control without sacrificing the
+certificate-size advantage.
 
-The relevant property of wFA^IID is that it produces certificates and votes
-of the **same size** as stake-based truncation — eligibility of a
-non-persistent seat is established by re-running a deterministic public
-sortition draw at epoch start, not by an in-vote eligibility proof — while
-offering a *bounded number of votes per EB* irrespective of how many pools
-are eligible. This trades implementation complexity (the per-seat sortition
-draw and the bookkeeping for multi-seat winners) for tighter network-load
-control without sacrificing the certificate-size win that motivates the
-choice of stake-based truncation.
-
-The decision tree for a future revisit therefore reduces to:
-
-1. If network simulations or mainnet operation show that stake-based
-   truncation's vote count is comfortably within the $L_{\text{vote}}$
-   budget at the largest realistic stake distribution, no change is
-   needed.
-2. If vote count starts to pressure the budget, switch to wFA^IID via an
-   intra-era parameter change — keeping the same certificate format and
-   vote shape, accepting the additional sortition-related code paths.
-3. wFA^LS would be revisited only if both of the above prove insufficient
-   *and* a justification for the certificate-size cost can be made on
-   security grounds that are not addressed by key rotation. We do not
-   anticipate this case but flag it for completeness.
-
-This staged fallback is one of the reasons we recommend specifying the
-committee parameter as a cumulative-stake target / maximum-error value
-rather than a fixed committee size: the same parameter shape governs all
-three schemes, so an intra-era switch among them does not require a new
-era.
-
-**Caveat:** Network-level simulations confirming that vote diffusion at
-higher absolute vote counts (the All-vote and stake-based schemes can
-produce more votes per EB than wFA^LS) does not exceed the $L_{\text{vote}}$
-budget have so far been run on a 750-node topology, where all three schemes
-behave identically. Confirmation at 2000-node scale is in progress; results
-will be linked here before merge.
+**Caveat:** Network-level simulations confirming that vote diffusion at the
+expected vote counts does not exceed the $L_{\text{vote}}$ budget have so far
+been run on the [mini-mainnet][mini-mainnet] topology, where both schemes behave
+identically.
 
 #### Transaction References in Endorser Blocks
 
