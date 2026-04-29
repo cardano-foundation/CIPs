@@ -1,6 +1,6 @@
 ---
 CPS: 26
-Title: Approaches to fully-homomorphic encryption 
+Title: Approaches to fully homomorphic encryption 
 Category: Plutus
 Status: Open
 Authors: 
