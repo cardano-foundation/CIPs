@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 30
 Title: Quantum-Secure Cardano settlement layer
 Category: Consensus
 Status: Open
