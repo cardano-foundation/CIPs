@@ -4,7 +4,7 @@
   "title": "CIP-0169 Common",
   "description": "Generic CIP-100 governance metadata extension introducing the optional `onChain` property (CIP-0169). Downstream CIPs (CIP-108, CIP-119, CIP-136, ...) compose this with their own required body fields. All `$ref`s to `cardano-conway.json` resolve to CIP-0116 Conway-era domain types: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116",
   "type": "object",
-  "required": ["hashAlgorithm", "authors", "body", "onChain"],
+  "required": ["hashAlgorithm", "authors", "body"],
   "properties": {
     "hashAlgorithm": {
       "$ref": "#/definitions/HashAlgorithm"
@@ -71,6 +71,7 @@
       "title": "Body",
       "description": "The body of the metadata document that is hashed and signed (CIP-100), extended with the optional `onChain` property (CIP-0169). Downstream CIPs add their own required fields and constraints; this schema only defines the CIP-0169 extension and inherited optional CIP-100 fields.",
       "type": "object",
+      "required": ["onChain"],
       "properties": {
         "references": {
           "title": "References",
