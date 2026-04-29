@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json",
+  "$id": "cardano-conway.json",
   "title": "Cardano Conway Era Domain Types",
   "definitions": {
     "BigInt": {
