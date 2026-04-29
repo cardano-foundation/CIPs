@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "cip-0169.common.schema.json",
   "title": "CIP-0169 Common",
   "description": "Generic CIP-100 governance metadata extension introducing the optional `onChain` property (CIP-0169). Downstream CIPs (CIP-108, CIP-119, CIP-136, ...) compose this with their own required body fields.",
@@ -148,7 +148,7 @@
       "description": "Governance action proposal (CIP-116 ProposalProcedure with `anchor` omitted per CIP-0169).",
       "type": "object",
       "required": ["deposit", "reward_account", "gov_action"],
-      "unevaluatedProperties": false,
+      "additionalProperties": false,
       "properties": {
         "deposit": {
           "$ref": "#/definitions/UInt64",
@@ -175,7 +175,7 @@
       "items": {
         "type": "object",
         "required": ["key", "value"],
-        "unevaluatedProperties": false,
+        "additionalProperties": false,
         "properties": {
           "key": {
             "$ref": "#/definitions/Voter"
@@ -186,7 +186,7 @@
             "items": {
               "type": "object",
               "required": ["key", "value"],
-              "unevaluatedProperties": false,
+              "additionalProperties": false,
               "properties": {
                 "key": {
                   "$ref": "#/definitions/GovActionId"
@@ -196,7 +196,7 @@
                   "description": "CIP-116 VotingProcedure with `anchor` omitted per CIP-0169.",
                   "type": "object",
                   "required": ["vote"],
-                  "unevaluatedProperties": false,
+                  "additionalProperties": false,
                   "properties": {
                     "vote": {
                       "$ref": "#/definitions/Vote"
@@ -214,7 +214,7 @@
       "description": "DRep registration certificate (CIP-116 `register_drep` with `anchor` omitted per CIP-0169).",
       "type": "object",
       "required": ["tag", "drep_credential", "coin"],
-      "unevaluatedProperties": false,
+      "additionalProperties": false,
       "properties": {
         "tag": {
           "type": "string",
@@ -234,7 +234,7 @@
       "description": "DRep update certificate (CIP-116 `update_drep` with `anchor` omitted per CIP-0169).",
       "type": "object",
       "required": ["tag", "drep_credential"],
-      "unevaluatedProperties": false,
+      "additionalProperties": false,
       "properties": {
         "tag": {
           "type": "string",
@@ -250,7 +250,7 @@
       "description": "Constitutional committee cold-credential resignation (CIP-116 `resign_committee_cold` with `anchor` omitted per CIP-0169).",
       "type": "object",
       "required": ["tag", "committee_cold_credential"],
-      "unevaluatedProperties": false,
+      "additionalProperties": false,
       "properties": {
         "tag": {
           "type": "string",
@@ -273,7 +273,7 @@
           "title": "Parameter Change Action",
           "type": "object",
           "required": ["tag", "protocol_param_update"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -294,7 +294,7 @@
           "title": "Hard Fork Initiation Action",
           "type": "object",
           "required": ["tag", "protocol_version"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -312,7 +312,7 @@
           "title": "Treasury Withdrawals Action",
           "type": "object",
           "required": ["tag"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -323,7 +323,7 @@
               "items": {
                 "type": "object",
                 "required": ["key", "value"],
-                "unevaluatedProperties": false,
+                "additionalProperties": false,
                 "properties": {
                   "key": {
                     "$ref": "#/definitions/RewardAddress"
@@ -343,7 +343,7 @@
           "title": "No Confidence Action",
           "type": "object",
           "required": ["tag"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -358,7 +358,7 @@
           "title": "Update Committee Action",
           "type": "object",
           "required": ["tag", "signature_threshold", "committee"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -378,7 +378,7 @@
               "items": {
                 "type": "object",
                 "required": ["key", "value"],
-                "unevaluatedProperties": false,
+                "additionalProperties": false,
                 "properties": {
                   "key": {
                     "$ref": "#/definitions/Credential"
@@ -398,7 +398,7 @@
           "title": "New Constitution Action",
           "type": "object",
           "required": ["tag", "constitution"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -416,7 +416,7 @@
           "title": "Info Action",
           "type": "object",
           "required": ["tag"],
-          "unevaluatedProperties": false,
+          "additionalProperties": false,
           "properties": {
             "tag": {
               "type": "string",
