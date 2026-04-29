@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0169/cip-0169.common.schema.json",
+  "$id": "cip-0169.common.schema.json",
   "title": "CIP-0169 Common",
-  "description": "Generic CIP-100 governance metadata extension introducing the optional `onChain` property (CIP-0169). Downstream CIPs (CIP-108, CIP-119, CIP-136, ...) compose this with their own required body fields.",
+  "description": "Generic CIP-100 governance metadata extension introducing the optional `onChain` property (CIP-0169). Downstream CIPs (CIP-108, CIP-119, CIP-136, ...) compose this with their own required body fields. All `$ref`s to `cardano-conway.json` resolve to CIP-0116 Conway-era domain types: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116",
   "type": "object",
   "required": ["hashAlgorithm", "authors", "body", "onChain"],
   "properties": {
@@ -427,37 +427,48 @@
       ]
     },
     "Constitution": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/Constitution"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Constitution).",
+      "$ref": "cardano-conway.json#/definitions/Constitution"
     },
     "GovActionId": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/GovActionId"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/GovActionId).",
+      "$ref": "cardano-conway.json#/definitions/GovActionId"
     },
     "Vote": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/Vote"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Vote).",
+      "$ref": "cardano-conway.json#/definitions/Vote"
     },
     "Voter": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/Voter"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Voter).",
+      "$ref": "cardano-conway.json#/definitions/Voter"
     },
     "UInt64": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/UInt64"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/UInt64).",
+      "$ref": "cardano-conway.json#/definitions/UInt64"
     },
     "RewardAddress": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/RewardAddress"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/RewardAddress).",
+      "$ref": "cardano-conway.json#/definitions/RewardAddress"
     },
     "UnitInterval": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/UnitInterval"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/UnitInterval).",
+      "$ref": "cardano-conway.json#/definitions/UnitInterval"
     },
     "Credential": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/Credential"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Credential).",
+      "$ref": "cardano-conway.json#/definitions/Credential"
     },
     "ProtocolVersion": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/ProtocolVersion"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ProtocolVersion).",
+      "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
     },
     "ProtocolParamUpdate": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/ProtocolParamUpdate"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ProtocolParamUpdate).",
+      "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
     },
     "ScriptHash": {
-      "$ref": "https://raw.githubusercontent.com/cardano-foundation/CIPs/master/CIP-0116/cardano-conway.json#/definitions/ScriptHash"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ScriptHash).",
+      "$ref": "cardano-conway.json#/definitions/ScriptHash"
     }
   }
 }
