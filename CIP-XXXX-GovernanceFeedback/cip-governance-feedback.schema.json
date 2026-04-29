@@ -1,0 +1,253 @@
+{
+    "title": "CIP-XXXX Governance Proposal Feedback and Addenda",
+    "description": "Draft proposals, feedback, and addenda against Cardano governance proposals, extending CIP-100.",
+    "oneOf": [
+        { "$ref": "#/definitions/DraftProposal" },
+        { "$ref": "#/definitions/ProposalFeedback" },
+        { "$ref": "#/definitions/ProposalAddendum" }
+    ],
+    "definitions": {
+        "DraftProposal": {
+            "title": "DraftProposal",
+            "type": "object",
+            "required": ["hashAlgorithm", "authors", "body", "@type"],
+            "properties": {
+                "@type": { "const": "DraftProposal" },
+                "hashAlgorithm": { "const": "blake2b-256" },
+                "authors": {
+                    "type": "array",
+                    "items": { "$ref": "https://cips.cardano.org/cip/CIP-0100#/definitions/Author" }
+                },
+                "body": {
+                    "type": "object",
+                    "required": ["content", "proposedActionType", "revision", "status"],
+                    "properties": {
+                        "content": { "$ref": "#/definitions/LangString" },
+                        "proposedActionType": {
+                            "type": "string",
+                            "description": "Identifies the eventual on-chain action kind. For CIP-1694 actions, use the exact action name (e.g. treasury_withdrawals_action, parameter_change_action, info_action, hard_fork_initiation_action, update_committee, new_constitution, no_confidence). Free-form labels are permitted for actions outside CIP-1694."
+                        },
+                        "revision": { "type": "integer", "minimum": 1 },
+                        "status": {
+                            "type": "string",
+                            "enum": ["InProgress", "ReviewReady", "Withdrawn", "Submitted"]
+                        },
+                        "supersedes": { "$ref": "#/definitions/DocumentUri" },
+                        "submittedAs": { "$ref": "#/definitions/Subject" },
+                        "comment": { "$ref": "#/definitions/LangString" },
+                        "references": { "type": "array" },
+                        "externalUpdates": { "type": "array" }
+                    }
+                }
+            }
+        },
+
+        "ProposalFeedback": {
+            "title": "ProposalFeedback",
+            "type": "object",
+            "required": ["hashAlgorithm", "authors", "body", "@type"],
+            "properties": {
+                "@type": { "const": "ProposalFeedback" },
+                "hashAlgorithm": { "const": "blake2b-256" },
+                "authors": { "type": "array" },
+                "body": {
+                    "type": "object",
+                    "required": ["subject", "feedbackType", "content"],
+                    "properties": {
+                        "subject": { "$ref": "#/definitions/Subject" },
+                        "feedbackType": {
+                            "type": "string",
+                            "enum": [
+                                "Comment",
+                                "Question",
+                                "Concern",
+                                "Endorsement",
+                                "Objection",
+                                "ConditionalSupport",
+                                "ConditionalOpposition"
+                            ]
+                        },
+                        "content": { "$ref": "#/definitions/LangString" },
+                        "conditions": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/Condition" }
+                        },
+                        "inReplyTo": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/DocumentUri" }
+                        },
+                        "votingIntent": { "$ref": "#/definitions/VotingIntent" },
+                        "comment": { "$ref": "#/definitions/LangString" },
+                        "references": { "type": "array" },
+                        "externalUpdates": { "type": "array" }
+                    },
+                    "allOf": [
+                        {
+                            "if": {
+                                "properties": {
+                                    "feedbackType": {
+                                        "enum": ["ConditionalSupport", "ConditionalOpposition"]
+                                    }
+                                }
+                            },
+                            "then": {
+                                "required": ["conditions"],
+                                "properties": {
+                                    "conditions": { "minItems": 1 }
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+
+        "ProposalAddendum": {
+            "title": "ProposalAddendum",
+            "type": "object",
+            "required": ["hashAlgorithm", "authors", "body", "@type"],
+            "properties": {
+                "@type": { "const": "ProposalAddendum" },
+                "hashAlgorithm": { "const": "blake2b-256" },
+                "authors": { "type": "array" },
+                "body": {
+                    "type": "object",
+                    "required": ["subject", "addendumType", "content"],
+                    "properties": {
+                        "subject": { "$ref": "#/definitions/Subject" },
+                        "addendumType": {
+                            "type": "string",
+                            "enum": [
+                                "Clarification",
+                                "Correction",
+                                "Narrowing",
+                                "Commitment",
+                                "Withdrawal"
+                            ]
+                        },
+                        "content": { "$ref": "#/definitions/LangString" },
+                        "bindingStatements": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/BindingStatement" }
+                        },
+                        "addresses": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/FeedbackAddress" }
+                        },
+                        "inReplyTo": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/DocumentUri" }
+                        },
+                        "supersedes": {
+                            "type": "array",
+                            "items": { "$ref": "#/definitions/DocumentUri" }
+                        },
+                        "comment": { "$ref": "#/definitions/LangString" },
+                        "references": { "type": "array" },
+                        "externalUpdates": { "type": "array" }
+                    }
+                }
+            }
+        },
+
+        "Subject": {
+            "title": "Subject",
+            "description": "A reference to the proposal being discussed or amended.",
+            "type": "object",
+            "required": ["@type", "label"],
+            "properties": {
+                "@type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "GovernanceAction", "DraftProposal"]
+                },
+                "uri": { "type": "string", "format": "uri" },
+                "hash": { "type": "string", "description": "Expected blake2b-256 hash of canonicalized subject." },
+                "actionId": {
+                    "type": "string",
+                    "description": "On-chain governance action identifier; required when @type is GovernanceAction."
+                },
+                "label": { "type": "string" }
+            },
+            "allOf": [
+                {
+                    "if": { "properties": { "@type": { "const": "GovernanceAction" } } },
+                    "then": { "required": ["actionId"] }
+                },
+                {
+                    "if": { "properties": { "@type": { "enum": ["GovernanceMetadata", "DraftProposal"] } } },
+                    "then": { "required": ["uri"] }
+                }
+            ]
+        },
+
+        "Condition": {
+            "title": "Condition",
+            "description": "A specific change requested as a precondition for the author's voting stance.",
+            "type": "object",
+            "required": ["description", "criticality"],
+            "properties": {
+                "description": { "$ref": "#/definitions/LangString" },
+                "criticality": {
+                    "type": "string",
+                    "enum": ["Blocking", "Strong", "Weak"]
+                },
+                "addressedBy": { "$ref": "#/definitions/DocumentUri" }
+            }
+        },
+
+        "VotingIntent": {
+            "title": "VotingIntent",
+            "type": "object",
+            "required": ["role", "stance"],
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "enum": ["DRep", "SPO", "ConstitutionalCommittee", "Delegator", "Other"]
+                },
+                "identifier": { "type": "string" },
+                "stance": {
+                    "type": "string",
+                    "enum": ["Yes", "No", "Abstain", "Undecided"]
+                }
+            }
+        },
+
+        "BindingStatement": {
+            "title": "BindingStatement",
+            "type": "object",
+            "required": ["field", "revisedText"],
+            "properties": {
+                "field": { "type": "string" },
+                "originalText": { "type": "string" },
+                "revisedText": { "type": "string" },
+                "rationale": { "type": "string" }
+            }
+        },
+
+        "FeedbackAddress": {
+            "title": "FeedbackAddress",
+            "type": "object",
+            "required": ["uri", "disposition"],
+            "properties": {
+                "uri": { "type": "string", "format": "uri" },
+                "disposition": {
+                    "type": "string",
+                    "enum": ["Accepted", "PartiallyAccepted", "Rejected", "Noted"]
+                }
+            }
+        },
+
+        "DocumentUri": { "type": "string", "format": "uri" },
+
+        "LangString": {
+            "description": "Either a plain string, or a JSON-LD language map of locale-keyed strings.",
+            "oneOf": [
+                { "type": "string" },
+                {
+                    "type": "object",
+                    "additionalProperties": { "type": "string" }
+                }
+            ]
+        }
+    }
+}
