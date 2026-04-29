@@ -1,9 +1,10 @@
 ---
 CPS: 26
-Title: Fully homomorphic encryption with programmable bootstrapping
+Title: Approaches to fully-homomorphic encryption 
 Category: Plutus
 Status: Open
-Authors: Koz Ross <koz@mlabs.city>
+Authors: 
+    - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions: 
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1143
