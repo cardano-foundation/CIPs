@@ -1,9 +1,10 @@
 ---
 CPS: 27
-Title: Post-quantum signatures
+Title: Approaches to post-quantum signatures
 Category: Plutus
 Status: Open
-Authors: Koz Ross <koz@mlabs.city>
+Authors: 
+    - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions: 
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1144
@@ -84,7 +85,7 @@ Part of the efforts to make Cardano 'post-quantum ready' must extend such
 capabilities to developers of scripts and dApps to be meaningful. Currently, no
 such possibilities exist in a practically usable way.
 
-## Use cases
+## Use Cases
 
 The chief use case today for such capabilities are script or dApp developers
 whose work currently relies on digital signatures. A good example of this would
@@ -229,7 +230,7 @@ This CPS is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2
 [shors-algorithm]: https://en.wikipedia.org/wiki/Shor%27s_algorithm
 [post-quantum-cryptography]: https://en.wikipedia.org/wiki/Post-quantum_cryptography
 [ethereum-top-priority]: https://thequantuminsider.com/2026/01/26/ethereum-foundation-elevates-post-quantum-security-to-top-strategic-priority/
-[algorand-steps]: https://thequantuminsider.com/2026/01/26/ethereum-foundation-elevates-post-quantum-security-to-top-strategic-priority/
+[algorand-steps]: https://algorand.co/technology/post-quantum 
 [cip-121]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0121
 [cip-122]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0122
 [cip-123]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0123
