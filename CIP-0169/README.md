@@ -159,6 +159,22 @@ Tools **SHOULD** implement the following verification when processing governance
 
 Please see [examples/](./examples/).
 
+### Validation
+
+The schema uses JSON Schema 2020-12 and references the CIP-0116 Conway domain types.
+Validate an instance with [ajv-cli](https://github.com/ajv-validator/ajv-cli):
+
+```sh
+ajv validate --spec=draft2020 \
+  -s cip-0169.common.schema.json \
+  -r ../CIP-0116/cardano-conway.json \
+  -d examples/<file>.json \
+  --all-errors --strict=false
+```
+
+`-r` registers the referenced CIP-0116 schema so `$ref`s resolve offline.
+`--strict=false` allows the OpenAPI-style `discriminator` keyword (advisory, not enforced).
+
 ## Rationale
 
 By including the on-chain effects within the signed metadata body using the `onChain` property.
