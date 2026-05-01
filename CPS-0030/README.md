@@ -4,13 +4,13 @@ Title: Quantum-Secure Cardano settlement layer
 Category: Consensus
 Status: Open
 Authors:
-    - Hamza Jeljeli <hamza.jeljeli@iohk.io>
-    - Gamze Kilic <gamze.kilic@iohk.io>
-    - Damien Robissout <damien.robissout@iohk.io>
-    - Thomas Vellekoop <thomas.vellekoop@iohk.io>
+  - Hamza Jeljeli <hamza.jeljeli@iohk.io>
+  - Gamze Kilic <gamze.kilic@iohk.io>
+  - Damien Robissout <damien.robissout@iohk.io>
+  - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Proposed Solutions: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1175
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1175
 Created: 2026-04-02
 License: CC-BY-4.0
 ---
@@ -118,8 +118,8 @@ consensus designs.
 The impact of a cryptographic break would not be the same across the system, so
 the problem must be framed in terms of priority and system impact.
 
-1. **Signature schemes** are the highest priority because they protect the root
-   of trust for transaction authorization, governance, and stake pool
+1. **Signature schemes** (Ed25519) are the highest priority because they protect
+   the root of trust for transaction authorization, governance, and stake pool
    operational control. In Cardano, this includes payment and staking keys and
    stake pool cold keys. If they are broken, an adversary could forge
    authorizations, move funds, or take control of critical or even adversarial
@@ -256,6 +256,8 @@ The goal of a CIP that addresses this CPS should be to
 1. Ensure that signatures in transaction, governance, staking, and block forging
    cannot be forged.
 2. Ensure the blockchain remains forward and adaptive secure.
+3. Any migration should explicitly address how the old crypto should transition.
+   This includes how credentials backed by different derived keys are handled.
 
 Again, such a CIP does not have in scope the Plutus language, as it is
 constraint by other design principles and timings.
@@ -275,6 +277,7 @@ Below a non-exhaustive list of open questions that come at this stage:
 - What alternative PQ schemes are there for KES and VRF?
 - Do we need to replace the VRF scheme if we opt for a public leadership
   schedule?
+- What is a fair way to transition old funds?
 
 ## Copyright
 
