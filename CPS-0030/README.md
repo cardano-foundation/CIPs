@@ -1,6 +1,6 @@
 ---
 CPS: 30
-Title: Quantum-Secure Cardano settlement layer
+Title: Quantum-secure settlement layer
 Category: Consensus
 Status: Open
 Authors:
