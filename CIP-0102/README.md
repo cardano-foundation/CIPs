@@ -26,13 +26,15 @@ The inability to create trustless onchain royalty validation with [CIP-0027][] i
 
 In addition, this standard allows royalties to be split between multiple addresses, another limitation of the CIP-27 royalty schema.
 
-Version 2 this standard also supports:
+Version 2 of this standard also supports:
 
 - Multiple royalty policies defined for a single collection, applied at the level of individual tokens.
 - CIP-88 Integration - integrate with the latest standard for NFT collection metadata, defining how they ought to work in tandem.
 - Non-ada currencies - royalties **must** be paid in the same monetary unit as the sale.
 
 ## Specification
+
+> The bolded keywords **must**, **may**, and **optional** in this standard are to be interpreted as described in RFC 2119.
 
 ### Expected Behavior
 
@@ -52,7 +54,7 @@ Royalties **must** be paid in the same monetary unit as the sale.
 
 ### 500 Royalty Datum Standard
 
-The following defines the `500` Royalty NFT standard with the registered `asset_name_label` prefix value, and optionally, an integer postfix. This postfix is included to allow for multiple Royalty NFTs, specifying multiple royalty policies.
+The following defines the `500` Royalty NFT standard with the registered `asset_name_label` prefix value, and an **optional** integer postfix. This postfix is included to allow for multiple Royalty NFTs, specifying multiple royalty policies.
 
 | asset_name_label | class | description                                                              |
 | ---------------- | ----- | ------------------------------------------------------------------------ |
@@ -97,7 +99,7 @@ royalty_recipient = #6.121([
               optional_big_int,           ; max fee (absolute value in lovelace)
             ])
 
-royalty_recipients = [ * royalty_recipient ]
+royalty_recipients = [ 1* royalty_recipient ]
 
 ; version is of type int, we start with version 1
 version = 1 / 2
@@ -138,7 +140,7 @@ extra =
 
 The correct datum may then be reliably found by searching for a Royalty Token with a matching prefix (& postfix). Examples of how to do so are provided below.
 
-In the case of ambiguity, users/dapps may choose whichever policy they wish to honor.
+If multiple outputs match this pattern, implementors may choose whichever policy they wish to honor from the valid datums.
 
 ### CIP-88 Integration
 
