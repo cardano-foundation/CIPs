@@ -1,60 +1,61 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "cip-169.common.schema.json",
-  "title": "CIP-169 Common",
-  "description": "Metadata document for Cardano governance with on-chain effects verification, extending CIP-100",
+  "$id": "cip-0169.common.schema.json",
+  "title": "CIP-0169 Common",
+  "description": "Generic CIP-100 governance metadata extension introducing the optional `onChain` property (CIP-0169). Downstream CIPs (CIP-108, CIP-119, CIP-136, ...) compose this with their own required body fields. All `$ref`s to `cardano-conway.json` resolve to CIP-0116 Conway-era domain types: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116",
   "type": "object",
   "required": ["hashAlgorithm", "authors", "body"],
   "properties": {
     "hashAlgorithm": {
-      "$ref": "#/definitions/hashAlgorithm"
+      "$ref": "#/definitions/HashAlgorithm"
     },
     "authors": {
-      "$ref": "#/definitions/authors"
+      "$ref": "#/definitions/Authors"
     },
     "body": {
-      "$ref": "#/definitions/body"
+      "$ref": "#/definitions/Body"
     }
   },
   "definitions": {
-    "hashAlgorithm": {
+    "HashAlgorithm": {
+      "title": "HashAlgorithm",
+      "description": "The algorithm used to authenticate this document externally (CIP-100).",
       "type": "string",
-      "enum": ["blake2b-256"],
-      "title": "Hash Algorithm",
-      "description": "The algorithm used to authenticate this document externally (CIP-100)"
+      "enum": ["blake2b-256"]
     },
-    "authors": {
+    "Authors": {
       "title": "Authors",
-      "description": "The authors of this governance metadata (CIP-100)",
+      "description": "The authors of this governance metadata (CIP-100).",
       "type": "array",
       "items": {
-        "$ref": "#/definitions/author"
+        "$ref": "#/definitions/Author"
       }
     },
-    "author": {
+    "Author": {
       "title": "Author",
-      "description": "An author endorsing the content of a metadata document (CIP-100)",
+      "description": "An author endorsing the content of a metadata document (CIP-100).",
       "type": "object",
-      "required": ["name", "witness"],
+      "required": ["witness"],
       "properties": {
         "name": {
-          "type": "string",
-          "title": "Name"
+          "title": "Name",
+          "type": "string"
         },
         "witness": {
-          "$ref": "#/definitions/witness"
+          "$ref": "#/definitions/Witness"
         }
       }
     },
-    "witness": {
+    "Witness": {
       "title": "Witness",
-      "description": "A witness proving that the author endorses the content of the metadata",
+      "description": "A witness proving that the author endorses the content of the metadata (CIP-100).",
       "type": "object",
+      "required": ["witnessAlgorithm", "publicKey", "signature"],
       "properties": {
         "witnessAlgorithm": {
           "title": "WitnessAlgorithm",
           "type": "string",
-          "enum": ["ed25519", "CIP-0008"]
+          "enum": ["ed25519"]
         },
         "publicKey": {
           "title": "PublicKey",
@@ -66,101 +67,214 @@
         }
       }
     },
-    "body": {
+    "Body": {
       "title": "Body",
-      "description": "The body of the metadata document that is hashed to produce a signature (CIP-100), extended with optional onChain property (CIP-169)",
+      "description": "The body of the metadata document that is hashed and signed (CIP-100), extended with the optional `onChain` property (CIP-0169). Downstream CIPs add their own required fields and constraints; this schema only defines the CIP-0169 extension and inherited optional CIP-100 fields.",
       "type": "object",
-      "required": ["title", "abstract", "motivation", "rationale"],
+      "required": ["onChain"],
       "properties": {
-        "title": {
-          "type": "string",
-          "title": "Title",
-          "description": "A brief introduction to the motivation for the governance action"
-        },
-        "abstract": {
-          "type": "string",
-          "title": "Abstract",
-          "description": "A concise summary of the motivation and rationale for the governance action"
-        },
-        "motivation": {
-          "type": "string",
-          "title": "Motivation",
-          "description": "Context around the problem being addressed by the on-chain action"
-        },
-        "rationale": {
-          "type": "string",
-          "title": "Rationale",
-          "description": "Explanation of how the governance action addresses the problem outlined in 'motivation'"
-        },
         "references": {
-          "type": "array",
           "title": "References",
+          "type": "array",
           "items": {
-            "$ref": "#/definitions/reference"
+            "$ref": "#/definitions/Reference"
+          }
+        },
+        "comment": {
+          "title": "Comment",
+          "type": "string"
+        },
+        "externalUpdates": {
+          "title": "ExternalUpdates",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ExternalUpdate"
           }
         },
         "onChain": {
-          "$ref": "#/definitions/onChain",
-          "title": "OnChain",
-          "description": "Optional CIP-169 on-chain effects encoding (CIP-116 standard). This property encapsulates the on-chain effects and enables verification that metadata matches the on-chain action."
+          "$ref": "#/definitions/OnChain"
         }
       }
     },
-    "onChain": {
-      "title": "OnChain Effects",
-      "description": "The on-chain effects encoded in CIP-116 standard format. This property is optional but when present binds metadata to specific on-chain effects.",
-      "oneOf": [
-        {
-          "$ref": "#/definitions/ProposalProcedure"
+    "Reference": {
+      "title": "Reference",
+      "description": "A reference to a document (CIP-100).",
+      "type": "object",
+      "required": ["@type", "label", "uri"],
+      "properties": {
+        "@type": {
+          "title": "Type",
+          "type": "string",
+          "enum": ["GovernanceMetadata", "Other"]
         },
-        {
-          "$ref": "#/definitions/VotingProcedure"
+        "label": {
+          "title": "Label",
+          "type": "string"
         },
-        {
-          "$ref": "#/definitions/DRepRegistration"
-        },
-        {
-          "$ref": "#/definitions/DRepUpdate"
-        },
-        {
-          "$ref": "#/definitions/CommitteeResignation"
+        "uri": {
+          "title": "URI",
+          "type": "string"
         }
+      }
+    },
+    "ExternalUpdate": {
+      "title": "ExternalUpdate",
+      "description": "A source for updates after the metadata is published (CIP-100).",
+      "type": "object",
+      "required": ["title", "uri"],
+      "properties": {
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "uri": {
+          "title": "URI",
+          "type": "string"
+        }
+      }
+    },
+    "OnChain": {
+      "title": "OnChain Effects",
+      "description": "On-chain effects encoded per CIP-116. Bound into the signed body so metadata cannot be replayed against a different on-chain action. The `anchor` property is omitted from every variant — it points to this metadata document itself and is not part of the on-chain effect being verified.",
+      "oneOf": [
+        { "$ref": "#/definitions/ProposalProcedure" },
+        { "$ref": "#/definitions/VotingProcedures" },
+        { "$ref": "#/definitions/DRepRegistration" },
+        { "$ref": "#/definitions/DRepUpdate" },
+        { "$ref": "#/definitions/CommitteeResignation" }
       ]
     },
     "ProposalProcedure": {
-      "type": "object",
       "title": "ProposalProcedure",
-      "description": "On-chain governance action proposal (CIP-116). Note: anchor property is omitted per CIP-169 specification.",
+      "description": "Governance action proposal (CIP-116 ProposalProcedure with `anchor` omitted per CIP-0169).",
+      "type": "object",
       "required": ["deposit", "reward_account", "gov_action"],
+      "unevaluatedProperties": false,
       "properties": {
         "deposit": {
           "$ref": "#/definitions/UInt64",
           "title": "Deposit",
-          "description": "The deposit amount in lovelace required for the proposal"
+          "description": "The deposit amount in lovelace required for the proposal."
         },
         "reward_account": {
           "$ref": "#/definitions/RewardAddress",
           "title": "Reward Account",
-          "description": "The reward account where the proposal deposit is returned after finalization"
+          "description": "The reward account where the proposal deposit is returned after finalization."
         },
         "gov_action": {
           "$ref": "#/definitions/GovAction",
           "title": "Governance Action",
-          "description": "The specific governance action (CIP-116)"
+          "description": "The specific governance action (CIP-116)."
+        }
+      }
+    },
+    "VotingProcedures": {
+      "title": "VotingProcedures",
+      "description": "On-chain votes (CIP-116 VotingProcedures: a map of Voter → GovActionId → VotingProcedure). Each inner VotingProcedure has `anchor` omitted per CIP-0169. Reusing CIP-116's existing container avoids introducing a CIP-0169-specific wrapper type and naturally binds metadata to the (voter, action, vote) tuple(s) being attested.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["key", "value"],
+        "unevaluatedProperties": false,
+        "properties": {
+          "key": {
+            "$ref": "#/definitions/Voter"
+          },
+          "value": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["key", "value"],
+              "unevaluatedProperties": false,
+              "properties": {
+                "key": {
+                  "$ref": "#/definitions/GovActionId"
+                },
+                "value": {
+                  "title": "VotingProcedure",
+                  "description": "CIP-116 VotingProcedure with `anchor` omitted per CIP-0169.",
+                  "type": "object",
+                  "required": ["vote"],
+                  "unevaluatedProperties": false,
+                  "properties": {
+                    "vote": {
+                      "$ref": "#/definitions/Vote"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "DRepRegistration": {
+      "title": "DRepRegistration",
+      "description": "DRep registration certificate (CIP-116 `register_drep` with `anchor` omitted per CIP-0169).",
+      "type": "object",
+      "required": ["tag", "drep_credential", "coin"],
+      "unevaluatedProperties": false,
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": ["register_drep"]
+        },
+        "drep_credential": {
+          "$ref": "#/definitions/Credential"
+        },
+        "coin": {
+          "$ref": "#/definitions/UInt64",
+          "description": "DRep registration deposit in lovelace."
+        }
+      }
+    },
+    "DRepUpdate": {
+      "title": "DRepUpdate",
+      "description": "DRep update certificate (CIP-116 `update_drep` with `anchor` omitted per CIP-0169).",
+      "type": "object",
+      "required": ["tag", "drep_credential"],
+      "unevaluatedProperties": false,
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": ["update_drep"]
+        },
+        "drep_credential": {
+          "$ref": "#/definitions/Credential"
+        }
+      }
+    },
+    "CommitteeResignation": {
+      "title": "CommitteeResignation",
+      "description": "Constitutional committee cold-credential resignation (CIP-116 `resign_committee_cold` with `anchor` omitted per CIP-0169).",
+      "type": "object",
+      "required": ["tag", "committee_cold_credential"],
+      "unevaluatedProperties": false,
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": ["resign_committee_cold"]
+        },
+        "committee_cold_credential": {
+          "$ref": "#/definitions/Credential"
         }
       }
     },
     "GovAction": {
       "title": "GovAction",
+      "description": "A Conway-era governance action (CIP-116). Discriminated by `tag`.",
       "type": "object",
-      "description": "The type of governance action (CIP-116)",
       "discriminator": {
         "propertyName": "tag"
       },
       "oneOf": [
         {
-          "type": "object",
           "title": "Parameter Change Action",
+          "type": "object",
+          "required": ["tag", "protocol_param_update"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -170,16 +284,18 @@
               "$ref": "#/definitions/GovActionId"
             },
             "protocol_param_update": {
-              "type": "object",
-              "title": "Protocol Parameter Update",
-              "description": "The protocol parameters being updated (ProtocolParamUpdate)"
+              "$ref": "#/definitions/ProtocolParamUpdate"
+            },
+            "policy_hash": {
+              "$ref": "#/definitions/ScriptHash"
             }
-          },
-          "required": ["tag", "protocol_param_update"]
+          }
         },
         {
+          "title": "Hard Fork Initiation Action",
           "type": "object",
-          "title": "Hard fork initiation action",
+          "required": ["tag", "protocol_version"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -191,12 +307,13 @@
             "protocol_version": {
               "$ref": "#/definitions/ProtocolVersion"
             }
-          },
-          "required": ["tag", "protocol_version"]
+          }
         },
         {
+          "title": "Treasury Withdrawals Action",
           "type": "object",
-          "title": "Treasury withdrawals action",
+          "required": ["tag"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -206,6 +323,8 @@
               "type": "array",
               "items": {
                 "type": "object",
+                "required": ["key", "value"],
+                "unevaluatedProperties": false,
                 "properties": {
                   "key": {
                     "$ref": "#/definitions/RewardAddress"
@@ -213,16 +332,19 @@
                   "value": {
                     "$ref": "#/definitions/UInt64"
                   }
-                },
-                "unevaluatedProperties": false
+                }
               }
+            },
+            "policy_hash": {
+              "$ref": "#/definitions/ScriptHash"
             }
-          },
-          "required": ["tag"]
+          }
         },
         {
+          "title": "No Confidence Action",
           "type": "object",
-          "title": "No confidence governance action",
+          "required": ["tag"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -231,12 +353,13 @@
             "gov_action_id": {
               "$ref": "#/definitions/GovActionId"
             }
-          },
-          "required": ["tag"]
+          }
         },
         {
+          "title": "Update Committee Action",
           "type": "object",
-          "title": "Update committee",
+          "required": ["tag", "signature_threshold", "committee"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -255,6 +378,8 @@
               "type": "array",
               "items": {
                 "type": "object",
+                "required": ["key", "value"],
+                "unevaluatedProperties": false,
                 "properties": {
                   "key": {
                     "$ref": "#/definitions/Credential"
@@ -262,19 +387,19 @@
                   "value": {
                     "$ref": "#/definitions/UInt64"
                   }
-                },
-                "unevaluatedProperties": false
+                }
               }
             },
             "signature_threshold": {
               "$ref": "#/definitions/UnitInterval"
             }
-          },
-          "required": ["tag", "signature_threshold", "committee"]
+          }
         },
         {
+          "title": "New Constitution Action",
           "type": "object",
-          "title": "New constitution",
+          "required": ["tag", "constitution"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
@@ -286,54 +411,65 @@
             "constitution": {
               "$ref": "#/definitions/Constitution"
             }
-          },
-          "required": ["tag", "constitution"]
+          }
         },
         {
+          "title": "Info Action",
           "type": "object",
-          "title": "Info action",
+          "required": ["tag"],
+          "unevaluatedProperties": false,
           "properties": {
             "tag": {
               "type": "string",
               "enum": ["info_action"]
             }
-          },
-          "required": ["tag"]
+          }
         }
       ]
     },
+    "Constitution": {
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Constitution).",
+      "$ref": "cardano-conway.json#/definitions/Constitution"
+    },
     "GovActionId": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/GovActionId"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/GovActionId).",
+      "$ref": "cardano-conway.json#/definitions/GovActionId"
+    },
+    "Vote": {
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Vote).",
+      "$ref": "cardano-conway.json#/definitions/Vote"
+    },
+    "Voter": {
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Voter).",
+      "$ref": "cardano-conway.json#/definitions/Voter"
     },
     "UInt64": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UInt64"
-    },    
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/UInt64).",
+      "$ref": "cardano-conway.json#/definitions/UInt64"
+    },
     "RewardAddress": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/RewardAddress"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/RewardAddress).",
+      "$ref": "cardano-conway.json#/definitions/RewardAddress"
     },
     "UnitInterval": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/UnitInterval"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/UnitInterval).",
+      "$ref": "cardano-conway.json#/definitions/UnitInterval"
     },
     "Credential": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Credential"
-    },
-    "Constitution": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Constitution"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/Credential).",
+      "$ref": "cardano-conway.json#/definitions/Credential"
     },
     "ProtocolVersion": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ProtocolVersion"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ProtocolVersion).",
+      "$ref": "cardano-conway.json#/definitions/ProtocolVersion"
     },
-    "TransactionHash": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/TransactionHash"
-    },
-    "Ed25519KeyHash": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Ed25519KeyHash"
+    "ProtocolParamUpdate": {
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ProtocolParamUpdate).",
+      "$ref": "cardano-conway.json#/definitions/ProtocolParamUpdate"
     },
     "ScriptHash": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/ScriptHash"
-    },
-    "Anchor": {
-      "$ref": "../CIP-0116/cardano-conway.json#/definitions/Anchor"
+      "description": "Defined in CIP-0116 (cardano-conway.json#/definitions/ScriptHash).",
+      "$ref": "cardano-conway.json#/definitions/ScriptHash"
     }
   }
 }

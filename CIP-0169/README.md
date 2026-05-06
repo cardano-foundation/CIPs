@@ -16,7 +16,7 @@ License: CC-BY-4.0
 ## Abstract
 
 This CIP extends [CIP-100 | Governance Metadata][CIP-100] to introduce a standardized `onChain` property.
-The `onChain` property encapsulates the on-chain effects using [CIP-116 | Standard JSON encoding for Domain Types][CIP-116] standard encoding,
+The `onChain` property encapsulates the on-chain effects using [CIP-0116 | Standard JSON encoding for Domain Types][CIP-0116] standard encoding,
 enabling verification that metadata content matches on-chain action and preventing metadata replay attacks.
 This can be applied to all types of governance metadata, including governance actions, votes, DRep registrations/updates, and Constitutional Committee resignations.
 
@@ -41,10 +41,19 @@ However, the actual on-chain effect would send funds to a different, malicious a
 In high-volume voting environments such attacks could succeed if voters don't manually verify that the metadata matches the on-chain effects.
 Relying on manual verification by voters is error prone and inefficient.
 
-### Other Author attacks
+### Multi-Author Misattachment
 
-- discuss attacks where multiple authors are collaborating before constructing on-chain part
-- having an onChain property prevents someone from attaching the signed metadata to the wrong thing
+When metadata is jointly authored multiple parties signing the same `body` before the on-chain action is constructed there is a window between *signing* and *submission* in which the signed payload can be attached to the *wrong* on-chain effect.
+
+Concretely, consider a multi-author treasury withdrawal:
+
+1. Authors A, B, and C draft and sign metadata describing a withdrawal of ₳50,000 to address `stake1...legit`.
+2. Author C, who controls submission, swaps the on-chain `ProposalProcedure` to send the funds elsewhere or to a *different recipient* in a list of withdrawals and submits using the original signed metadata.
+3. Verifiers see three valid author signatures over a body that *describes* the legitimate withdrawal, but the actual on-chain effect differs.
+
+Without `onChain`,
+the author signatures only attest to the prose narrative.
+Anchoring the signed body to the exact on-chain effect closes this gap: any divergence between the bound `onChain` value and the submitted action invalidates the binding, and tools can refuse to display the metadata as endorsed.
 
 ## Specification
 
@@ -54,17 +63,29 @@ The `onChain` property is a new **optional** property within the `body` object o
 
 #### JSON-LD Context
 
-The `onChain` property shall be defined in the JSON-LD `@context` as follows:
+The `onChain` property is defined in the JSON-LD `@context` under the `CIP169` namespace,
+with each CIP-0116 sub-property (`deposit`, `reward_account`, `gov_action`, `tag`, `rewards`, `gov_action_id`, `transaction_id`, `gov_action_index`, `voter`, `voting_procedure`, `vote`, `protocol_param_update`, `protocol_version`, `policy_hash`, `committee`, `members_to_remove`, `signature_threshold`, `constitution`, `script_hash`, `drep_credential`, `committee_cold_credential`, `coin`, etc.) mapped under the `CIP116` namespace.
+Mapping every reachable property is **required**: any term left undefined is dropped during canonicalization, which would silently exclude the on-chain payload from the author signature and defeat the purpose of this CIP.
+
+A example (see [`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the complete context):
 
 ```json
 {
   "@context": {
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
+    "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
     "body": {
       "@id": "CIP100:body",
       "@context": {
         "onChain": {
-          "@id": "CIP169:onChain"
+          "@id": "CIP169:onChain",
+          "@context": {
+            "tag": "CIP116:tag",
+            "deposit": "CIP116:deposit",
+            "reward_account": "CIP116:reward_account",
+            "gov_action": { "@id": "CIP116:gov_action", "@context": { "...": "..." } }
+          }
         }
       }
     }
@@ -73,55 +94,56 @@ The `onChain` property shall be defined in the JSON-LD `@context` as follows:
 ```
 
 > [!NOTE]
-> This CIP uses `CIP169` as the namespace identifier.
+> This CIP uses `CIP169` as the namespace identifier for the `onChain` property itself, while every property *inside* `onChain` lives in the `CIP116` namespace.
 
 #### Structure
 
-The `onChain` property **MUST** conform to one of the [CIP-116][] Conway-era governance types.
-The specific type is indicated by the `@type` field within the `onChain` object.
+The `onChain` property **MUST** conform to one of the [CIP-0116][] Conway-era governance types listed below.
+Field names and discriminator values follow CIP-0116 verbatim — that is,
+snake_case property names (e.g. `reward_account`, `gov_action`, `gov_action_id`) and a `tag` discriminator carrying snake_case enum values (e.g. `treasury_withdrawals_action`, `register_drep`).
+Inner certificate/governance-action variants are discriminated by their own `tag` field per CIP-0116.
 
 > [!WARNING]
-> The `anchor` property **MUST** be omitted from all CIP-116 objects within the `onChain` property.
-> The `anchor` property contains a URL and hash that points to the metadata document itself, creating a circular dependency.
-> Since the `anchor` is not part of the actual on-chain effect (it's only a pointer to metadata), it is excluded from the `onChain` encoding.
-> This applies to all CIP-116 types that include an `anchor` property, including:
+> The `anchor` property **MUST** be omitted from any CIP-0116 object whose `anchor` points to *this* metadata document. Including such an `anchor` would create a circular dependency, and it is not part of the on-chain effect being verified.
+> This applies to:
 > - `ProposalProcedure.anchor`
-> - `VotingProcedure.anchor` (when present)
-> - `Constitution.anchor` (when present in `NewConstitution` actions)
+> - The inner `VotingProcedure.anchor` (when present)
+> - `register_drep`, `update_drep`, and `resign_committee_cold` certificate `anchor` fields
+>
+> **Exception:** `Constitution.anchor` (inside `new_constitution` actions) is **retained**. That anchor points to the constitution document itself — a separate artifact from the governance metadata — so it is part of the on-chain effect and must be bound into the signed body.
 
 ##### Supported Types
 
 **For Governance Actions:**
 
-The `onChain` property conforms to the [CIP-116][] `ProposalProcedure` type.
+The `onChain` property conforms to the [CIP-0116][] `ProposalProcedure` type (without `anchor`),
+whose `gov_action` field's `tag` is one of the Conway-era governance action types:
 
-Where `GovAction` is one of the [CIP-116][] Conway-era governance action types:
+- `info_action`
+- `parameter_change_action`
+- `hard_fork_initiation_action`
+- `treasury_withdrawals_action`
+- `no_confidence`
+- `update_committee`
+- `new_constitution`
 
-- `InfoAction`
-- `ParameterChange`
-- `HardForkInitiation`
-- `TreasuryWithdrawals`
-- `NoConfidence`
-- `UpdateCommittee`
-- `NewConstitution`
-
-See [CIP-116 cardano-conway.json](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/cardano-conway.json) for complete type definitions.
+See [CIP-0116 cardano-conway.json](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/cardano-conway.json) for complete type definitions.
 
 **For Votes:**
 
-The `onChain` property conforms to the [CIP-116][] `VotingProcedure` type.
+The `onChain` property conforms to the [CIP-0116][] `VotingProcedures` type — a map of `Voter` → `GovActionId` → `VotingProcedure` — with each inner `VotingProcedure`'s `anchor` omitted. Reusing the existing CIP-0116 container naturally binds the metadata to the (voter, action, vote) tuple(s) being attested without introducing a CIP-0169-specific wrapper type.
 
 **For DRep Registration:**
 
-The `onChain` property conforms to the [CIP-116][] DRep registration certificate structure.
+The `onChain` property conforms to the [CIP-0116][] `register_drep` certificate (without `anchor`).
 
 **For DRep Update:**
 
-The `onChain` property conforms to the [CIP-116][] DRep update certificate structure.
+The `onChain` property conforms to the [CIP-0116][] `update_drep` certificate (without `anchor`).
 
 **For Committee Cold Credential Resignation:**
 
-The `onChain` property conforms to the [CIP-116][] committee resignation certificate structure.
+The `onChain` property conforms to the [CIP-0116][] `resign_committee_cold` certificate (without `anchor`).
 
 ### Verification Process
 
@@ -137,6 +159,22 @@ Tools **SHOULD** implement the following verification when processing governance
 
 Please see [examples/](./examples/).
 
+### Validation
+
+The schema uses JSON Schema 2020-12 and references the CIP-0116 Conway domain types.
+Validate an instance with [ajv-cli](https://github.com/ajv-validator/ajv-cli):
+
+```sh
+ajv validate --spec=draft2020 \
+  -s cip-0169.common.schema.json \
+  -r ../CIP-0116/cardano-conway.json \
+  -d examples/<file>.json \
+  --all-errors --strict=false
+```
+
+`-r` registers the referenced CIP-0116 schema so `$ref`s resolve offline.
+`--strict=false` allows the OpenAPI-style `discriminator` keyword (advisory, not enforced).
+
 ## Rationale
 
 By including the on-chain effects within the signed metadata body using the `onChain` property.
@@ -150,34 +188,21 @@ This allows governance tools to automatically verify this for voters.
 [CIP-100][] provides the base structure for governance metadata.
 This extension adds security-critical information while maintaining backward compatibility.
 
-### Why Use CIP-116 Encoding?
+### Why Use CIP-0116 Encoding?
 
-[CIP-116][] provides standardized JSON encoding for Cardano domain types.
+[CIP-0116][] provides standardized JSON encoding for Cardano domain types.
 
-### Why Exclude the Anchor Property?
+### Why Exclude the Self-Referential Anchor?
 
-The `anchor` property in CIP-116 governance types contains a URL and hash that points to the metadata document itself.
-Including it in the `onChain` property would create a circular dependency: the metadata would contain an anchor pointing to itself.
+`ProposalProcedure`, `VotingProcedure`, and the DRep / committee resignation certificates each carry an `anchor` whose URL and hash point at *this* metadata document. Embedding that anchor inside the metadata it describes would create a circular dependency — the document would have to be hashed before it could be assembled. It also adds nothing to verification: the verifier already has the document in hand, so a pointer to it is redundant.
 
-More importantly, the `anchor` is not part of the actual on-chain effect being verified.
-The purpose of the `onChain` property is to encode the substantive on-chain effects (deposits, addresses, governance action parameters, etc.) that determine what the action actually does.
-The `anchor` is merely a pointer to where metadata can be found, and is not relevant for verifying that the metadata matches the on-chain action.
+These self-referential anchors are therefore excluded from the `onChain` encoding. All other CIP-0116 properties — including anchors that point to *other* artifacts — are retained.
 
-Therefore, the `anchor` property is explicitly excluded from the `onChain` encoding, while all other CIP-116 properties that represent actual on-chain effects are included.
-
-### Why Optional?
-
-The `onChain` property is optional to maintain backward compatibility.
-
-This CIP is fully backward compatible:
-
-- **Existing Metadata**: Governance actions without `onChain` remain valid
-- **Parsers**: Parsers ignoring `onChain` continue to work
-- **Validators**: Validators not checking `onChain` continue to work
+The notable example is `Constitution.anchor` inside a `new_constitution` action: it points to the constitution document, which is a separate artifact from the governance metadata, and is itself part of the on-chain effect being voted on. That anchor is kept as-is.
 
 ## Open Questions
 
-- How to handle `anchor` property inside of CIP116 objects in a nice way?
+- Whether downstream metadata CIPs (CIP-108, CIP-119, CIP-136) should `require` `onChain` once tooling adopts it, or keep it optional indefinitely. Making it required is a hard backward-compatibility break and probably best deferred.
 
 ## Path to Active
 
@@ -199,6 +224,5 @@ This CIP is considered **Active** when:
 This CIP is licensed under [CC-BY-4.0][].
 
 [CIP-100]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md
-[CIP-108]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md
-[CIP-116]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md
+[CIP-0116]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
