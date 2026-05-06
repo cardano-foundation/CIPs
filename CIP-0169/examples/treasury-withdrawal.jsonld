@@ -3,7 +3,7 @@
   "hashAlgorithm": "blake2b-256",
   "body": {
     "title": "Fund Development Team",
-    "abstract": "Withdraw ₱100,000 to fund smart contract development team.",
+    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
     "motivation": "The team has delivered milestones and requires funding for continued work.",
     "rationale": "Funding will enable completion of the remaining project deliverables.",
     "onChain": {
