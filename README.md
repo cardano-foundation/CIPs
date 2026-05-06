@@ -64,17 +64,17 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0033 | [Reference Scripts](./CIP-0033/) | Active |
 | 0034 | [Chain ID Registry](./CIP-0034/) | Proposed |
 | 0035 | [Plutus Core Evolution](./CIP-0035) | Active |
-| 0036 | [Catalyst Registration Transaction Metadata Format](./CIP-0036) | Proposed |
+| 0036 | [Catalyst Registration Transaction Metadata Format (Updated)](./CIP-0036) | Proposed |
 | 0037 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
 | 0040 | [Collateral Output](./CIP-0040) | Active |
-| 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
+| 0042 | [New Plutus Builtin serialiseData](./CIP-0042) | Active |
 | 0045 | [Decentralized WebRTC dApp-Wallet Communication](./CIP-0045) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Active |
 | 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 0054 | [Cardano Smart NFTs](./CIP-0054) | Proposed |
 | 0055 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
-| 0057 | [Plutus Smart-Contract Blueprint](./CIP-0057) | Active |
+| 0057 | [Plutus Contract Blueprint](./CIP-0057) | Active |
 | 0058 | [Plutus Bitwise Primitives](./CIP-0058) | Inactive |
 | 0059 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
@@ -82,8 +82,8 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
 | 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Active |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
-| 0072 | [DApp Registration](./CIP-0072) | Proposed |
-| 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
+| 0072 | [dApp Registration & Verification](./CIP-0072) | Proposed |
+| 0074 | [Set minPoolCost to 0](./CIP-0074) | Proposed |
 | 0075 | [Fair Stake Pool Rewards](./CIP-0075) | Proposed |
 | 0080 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 0082 | [Improved Rewards Scheme Parameters](./CIP-0082) | Proposed |
@@ -95,7 +95,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0089 | [Distributed DApps & Beacon Tokens](./CIP-0089) | Active |
 | 0091 | [Don't force Built-In functions](./CIP-0091) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
-| 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
+| 0094 | [On-chain SPO polls](./CIP-0094) | Active |
 | 0095 | [Web-Wallet Bridge - Conway ledger era](./CIP-0095) | Active |
 | 0099 | [Proof of Onboarding](./CIP-0099) | Active |
 | 0100 | [Governance Metadata](./CIP-0100) | Active |
@@ -108,11 +108,11 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
-| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Active |
+| 0110 | [Plutus v1 Script References](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
-| 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
+| 0116 | [Canonical JSON Encoding for Domain Types](./CIP-0116) | Proposed |
 | 0117 | [Explicit script return values](./CIP-0117) | Active |
 | 0118 | [Nested Transactions](./CIP-0118) | Proposed |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |

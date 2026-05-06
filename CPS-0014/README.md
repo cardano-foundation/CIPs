@@ -1,6 +1,6 @@
 ---
 CPS: 14
-Title: Register of CBOR Tags for Cardano Data structures
+Title: Register of CBOR Tags
 Category: Tools
 Status: Open
 Authors:
