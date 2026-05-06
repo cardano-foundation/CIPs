@@ -2,10 +2,7 @@
   "@context": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/cip-0169.common.jsonld",
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Vote YES on Budget Proposal",
-    "abstract": "This metadata explains why I am voting YES on the 2025 budget proposal.",
-    "motivation": "The proposed budget aligns with community priorities and includes proper accountability measures.",
-    "rationale": "After reviewing the proposal details, the budget allocation is reasonable and the oversight mechanisms are sufficient.",
+    "comment": "The proposed budget aligns with community priorities and includes proper accountability measures.",
     "onChain": [
       {
         "key": {
