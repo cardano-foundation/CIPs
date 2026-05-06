@@ -164,13 +164,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -265,13 +265,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -349,6 +349,31 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 | 2 min       | 26 MB       | 62 MB       |
 | 5 min       | 11 MB       | 25 MB       |
 | 10 min      | 6 MB        | 13 MB       |
+
+#### Message id enforcement
+
+##### Message id format
+
+The `messageId` of a message must follow a strict deterministic format. This guarantees uniqueness, prevents id collisions or spoofing and allows any node to independently recompute and verify the id of a received message.
+
+The `messageId` is the `Blake2b-256` hash of the CBOR encoded payload part of the message (which is signed by the KES keys as explained in the [Message authentication mechanism](#Message-authentication-mechanism) section):
+
+```
+messageId = Blake2b-256(cbor(messagePayload))
+```
+
+Upon reception of a message, a node must recompute the `messageId` using the formula above and compare it to the announced `messageId` in the message payload. If they do not match, the message is considered as invalid, which is a protocol violation.
+
+##### Golden vectors
+
+Implementations should validate their `messageId` computation against the following vector:
+
+| Field                | Value                                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `messageBody`        | `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`                                                                                                                        |
+| `kesPeriod`          | `123`                                                                                                                                                    |
+| `expiresAt`          | `123456`                                                                                                                                                 |
+| Expected `messageId` | `[202, 230, 133, 93, 29, 204, 161, 252, 87, 183, 156, 101, 193, 251, 172, 245, 171, 98,179, 213, 232, 216, 239, 9, 94, 155, 194, 226, 246, 17, 50, 185]` |
 
 #### Protocol authentication
 
@@ -498,7 +523,7 @@ A standalone network node will use its own `handshake`. It can introduce its own
 ```hs
 data NodeToNodeVersion = NodeToNodeV_1 | NodeToNodeV_2
   deriving (Eq, Ord, Show)
-  
+
 data NodeToNodeVersionData = NodeToNodeVersionData
   { networkMagic  :: !NetworkMagic
   , diffusionMode :: !DiffusionMode
@@ -596,13 +621,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -689,13 +714,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -722,7 +747,6 @@ In order to identify messages belonging to a specific protocol, each DMQ network
 #### For Mithril
 
 - Mithril requires strong network foundations to support interactions between its various nodes:
-
   - Mithril needs to exist in a decentralized context where multiple aggregators can operate seamlessly and independently.
   - Mithril needs participation of all or nearly all of the Cardano network SPOs to provide maximal security to the multi-signatures embedded in the certificates.
   - Creating a separate network would entail significant costs and efforts (there are more than 3,000 SPOs which would need to be connected with resilient and secure network, and much more passive nodes).
@@ -733,7 +757,6 @@ In order to identify messages belonging to a specific protocol, each DMQ network
 #### For Cardano
 
 - Why would it be great for Cardano to support a decentralized message queue with its network?
-
   - This is a required feature to make the Cardano ecosystem scalable.
   - The design is versatile enough to support present and future use cases.
 
