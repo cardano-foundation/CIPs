@@ -1,6 +1,6 @@
 ---
 CPS: 14
-Title: Register of CBOR Tags
+Title: Register of On-Chain CBOR Tags
 Category: Tools
 Status: Open
 Authors:

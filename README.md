@@ -188,7 +188,7 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
 | 0012 | [Query Layer Standardization](./CPS-0012) | Open |
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
-| 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
+| 0014 | [Register of On-Chain CBOR Tags](./CPS-0014) | Open |
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
 | 0017 | [Settlement Speed](./CPS-0017) | Open |
 | 0018 | [Greater Transaction Throughput](./CPS-0018) | Open |
