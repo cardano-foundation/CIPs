@@ -188,7 +188,8 @@ transaction_body = {0 : set<transaction_input>
 output_tag = [ index: unit, purpose: redeemer_tag, data: plutus_data ]
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
+
 The core idea of this proposal is to introduce a mechanism by which we can associate arbitrary data (that is only relevant during Phase 2 validation) with transaction outputs without sacrificing script composability or wastefully storing this data into the chain.  
 
 There are a few possible alternatives for where to store the arbitrary data associated with outputs. 
