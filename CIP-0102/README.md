@@ -140,7 +140,7 @@ extra =
 
 The correct datum may then be reliably found by searching for a Royalty Token with a matching prefix (& postfix). Examples of how to do so are provided below.
 
-If multiple outputs match this pattern, implementors may choose whichever policy they wish to honor from the valid datums.
+If multiple outputs match this pattern, the first-published output should be used.
 
 ### CIP-88 Integration
 
