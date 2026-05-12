@@ -1,6 +1,6 @@
 ---
 CIP: 69
-Title: Script Signature Unification
+Title: Plutus Script Type Uniformization
 Category: Plutus
 Authors:
   - Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>

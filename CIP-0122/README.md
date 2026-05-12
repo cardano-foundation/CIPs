@@ -1,6 +1,6 @@
 ---
 CIP: 122
-Title: Logical operations over BuiltinByteString
+Title: Logical operations over `BuiltinByteString`
 Category: Plutus
 Status: Active
 Authors: 

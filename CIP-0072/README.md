@@ -1,6 +1,6 @@
 ---
 CIP: 72
-Title: Cardano dApp Registration & Discovery
+Title: dApp Registration & Verification
 Status: Proposed
 Category: Metadata
 Authors: 

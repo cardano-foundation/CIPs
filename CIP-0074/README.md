@@ -1,6 +1,6 @@
 ---
 CIP: 74
-Title: Set minPoolCost to 0
+Title: Set `minPoolCost` to 0
 Authors:
  - Robin of Loxley <adarobinhood@tutanota.com>
 Category: Ledger
