@@ -47,6 +47,7 @@ This dual-network approach is unique among Cardano naming solutions and
 makes GetMyID a practical development tool in addition to a production 
 identity service.
 
+
 ## Specification
 
 ### Policy ID
