@@ -124,7 +124,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Active |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
 | 0129 | [Governance Identifiers](./CIP-0129) | Proposed |
-| 0132 | [New Plutus Builtin DropList](./CIP-0132) | Proposed |
+| 0132 | [New Plutus Builtin dropList](./CIP-0132) | Proposed |
 | 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
 | 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
 | 0135 | [Disaster Recovery Plan for Cardano networks](./CIP-0135) | Active |
