@@ -36,6 +36,17 @@ Key differentiators from existing solutions:
 - Fully open resolver API — any wallet or dApp can integrate for free
 - `.id` suffix is unambiguous and cannot collide with ADA Handle or CNS
 
+An additional motivation for this project was the lack of accessible 
+testnet NFT handle infrastructure on Cardano. When building and testing 
+dApps that rely on human-readable addresses, developers are forced to 
+use mainnet handles or build their own resolution layer from scratch. 
+GetMyID solves this by running both a **preprod testnet** and **mainnet** 
+instance simultaneously at the same platform (getmyid.today), allowing 
+developers to test handle resolution workflows without spending real ADA. 
+This dual-network approach is unique among Cardano naming solutions and 
+makes GetMyID a practical development tool in addition to a production 
+identity service.
+
 ## Specification
 
 ### Policy ID
