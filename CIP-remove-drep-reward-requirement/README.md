@@ -73,7 +73,7 @@ This improves compatibility for tooling and wallet flows that should not need go
 
 ### Acceptance Criteria
 
-- [ ] The Conway ledger specification is updated so reward withdrawals no longer depend on governance delegation status.
+- [ ] The ledger specification is updated so reward withdrawals no longer depend on governance delegation status.
 - [ ] `cardano-ledger` implements the rule change and includes regression tests covering withdrawals from undelegated reward accounts.
 - [ ] `cardano-node` integrates the change and releases it as part of a Cardano hard fork.
 - [ ] Wallets and transaction-submission tooling update user-facing messaging to reflect that reward withdrawal no longer requires prior voting delegation.
