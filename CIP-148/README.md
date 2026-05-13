@@ -7,8 +7,7 @@ Authors:
     - Philip DiSarro <info@anastasialabs.com>
 Implementors: N/A
 Discussions:
-    - https://plutus.readthedocs.io/en/latest/reference/writing-scripts/common-weaknesses/double-satisfaction.html
-    - https://github.com/cardano-foundation/CIPs/pull/735
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/735  
 Created: 2024-01-04
 License: CC-BY-4.0
 ---
