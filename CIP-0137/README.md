@@ -177,6 +177,9 @@ message = [
 ]
 ```
 
+> [!NOTE]
+> Only indefinite-length CBOR lists of `messageIdAndSize`, `messageId` and `message` are supported inside `msgReplyMessageIds`, `msgRequestMessages` and `msgReplyMessages`.
+
 #### Message Submission V1 mini-protocol
 
 ##### State machine
