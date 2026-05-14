@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-deeplink-signing/cip30dl-attestation.schema.json",
+  "title": "CIP-30-DeepLink vendor attestation manifest",
+  "description": "Authoritative runtime source of a wallet's CIP-30-DeepLink protocol commitments. Served by every conforming wallet at https://<wallet-domain>/.well-known/cip30dl-attestation.json with Content-Type application/json and Cache-Control: max-age=86400.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["wallet_id", "protocol_versions", "methods", "https_prefix", "scheme", "max_payload_bytes"],
+  "properties": {
+    "wallet_id": {
+      "type": "string",
+      "description": "Lowercase ASCII id matching wallet-registry.json when the wallet is registry-listed.",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,30}[a-z0-9]$"
+    },
+    "protocol_versions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "enum": ["1", "2"] },
+      "description": "List of CIP-30-DeepLink protocol versions the wallet implements. v=1 retains optional AASA + custom-scheme fallback; v=2 mandates AASA and retires the custom-scheme fallback."
+    },
+    "methods": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "connect",
+          "signTx",
+          "signData",
+          "getUsedAddresses",
+          "getUnusedAddresses",
+          "getRewardAddresses",
+          "getNetworkId",
+          "submitTx",
+          "signGovernance"
+        ]
+      },
+      "description": "Methods the wallet honours. connect, signTx, signData, getUsedAddresses, getRewardAddresses, getNetworkId are REQUIRED in v=1."
+    },
+    "https_prefix": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://[a-z0-9.-]+/cip30dl/v1/$",
+      "description": "Authoritative HTTPS prefix the wallet claims via AASA / assetlinks.json."
+    },
+    "scheme": {
+      "type": "string",
+      "pattern": "^cip30dl-[a-z0-9][a-z0-9_-]{0,30}[a-z0-9]$",
+      "description": "Per-wallet custom-scheme fallback identifier."
+    },
+    "supports_governance": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the wallet honours the reserved signGovernance method profile (CIP-95 surface)."
+    },
+    "supports_submit": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the wallet honours the optional submitTx method."
+    },
+    "max_payload_bytes": {
+      "type": "integer",
+      "minimum": 12288,
+      "description": "Maximum request-URL size in bytes the wallet will accept. MUST be >= 12288 per the v1 URI-length budget."
+    },
+    "audit_reports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["vendor", "url", "report_date"],
+        "properties": {
+          "vendor": { "type": "string", "minLength": 1 },
+          "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+          "report_date": { "type": "string", "format": "date" }
+        }
+      }
+    },
+    "vulnerability_disclosure": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://",
+      "description": "Public vulnerability-disclosure endpoint; conventionally /.well-known/security.txt."
+    }
+  }
+}

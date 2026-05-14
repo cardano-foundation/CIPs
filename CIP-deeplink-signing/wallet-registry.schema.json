@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-deeplink-signing/wallet-registry.schema.json",
+  "title": "CIP-30-DeepLink wallet registry",
+  "description": "Advisory list of Cardano wallets that implement CIP-30-DeepLink. Mirrors the CIP-10 registry-file pattern. The authoritative runtime source of a wallet's protocol commitments is the vendor-attestation manifest at /.well-known/cip30dl-attestation.json; this registry exists purely as a human-curated convenience for dApps that want a static wallet picker.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "scheme", "https"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Lowercase ASCII identifier for the wallet. Used as the per-wallet scheme suffix and as the path discriminator in the custom-scheme fallback URI (cip30dl-<id>:/v1/...). Must be unique across the registry.",
+        "pattern": "^[a-z0-9][a-z0-9_-]{0,30}[a-z0-9]$"
+      },
+      "scheme": {
+        "type": "string",
+        "description": "Per-wallet custom-scheme fallback identifier, of the form cip30dl-<id>. Per-wallet schemes prevent shared-scheme hijack: any installed app can register a bare cip30dl: scheme and intercept fallback URIs intended for a specific wallet; per-wallet schemes scope the hijack risk to wallets that share an installed namespace.",
+        "pattern": "^cip30dl-[a-z0-9][a-z0-9_-]{0,30}[a-z0-9]$"
+      },
+      "https": {
+        "type": "string",
+        "description": "Wallet vendor's Universal Link / App Link prefix. MUST be HTTPS, MUST end with a trailing slash, MUST claim the path '/cip30dl/v1/' via the wallet's apple-app-site-association (iOS) and /.well-known/assetlinks.json (Android) when AASA/App-Links are published per the v=2 mandate.",
+        "format": "uri",
+        "pattern": "^https://[a-z0-9.-]+/cip30dl/v1/$"
+      }
+    }
+  },
+  "uniqueItems": true
+}

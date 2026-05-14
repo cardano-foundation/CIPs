@@ -1,0 +1,6 @@
+# Reference implementations will be linked here in Wave 2.
+# Planned contents:
+#   - dapp-side TypeScript client snippet (extracted from aegis frontend)
+#   - wallet-side Swift URL handler (iOS reference)
+#   - wallet-side Kotlin URL handler (Android reference)
+#   - conformance test runner README
