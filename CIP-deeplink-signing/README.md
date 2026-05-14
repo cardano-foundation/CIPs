@@ -28,7 +28,7 @@ the witness set via a universal-link callback. The spec is profiled for iOS (Uni
 custom scheme fallback) and Android (App Links plus Intent disambiguation). It is a strict subset of
 CIP-30's method surface so wallets can reuse their existing signing UI.
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 [CPS-0010](https://cips.cardano.org/cps/CPS-0010) ("Wallet Connectors", Open) documents that
 [CIP-30](https://cips.cardano.org/cip/CIP-30) is a JavaScript-injection contract over a shared browser
