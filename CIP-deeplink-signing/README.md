@@ -7,8 +7,8 @@ Authors:
     - "Nathaniel \"decimalist\" Minton (Flux Point Studios) <nathanielminton@fluxpointstudios.com>"
 Implementors: []
 Discussions:
-    - https://forum.cardano.org/t/cip-proposal-mobile-deep-link-signing-for-native-dapps-cip-30-extension/154561
-    - https://github.com/cardano-foundation/CIPs/pull/1189
+    - Forum thread: https://forum.cardano.org/t/cip-proposal-mobile-deep-link-signing-for-native-dapps-cip-30-extension/154561
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1189
 Solution-To:
     - CPS-0010
 Created: 2026-05-13
@@ -960,7 +960,7 @@ today.
 
 ## Path to Active
 
-### Acceptance Criteria
+### Acceptance criteria
 
 1. At least one production Cardano wallet (Lace OR Eternl OR Vespr OR Typhon OR Nami) ships
    CIP-30-DeepLink support on iOS App Store and Google Play, with both Universal Link / App Link
@@ -1003,16 +1003,18 @@ inside the typical Cardano-Foundation review window for new CIPs. The spec is be
 of the implementations on purpose, so that editors and other wallet teams can shape the design
 before code calcifies around it.
 
-- **dApp-side TypeScript SDK** &mdash; will be published as `@aegis/cip30-deeplink-client` and consumed
-  by the Aegis iOS app at [`Flux-Point-Studios/aegis-contracts`](https://github.com/Flux-Point-Studios/aegis-contracts)
-  (`frontend/src/wallet/deeplink/`). The Aegis iOS app is already wrapped with Capacitor 8 on the
-  `main` branch as of 2026-05-13; the deep-link client is the next mobile-wave deliverable. Anticipated
-  shape:
+- **dApp-side TypeScript SDK** &mdash; will be published as
+  [`Flux-Point-Studios/cip30-deeplink-client`](https://github.com/Flux-Point-Studios/cip30-deeplink-client)
+  (Apache-2.0 licensed, public repository created at draft submission). The SDK is consumed by the
+  Aegis iOS app (Aegis itself is not open-source; only the on-chain validator suite at
+  [`Flux-Point-Studios/aegis-contracts`](https://github.com/Flux-Point-Studios/aegis-contracts) is
+  public). The Aegis iOS app is already wrapped with Capacitor 8 as of 2026-05-13; the deep-link
+  client is the next mobile-wave deliverable. Anticipated shape:
 
   ```typescript
-  import { DeepLinkClient } from "@aegis/cip30-deeplink-client";
+  import { DeepLinkClient } from "@fluxpoint/cip30-deeplink-client";
 
-  const client = new DeepLinkClient({ wallet: "lace", chain: "cardano:preprod" });
+  const client = new DeepLinkClient({ wallet: "yuti", chain: "cardano:preprod" });
   const session = await client.connect({ name: "Aegis", url: "https://aegis.fluxpointstudios.com" });
   const { witnessSet, txHash } = await client.signTx({ tx: cborHex, partialSign: false });
   const signedTx = client.assemble(cborHex, witnessSet);
@@ -1030,8 +1032,9 @@ before code calcifies around it.
 - **Conformance test runner** &mdash; will drive a wallet under test through
   `connect / signTx (valid) / signTx (commit mismatch &mdash; MUST reject -2) / signTx (replayed nonce &mdash; MUST reject -5) / disconnect`,
   plus the negative cases from Appendix C below. Will be published under
-  `Flux-Point-Studios/cip30-deeplink-conformance` initially; if editors prefer a vendor-neutral
-  home under `cardano-foundation/` we will migrate.
+  [`Flux-Point-Studios/cip30-deeplink-conformance`](https://github.com/Flux-Point-Studios/cip30-deeplink-conformance)
+  (repository to be created alongside the first conformance pass); if editors prefer a
+  vendor-neutral home under `cardano-foundation/` we will migrate.
 
 The spec authors will surface real preprod transaction hashes (Aegis &harr; Yuti) and the conformance
 test pass status to the Discussions thread on this PR as those milestones land, so editors can track
