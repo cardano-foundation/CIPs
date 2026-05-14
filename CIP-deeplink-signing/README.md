@@ -881,7 +881,7 @@ extensions (ignore unless critical-bit set), how HSTS handles unknown directives
 HTTP/3 frames handle unknown frame types (drop without close). The CIP rejects the unqualified
 Postel rule because every URL key here is in the critical set.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 **Why borrow Phantom/Petra over Solana MWA?** Solana MWA optimises for *high-throughput in-app gaming*
 (Saga phone) and pays for that with WebSocket transport, an association keypair, and a 30-second
