@@ -192,8 +192,11 @@ strings decode to the same bytes; this defeats the response-signing layer's auth
 `web+cardano:` URI family and its grammar (CIP-13:85-90):
 `cardanouri = "web+cardano:" (paymentref | authorityref)`. CIP-13 is explicitly extensible by
 subsequent CIPs declaring new authorities, as done by [CIP-162](https://cips.cardano.org/cip/CIP-162)
-for the `drep` authority and by [CIP-45](https://cips.cardano.org/cip/CIP-45) for the `connect`
-authority (CIP-45:91-99 uses `web+cardano://connect/v1?identifier=<public_key>`).
+for the `drep` authority, [CIP-45](https://cips.cardano.org/cip/CIP-45) for the `connect` authority
+(CIP-45:91-99 uses `web+cardano://connect/v1?identifier=<public_key>`), and
+[CIP-158](https://cips.cardano.org/cip/CIP-158) for the `browse` authority
+(`web+cardano://browse/v1?uri=<percent_encoded_uri>`, navigation-only and explicitly out of scope
+for signing flows or callback paths per CIP-158's own Rationale).
 
 CIP-30-DeepLink does NOT adopt a `web+cardano://<authority>` form for its primary URI. The reason
 is operational: a single shared `web+cardano:` scheme has every wallet vendor competing for the
@@ -207,7 +210,8 @@ AASA / assetlinks file. The custom-scheme fallback `cip30dl:<wallet-id>/v1/...` 
 disambiguated by the embedded `<wallet-id>`.
 
 For interoperability, a future minor revision MAY define a CIP-13-grammar-compliant alternate form
-`web+cardano://cip30dl/v1/<wallet-id>/<method>?<params>` that routes through the user's OS-default
+`web+cardano://cip30dl/v1/<wallet-id>/<method>?<params>` (mirroring CIP-158's `browse` grammar
+precedent as the established CIP-13 extension shape) that routes through the user's OS-default
 Cardano-URI handler when the dApp does not know which wallet to address. This is deferred to a
 follow-up CIP because the chooser-mode UX is materially worse for the same-device dApp-to-wallet
 flow this CIP is optimised for.
