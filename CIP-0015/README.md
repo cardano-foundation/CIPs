@@ -1,6 +1,6 @@
 ---
 CIP: 15
-Title: Registration Transaction Metadata Format
+Title: Catalyst Registration Transaction Metadata Format
 Category: Metadata
 Status: Active
 Authors:

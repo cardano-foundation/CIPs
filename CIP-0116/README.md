@@ -1,6 +1,6 @@
 ---
 CIP: 116
-Title: Standard JSON encoding for Domain Types
+Title: Canonical JSON Encoding for Domain Types
 Category: Tools
 Status: Proposed
 Authors:

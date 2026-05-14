@@ -1,6 +1,6 @@
 ---
 CIP: 42
-Title: New Plutus Builtin serialiseData
+Title: New Plutus Builtin `serialiseData`
 Status: Active
 Category: Plutus
 Authors:

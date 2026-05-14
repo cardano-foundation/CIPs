@@ -1,6 +1,6 @@
 ---
 CIP: 18
-Title: Multi-Stake-Keys Wallets 
+Title: Multi-Stake-Keys Wallets
 Status: Proposed
 Category: Wallets
 Authors:
