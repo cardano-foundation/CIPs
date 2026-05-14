@@ -831,7 +831,7 @@ bytes signed MUST be the canonical form defined above.
      |                                                          |
 ```
 
-## Versioning
+### Versioning
 
 The `v` URL parameter (e.g. `v=1`) carries the protocol version. Wallets and dApps MUST encode it as a
 decimal integer with no leading zeros.
