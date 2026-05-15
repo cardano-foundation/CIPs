@@ -615,7 +615,7 @@ alreadyReceived = [1]
 expired         = [2]
 other           = [3, tstr]
 
-messageId    = bstr
+messageId    = bstr .size 32
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
@@ -708,7 +708,7 @@ msgReplyMessagesNonBlocking = [1, [* message], hasMore]
 msgReplyMessagesBlocking    = [2, [+ message]]
 msgClientDone               = [3]
 
-messageId    = bstr
+messageId    = bstr .size 32
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
