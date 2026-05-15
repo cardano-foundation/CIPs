@@ -151,7 +151,7 @@ msgDone              = [5, ]
 
 isBlocking = false / true
 messageCount = word16
-messageId = bstr
+messageId = bstr .size 32
 messageBody = bstr
 messageIdAndSize = [ messageId, messageSizeInBytes ]
 messageIdList = [ * messageId ]
@@ -255,7 +255,7 @@ msgDone              = [5, ]
 
 isBlocking = false / true
 messageCount = word16
-messageId = bstr
+messageId = bstr .size 32
 messageBody = bstr
 messageIdAndSize = [ messageId, messageSizeInBytes ]
 messageIdList = [ * messageId ]
