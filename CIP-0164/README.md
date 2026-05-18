@@ -12,6 +12,7 @@ Authors:
   - Andre Knipsel <andre.knispel@iohk.io>
   - Yves Hauser <yves.hauser@iohk.io>
   - Simon Gellis <simon@sundae.fi>
+  - Paul Clark <paul.clark@iohk.io>
 Implementors:
   - Input Output Engineering
 Discussions:
@@ -1826,11 +1827,22 @@ nodes to 4 virtual CPUs each and limited inter-node bandwidth to 10 Mb/s. We
 vary the throughput to illustrate the protocol's behavior in light vs congested
 transaction loads, and inject transaction from the 60th through 960th slots of
 the simulation; the simulation continues until the 1500th slot, so that the
-effects of clearing the memory pool are apparent. The table below summarizes the
+effects of clearing the memory pool are apparent.
+
+The simulation is based on the "stake-based truncation" committee
+selection algorithm (known as 'top-stake-fraction' in the simulator
+configuration).  With the stake distribution in the `mini-mainnet`
+topology this results in a committee size of 208, less than the ideal
+size.  We therefore also ran it with a 1500 `midi-mainnet`, derived
+similarly, which produces a committee size of 448.  The results of all
+these tests are documented in the [2026w18
+analysis](https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18).
+
+The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
-the memory pool can become referenced by an EB in as few as 20 seconds when the
+the memory pool can become referenced by an EB in as few as 13 seconds when the
 system is lightly or moderately loaded and that it can reach certification on
-the ledger in about one minute. These times more than double under congested
+the ledger in well under a minute. These times almost triple under congested
 conditions. In all cases there is little overhead, relative to the total bytes
 of transactions, in data that must be stored permanently as the ledger history.
 
@@ -1839,11 +1851,11 @@ of transactions, in data that must be stored permanently as the ledger history.
 
 | Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions    | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
 | ------------------: | ---------------: | ------------- | ----------------: | --------------------: | -------------------: |
-|               0.150 |            100.0 | light load    |              17.9 |                  55.9 |                 92.3 |
-|               0.200 |            133.3 | moderate load |              22.6 |                  64.5 |                 97.2 |
-|               0.250 |            166.7 | heavy load    |              22.9 |                  62.0 |                 97.5 |
-|               0.300 |            200.0 | congestion    |              43.1 |                  83.8 |                 97.5 |
-|               0.350 |            233.3 | over capacity |             135.5 |                 176.9 |                 96.9 |
+|               0.150 |            100.0 | light load    |              13.2 |                  49.2 |                 95.1 |
+|               0.200 |            133.3 | moderate load |              13.4 |                  49.5 |                 95.6 |
+|               0.250 |            166.7 | heavy load    |              21.5 |                  61.3 |                 95.4 |
+|               0.300 |            200.0 | congestion    |              38.2 |                  76.4 |                 95.8 |
+|               0.350 |            233.3 | over capacity |              95.4 |                 134.2 |                 95.7 |
 
 <em>Table 6: Leios efficiency at different throughputs</em>
 
