@@ -1,13 +1,15 @@
 ---
-CIP: 158
+CIP: 0158
 Title: Cardano URIs - Browse Application
 Category: Wallets
 Status: Proposed
 Authors:
     - Adam Dean <adam@crypto2099.io>
     - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz> 
+    - Mad Orkestra <mad@madorkestra.com>
 Implementors:
     - VESPR Wallet (https://vespr.xyz)
+    - Begin Wallet (https://begin.is)
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/1058
 Created: 2025-07-17
@@ -69,7 +71,7 @@ as:
 
 #### ABNF Grammar
 
-``` 
+```
 cardanourn = "web+cardano:" authority
 authority = "//browse" version
 version = "/v1" pathquery
@@ -119,15 +121,15 @@ web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
 * Parse and validate version, scheme, and domain.
 * Forward the entire app-specific path and query string to the app.
 * Suggested allowlist/blocklist and security policies:
-    * Each wallet may optionally implement its own allowed list of trusted 
+  * Each wallet may optionally implement its own allowed list of trusted
       domains where navigation would not require explicit permissions
-    * Each wallet may optionally implement a blacklist of known untrusted 
-      domains where the user would be shown a clear warning that the website is 
-      known to be malicious. With very explicit user permission user should 
+  * Each wallet may optionally implement a blacklist of known untrusted
+      domains where the user would be shown a clear warning that the website is
+      known to be malicious. With very explicit user permission user should
       still be allowed to navigate.
-    * For domains outside an allowlist/blacklist, wallet may want to show a 
-      warning and request explicit permission before navigating. This is to 
-      prevent unwanted IP / device info / other data exfiltration which can be 
+  * For domains outside an allowlist/blacklist, wallet may want to show a
+      warning and request explicit permission before navigating. This is to
+      prevent unwanted IP / device info / other data exfiltration which can be
       obtained simply by loading a webpage
 
 ### Security Considerations
@@ -153,25 +155,25 @@ payment or metadata intents, improving clarity and interoperability.
 
 ### Acceptance Criteria
 
-- [ ] At least two major Cardano wallets implement support for the browse
+* [X] At least two major Cardano wallets implement support for the browse
   authority in web+cardano URIs, including launching its embedded browser with
   the specified path.
-- [ ] Demonstrable user success in navigating from a mobile device (e.g., native
+* [X] Demonstrable user success in navigating from a mobile device (e.g., native
   camera or link) into a wallet and then directly into the dApp or application
   flow.
-- [ ] Positive feedback or validation from the community or wallet/dApp
+* [X] Positive feedback or validation from the community or wallet/dApp
   developers confirming interoperability.
 
 ### Implementation Plan
 
-- [X] Publish and socialize the CIP draft for feedback from wallet and dApp
+* [X] Publish and socialize the CIP draft for feedback from wallet and dApp
   developers.
-- [X] Develop a reference implementation or demo prototype showing browse URI
+* [X] Develop a reference implementation or demo prototype showing browse URI
   handling in at least one wallet.
-    - Reference Implementation: https://github.com/crypto2099/cardano-uri-parser
-    - NPM Package: https://www.npmjs.com/package/cardano-uri-parser
-- [ ] Write integration guides or example code for wallet and dApp developers.
-- [ ] Monitor ecosystem adoption and collect feedback for potential refinements
+  * Reference Implementation: <https://github.com/crypto2099/cardano-uri-parser>
+  * NPM Package: <https://www.npmjs.com/package/cardano-uri-parser>
+* [ ] Write integration guides or example code for wallet and dApp developers.
+* [ ] Monitor ecosystem adoption and collect feedback for potential refinements
   or amendments to the standard.
 
 ## Copyright
