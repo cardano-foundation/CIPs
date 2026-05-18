@@ -35,12 +35,13 @@ Under CIP-1694, the CC must reach its approval threshold for every governance ac
 2. **DRep discouragement.** When CC rejections arrive late, DReps who already spent time evaluating proposals see their work invalidated. Over time, this suppresses DRep participation.
 3. **False urgency.** The requirement that CC members evaluate every proposal creates a baseline workload that scales linearly with governance activity, regardless of whether the proposals are contentious.
 4. **Compensation pressure.** The active-approval model makes the "CC members must be compensated" argument seem self-evident, because their workload is indeed real and ongoing. Regardless, since the activation of Conway-era governance, the community has been unable to reach consensus on whether and how Constitutional Committee members should be compensated, despite mentions of this in (all versions so far of the) constitution. Optimistic Constitutionality aids to dissolve this by dramatically reducing the expected workload, and introduces new, more transparent possibilities for CC compensation, should that remain a desire.
+5. **CC discouragement.** The CC is already overburdened by its current workload, and rejections of compensation doesnt improve the situation. New CC members are discouraged to put themselves up for vote. 
 
 ## Specification
 
 ### Overview
 
-The core change is to the ratification logic in the Conway ledger rules. 
+The core change is to the ratification logic in the Conway ledger rules. `TODO: Describe the changes required for the extenstion of the live epochs for CCs to react.`
 After CIP-1694, and simplified, ignoring the different Action types, a governance action is ratified when all these 3 conditions are met:
 
 #### After CIP-1694
@@ -108,6 +109,8 @@ The guardrails script (proposal policy) continues to apply to Protocol Parameter
 
 The changes are localized to the `RATIFY` transition rule in the Conway ledger specification.
 
+TODO: Describe the changes required for the extenstion of the live epochs for CCs to react. 
+
 #### Current `ccApproved` Predicate (Simplified)
 
 ```haskell
@@ -145,11 +148,21 @@ The local-state-query protocol should be extended to expose:
 
 ### New Governance Protocol Parameter (Optional)
 
-This CIP proposes an **optional** new governance protocol parameter:
+This CIP proposes a new **optional** governance protocol parameter:
 
 - `ccOptimisticEnabled :: Bool` — Controls whether Optimistic Constitutionality is active. Default: `True` after activation. Can be set to `False` via a Protocol Parameter Change governance action to revert to CIP-1694 behavior.
 
 This parameter provides a safety valve: if the community determines that Optimistic Constitutionality is being exploited or producing poor outcomes, it can be disabled through normal governance without requiring a hard fork.
+
+### New Governance Protocol Parameter (Recommended)
+
+This CIP proposes a new governance protocol parameter:
+
+- `minEpochsLiveGA :: Int` — Controls how many epochs must pass at mininum before a Governance Action is approved, irregardless of voting thresholds. 
+ 
+This parameter directly addresses the risk "Collusion" in the Remaining Risk chapter below, and provides mitigation for a collusion attack, where a proposer and the Top x DReps submit a malicious Governance Action last minute, which could fully drain the treasury within a single epoch, or introduce contentious parameters (within guardrails).
+
+
 
 ### Interaction with CC Expiry and No-Confidence
 
@@ -199,25 +212,36 @@ Governance actions submitted before the activation epoch follow the pre-existing
 
 All existing CC credentials, hot/cold key infrastructure (CIP-0105), governance metadata standards (CIP-0100, CIP-0108, CIP-0136), and wallet integrations (CIP-0030, CIP-0095) remain compatible. The change is entirely within the ledger's `RATIFY` rule and does not affect transaction formats, certificate types, or on-chain data structures.
 
-### Remaining Risk
+
+#### Optional: Off-Chain Convention (Pre-Hard-Fork)
+
+Before the hard fork, the current CC could voluntarily adopt an "optimistic convention", where CC members agree (via off-chain coordination or an Info Action) to vote `Yes` on all governance actions unless they intend to challenge constitutionality. CC members who identify a constitutional concern vote `No` and publish a rationale (per CIP-0136 metadata). 
+This convention achieves the behavioral outcome of Optimistic Constitutionality without ledger changes, serving as a live experiment to validate the model.
+
+Other suggestions were made by community members to use scripts for enforcing this "social convention", where CC members who run a cold-hot key model could migrate one of their CC hot keys to a smart contract to enforces the yes vote. Overwriting the yes with a no would be manually handled by the remaining hot keys to reach the required quorum of a single CC's vote. 
+
+
+### Remaining Risks
 
 ### Power Abuse
 
 Under Optimistic Constitutionality, CC members could single-handedly block all DRep- and SPO-approved, near-ratified Governance Actions by voting No up until the last block of an epoch, which would leave no time for the remaining CC to overrule the Constitutional Challenge. This risk is real, and currently known possible mitigations for it, such as introducing approval window extensions upon the first CC no vote are only increasing complexity, introduce new more complicated issues and are practically infeasible.
 At the moment, the best mitigation for such power abuse would be to acknowledge this risk and rely on the possibilty to call out a state of no confidence - after a Governance Action got maliciously CC-blocked last minute.
 
+### Collusion
+Someone could submit a Governance Action in the final slots of an epoch and collude with the top 10 DReps to vote "yes." If no CC member catches this mischievous behavior in time, the action could meet the ratification threshold without the CC being able to stop it. This risk is real, and mitigations could include a new parameter for `minimal-epochs-govaction-live`, where at least x epochs are required to pass before a Governance Action could be ratified.
+
 ## Path to Active
 
 ### Acceptance Criteria
 
-1. The formal Conway ledger specification (`cardano-ledger`) is updated to reflect the modified `RATIFY` rule as described in this CIP.
-2. The implementation is deployed on the `preview` testnet and exercised with both challenged and unchallenged governance actions.
-3. The implementation is deployed on the `preprod` testnet with a functioning Constitutional Committee.
-4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
-5. The local-state-query protocol exposes challenge status for governance actions.
+[ ] 0. A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
+[ ] 1. The formal Conway ledger specification (`cardano-ledger`) is updated to reflect the modified `RATIFY` rule as described in this CIP.
+[ ] 2. The implementation is deployed on the `preview` testnet and exercised with both challenged and unchallenged governance actions.
+[ ] 3. The implementation is deployed on the `preprod` testnet with a functioning Constitutional Committee.
+[ ] 4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
+[ ] 5. The local-state-query protocol exposes challenge status for governance actions.
 
-### Info Action
-A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
 
 ### Implementation Plan
 
@@ -225,29 +249,22 @@ This CIP requires a **hard fork** to activate, as it changes the ledger's ratifi
 
 #### Phase 1: Specification & Review
 
-- Formal specification update to the Conway ledger rules (Agda/Haskell in `IntersectMBO/cardano-ledger`, `pragma-org/amaru`, `blinklabs-io/dingo` and others).
-- Community review period (minimum 3 months) + .
-- CIP editors and Ledger team review.
+[ ] - Formal specification update to the Conway ledger rules (Agda/Haskell in `IntersectMBO/cardano-ledger`, `pragma-org/amaru`, `blinklabs-io/dingo` and others).
+[ ] - Community review period (minimum 3 months) .
+[ ] - CIP editors and Ledger team review.
 
 #### Phase 2: Testnet Deployment
 
-- Implementation in `cardano-ledger` behind a feature flag tied to the new era.
-- Deployment on `preview` testnet.
-- Integration testing with governance tooling (GovTool, cardano-cli, Eternl, Lace).
-- Deployment on `preprod` testnet.
+[ ] - Implementation in `cardano-ledger` behind a feature flag tied to the new era.
+[ ] - Deployment on `preview` testnet.
+[ ] - Integration testing with governance tooling (GovTool, cardano-cli, Eternl, Lace).
+[ ] - Deployment on `preprod` testnet.
 
 #### Phase 3: Mainnet Activation
 
-- Hard fork governance action submitted, requiring approval from the CC, DReps, and SPOs under the *current* (pre-Optimistic) rules.
-- Upon ratification and enactment at the subsequent epoch boundary, Optimistic Constitutionality becomes active with `ccOptimisticEnabled :: Bool` set to `TRUE`.
+[ ] - Hard fork governance action submitted, requiring approval from the CC, DReps, and SPOs under the *current* (pre-Optimistic) rules.
+[ ] - Upon ratification and enactment at the subsequent epoch boundary, Optimistic Constitutionality becomes active with `ccOptimisticEnabled :: Bool` set to `TRUE`.
 
-#### Optional: Off-Chain Convention (Pre-Hard-Fork)
-
-Before the hard fork, the current CC could voluntarily adopt an "optimistic" convention:
-
-- CC members agree (via off-chain coordination or an Info Action) to vote `Yes` on all governance actions unless they intend to challenge constitutionality.
-- CC members who identify a constitutional concern vote `No` and publish a rationale (per CIP-0136 metadata).
-- This convention achieves the behavioral outcome of Optimistic Constitutionality without ledger changes, serving as a live experiment to validate the model.
 
 ## References
 
