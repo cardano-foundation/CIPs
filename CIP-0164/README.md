@@ -2474,7 +2474,7 @@ the [Protocol Security](#protocol-security) section and
 
 #### Voting committee selection
 
-A stake cutoff is required: allowing every registered SPO to vote ("All-vote")
+A stake cutoff is required: allowing every registered SPO to vote ("Everyone votes")
 leaves the committee size unbounded and vulnerable to an adversary registering
 pools to inflate vote traffic. Moreover, under realistic Pareto-distributed
 stake the marginal security gain of including additional small pools diminishes
@@ -2545,8 +2545,14 @@ certificate-size advantage.
 
 **Caveat:** Network-level simulations confirming that vote diffusion at the
 expected vote counts does not exceed the $L_{\text{vote}}$ budget have so far
-been run on the [mini-mainnet][mini-mainnet] topology, where both schemes behave
-identically.
+been run on the [mini-mainnet][mini-mainnet] topology, and also on a similarly-
+derived `midi-mainnet` with 1500 nodes, where both schemes behave
+identically.  To push the committee size to its limits, we also simulated an
+'everyone votes' mode - literally everyone, even relays - giving a committee
+size of 750 and 1500 respectively.  Even then, the protocol performed as
+expected, showing that committee size is not a significant factor in performance.
+Full results are available in the [2026w18
+analysis](https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18).
 
 #### Transaction References in Endorser Blocks
 
