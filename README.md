@@ -156,6 +156,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0170 | [KERI-backed metadata attestations](./CIP-0170) | Proposed |
 | 0171 | [On-chain Smart Contract Bytecode Verification](./CIP-0171) | Proposed |
 | 0176 | [Non-segregated Block Body Serialization](./CIP-0176) | Proposed |
+| 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
