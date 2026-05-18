@@ -2,7 +2,7 @@
 CIP: 0158
 Title: Cardano URIs - Browse Application
 Category: Wallets
-Status: Proposed
+Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
     - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz> 
