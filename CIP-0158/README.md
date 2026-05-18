@@ -1,5 +1,5 @@
 ---
-CIP: 0158
+CIP: 158
 Title: Cardano URIs - Browse Application
 Category: Wallets
 Status: Active
