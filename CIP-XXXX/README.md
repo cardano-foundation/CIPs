@@ -47,10 +47,7 @@ This defect produces five interacting problems:
 
 The obvious direct fix — lowering `a₀` — is unacceptable because `a₀` carries the Sybil-resistance load. Removing or weakening it reopens the stake-splitting channel. Any acceptable fix must preserve `a₀`'s deterrent role while removing the dilution.
 
-A fuller treatment of the problem, the derivation of the proposed formula, numerical examples, and game-theoretic analysis of `a₀` under both regimes lives in two supporting documents shipped alongside this CIP:
-
-- `utilization_scaled_pledge_bonus.md` (in this folder) — full written analysis with derivations.
-- `CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html` (in this folder) — an interactive simulator. Live URL: https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html
+A fuller treatment — the derivation of the proposed formula, numerical worked examples, and game-theoretic analysis of `a₀` under both regimes — is in [Appendix A](#appendix-a-detailed-derivation-and-worked-examples) below. An [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) with adjustable parameters and four guided tutorials accompanies the proposal.
 
 ## Specification
 
