@@ -7,7 +7,7 @@ Authors:
     - John Shearing <johnshearing@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1193
 Created: 2026-05-15
 License: CC-BY-4.0
 ---
@@ -18,9 +18,7 @@ Cardano's reward formula contains a structural defect in the pledge bonus term `
 
 This CIP proposes a parameter-free reshape of the existing pledge bonus by multiplying it by pool utilization `u = min(S, S_sat) / S_sat`. The new bonus is `A = r · a₀ · P · min(S, S_sat) / (S_sat · (1 + a₀))`. A saturated pool earns exactly today's pledge bonus; a half-utilized pool earns half; an empty pledged pool earns nothing from pledge until delegators arrive. No new parameter is introduced — `a₀` retains its name, governance dial, and Sybil-resistance role. The change removes the dilution regime entirely, strengthens Sybil resistance at the formula level, makes "fill pools to saturation" self-enforcing at every utilization level, and gives small honest operators a viable on-ramp through delegation rather than personal capital.
 
-> **▶ Interactive simulator with guided tutorials.** A companion page lets readers manipulate `P`, `S`, `r`, `a₀`, `m`, `F`, and the blending coefficient `b`, and watch the formula's behavior in real time against side-by-side current-vs-proposed curves. Four narrated walkthroughs are built in: (1) **the math explainer** — what changes, why, with the formula derivation; (2) **who benefits, and by how much** — stakeholder-by-stakeholder tour of saturated SPOs, below-saturation SPOs, small honest operators, delegators, cooperatives, decentralization, and treasury; (3) **the multi-pool operator problem** — the quantitative case for how the CIP deters MPO behavior at the formula level without lowering Sybil resistance; (4) **free-form exploration** — manipulate every parameter freely. Live page: https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html. The same file is also included in this folder as `CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html` and runs offline in any modern browser.
-
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The standard Cardano delegator return formula (Reward Sharing Scheme, CIP-0084) reduces to:
 
@@ -42,7 +40,7 @@ Concretely, a 50 M-pledge pool with `F = 340`, `r = 0.000400`, `S_sat = 75 M` sh
 This defect produces five interacting problems:
 
 1. **Rational delegation is punished.** The protocol's equilibrium analysis assumes delegators rotate toward high-pledge, well-operated pools. The reward formula penalizes that rotation in the regime delegators are supposed to prefer.
-2. **Cooperative delegation has no protocol-level instrument.** Coordinators that perform the rational-delegator function for many small holders (e.g., Pool Ranger) suffer the dilution most acutely. Bringing 25 M ADA into a pool to gain bargaining leverage simultaneously erodes the ROA of the members on whose behalf the coordinator acts. Today's workaround — informal off-chain negotiation between large delegators and SPOs — is opaque and unverifiable.
+2. **Cooperative delegation has no protocol-level instrument.** Coordinators that perform the rational-delegator function for many small holders (e.g., [Pool Ranger](https://github.com/johnshearing/pool_ranger) — a cooperative-delegation platform that pools members' staking credentials and routes delegation toward the highest-yielding pools each epoch) suffer the dilution most acutely. Bringing 25 M ADA into a pool to gain bargaining leverage simultaneously erodes the ROA of the members on whose behalf the coordinator acts. Today's workaround — informal off-chain negotiation between large delegators and SPOs — is opaque and unverifiable.
 3. **Small honest SPOs cannot compete on the pledge-bonus axis.** A small operator with modest pledge is structurally disadvantaged regardless of operational quality, because the bonus is tied to capital declared rather than capital actually attracted.
 4. **The Sybil deterrent leans entirely on the delegator-preference channel.** Splitting `X` ADA into `N` pools leaves the total pledge bonus unchanged under the current formula; only delegator avoidance makes the split unprofitable. The formula itself does no Sybil work beyond setting `A`'s magnitude.
 5. **Empty pledged pools earn the same per-pledge bonus as filled pools.** The protocol pays for an entitlement that has not yet produced the equilibrium it is meant to incentivize.
@@ -60,13 +58,17 @@ A fuller treatment of the problem, the derivation of the proposed formula, numer
 
 All symbols carry their standard CIP-0084 / Reward Sharing Scheme meaning:
 
-- `r` — per-epoch reward rate (fraction of total ADA supply distributed per epoch).
+- `r` — per-epoch reward rate (fraction of total ADA supply distributed per epoch). Drifts down slowly as the reserve depletes; currently ≈ 0.000400.
 - `a₀` — pledge influence factor (existing protocol parameter, currently `0.3`, governance-tunable).
 - `k` — target stake-pool count (currently `500`).
 - `P` — operator pledge (ADA, declared on-chain).
 - `S` — total live stake delegated to the pool, including pledge.
-- `S_sat` — saturation cap, defined as `(active network stake) / k`.
+- `S_sat` — saturation cap, defined as `(active network stake) / k`. Currently ≈ 65–75 M ADA.
 - `u` — pool utilization, defined as `min(S, S_sat) / S_sat`. `u ∈ [0, 1]`.
+- `F` — fixed fee in ADA per epoch (flat overhead the SPO takes off the top of gross rewards before margin). SPO-set, subject to protocol minimum.
+- `m` — margin (SPO's percentage cut of post-fee rewards before the remainder is split among delegators by stake fraction). SPO-set, 0–100%.
+- `p` — performance factor (actual blocks minted divided by blocks the pool's stake fraction would predict, capped at 1.0).
+- `A` — pledge bonus per epoch (ADA/epoch advantage a pledged pool earns over an otherwise-identical zero-pledge pool). Defined in `Current pledge bonus` and `Proposed pledge bonus` below.
 
 ### Current pledge bonus
 
@@ -116,7 +118,7 @@ This proposal introduces **no new on-chain data, no new transaction types, no ne
 
 This proposal is a single, atomic change to the reward calculation, taking effect at the hard-fork combinator event that activates it. The protocol parameter `a₀` continues to be versioned by the existing governance mechanism. If the optional blending coefficient `b` is adopted, it is versioned identically to `a₀`. No additional versioning scheme is introduced by this CIP.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why utilization scaling removes dilution
 
@@ -200,7 +202,7 @@ The proposal's net effect across stakeholder classes:
 | Proposal                              | Mechanism                                            | Resolves dilution? |
 | ------------------------------------- | ---------------------------------------------------- | ------------------ |
 | Lower `a₀` directly                   | Weaken pledge bonus everywhere                       | Yes, but reopens Sybil channel |
-| CIP-50 leverage cap                   | Limit delegation/pledge ratio per pool               | No — addresses SPO leverage, not the dilution mechanism |
+| [CIP-0050](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0050) leverage cap | Limit delegation/pledge ratio per pool               | No — addresses SPO leverage, not the dilution mechanism |
 | Treasury "trough" subsidy             | Pay delegators to fill underused pools               | Partial; treasury-funded, hard to scale |
 | **Utilization-scaled pledge bonus**   | **Multiply `A` by `u`. Existing `a₀` reused.**       | **Yes — directly, treasury-tunable, Sybil-strengthening, helps every delegator** |
 
@@ -214,7 +216,7 @@ The proposal's net effect across stakeholder classes:
 | Whales "self-delegate" to lift utilization | Whale's parked ADA earns only as a delegator (after `F`, margin, pro-rata split). No arbitrage advantage over delegating to any equivalent pool. |
 | Sybil whales attract delegators to recoup split bonus | Each of `N` split pools must individually reach competitive utilization. The split whale would need `N` times the delegator base, which by assumption they do not have. |
 
-A fuller game-theoretic analysis, including numerical anchors and edge cases, is in the supporting documents shipped in this folder.
+A fuller game-theoretic analysis, including numerical anchors and edge cases, is in [Appendix A](#appendix-a-detailed-derivation-and-worked-examples). Readers can also explore both formulas interactively, with adjustable parameters and four guided tutorials, at the [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html).
 
 ## Path to Active
 
@@ -241,21 +243,161 @@ Implementors have not yet committed; the `Implementors:` field is empty pending 
 
 ## References
 
-- CIP-0001 — CIP process and document structure.
-- CIP-0084 — Reward Sharing Scheme (the formula this CIP modifies).
-- CIP-1694 — On-chain governance actions (the mechanism this CIP would be activated through).
-- CIP-50 — Pool leverage cap proposal (related; addresses a different symptom).
-- Brünjes, Kiayias, Koutsoupias, Stouka — *Reward Sharing Schemes for Stake Pools* (the original RSS paper formalizing the formula this CIP modifies).
-- `utilization_scaled_pledge_bonus.md` (in this folder) — Full written derivation, numerical anchors, and risk analysis.
-- `CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html` (in this folder) — Interactive simulator with four guided tutorials, runnable offline. Live page: https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html. Tutorials:
-  - **The math explainer** — derivation of `A_new` from the existing reward formula, with the blending coefficient `b` and the current-vs-proposed curves side by side.
-  - **Who benefits, and by how much** — stakeholder-by-stakeholder walkthrough: saturated SPOs, below-saturation SPOs, small honest operators, delegators, cooperatives, decentralization, treasury.
-  - **The multi-pool operator problem** — quantitative tour showing today's formula imposes no cost on splitting, while the proposal taxes it proportional to `N` without lowering `a₀`.
-  - **Free-form exploration** — every slider unlocked; sweep parameters and watch both formulas respond.
+- [CIP-0001](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001) — CIP process and document structure.
+- [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) — Reward Sharing Scheme (the formula this CIP modifies).
+- [CIP-1694](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694) — On-chain governance actions (the mechanism this CIP would be activated through).
+- [CIP-0050](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0050) — Pool leverage cap proposal (related; addresses a different symptom).
+- Brünjes, Kiayias, Koutsoupias, Stouka — [*Reward Sharing Schemes for Stake Pools*](https://eprint.iacr.org/2018/1145) (the original RSS paper formalizing the formula this CIP modifies).
+- [Interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) — adjustable parameters with four guided tutorials: (1) the math explainer, (2) who benefits and by how much, (3) the multi-pool operator problem, (4) free-form exploration. Source repository: [johnshearing/pool_ranger](https://github.com/johnshearing/pool_ranger).
 
 ## Acknowledgements
 
 This proposal was drafted with assistance from Claude (Anthropic). The mathematical derivation, the constraint that `a₀` must be preserved, the proposed `u` scaling, and the analysis of cooperative-delegation effects emerged from extended dialog between the author and the model. All claims have been independently re-derived by the author. Any errors are the author's.
+
+## Appendix A: Detailed Derivation and Worked Examples
+
+This appendix provides the full derivation, numerical worked examples, expanded stakeholder analysis, and extended risk discussion that underlies the more compact treatment in the body. Readers can follow the body of this CIP without it; reviewers who want to verify the math, work through the Sybil deterrent quantitatively, or examine the per-stakeholder mechanics in detail will find that material here.
+
+### A.1 The problem in precise terms
+
+The standard Cardano delegator ROA formula is:
+
+```
+ROA = (1 − m) · [ r/(1+a₀) + (A − F)/S ] · 73 · 100%
+where  A = r · a₀ · P / (1+a₀)
+```
+
+Under the current formula, `A` depends on `P` but not on `S`. This is the structural defect. Per-delegator ROA depends on `(A − F)/S`, and when `A` is fixed while `S` grows, that ratio shrinks.
+
+The sign of `(A − F)` decides whether per-delegator ROA *rises* or *falls* as total pool stake `S` grows:
+
+| Regime | `dROA/dS` | Pool type | Implication for adding delegation |
+|---|---|---|---|
+| `A > F` | negative | high-pledge pool (the kind a rational delegator must pick) | adding stake dilutes existing delegators |
+| `A < F` | positive | low-pledge pool | adding stake helps via fixed-fee amortization |
+| `A = F` | zero | edge case | ROA flat |
+
+Quantitative anchor: take a 50 M-pledge pool with `F = 340`, `r = 0.000400`, `m = 1%`, `S_sat = 75 M`. With no external delegation, `S = 50 M` and `(A − F)/S ≈ 8.55 × 10⁻⁵`. When 25 M of delegation arrives and saturates the pool, `S = 75 M` and `(A − F)/S ≈ 5.70 × 10⁻⁵`. Roughly a **0.21% absolute ROA loss** for the delegators in the pool, paid for by their own arrival.
+
+The deeper issue: the reward formula's pledge bonus `A` does not scale with the pool's stake `S`. Under the current formula, `A` is set by `P` alone — what the SPO commits — and is the same whether the pool has 1 ADA of delegation or 25 million ADA of delegation. Delegators thus split a fixed bonus pot. The more delegators arrive, the smaller each share.
+
+This is the root cause behind every observed pathology of the current incentive: dilution, the structural conflict between concentration-for-leverage and concentration-for-ROA, the inability of cooperators to negotiate, and the protocol's silence toward "rational delegator" behavior. Fix `A`'s independence from `S` and every symptom resolves at once.
+
+### A.2 Why `a₀` must be preserved
+
+`a₀` is Cardano's primary defense against Sybil-style stake splitting — the scenario in which a single ADA whale creates many small pools to gain disproportionate block production while appearing as many independent operators. The mechanism works through delegator preference, not direct restriction:
+
+- A whale with `X` ADA who splits into `N` pools earns `r · a₀ · (X/N) / (1+a₀)` of pledge bonus per pool — small per pool, total unchanged across all `N` pools.
+- Rational delegators read the small `A` on each fake pool, see the unattractive ROA the small pledge bonus produces, and avoid those pools in favor of pools with concentrated pledge.
+- Without delegators, the whale's `N`-pool split nets less revenue than concentrating in one pool (each split pool's fixed fee is unearned, margin revenue collapses, saturation budgets go unused). The strategy fails in expectation.
+
+Lowering or removing `a₀` would solve the dilution problem but reopen the Sybil channel. Any acceptable solution must leave the Sybil deterrent intact.
+
+This proposal preserves `a₀` as a parameter — same name, same governance dial. It only changes what `a₀` multiplies. The Sybil deterrent strengthens under the proposal: splitting a whale's pledge across `N` pools now reduces the *total* pledge bonus across those pools by a factor of `N`, rather than leaving it unchanged. The delegator-preference channel that does the Sybil work today continues to do it, with mathematical reinforcement.
+
+### A.3 Why utilization scaling fixes the dilution
+
+Under the proposed formula, `A_new/S = r · a₀ · P / (S_sat · (1+a₀))` — a quantity independent of `S`. The per-ADA pledge bonus share is fixed per unit pledge, regardless of how many delegators arrive.
+
+The per-delegator term in the ROA formula becomes:
+
+```
+(A_new − F)/S = A_new/S − F/S
+              = r · a₀ · P / (S_sat · (1+a₀))  −  F/S
+```
+
+Its derivative with respect to `S` (adding delegation, with `P` fixed):
+
+```
+d/dS [(A_new − F)/S] = 0 − (−F/S²) = +F/S²    > 0
+```
+
+Strictly positive. Adding delegation to any pool now monotonically increases per-delegator ROA, through the fixed-fee amortization channel alone, with no offsetting pledge-bonus dilution. The high-pledge regime that currently punishes delegators ceases to exist as a regime.
+
+The pledge derivative is similarly clean (adding pledge, with `S` fixed):
+
+```
+dA_new/dP                   = r · a₀ · S / (S_sat · (1+a₀))
+d/dP [(A_new − F)/S]        = r · a₀ / (S_sat · (1+a₀))      > 0
+```
+
+Also strictly positive, and constant in `P`. Pledge growth always lifts ROA uniformly across the pool, regardless of how much pledge already exists. SPOs who add pledge can show their delegators a direct ROA gain — a relationship that is muddled in the current formula.
+
+**Worked numerical example.** Same 50 M-pledge pool, `m = 1%`, `F = 340`, `r = 0.000400`, `S_sat = 75 M`.
+
+*Before delegation arrives* — `P = 50 M`, `S = 50 M` (pledge only), `u = 50/75 ≈ 0.667`:
+
+```
+A_new         = 0.000400 · 0.3 · 50M · 50M / (75M · 1.3) ≈ 3077
+(A − F)/S     = (3077 − 340) / 50M                       ≈ 5.47 × 10⁻⁵
+```
+
+*After 25 M of delegation arrives* — `P = 50 M`, `S = 75 M`, `u = 1.0`:
+
+```
+A_new         = 0.000400 · 0.3 · 50M · 75M / (75M · 1.3) ≈ 4615
+(A − F)/S     = (4615 − 340) / 75M                       ≈ 5.70 × 10⁻⁵
+```
+
+The `(A − F)/S` term *rises* from `5.47 × 10⁻⁵` to `5.70 × 10⁻⁵` — a small structural gain for every delegator in the pool. Under the current formula the same change drops the term from `8.55 × 10⁻⁵` to `5.70 × 10⁻⁵`. The dilution becomes a small gain.
+
+Both formulas land at the same value (`5.70 × 10⁻⁵`) at saturation. This is by construction: `A_new = A_current` when `u = 1`. The saturated pool — the equilibrium point — is unchanged. What changes is the *path* into saturation: under the current formula, delegators are punished for taking that path; under the proposal, they are rewarded for it.
+
+### A.4 Extended stakeholder analysis
+
+This section expands the compact `Stakeholder summary` in the body with the mechanism-level reasoning behind each effect.
+
+#### SPOs
+
+- **Pledge becomes a partnership claim, not an isolated entitlement.** An SPO with high pledge but no delegators earns no pledge bonus under the proposal. To realize the bonus, they must attract delegators. This converts pledge from a one-sided revenue declaration into the SPO's contribution to a joint enterprise — exactly the relationship the formula's authors intended `a₀` to create but never quite achieved.
+- **The saturation case is unchanged.** An SPO who runs a near-saturated pool today earns the same pledge bonus, the same margin, the same fixed fee under the proposal. Nothing is taken away from operators who are already attracting the delegation their pledge implies.
+- **Small honest operators become structurally viable.** An operator with modest pledge can compete by attracting delegation. The path "build a quality pool → attract delegators → earn pledge bonus through their participation" becomes the explicit incentive. Pool operation no longer requires whale-tier personal capital to make economic sense.
+- **A new bargaining surface emerges naturally.** SPOs can lower margin, improve performance, attest to single-pool operation, or otherwise court large delegators with the visible promise that delegation lifts everyone's ROA in their pool. Today an SPO's pledge declaration is the only public commitment they make; under the proposal, every operational improvement becomes legible to delegators because it materializes in `(A − F)/S`.
+
+#### Delegators
+
+- **Adding delegation to any pool always increases per-delegator ROA.** This is the central result. Whether 1 ADA or 25 million ADA arrives, the math agrees with the intuition that joining a pool helps the people there. The high-pledge dilution regime is structurally removed.
+- **Sticky stake gets a tailwind.** Delegators who never revisit their decision still benefit when others arrive at their pool. A pool that grows toward saturation lifts its inhabitants' ROA continuously, not just at the moment of saturation.
+- **Pool selection simplifies and improves for the rational delegator.** The two ROA terms `r/(1+a₀)` and `(A − F)/S` both have transparent shapes: the first is universal, the second scales with pledge and inversely with `F/S`. A rational delegator's job becomes "find pools with high `P · u / S` and low `F`" — a single comparable metric per pool, replacing the regime-dependent reasoning the current formula forces.
+- **Pledge increases visibly lift every delegator's ROA.** When an SPO commits more pledge, every delegator's per-ADA bonus rises by exactly `r · a₀ / (S_sat · (1+a₀))`. The relationship is public, computable, and easy to verify epoch over epoch.
+
+#### Cooperatives
+
+This subsection treats cooperatives as a class. Pool Ranger is cited as an example where it grounds an otherwise abstract claim.
+
+- **Bargaining power becomes structural without any registration or identification.** A cooperative benefits as any large delegator does. There is no need for the protocol to recognize a cooperative as a special party, no need for a registry, no need to consolidate stake credentials. A cooperative's leverage is simply "we bring substantial delegation, and the math of our arrival is visible to your delegators."
+- **The bargaining math is the same math every delegator sees.** When a cooperative says "we will bring 25 M to this pool and lift `A_new/S` accordingly — adjust your margin to X% or we go elsewhere," the SPO and the existing delegators can both verify the claim. The credibility of the threat is automatic.
+- **Withdrawal is visibly costly.** The day a cooperative leaves a pool, `S` drops, `A_new` drops with it, and every remaining delegator's ROA drops. The credible threat of withdrawal stops being a private negotiation and becomes a publicly observable mathematical event. SPOs have a continuous incentive to retain large delegators, not just attract them.
+- **The values-vs-yield trade-off shrinks.** With dilution eliminated, a cooperative can weight pool selection toward community values — governance participation, software contributions, single-pool operators, public-goods funding — without sacrificing yield in any high-pledge regime. The ROA penalty for values-driven selection drops to near zero. This is the operational premise Pool Ranger is built around, and the proposal removes the structural obstacle to it for every comparable cooperative.
+
+#### Decentralization
+
+- **Sybil splitting is more strongly punished than today.** Under the current formula, a whale splitting `X` ADA into `N` pools earns the same total pledge bonus regardless of `N` (Sybil resistance is paid for by the delegator-preference channel). Under the proposal, splitting reduces the total pledge bonus across the split pools by a factor of `N`, because each pool's bonus now multiplies by its own utilization (which is at best `1/N` of the unsplit pool's utilization, given the same delegator base). The deterrent strengthens at the formula level, not just at the equilibrium-behavior level.
+- **Small SPOs gain a viable on-ramp.** Today small pools cannot compete with whale-pledge pools on the pledge-bonus axis. Under the proposal, a small pool that attracts delegation earns the full saturated pledge bonus, in proportion to its (modest) pledge. Many small honest pools can each become attractive to a fraction of delegators. The ~3,000-pool population the network maintains today can be productive, not just tolerated.
+- **Power tilts from SPOs toward delegators.** Currently SPOs hold pricing power and delegators choose only which pool to accept. The proposal makes every act of delegation a publicly visible contribution to a pool's revenue. SPOs court delegators with operational improvements, not just margin marketing. Two-sided negotiation replaces one-sided extraction.
+- **The "fill pools to saturation" equilibrium becomes self-enforcing.** Empty pledged pools no longer earn — so empty pools either fill or fade. Saturated pools continue to earn the same as today. The protocol-intended convergence on `k` well-utilized pools gains a continuous gravitational pull at every utilization level, not just at the saturation boundary.
+
+#### Protocol health
+
+- **The dilution regime is structurally removed.** The current formula's `A > F` regime no longer exists, because `A` now scales with `S`. The rational-delegator function the formula assumes is finally rewarded by the formula it appears in.
+- **No new on-chain quantity, no new parameter, no new certificate.** Implementation cost is a single multiplication by `S / S_sat` in the gross-rewards calculation. `S` and `P` are already tracked per epoch.
+- **Sybil resistance is preserved and strengthened.** `a₀` continues to do its job. The delegator-preference channel that deters splitting is reinforced by formula-level penalties for splitting.
+- **Treasury impact is governance-tunable.** Below-saturation pools emit less pledge bonus than today, so total emission is slightly reduced when the network operates below average saturation. The unused share stays in the reserve and is distributed in later epochs (consistent with how the reserve depletes today). Governance can recalibrate `a₀` upward to compensate exactly if it wants to preserve the current total emission profile, or accept slower reserve depletion as a side effect.
+- **The change is observable, monotone, and reversible.** Every effect — on every pool, every delegator, every SPO — is computable from public quantities. The blending coefficient `b` makes adoption arbitrarily gradual. Governance can move it back toward `b = 0` if the equilibrium turns out worse than predicted.
+
+### A.5 Extended risks and mitigations
+
+The body lists the primary risks compactly. The expanded analysis below covers the same risks and three additional cases (whale self-delegation, single-pool high-pledge SPOs, implementation complexity).
+
+| Risk | Mitigation |
+|---|---|
+| Below-saturation pools earn less pledge bonus, which could make cold-start harder for newly-launched pools | The strongest natural mitigation is that the proposal *creates* an incentive for cooperatives to fill such pools rapidly: arriving at a low-utilization pool with quality SPO behavior produces a large `dROA/dS` gain for everyone, which is the cooperative's bargaining lever. Cold start becomes a coordinated act, not a passive wait. If the network wants additional support for cold-start anyway, an explicit launch grant from treasury can be added separately without changing the formula. |
+| Total emission may shrink if pools network-wide operate below average saturation, slowly extending reserve depletion | Easily compensated by a one-time upward recalibration of `a₀` so that average-utilization total bonus matches today's. Saturated pools see a small bonus uplift; below-saturation pools still receive less than today. The recalibration is a single governance vote, computable from current chain data. Alternatively, governance can accept slower reserve depletion as a benign side effect. |
+| Established high-pledge SPOs whose pools are not near saturation see reduced rewards | Real. This is the intended redirection: the protocol stops paying pledge bonus to pledged pools that have not earned delegator interest. SPOs in this position can either improve operations to attract delegation, or accept that the pure-pledge revenue stream is no longer available. The saturated pledge bonus is fully preserved. |
+| Whales might "self-delegate" — park ADA in their own pool to raise utilization and claim more pledge bonus | The whale's parked ADA earns rewards only as a delegator (after `F`, margin, and pro-rata split). The total emission to the whale net-of-costs is roughly the same as delegating that ADA to any other equivalent pool. There is no arbitrage advantage to self-delegation beyond what any delegator can capture by delegating to the whale's pool. The utilization metric is robust to this behavior. |
+| Single-pool SPOs with high pledge and limited delegation see reduced rewards | Same redirection principle. The current formula effectively subsidizes high-pledge pools regardless of demand; the proposal makes the bonus contingent on demand. SPOs in this position have a clear path to recover: court delegators. |
+| Sybil-splitting whales could try to attract delegators to each of their `N` pools to recover the lost bonus | Each of the `N` pools would still individually need to reach competitive utilization. The split whale's total available pool capacity is `N · S_sat`, of which they can pledge `X/N` per pool. To earn the same total pledge bonus as the unsplit case (delegated to capacity), they would need `N` times the delegator base — which by assumption they do not have. The formula-level penalty for splitting is robust. |
+| Implementation complexity | Negligible. `S` and `P` are already snapshotted per epoch. The change is a single multiplication by `min(S, S_sat) / S_sat`. No new on-chain state, no new transaction types, no new certificates. |
 
 ## Copyright
 
