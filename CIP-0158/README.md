@@ -11,7 +11,7 @@ Implementors:
     - VESPR Wallet (https://vespr.xyz)
     - Begin Wallet (https://begin.is)
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1058
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
