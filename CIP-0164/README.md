@@ -769,10 +769,12 @@ realized committee grows beyond what is optimal for voting throughput, that
 cost is paid on the optimistic (certifying) path of the protocol and is
 acceptable. Under-representation is the case the parameter is tuned against.
 
-There is no per-EB sortition. There are no non-persistent voters. Membership
-is determined once per epoch, deterministically, from the stake distribution
+There is no per-EB sortition. There are no non-persistent voters. Membership is
+determined once per epoch, deterministically, from the stake distribution
 available at the epoch boundary; this matches the cadence of the existing
-VRF-key handling for pool parameters.
+VRF-key handling for pool parameters. The rationale for selecting this scheme
+over the alternatives considered (notably wFA^LS) is recorded in [Design
+Decisions](#voting-committee-selection).
 
 The certificate accordingly consists of a bitfield indicating which committee
 members signed plus a single aggregated BLS signature. Its size grows linearly
@@ -785,22 +787,21 @@ include the `endorser_block_hash` field that uniquely identifies the target EB:
 Under the stake-based committee scheme, all votes share a single uniform
 structure:
 
-- `election_id`: Identifier for the voting round (derived from the slot
-  number of the RB that announced the target EB)
-- `committee_voter_id`: Epoch-specific compact identifier of the voter's
-  position within the truncation-derived committee (e.g. an index into the
-  ordered committee)
-- `endorser_block_hash`: Hash of the RB header that announced the target EB
-- `vote_signature`: BLS signature over `(election_id, endorser_block_hash)`
+- `slot_no`: Identifier for the voting round and equal to slot number of the RB
+  that announced the target EB.
+- `endorser_block_hash`: Hash of the EB to vote on.
+- `voter_id`: Index into the epoch's stake-based committee (pools ordered by
+  descending stake at the epoch boundary; see [Committee
+  Selection](#committee-selection))
+- `vote_signature`: BLS signature over `concat(slot_no, endorser_block_hash)`
 
 Votes do not carry per-EB sortition eligibility proofs. Eligibility is
 determined by epoch-level committee membership and verified by direct lookup
 against the committee derived at the epoch boundary.
 
-The `endorser_block_hash` identifies the header that announces the EB instead of
-identifying the EB's hash directly. This ensures the voters validated the EB
-against the same ledger state that it extends when certified on chain; recall
-that multiple RB headers could announce the same EB.
+Binding the vote signature to `slot_no` in addition to `endorser_block_hash`
+ensures voters validated the EB against the same ledger state it extends when
+certified on chain; recall that multiple RB headers could announce the same EB.
 
 A [CDDL for votes and certificates](#votes-certificates-cddl) is available in
 Appendix B.
@@ -816,15 +817,12 @@ following before accepting the block:
    signatures in this implementation)
 
 3. **Voter Eligibility**: Each signing voter must be a member of the epoch's
-   stake-based committee. Membership is verified by re-deriving the committee
-   from the stake distribution active for the epoch in which the announcing
-   RB was produced. No per-EB sortition proof is required; eligibility is
-   verifiable and deterministic by direct membership lookup, and nodes can
-   independently agree on the committee from the on-chain stake distribution
-   alone.
+   stake-based committee, selected from the active stake distribution at the
+   epoch boundary.
 
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
+
 5. **EB Consistency**: Certificate references the correct EB hash announced in
    the preceding RB
 
@@ -973,10 +971,11 @@ redundant fetching and validation.
 #### Voting & Certification
 
 <a id="VotingEB" href="#VotingEB"></a>**Voting Process**: Committee members
-[selected through a lottery process](#votes-and-certificates) vote on EBs as
-soon as [vote requirements](#step-3-committee-validation) are met according to
-protocol (step 9). An honest node casts only one vote for the EB extending its
-current longest chain.
+(determined deterministically at the epoch boundary by [stake-based
+truncation](#committee-structure)) vote on EBs as soon as [vote
+requirements](#step-3-committee-validation) are met according to protocol
+(step 9). An honest node casts only one vote for the EB extending its current
+longest chain.
 
 <a id="VoteDiffusion" href="#VoteDiffusion"></a>**Vote Propagation**: Votes
 propagate through the network during the vote diffusion period $L_\text{diff}$
@@ -1829,13 +1828,14 @@ transaction loads, and inject transaction from the 60th through 960th slots of
 the simulation; the simulation continues until the 1500th slot, so that the
 effects of clearing the memory pool are apparent.
 
-The simulation is based on the "stake-based truncation" committee
-selection algorithm (known as 'top-stake-fraction' in the simulator
-configuration).  With the stake distribution in the `mini-mainnet`
-topology this results in a committee size of 208, less than the ideal
-size.  We therefore also ran it with a 1500 `midi-mainnet`, derived
-similarly, which produces a committee size of 448.  The results of all
-these tests are documented in the [2026w18 analysis][2026w18].
+The simulation is based on the "stake-based truncation" committee selection
+algorithm (known as 'top-stake-fraction' in the simulator configuration). With
+the stake distribution in the `mini-mainnet` topology this results in a
+committee size of 208, less than the ideal size. We therefore also ran it with a
+1500 `midi-mainnet`, derived similarly, which produces a committee size of 448 —
+both lower than the ~916 voters implied by the $\sigma_c = 0.99$ default in
+[Table 7](#table-7) on mainnet stake. The results of all these tests are
+documented in the [2026w18 analysis][2026w18].
 
 The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
@@ -2473,13 +2473,13 @@ the [Protocol Security](#protocol-security) section and
 
 #### Voting committee selection
 
-A stake cutoff is required: allowing every registered SPO to vote ("Everyone votes")
-leaves the committee size unbounded and vulnerable to an adversary registering
-pools to inflate vote traffic. Moreover, under realistic Pareto-distributed
-stake the marginal security gain of including additional small pools diminishes
-rapidly: on mainnet at epoch 612, 916 pools already cover 99% of active stake
-while the remaining ~2,000 pools share ~1%. A cumulative-stake threshold
-($\sigma_c$) captures this naturally.
+A stake cutoff is required: allowing every registered SPO to vote ("Everyone
+votes") leaves the committee size unbounded and vulnerable to an adversary
+registering pools to inflate vote traffic. Moreover, under realistic
+Pareto-distributed stake the marginal security gain of including additional
+small pools diminishes rapidly: on mainnet at epoch 612, 916 pools already cover
+99% of active stake while the remaining ~2,000 pools share ~1%. A
+cumulative-stake threshold ($\sigma_c$) captures this naturally.
 
 Given a stake cutoff, two committee-selection schemes were seriously considered:
 **stake-based truncation** (the scheme specified above) and **wFA^LS** (weighted
@@ -2526,6 +2526,14 @@ stake data.)
   generalize across schemes (the cumulative-stake / maximum-error parameter
   proposed here does). Locking in stake-based truncation now does not foreclose
   future revisitation if simulation or operational data warrant it.
+
+The adaptive-security argument above is contingent on BLS key rotation
+(Appendix A requirement 2). The on-chain mechanism for registering rotations
+— likely an extension of the existing pool-registration certificate path with
+epoch-boundary activation — is left to a follow-up PR amending this CIP.
+Until that mechanism is specified, the static-vs-adaptive distinction
+collapses for *all* schemes considered here (stake-based truncation, wFA^LS,
+and All-vote alike), so the relative comparison above is unaffected.
 
 **wFA^IID as a forward-looking option.** A variant **wFA^IID** (Fait Accompli
 with IID stake-proportional sampling for non-persistent seats) is recorded here
@@ -2683,11 +2691,13 @@ The proposal will be considered active once the following criteria are met:
 - [ ] Protocol performance validated through load tests in a representative
       environment.
 - [ ] Required changes are documented in an implementation-independent way via
-      the
-      [Cardano blueprint](https://cardano-scaling.github.io/cardano-blueprint/)
-      including conformance tests.
+      the [Cardano
+      blueprint](https://cardano-scaling.github.io/cardano-blueprint/) including
+      conformance tests.
 - [ ] Formal specification of the consensus and ledger changes is available.
 - [ ] ΔQSD model available for Leios parameter selection.
+- [ ] BLS key rotation mechanism specified in this CIP — see Appendix A
+      requirement 2.
 - [ ] Community agreement on initial Leios protocol parameters.
 - [ ] A peer-reviewed implementation of a Leios-enabled node is available.
 - [ ] Successful operation with open participation in testnet environments over
@@ -2910,8 +2920,6 @@ usual mechanisms of governing a hard-fork will be employed.
 
 <!-- Footnotes -->
 
-[^fasort]: The Fait Accompli sortition scheme
-
 [^2]: Leios: Dynamic Availability for Blockchain Sharding (2025)
 
 [^leioscrypto]: Leios cryptography prototype implementation
@@ -3082,32 +3090,27 @@ Certificates**</a>
 
 ```cddl
 leios_certificate =
-  [ election_id              : election_id
-  , endorser_block_hash      : hash32
-  , persistent_voters        : [* persistent_voter_id]
-  , nonpersistent_voters     : {* pool_id => leios_bls_signature}
-  , aggregated_vote_sig      : leios_bls_signature
-  ]
-
-leios_vote = persistent_vote / non_persistent_vote
-
-persistent_vote =
-  [ 0
-  , election_id
-  , persistent_voter_id
+  [ slot_no
   , endorser_block_hash
-  , vote_signature : leios_bls_signature
+  , signers               : bytes          ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
+  , aggregated_signature  : leios_bls_signature
   ]
 
-non_persistent_vote =
-  [ 1
-  , election_id
-  , pool_id
-  , eligibility_signature : leios_bls_signature
+leios_vote =
+  [ slot_no
   , endorser_block_hash
-  , vote_signature : leios_bls_signature
+  , voter_id             : uint           ; index into the epoch's stake-based committee
+  , vote_signature       : leios_bls_signature
   ]
+  
+endorser_block_hash = hash32
 ```
+
+The `signers` bitfield is `⌈N/8⌉` bytes where `N` is the committee size for the
+epoch in which the announcing RB was produced. Both the committee and `N` are
+derived deterministically from the active stake distribution (see [Committee
+Selection](#committee-selection)), so no per-vote eligibility proof is carried
+in either the vote or the certificate.
 
 Leios uses **BLS12-381 MinSig** (small signature, large verification key):
 
@@ -3115,10 +3118,13 @@ Leios uses **BLS12-381 MinSig** (small signature, large verification key):
 - Signature: compressed G1 = 48 bytes
 - Proof-of-possession: compressed G1 = 48 bytes
 
-MinSig is chosen because:
-
-- Certificate size is ~8 kB vs >12 kB for MinPk
-- Network propagation and storage are significantly improved
+MinSig is chosen because vote traffic — not certificate size — dominates the
+on-wire cost of the voting layer once the certificate collapses to a single
+aggregated signature. The single signature in a certificate is 48 B under MinSig
+vs 96 B under MinPk; an individual vote is 48 B + overhead vs 96 B + overhead.
+Verification keys are referenced indirectly through the committee bitfield
+rather than carried per-vote, so MinSig's larger 96 B keys do not appear on the
+wire at vote time.
 
 ```cddl
 ; BLS12-381 MinSig encodings for Leios
