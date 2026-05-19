@@ -1,6 +1,6 @@
 ---
-CPS: 31
-Title: Urgency Signalling
+CPS: "?"
+Title: Prioritising Urgent Transactions
 Category: Consensus
 Status: Open
 Authors:
@@ -129,4 +129,4 @@ What MEV opportunities are created or amplified by public urgency signals?
 
 ## Copyright
 
-This CPS is licensed under CC-BY-4.0.
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
