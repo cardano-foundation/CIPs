@@ -1835,8 +1835,7 @@ configuration).  With the stake distribution in the `mini-mainnet`
 topology this results in a committee size of 208, less than the ideal
 size.  We therefore also ran it with a 1500 `midi-mainnet`, derived
 similarly, which produces a committee size of 448.  The results of all
-these tests are documented in the [2026w18
-analysis](https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18).
+these tests are documented in the [2026w18 analysis][2026w18].
 
 The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
@@ -2551,8 +2550,7 @@ identically.  To push the committee size to its limits, we also simulated an
 'everyone votes' mode - literally everyone, even relays - giving a committee
 size of 750 and 1500 respectively.  Even then, the protocol performed as
 expected, showing that committee size is not a significant factor in performance.
-Full results are available in the [2026w18
-analysis](https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18).
+Full results are available in the [2026w18 analysis][2026w18].
 
 #### Transaction References in Endorser Blocks
 
@@ -2886,6 +2884,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [timings]:
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/analysis/timings/ReadMe.ipynb
   "Analysis of mainnet transaction validation times"
+[2026w18]:
+  https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18
+  "Multiple committee selection methods across mini-mainnet (750 nodes) and midi-mainnet (1500 nodes)"
 
 <!-- External resources -->
 
