@@ -46,7 +46,8 @@ The proposed solution is described in detail below.
 This specification proposes to create `3` new mini-protocols in the Cardano network layer:
 
 - `node-2-node`:
-  - [**Message Submission mini-protocol**](#Message-Submission-mini-protocol): Diffusion of the messages on the Cardano network.
+  - [**Message Submission V2 mini-protocol**](#Message-Submission-v2-mini-protocol): Diffusion of messages on the Cardano network (version 2).
+  - [**Message Submission V1 mini-protocol**](#Message-Submission-v1-mini-protocol): Diffusion of messages on the Cardano network (version 1).
 - `node-2-client`:
   - [**Local Message Submission mini-protocol**](#Local-Message-Submission-mini-protocol): Local submission of a message to be diffused by the Cardano network.
   - [**Local Message Notification mini-protocol**](#Local-Message-Notification-mini-protocol): Local notification of a message received from the Cardano network.
@@ -71,12 +72,122 @@ The node to node message submission protocol is used to transfer messages betwee
 > [!NOTE]
 > There exists a local message submission protocol which is used when the server trusts a local client as described in the [following section](#Local-Message-Submission-mini-protocol).
 
-#### State machine
+#### Version differences
+
+The Message Submission V2 mini-protocol introduces the following improvements over V1:
+
+- **Simplified State Machine**: V2 eliminates the `StInit` state present in V1, reducing protocol complexity. This is possible because V2 reverses the agency model compared to V1.
+
+- **Reversed Agency Model**: In V1, the outbound side has agency in the `StInit` state and initiates the protocol with `MsgInit`. In V2, the inbound side has agency in the `StIdle` state and can immediately start requesting messages without requiring an initialization message.
+
+- **Reduced Message Types**: V2 eliminates the `MsgInit` message.
+
+- **Termination Agency**: In V1, the outbound side terminates the protocol with `MsgDone`. In V2, the inbound side has the agency to terminate the protocol with `MsgDone`.
+
+#### Message Submission V2 mini-protocol
+
+##### State machine
+
+| Agency                   |                                                           |
+| ------------------------ | --------------------------------------------------------- |
+| Outbound side has Agency | StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages |
+| Inbound side has Agency  | StIdle                                                    |
+
+```mermaid
+stateDiagram-v2
+
+  classDef White fill:white,stroke:white
+  classDef Black fill:white,stroke:black
+  classDef Blue fill:white,stroke:blue
+  classDef Green fill:white,stroke:green
+
+  start:::White --> StIdle:::Green
+  StIdle:::Green --> StMessageIdsBlocking:::Blue : MsgRequestMessageIdsBlocking
+  StMessageIdsBlocking:::Blue --> StIdle:::Green : MsgReplyMessageIds
+  StIdle:::Green --> StMessageIdsNonBlocking:::Blue : MsgRequestMessageIdsNonBlocking
+  StMessageIdsNonBlocking:::Blue --> StIdle:::Green : MsgReplyMessageIds
+  StIdle:::Green --> StMessages:::Blue : MsgRequestMessages
+  StMessages:::Blue --> StIdle:::Green : MsgReplyMessages
+  StIdle:::Green --> StDone:::Black : MsgDone
+
+```
+
+##### Protocol messages
+
+- **MsgRequestMessageIdsNonBlocking(ack,req)**: The inbound side asks for new message ids and acknowledges old ids. The outbound side immediately replies (possible with an empty list).
+- **MsgRequestMessageIdsBlocking(ack,req)**: The inbound side asks for new messages ids and acknowledges old ids. The outbound side will block until new messages are available.
+- **MsgReplyMessageIds([(id,size)])**: The outbound side replies with a list of available messages. The list contains pairs of message ids and the corresponding size of the message in bytes. In the blocking case the reply is guaranteed to contain at least one message. In the non-blocking case, the reply may contain an empty list.
+- **MsgRequestMessages([id])**: The inbound side requests messages by sending a list of message-ids.
+- **MsgReplyMessages([messages])**: The outbound side replies with a list messages.
+- **MsgDone**: The inbound side terminates the mini-protocol.
+
+##### Transition table
+
+| From state              | Message                         | Parameters  | To State                |
+| ----------------------- | ------------------------------- | ----------- | ----------------------- |
+| StIdle                  | MsgRequestMessageIdsBlocking    | ack,req     | StMessageIdsBlocking    |
+| StMessageIdsBlocking    | MsgReplyMessageIds              | [(id,size)] | StIdle                  |
+| StIdle                  | MsgRequestMessageIdsNonBlocking | ack,req     | StMessageIdsNonBlocking |
+| StMessageIdsNonBlocking | MsgReplyMessageIds              | [(id,size)] | StIdle                  |
+| StIdle                  | MsgRequestMessages              | [id]        | StMessages              |
+| StMessages              | MsgReplyMessages                | [messages]  | StIdle                  |
+| StIdle                  | MsgDone                         |             | StDone                  |
+
+##### CDDL encoding specification
+
+```cddl
+messageSubmissionMessage
+  = msgRequestMessageIds
+  / msgReplyMessageIds
+  / msgRequestMessages
+  / msgReplyMessages
+  / msgDone
+
+msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
+msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
+msgRequestMessages   = [3, messageIdList ]
+msgReplyMessages     = [4, messageList ]
+msgDone              = [5, ]
+
+isBlocking = false / true
+messageCount = word16
+messageId = bstr .size 32
+messageBody = bstr
+messageIdAndSize = [ messageId, messageSizeInBytes ]
+messageIdList = [ * messageId ]
+messageList = [ * message ]
+messageSizeInBytes = word32
+kesSignature = bstr
+kesPeriod = word32
+operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
+coldVerificationKey = bstr .size 32
+expiresAt = word32
+
+messagePayload = [
+  messageBody
+  , kesPeriod
+  , expiresAt
+]
+message = [
+  messageId
+  , messagePayload
+  , kesSignature
+  , operationalCertificate
+  , coldVerificationKey
+]
+```
+
+> [!NOTE]
+> Only indefinite-length CBOR lists of `messageIdAndSize`, `messageId` and `message` are supported inside `msgReplyMessageIds`, `msgRequestMessages` and `msgReplyMessages`.
+
+#### Message Submission V1 mini-protocol
+
+##### State machine
 
 | Agency                   |                                                                   |
 | ------------------------ | ----------------------------------------------------------------- |
 | Outbound side has Agency | StInit, StMessageIdsNonBlocking, StMessageIdsBlocking, StMessages |
-| Inbound side has Agency  | StIdle, StDone                                                    |
+| Inbound side has Agency  | StIdle                                                            |
 
 ```mermaid
 stateDiagram-v2
@@ -139,12 +250,12 @@ msgInit              = [0]
 msgRequestMessageIds = [1, isBlocking, messageCount, messageCount]
 msgReplyMessageIds   = [2, [ *messageIdAndSize ] ]
 msgRequestMessages   = [3, messageIdList ]
-msgReplyMessages     = [4, ]
+msgReplyMessages     = [4, messageList ]
 msgDone              = [5, ]
 
 isBlocking = false / true
 messageCount = word16
-messageId = bstr
+messageId = bstr .size 32
 messageBody = bstr
 messageIdAndSize = [ messageId, messageSizeInBytes ]
 messageIdList = [ * messageId ]
@@ -157,13 +268,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -182,7 +293,7 @@ The mini-protocol is based on two pull-based operations:
 - the message consumer asks for message ids,
 - and uses these ids to request a batch of messages (which it has not received yet)
 
-The outbound side is responsible for initiating the mini-protocol with a peer node, but the inbound side (i.e. the other node) is the one who asks for information.
+In version 1, the outbound side is responsible for initiating the mini-protocol with a peer node, but the inbound side (i.e. the other node) is the one who asks for information.
 
 The outbound side maintains a limited size FIFO queue of outstanding messages for each of the inbound sides it is connected to, so does the inbound side with a mirror FIFO queue of message ids:
 
@@ -241,6 +352,31 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 | 2 min       | 26 MB       | 62 MB       |
 | 5 min       | 11 MB       | 25 MB       |
 | 10 min      | 6 MB        | 13 MB       |
+
+#### Message id enforcement
+
+##### Message id format
+
+The `messageId` of a message must follow a strict deterministic format. This guarantees uniqueness, prevents id collisions or spoofing and allows any node to independently recompute and verify the id of a received message.
+
+The `messageId` is the `Blake2b-256` hash of the CBOR encoded payload part of the message (which is signed by the KES keys as explained in the [Message authentication mechanism](#Message-authentication-mechanism) section):
+
+```
+messageId = Blake2b-256(cbor(messagePayload))
+```
+
+Upon reception of a message, a node must recompute the `messageId` using the formula above and compare it to the announced `messageId` in the message payload. If they do not match, the message is considered as invalid, which is a protocol violation.
+
+##### Golden vectors
+
+Implementations should validate their `messageId` computation against the following vector:
+
+| Field                | Value                                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `messageBody`        | `[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]`                                                                                                                        |
+| `kesPeriod`          | `123`                                                                                                                                                    |
+| `expiresAt`          | `123456`                                                                                                                                                 |
+| Expected `messageId` | `[202, 230, 133, 93, 29, 204, 161, 252, 87, 183, 156, 101, 193, 251, 172, 245, 171, 98,179, 213, 232, 216, 239, 9, 94, 155, 194, 226, 246, 17, 50, 185]` |
 
 #### Protocol authentication
 
@@ -368,7 +504,7 @@ For a total of `3,000` SPOs sending messages, the extra networking cost incurred
 
 ##### Sybil attack
 
-In this attack, a malicious sender would attempt to create multiple identities impersonating SPOs. This attack is completely mitigated by the [Message authentication mechanism](#Message-authentication-mechanism) as only active SPO on the Cardano chain can be authenticated and send messages. This would be considered as a protocol violation and the malicous peer would be disconnected.
+In this attack, a malicious sender would attempt to create multiple identities impersonating SPOs. This attack is completely mitigated by the [Message authentication mechanism](#Message-authentication-mechanism) as only active SPO on the Cardano chain can be authenticated and send messages. This would be considered as a protocol violation and the malicious peer would be disconnected.
 
 ##### Equivocation
 
@@ -381,13 +517,16 @@ In the specific case of Mithril, the individual signature is unique so there wil
 
 ##### DoS attack
 
-In this attack, a malicous SPO would try to flood the network by sending many messages at once. In that case, the network layer could detect that the throughput of messages originating from a SPO is above a threshold and consider it as a protocol violation, thus disconnecting the malicous peer. If a peer asks for N messages and receives more than N messages, then it would also be considered as a protocol violation. Also, the way mini-protocols are implemented allows to set a maximum message size.
+In this attack, a malicious SPO would try to flood the network by sending many messages at once. In that case, the network layer could detect that the throughput of messages originating from a SPO is above a threshold and consider it as a protocol violation, thus disconnecting the malicious peer. If a peer asks for N messages and receives more than N messages, then it would also be considered as a protocol violation. Also, the way mini-protocols are implemented allows to set a maximum message size.
 
 #### Network node handshaking
 
-A standalone network node will use its own `handshake`. It can introduce its own protocol parameters, but quite likely it will start with `NodeToNodeVersionData`:
+A standalone network node will use its own `handshake`. It can introduce its own protocol parameters, but quite likely it will start with `NodeToNodeVersionData` tied to `NodeToNodeVersion`:
 
 ```hs
+data NodeToNodeVersion = NodeToNodeV_1 | NodeToNodeV_2
+  deriving (Eq, Ord, Show)
+
 data NodeToNodeVersionData = NodeToNodeVersionData
   { networkMagic  :: !NetworkMagic
   , diffusionMode :: !DiffusionMode
@@ -415,10 +554,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                |
-| ----------------- | -------------- |
-| Client has Agency | StIdle         |
-| Server has Agency | StBusy, StDone |
+| Agency            |        |
+| ----------------- | ------ |
+| Client has Agency | StIdle |
+| Server has Agency | StBusy |
 
 ```mermaid
 stateDiagram-v2
@@ -476,7 +615,7 @@ alreadyReceived = [1]
 expired         = [2]
 other           = [3, tstr]
 
-messageId    = bstr
+messageId    = bstr .size 32
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
@@ -485,13 +624,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -512,10 +651,10 @@ The protocol follows a simple request-response pattern:
 
 #### State machine
 
-| Agency            |                                          |
-| ----------------- | ---------------------------------------- |
-| Client has Agency | StIdle                                   |
-| Server has Agency | StBusyNonBlocking,StBusyBlocking, StDone |
+| Agency            |                                   |
+| ----------------- | --------------------------------- |
+| Client has Agency | StIdle                            |
+| Server has Agency | StBusyNonBlocking, StBusyBlocking |
 
 ```mermaid
 stateDiagram-v2
@@ -569,7 +708,7 @@ msgReplyMessagesNonBlocking = [1, [* message], hasMore]
 msgReplyMessagesBlocking    = [2, [+ message]]
 msgClientDone               = [3]
 
-messageId    = bstr
+messageId    = bstr .size 32
 messageBody  = bstr
 kesSignature = bstr
 kesPeriod    = word64
@@ -578,13 +717,13 @@ coldVerificationKey = bstr .size 32
 expiresAt = word32
 
 messagePayload = [
-  messageId
-  , messageBody
+  messageBody
   , kesPeriod
   , expiresAt
 ]
 message = [
-  messagePayload
+  messageId
+  , messagePayload
   , kesSignature
   , operationalCertificate
   , coldVerificationKey
@@ -611,7 +750,6 @@ In order to identify messages belonging to a specific protocol, each DMQ network
 #### For Mithril
 
 - Mithril requires strong network foundations to support interactions between its various nodes:
-
   - Mithril needs to exist in a decentralized context where multiple aggregators can operate seamlessly and independently.
   - Mithril needs participation of all or nearly all of the Cardano network SPOs to provide maximal security to the multi-signatures embedded in the certificates.
   - Creating a separate network would entail significant costs and efforts (there are more than 3,000 SPOs which would need to be connected with resilient and secure network, and much more passive nodes).
@@ -622,7 +760,6 @@ In order to identify messages belonging to a specific protocol, each DMQ network
 #### For Cardano
 
 - Why would it be great for Cardano to support a decentralized message queue with its network?
-
   - This is a required feature to make the Cardano ecosystem scalable.
   - The design is versatile enough to support present and future use cases.
 
