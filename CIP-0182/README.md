@@ -7,7 +7,7 @@ Authors:
   - Alex Moser <alexander.moser@cardanofoundation.org>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/XXXX
+  - https://github.com/cardano-foundation/CIPs/pull/1164
 Created: 2026-03-18
 License: CC-BY-4.0
 ---
