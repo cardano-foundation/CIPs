@@ -63,6 +63,8 @@ jobs:
       - name: Validate CPS files
         if: steps.get-files.outputs.has_files == 'true'
         run: |
+          # Disable pathname expansion
+          set -f
           FILES="${{ steps.get-files.outputs.files }}"
           echo "Validating CPS files: $FILES"
           python3 .github/scripts/validate-cps.py $FILES
