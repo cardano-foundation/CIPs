@@ -3,7 +3,7 @@ CPS: ????
 Title: Coordination of Hierarchical Handle Namespace
 Status: Open
 Category: Tokens
-Authors:
+Author:
   - Slavcho King <support@getmyid.today>
 Created: 2026-05-22
 License: CC-BY-4.0
