@@ -8,7 +8,7 @@ Authors:
 Implementors:
     - Marius Georgescu <georgescumarius@live.com>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
+    - https://github.com/cardano-foundation/CIPs/pull/1200
 Created: 2026-05-19
 License: CC-BY-4.0
 ---
