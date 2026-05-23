@@ -30,7 +30,7 @@ independently with no shared governance framework and no defined
 hierarchy. Each platform independently decides which suffixes to use,
 which Policy IDs to mint under, and how resolution works.
 
-### 2. Namespace conflicts cannot be prevented or resolved
+### Namespace conflicts cannot be prevented or resolved
 
 Nothing in the current Cardano ecosystem prevents any naming platform
 from minting handles with any suffix at any time. A new entrant who
