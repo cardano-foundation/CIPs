@@ -3,7 +3,7 @@ CPS: ????
 Title: Coordination of Hierarchical Handle Namespace
 Category: Tokens
 Status: Open
-Author:
+Authors:
   - Slavcho King <support@getmyid.today>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1199
