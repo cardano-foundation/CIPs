@@ -80,7 +80,7 @@ A user holds `john.smith.did` minted by Platform A. Another user holds
 Wallets need a deterministic rule to resolve the correct address.
 Currently no such rule exists.
 
-### UC-2: Open participation for new providers
+### Open participation for new providers
 
 An independent developer builds a handle platform, proposes a CIP,
 and invests in building a user base — only to have another platform
