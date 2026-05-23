@@ -95,7 +95,7 @@ from that platform need assurance that their handles will continue to
 resolve. A governance framework with defined standards protects users
 from platform-specific failures.
 
-### UC-4: Reference implementation recognition
+### Reference implementation recognition
 
 An independent developer who identifies a governance gap, proposes a
 framework, builds a live working implementation, and goes through the
