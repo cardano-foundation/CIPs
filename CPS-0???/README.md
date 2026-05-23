@@ -45,7 +45,7 @@ a speculative handle `$did` was minted immediately after the `.did`
 namespace was discussed publicly — demonstrating that namespace
 squatting is trivially easy with no governance in place.
 
-### 3. Wallet resolution is ambiguous across multiple providers
+### Wallet resolution is ambiguous across multiple providers
 
 When multiple platforms mint handles with the same suffix under
 different Policy IDs, wallets have no deterministic rule for
