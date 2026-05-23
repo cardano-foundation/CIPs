@@ -170,8 +170,6 @@ A solution SHOULD:
 
 ## References
 
-- [CIP PR #1187 — GetMyID Handle Standard](https://github.com/cardano-foundation/CIPs/pull/1187)
-- [CIP-0001 — CIP Process](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md)
 - [W3C Decentralized Identifier Specification](https://www.w3.org/TR/did-core/)
 - [GetMyID Platform](https://getmyid.today)
 - [ADA Handle](https://handle.me)
