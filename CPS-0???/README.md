@@ -54,7 +54,7 @@ first, typically the incumbent. Users who purchased handles from a
 newer platform may find their handles do not resolve correctly in
 popular wallets, through no fault of their own.
 
-### 4. No open participation framework exists
+### No open participation framework exists
 
 ADA Handle achieved widespread wallet integration and community
 adoption without contributing any open specification or CIP to the
