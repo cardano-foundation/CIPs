@@ -73,7 +73,7 @@ governance mechanism, any standard can be bypassed by any participant.
 
 ## Use Cases
 
-### UC-1: Unambiguous wallet resolution
+### Unambiguous wallet resolution
 
 A user holds `john.smith.did` minted by Platform A. Another user holds
 `john.smith.did` minted by Platform B under a different Policy ID.
