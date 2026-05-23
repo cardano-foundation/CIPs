@@ -23,7 +23,7 @@ developers who invest in building new naming solutions.
 
 ## Problem
 
-### 1. No open standard exists for handle namespace hierarchy
+### No open standard exists for handle namespace hierarchy
 
 Cardano currently has multiple handle and naming services operating
 independently with no shared governance framework and no defined
