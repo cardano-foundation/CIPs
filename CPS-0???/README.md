@@ -64,7 +64,7 @@ developers without institutional funding or existing wallet
 relationships face structural disadvantages that a governance framework
 would eliminate.
 
-### 5. The CIP process alone cannot enforce compliance
+### The CIP process alone cannot enforce compliance
 
 As acknowledged by the CIP editors, participation in the CIP process
 is entirely voluntary. A CIP or CPS cannot prevent any entity from
