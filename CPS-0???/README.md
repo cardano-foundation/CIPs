@@ -88,7 +88,7 @@ claim the same namespace with no recourse. A governance framework
 would define the process for namespace registration and protect new
 entrants who participate in good faith.
 
-### UC-3: User protection across platform changes
+### User protection across platform changes
 
 If a naming platform shuts down or is acquired, users holding handles
 from that platform need assurance that their handles will continue to
