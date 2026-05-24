@@ -7,8 +7,8 @@ Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/34
-  - https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/34
+  - Cardano Forum: https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
 Created: 2020-10-31
 License: CC-BY-4.0
 ---

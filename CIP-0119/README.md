@@ -7,9 +7,9 @@ Authors:
     - Thomas Upfield <thomas.upfield@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/788
-    - https://vimeo.com/912374177/0e9299fb5d?share=copy
-    - https://vimeo.com/915297122/c39f4a739b?share=copy
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/788
+    - Video: https://vimeo.com/912374177/0e9299fb5d?share=copy
+    - Video: https://vimeo.com/915297122/c39f4a739b?share=copy
 Created: 2024-02-07
 License: CC-BY-4.0
 ---

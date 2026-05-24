@@ -8,8 +8,10 @@ Authors:
 Implementors:
     - Vladimir Kalnitsky <klntsky@gmail.com>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/742
-    - https://github.com/cardano-foundation/CIPs/pull/766
+    - CPS-0011? | Universal JSON Encoding for Domain Types: https://github.com/cardano-foundation/CIPs/pull/742
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/766
+Solution To:
+    - CPS-0011
 Created: 2024-02-22
 License: CC-BY-4.0
 ---

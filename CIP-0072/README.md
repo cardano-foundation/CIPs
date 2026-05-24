@@ -9,7 +9,7 @@ Authors:
   - Daniel Main <daniel.main@iohk.io>
 Implementors: ["Lace Wallet dApp Store", "DappsOnCardano dApp Store"]
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/355
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/355
 Created: 2022-10-18
 License: CC-BY-4.0
 ---

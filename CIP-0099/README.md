@@ -11,7 +11,7 @@ Implementors:
 - VESPR Wallet <https://www.vespr.xyz/>
 - Yoroi Wallet <https://yoroi-wallet.com/>
 Discussions:
-- https://github.com/cardano-foundation/CIPs/pull/546
+- Original PR: https://github.com/cardano-foundation/CIPs/pull/546
 Created: 2023-06-20
 License: CC-BY-4.0
 ---

@@ -7,7 +7,7 @@ Authors:
     - Niels Mündler <n.muendler@posteo.de>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/459
+    - Original PR: https://github.com/cardano-foundation/cips/pull/459
 Created: 2023-02-05
 License: CC-BY-4.0
 ---

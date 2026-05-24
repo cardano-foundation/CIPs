@@ -9,7 +9,7 @@ Authors:
   - Jan Mazak <jan.mazak@vacuumlabs.com>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/107
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/107
 Created: 2021-06-15
 License: CC-BY-4.0
 ---

@@ -9,9 +9,9 @@ Authors:
     - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/780
-    - https://github.com/cardano-foundation/CIPs/pull/862
-    - https://github.com/cardano-foundation/CIPs/pull/880
+    - CIP-0118? | Validation zones: https://github.com/cardano-foundation/CIPs/pull/780
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/862
+    - CIP-0131? | Transaction swaps: https://github.com/cardano-foundation/CIPs/pull/880
 Created: 2024-03-11
 License: CC-BY-4.0
 ---

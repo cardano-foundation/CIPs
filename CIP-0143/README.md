@@ -7,8 +7,8 @@ Authors:
     - Philip DiSarro <philipdisarro@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/444
-    - https://github.com/cardano-foundation/CIPs/pull/944
+    - CIP-0113? | Programmable token-like assets: https://github.com/cardano-foundation/CIPs/pull/444
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/944
 Solution To:
     - CPS-0003
 Created: 2024-12-03

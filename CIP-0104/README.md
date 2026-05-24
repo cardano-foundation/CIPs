@@ -11,7 +11,7 @@ Implementors:
 - newm-chain <https://newm.io/>
 - Gero <https://gerowallet.io/>
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/588
+    - Original PR: https://github.com/cardano-foundation/cips/pull/588
 Created: 2023-09-03
 License: CC-BY-4.0
 ---

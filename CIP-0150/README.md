@@ -7,7 +7,7 @@ Authors:
   - Alex Sierkov <alex.sierkov@gmail.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/993
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/993
 Created: 2025-02-24
 License: CC-BY-4.0
 ---

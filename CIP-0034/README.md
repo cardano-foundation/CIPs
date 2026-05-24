@@ -7,9 +7,9 @@ Authors:
   - Sebastien Guillemot <seba@dcspark.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/158
-  - https://github.com/cardano-foundation/CIPs/pull/332
-  - https://github.com/cardano-foundation/CIPs/pull/412
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/158
+  - CIP-0034 | Update registry.json to reflect Preview and Pre-Production test networks: https://github.com/cardano-foundation/CIPs/pull/332
+  - CIP-0034 | Include legacy testnet: https://github.com/cardano-foundation/CIPs/pull/412
 Created: 2021-11-24
 License: CC-BY-4.0
 ---

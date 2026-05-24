@@ -7,7 +7,7 @@ Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []
 Discussions:
-    - https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
+    - Cardano Forum: https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
 Created: 2022-01-03
 License: CC-BY-4.0
 ---

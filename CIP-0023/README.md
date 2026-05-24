@@ -8,8 +8,8 @@ Authors:
   - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
- - https://forum.cardano.org/t/fair-min-fees-cip/47534
- - https://github.com/cardano-foundation/CIPs/pull/66
+ - Cardano Forum: https://forum.cardano.org/t/fair-min-fees-cip/47534
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/66
 Created: 2021-02-04
 License: CC-BY-4.0
 ---

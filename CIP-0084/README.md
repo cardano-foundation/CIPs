@@ -7,7 +7,7 @@ Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/456
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/456
 Created: 2023-01-30
 License: CC-BY-4.0
 ---

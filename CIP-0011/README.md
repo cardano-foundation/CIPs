@@ -8,9 +8,9 @@ Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/33
-  - https://forum.cardano.org/t/staking-key-chain-for-hd-wallets/41857
-  - https://github.com/cardano-foundation/CIPs/pull/37
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/33
+  - Cardano Forum: https://forum.cardano.org/t/staking-key-chain-for-hd-wallets/41857
+  - Staking key chain for HD wallets: https://github.com/cardano-foundation/CIPs/pull/37
 Created: 2020-11-04
 License: CC-BY-4.0
 ---

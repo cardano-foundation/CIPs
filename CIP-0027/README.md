@@ -8,8 +8,8 @@ Authors:
   - TheRealAdamDean <adam@crypto2099.io>
 Implementors: N/A
 Discussions:
-  - https://forum.cardano.org/t/cip-royalties/68599
-  - https://github.com/cardano-foundation/CIPs/pull/116
+  - Cardano Forum: https://forum.cardano.org/t/cip-royalties/68599
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/116
 Created: 2021-08-29
 License: Apache-2.0
 ---

@@ -11,9 +11,9 @@ Implementors:
   - SundaeSwap governance <https://governance.sundaeswap.finance/>
   - Emurgo <https://www.emurgo.io/>
 Discussions:
-  - https://github.com/Emurgo/EmIPs/pull/5
-  - https://forum.cardano.org/t/message-signing-specification/41032
-  - https://cardano.ideascale.com/a/dtd/Create-message-signing-standard/323158-48088
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/42
+  - EmIPs PR: https://github.com/Emurgo/EmIPs/pull/5
+  - Cardano Forum: https://forum.cardano.org/t/message-signing-specification/41032
 Created: 2020-09-28
 License: CC-BY-4.0
 ---

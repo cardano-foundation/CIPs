@@ -9,7 +9,7 @@ Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
 Proposed Solutions: []
 Discussions:
-    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/638
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/638
 Created: 2023-12-14
 License: CC-BY-4.0
 ---

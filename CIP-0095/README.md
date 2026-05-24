@@ -18,9 +18,9 @@ Implementors:
   - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/509
-  - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
-  - https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309
+  - Original PR: https://github.com/cardano-foundation/cips/pull/509
+  - Discord: https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
+  - Discord: https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309
 Created: 2022-02-24
 License: CC-BY-4.0
 ---

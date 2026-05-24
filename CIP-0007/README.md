@@ -7,9 +7,9 @@ Authors:
   - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/12
-  - https://forum.cardano.org/t/protocol-parameters-pledge-and-sybil-resistance/35100
-  - https://github.com/input-output-hk/cardano-node/issues/1518
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/12
+  - Cardano Forum: https://forum.cardano.org/t/protocol-parameters-pledge-and-sybil-resistance/35100
+  - GitHub Issue: https://github.com/input-output-hk/cardano-node/issues/1518
 Created: 2020-08-11
 License: Apache-2.0
 ---

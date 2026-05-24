@@ -7,7 +7,7 @@ Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/83
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/83
 Created: 2020-03-18
 License: CC-BY-4.0
 ---

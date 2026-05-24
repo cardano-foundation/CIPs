@@ -16,8 +16,8 @@ Implementors:
     - Typhon <https://typhonwallet.io/>,
     - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-    - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
-    - https://github.com/cardano-foundation/cips/pulls/58
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/58
+    - Cardano Forum: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
 Created: 2020-01-05
 License: CC-BY-4.0
 ---

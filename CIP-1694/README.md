@@ -12,19 +12,19 @@ Authors:
     - Samuel Leathers <samuel.leathers@iohk.io>
 Implementors: []
 Discussions:
-    - <https://github.com/cardano-foundation/CIPs/pull/380>
-    - <https://forum.cardano.org/t/swarm-session-cip-1694/114453>
-    - <https://twitter.com/IOHK_Charles/status/1632211417221701632>
-    - <https://twitter.com/RichardMcCrackn/status/1632514347195850752>
-    - <https://twitter.com/RichardMcCrackn/status/1633135124500865024>
-    - <https://twitter.com/_KtorZ_/status/1632356766368382976>
-    - <https://twitter.com/_KtorZ_/status/1630087586193584128>
-    - <https://twitter.com/_KtorZ_/status/1631430933219012608>
-    - <https://twitter.com/technologypoet/status/1632158736985866241>
-    - <https://twitter.com/danny_cryptofay/status/1631606919071776768>
-    - <https://www.youtube.com/watch?v=2hCnmMG1__8>
-    - <https://www.youtube.com/watch?v=KiLhhOVXQOg>
-    - <https://github.com/cardano-foundation/CIPs/pull/916>
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/380
+    - Cardano Forum: https://forum.cardano.org/t/swarm-session-cip-1694/114453
+    - Twitter: https://twitter.com/IOHK_Charles/status/1632211417221701632
+    - Twitter: https://twitter.com/RichardMcCrackn/status/1632514347195850752
+    - Twitter: https://twitter.com/RichardMcCrackn/status/1633135124500865024
+    - Twitter: https://twitter.com/_KtorZ_/status/1632356766368382976
+    - Twitter: https://twitter.com/_KtorZ_/status/1630087586193584128
+    - Twitter: https://twitter.com/_KtorZ_/status/1631430933219012608
+    - Twitter: https://twitter.com/technologypoet/status/1632158736985866241
+    - Twitter: https://twitter.com/danny_cryptofay/status/1631606919071776768
+    - Video: https://www.youtube.com/watch?v=2hCnmMG1__8
+    - Video: https://www.youtube.com/watch?v=KiLhhOVXQOg
+    - CIP-1694 | SPO pre-defined voting options: https://github.com/cardano-foundation/CIPs/pull/916
 Created: 2022-11-18
 License: CC-BY-4.0
 ---

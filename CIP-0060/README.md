@@ -23,10 +23,10 @@ Implementors:
   - SoundRig <soundrig.io>
   - SickCityNFT <sickcity.xyz>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/307
-  - https://github.com/cardano-foundation/CIPs/pull/367
-  - https://github.com/cardano-foundation/CIPs/pull/502
-  - https://github.com/cardano-foundation/CIPs/pull/868
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/307
+  - CIP-0060 | Add more optional fields and update state to Active: https://github.com/cardano-foundation/CIPs/pull/367
+  - CIP-0060 | Update to v2: https://github.com/cardano-foundation/CIPs/pull/502
+  - CIP-0060 | v3 metadata restructuring: https://github.com/cardano-foundation/CIPs/pull/868
 Created: 2022-07-26
 License: CC-BY-4.0
 ---

@@ -9,10 +9,10 @@ Authors:
 Implementors:
   - Lace <https://www.lace.io/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/209
-  - https://github.com/cardano-foundation/CIPs/pull/323
-  - https://github.com/cardano-foundation/CIPs/pull/960
-  - https://github.com/cardano-foundation/CIPs/pull/972
+  - CIP-0030 | Adding optional networkId parameter to .enable: https://github.com/cardano-foundation/CIPs/pull/209
+  - CIP-0030 | Add chain id to differentiate between testnets: https://github.com/cardano-foundation/CIPs/pull/323
+  - CIP-0142? | Web-Wallet Bridge - Network Determination: https://github.com/cardano-foundation/CIPs/pull/960
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/972
 Created: 2024-01-17
 License: CC-BY-4.0
 ---

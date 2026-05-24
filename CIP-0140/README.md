@@ -12,7 +12,7 @@ Authors:
 Implementors:
   - Intersect
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/872
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/872
 Solution To:
   - CPS-0017
   - CPS-0021

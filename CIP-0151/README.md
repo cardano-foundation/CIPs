@@ -16,8 +16,8 @@ Implementors:
     -   VeriGlyph Sentinel: https://sentinel.veriglyph.io
     -   Ekklesia: https://ekklesia.vote
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/999
-    - https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/999
+    - Cardano Forum: https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
 Created: 2025-02-17
 License: CC-BY-4.0
 ---

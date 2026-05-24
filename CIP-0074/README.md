@@ -7,8 +7,8 @@ Authors:
  - Robin of Loxley <adarobinhood@tutanota.com>
 Implementors: []
 Discussions:
- - https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
- - https://github.com/cardano-foundation/CIPs/pull/358
+ - Cardano Forum: https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/358
 Created: 2022-10-17
 License: CC-BY-4.0
 ---

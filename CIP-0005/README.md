@@ -7,12 +7,12 @@ Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: N/A
 Discussions:
-  - https://forum.cardano.org/t/cip5-common-bech32-prefixes/35189
-  - https://github.com/cardano-foundation/CIPs/pull/427
-  - https://github.com/cardano-foundation/CIPs/pull/342
-  - https://github.com/cardano-foundation/CIPs/pull/251
-  - https://github.com/cardano-foundation/CIPs/pull/177
-  - https://github.com/cardano-foundation/CIPs/pull/31
+  - Cardano Forum: https://forum.cardano.org/t/cip5-common-bech32-prefixes/35189
+  - CIP-0005, CIP-0036 | Added clarity to voting key definitions: https://github.com/cardano-foundation/CIPs/pull/427
+  - CIP-0005 | Add governance vote key prefix: https://github.com/cardano-foundation/CIPs/pull/342
+  - Add reference implementation to CIP5: https://github.com/cardano-foundation/CIPs/pull/251
+  - CIP-0005 | Add prefixes for output datum hash and script data hash: https://github.com/cardano-foundation/CIPs/pull/177
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/31
 Created: 2020-05-28
 License: Apache-2.0
 ---

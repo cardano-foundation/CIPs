@@ -10,7 +10,7 @@ Implementors:
   - cardano-signer <https://github.com/gitmachtl/cardano-signer>
   - cardano-serialization-lib <https://github.com/Emurgo/cardano-serialization-lib>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/57
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/57
 Created: 2020-12-21
 License: Apache-2.0
 ---

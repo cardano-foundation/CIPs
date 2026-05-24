@@ -7,10 +7,10 @@ Authors:
   - Simon Thompson <simon.thompson@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/252
-  - https://github.com/cardano-foundation/CIPs/pull/344
-  - https://github.com/cardano-foundation/CIPs/pull/406
-  - https://github.com/cardano-foundation/CIPs/pull/560
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/252
+  - CIP-0052 | update list of auditors to include Tweag: https://github.com/cardano-foundation/CIPs/pull/344
+  - CIP-0052 | Add public keys to auditor table: https://github.com/cardano-foundation/CIPs/pull/406
+  - CIP-0052 | Add Vacuumlabs to the list of auditors: https://github.com/cardano-foundation/CIPs/pull/560
 Created: 2022-04-25
 License: CC-BY-4.0
 ---

@@ -8,8 +8,8 @@ Authors:
 Implementors:
   - Kenneth MacKenzie <kenneth.mackenzie@iohk.io>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/220
-  - https://github.com/cardano-foundation/CIPs/pull/506
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/220
+  - CIP-0381 | Adapt to Plutus bindings: https://github.com/cardano-foundation/CIPs/pull/506
 Created: 2022-02-11
 License: Apache-2.0
 ---

@@ -10,7 +10,7 @@ Authors:
 Implementors:
   - MLabs
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/250
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/250
 Created: 2022-04-27
 License: Apache-2.0
 ---

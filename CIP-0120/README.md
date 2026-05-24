@@ -9,7 +9,7 @@ Authors:
 Implementors: 
     - Danielle Stanko <danielle.stanko@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/796
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/796
 Created: 2024-03-19
 License: CC-BY-4.0
 ---

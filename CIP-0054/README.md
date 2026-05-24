@@ -8,8 +8,8 @@ Authors:
 Implementors:
   - Kieran Simkin
 Discussions:
-  - https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
-  - https://github.com/cardano-foundation/CIPs/pull/263
+  - Cardano Forum: https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/263
 Created: 2022-05-18
 License: CC-BY-4.0
 ---

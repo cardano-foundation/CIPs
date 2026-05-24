@@ -7,7 +7,7 @@ Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []
 Discussions:
-    - https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
+    - Cardano Forum: https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
 Created: 2022-10-21
 License: CC-BY-4.0
 ---

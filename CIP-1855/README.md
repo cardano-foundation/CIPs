@@ -10,8 +10,8 @@ Authors:
   - David Arnold <david.arnold@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/96
-  - https://github.com/cardano-foundation/CIPs/pull/194
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/96
+  - imp CIP-1855 complement with CIP-0005 prefixes: https://github.com/cardano-foundation/CIPs/pull/194
 Created: 2021-06-02
 License: CC-BY-4.0
 ---

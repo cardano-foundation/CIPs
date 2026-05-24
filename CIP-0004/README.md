@@ -10,8 +10,8 @@ Implementors:
   - Ruslan Dudin <ruslan@emurgo.io>
   - Sebastien Guillemot <seba@dcspark.io>
 Discussions:
-  - https://forum.cardano.org/t/cip4-wallet-checksum/32819
-  - https://github.com/cardano-foundation/CIPs/pull/4
+  - Cardano Forum: https://forum.cardano.org/t/cip4-wallet-checksum/32819
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/4
 Created: 2019-05-01
 License: Apache-2.0
 ---

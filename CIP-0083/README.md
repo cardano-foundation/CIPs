@@ -17,7 +17,7 @@ Implementors:
     - JorManager <https://bitbucket.org/muamw10/jormanager/>
     - Cardanoscan.io <https://cardanoscan.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/394
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/394
 Created: 2022-12-08
 License: CC-BY-4.0
 ---

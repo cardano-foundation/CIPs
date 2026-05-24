@@ -9,9 +9,9 @@ Authors:
 Implementors:
     - Las Safin <me@las.rs>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/283
-    - https://github.com/input-output-hk/plutus/issues/4252
-    - https://github.com/input-output-hk/plutus/pull/4733
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/283
+    - GitHub Issue: https://github.com/input-output-hk/plutus/issues/4252
+    - Implementation PR: https://github.com/input-output-hk/plutus/pull/4733
 Created: 2022-05-27
 License: Apache-2.0
 ---

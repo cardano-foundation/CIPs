@@ -8,10 +8,10 @@ Authors:
 Implementors:
     - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Discussions:
- - https://twitter.com/SmaugPool/status/1737454984147390905
- - https://twitter.com/Quantumplation/status/1737704936089985339
- - https://twitter.com/SmaugPool/status/1737814894710231161
- - https://github.com/IntersectMBO/cardano-ledger/issues/3965
+ - Twitter: https://twitter.com/SmaugPool/status/1737454984147390905
+ - Twitter: https://twitter.com/Quantumplation/status/1737704936089985339
+ - Twitter: https://twitter.com/SmaugPool/status/1737814894710231161
+ - GitHub Issue: https://github.com/IntersectMBO/cardano-ledger/issues/3965
 Created: 2023-12-20
 License: CC-BY-4.0
 ---

@@ -9,7 +9,7 @@ Authors:
   - Andre Knispel <andre.knispel@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/216
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/216
 Created: 2022-02-10
 License: CC-BY-4.0
 ---

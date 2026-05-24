@@ -7,8 +7,8 @@ Authors:
     - Jonathan Knowles <jonathan.knowles@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/2
-    - https://github.com/cardano-foundation/CIPs/issues/232
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/2
+    - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/232
 Created: 2020-05-04
 License: CC-BY-4.0
 ---

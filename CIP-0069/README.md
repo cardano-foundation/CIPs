@@ -7,7 +7,7 @@ Authors:
   - Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/321
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/321
 Created: 2022-08-23
 License: CC-BY-4.0
 ---

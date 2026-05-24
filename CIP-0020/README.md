@@ -25,8 +25,8 @@ Implementors:
     - Typhon Wallet <https://typhonwallet.io/>
     - Ledger Live <https://www.ledger.com/>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/100
-    - https://github.com/cardano-foundation/CIPs/pull/394
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/100
+    - CIP-0020 | Update with new Implementors, Screenshots: https://github.com/cardano-foundation/CIPs/pull/394
 Created: 2021-06-13
 License: CC-BY-4.0
 ---

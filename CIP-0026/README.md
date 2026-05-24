@@ -10,7 +10,7 @@ Authors:
 Implementors:
   - cardano-token-registry <https://github.com/cardano-foundation/cardano-token-registry>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/112
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/112
 Created: 2021-08-10
 License: CC-BY-4.0
 ---

@@ -14,7 +14,7 @@ Implementors:
   - João Santos Reis <joao.reis@moduscreate.com>
   - Christopher Harrison <christopher.harrison@moduscreate.com>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1083
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1083
 Created: 2025-08-18
 License: CC-BY-4.0
 ---

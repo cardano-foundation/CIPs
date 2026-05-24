@@ -10,10 +10,10 @@ Authors:
 Implementors:
   - cardano-signer <https://github.com/gitmachtl/cardano-signer>
 Discussions:
-  - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
-  - https://github.com/cardano-foundation/CIPs/pull/188
-  - https://github.com/cardano-foundation/CIPs/pull/349
-  - https://github.com/cardano-foundation/CIPs/pull/373
+  - Cardano Forum: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/188
+  - CIP-0036 | Adding the deregistration metadata format: https://github.com/cardano-foundation/CIPs/pull/349
+  - CIP-0036 | Change reward address field for Fund 10: https://github.com/cardano-foundation/CIPs/pull/373
 Created: 2021-12-06
 License: CC-BY-4.0
 ---

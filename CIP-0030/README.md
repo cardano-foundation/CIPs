@@ -16,20 +16,20 @@ Implementors:
   - RayWallet <https://raywallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/88
-  - https://github.com/cardano-foundation/CIPs/pull/148
-  - https://github.com/cardano-foundation/CIPs/pull/151
-  - https://github.com/cardano-foundation/CIPs/pull/183
-  - https://github.com/cardano-foundation/CIPs/pull/208
-  - https://github.com/cardano-foundation/CIPs/pull/323
-  - https://github.com/cardano-foundation/CIPs/issues/169
-  - https://github.com/cardano-foundation/CIPs/issues/178
-  - https://github.com/cardano-foundation/CIPs/issues/204
-  - https://github.com/cardano-foundation/CIPs/issues/253
-  - https://github.com/cardano-foundation/CIPs/issues/386
-  - https://github.com/cardano-foundation/CIPs/issues/404
-  - https://github.com/cardano-foundation/CIPs/issues/419
-  - https://github.com/cardano-foundation/CIPs/pull/446
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/88
+  - CIP-0030 | update to api.signData(): https://github.com/cardano-foundation/CIPs/pull/148
+  - CIP-0030 | Events API: https://github.com/cardano-foundation/CIPs/pull/151
+  - CIP30 experimental api section: https://github.com/cardano-foundation/CIPs/pull/183
+  - CIP-0030 | Add getCollateral function to the connector API: https://github.com/cardano-foundation/CIPs/pull/208
+  - CIP-0030 | Add chain id to differentiate between testnets: https://github.com/cardano-foundation/CIPs/pull/323
+  - CIP-0030 | Upgrade to latest format & propose version / extension scheme: https://github.com/cardano-foundation/CIPs/pull/446
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/169
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/178
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/204
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/253
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/386
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/404
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/419
 Created: 2021-04-29
 License: CC-BY-4.0
 ---

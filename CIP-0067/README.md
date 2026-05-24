@@ -8,8 +8,8 @@ Authors:
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors: N/A
 Discussions:
- - https://github.com/cardano-foundation/CIPs/pull/298
- - https://github.com/cardano-foundation/CIPs/pull/586
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/298
+ - CIP-0067, CIP-0068 | Add Clarification for Edits and Modification: https://github.com/cardano-foundation/CIPs/pull/586
 Created: 2022-07-13
 License: CC-BY-4.0
 ---

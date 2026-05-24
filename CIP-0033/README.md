@@ -9,8 +9,8 @@ Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/161
-    - https://github.com/cardano-foundation/CIPs/pull/213
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/161
+    - CIP-0033 | update to ban reference scripts in the presence of old scripts: https://github.com/cardano-foundation/CIPs/pull/213
 Created: 2021-11-29
 License: CC-BY-4.0
 ---

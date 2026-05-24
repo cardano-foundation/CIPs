@@ -8,8 +8,8 @@ Authors:
 Implementors:
     - Vacuum Labs <https://vacuumlabs.com/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/56
-  - https://forum.cardano.org/t/stake-pool-cold-keys-hd-derivation/43360
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/56
+  - Cardano Forum: https://forum.cardano.org/t/stake-pool-cold-keys-hd-derivation/43360
 Created: 2020-12-14
 License: CC-BY-4.0
 ---

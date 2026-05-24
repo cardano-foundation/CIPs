@@ -9,8 +9,8 @@ Authors:
   - Ján Hrnko <jan.hrnko@fivebinaries.com>
 Implementors: []
 Discussions:
-  - https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
-  - https://github.com/cardano-foundation/CIPs/pull/44
+  - Cardano Forum: https://forum.cardano.org/t/on-chain-stake-pool-operator-to-delegates-communication/42229
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/44
 Created: 2020-11-07
 License: CC-BY-4.0
 ---

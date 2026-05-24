@@ -11,12 +11,12 @@ Implementors:
     - Ashish Prajapati <https://cardanoscan.io/contactUs>
     - Dmytro Stashenko <https://preprod.adastat.net/about>
 Discussions:
-    - https://github.com/cardano-foundation/cips/pull/496
-    - https://github.com/cardano-foundation/cips/pull/102
-    - https://github.com/input-output-hk/cardano-node/pull/5050
-    - https://github.com/input-output-hk/cardano-node/pull/5132
-    - https://forum.cardano.org/t/entering-voltaire-on-chain-poll-for-spos/117330
-    - https://forum.cardano.org/t/entering-voltaire-poll-experiment-live-on-mainnet/117879
+    - CIP-0022 | Pool Operator Verification: https://github.com/cardano-foundation/cips/pull/496
+    - Original PR: https://github.com/cardano-foundation/cips/pull/102
+    - Implementation PR: https://github.com/input-output-hk/cardano-node/pull/5050
+    - Implementation PR: https://github.com/input-output-hk/cardano-node/pull/5132
+    - Cardano Forum: https://forum.cardano.org/t/entering-voltaire-on-chain-poll-for-spos/117330
+    - Cardano Forum: https://forum.cardano.org/t/entering-voltaire-poll-experiment-live-on-mainnet/117879
 Created: 2023-03-21
 License: CC-BY-4.0
 ---

@@ -7,7 +7,7 @@ Authors:
   - John Hughes <john.hughes@quviq.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/946
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/946
 Created: 2024-11-12
 License: CC-BY-4.0
 ---

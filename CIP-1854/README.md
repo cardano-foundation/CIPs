@@ -9,7 +9,7 @@ Authors:
 Implementors:
   - Round Table wallet
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/69
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/69
 Created: 2021-02-23
 License: CC-BY-4.0
 ---

@@ -10,10 +10,10 @@ Implementors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Sebastien Guillemot <seba@dcspark.io>
 Discussions:
-    - https://github.com/input-output-hk/implementation-decisions/pull/18
-    - https://github.com/cardano-foundation/cips/pull/33
-    - https://github.com/cardano-foundation/cips/pull/76
-    - https://github.com/cardano-foundation/cips/pull/132
+    - Implementation PR: https://github.com/input-output-hk/implementation-decisions/pull/18
+    - Original PR: https://github.com/cardano-foundation/cips/pull/33
+    - CIP-0003 clarify Trezor deviation at 24-word mnemonics: https://github.com/cardano-foundation/cips/pull/76
+    - CIP-0003: Fix Ledger algorithm and one wrong test vector: https://github.com/cardano-foundation/cips/pull/132
 Created: 2020-05-07
 License: CC-BY-4.0
 ---

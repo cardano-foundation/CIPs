@@ -7,10 +7,10 @@ Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/215
-  - https://github.com/cardano-foundation/CIPs/pull/428
-  - https://github.com/cardano-foundation/CIPs/pull/437
-  - https://github.com/cardano-foundation/CIPs/pull/484
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/215
+  - CIP-0035 | Redraft to handle Plutus Core language versions: https://github.com/cardano-foundation/CIPs/pull/428
+  - CIP-0035 | Update for new CIP-1: https://github.com/cardano-foundation/CIPs/pull/437
+  - CIP-0035 | Require proposals for new builtin types to explain how they will be (de)serialized: https://github.com/cardano-foundation/CIPs/pull/484
 Created: 2022-02-09
 License: CC-BY-4.0
 ---

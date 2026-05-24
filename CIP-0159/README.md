@@ -8,8 +8,8 @@ Authors:
     - George Flerovsky <george.flerovsky@gmail.com>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1061
-    - https://github.com/IntersectMBO/cardano-ledger/issues/5474
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1061
+    - GitHub Issue: https://github.com/IntersectMBO/cardano-ledger/issues/5474
 Created: 2025-07-16
 License: CC-BY-4.0
 ---

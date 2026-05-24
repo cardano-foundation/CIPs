@@ -13,10 +13,10 @@ Authors:
   - Chad [BBHMM]
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/242
-  - https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
-  - https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
-  - https://github.com/cardano-foundation/CIPs/pull/1042
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/242
+  - Cardano Forum: https://forum.cardano.org/t/cip-shelley-s-basho-voltaire-decentralization-update/97685
+  - Cardano Forum: https://forum.cardano.org/t/minimum-pool-fees-with-a-brief-mention-of-k-changes/97002/82
+  - CIP-0050 | Modernization & Additional Research: https://github.com/cardano-foundation/CIPs/pull/1042
 Created: 2022-04-04
 License: CC-BY-4.0
 ---

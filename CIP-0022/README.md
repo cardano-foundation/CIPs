@@ -13,7 +13,7 @@ Implementors:
   - StakePoolOperator Scripts
   - CNTools
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/102
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/102
 Created: 2021-06-21
 License: CC-BY-4.0
 ---

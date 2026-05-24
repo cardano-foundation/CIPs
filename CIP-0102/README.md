@@ -10,8 +10,8 @@ Implementors:
   - Nebula <https://github.com/spacebudz/nebula/>
   - Mintun <https://mintun.io/>
 Discussions:
-  - https://github.com/ikigai-github/CIPs/pull/1
-  - https://github.com/cardano-foundation/CIPs/pull/551
+  - First draft discussion: https://github.com/ikigai-github/CIPs/pull/1
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/551
 Created: 2023-08-08
 License: CC-BY-4.0
 ---

@@ -10,7 +10,7 @@ Authors:
 Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/624
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/624
 Created: 2023-11-17
 License: CC-BY-4.0
 ---

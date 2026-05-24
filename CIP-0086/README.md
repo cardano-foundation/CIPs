@@ -12,7 +12,7 @@ Implementors:
     - Equine <https://www.equine.gg/>
     - MLabs <https://mlabs.city/>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/430
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/430
 Created: 2022-11-01
 License: CC-BY-4.0
 ---

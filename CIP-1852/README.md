@@ -8,8 +8,8 @@ Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/33
-  - https://forum.cardano.org/t/cip1852-hd-wallets-for-cardano/41740
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/33
+  - Cardano Forum: https://forum.cardano.org/t/cip1852-hd-wallets-for-cardano/41740
 Created: 2019-10-28
 License: CC-BY-4.0
 ---

@@ -7,7 +7,7 @@ Authors:
   - Thaddeus Diamond <support@wildtangz.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/351
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/351
 Created: 2022-10-11
 License: CC-BY-4.0
 ---

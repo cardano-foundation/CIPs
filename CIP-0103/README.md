@@ -11,8 +11,8 @@ Implementors:
     - Eternl <https://eternl.io/>
     - Typhon <https://typhonwallet.io/>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/443
-    - https://github.com/cardano-foundation/CIPs/pull/587
+    - CIP-???? | Wallet api.signTxs() method: https://github.com/cardano-foundation/CIPs/pull/443
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/587
 Created: 2023-09-03
 License: CC-BY-4.0
 ---

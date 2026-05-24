@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - IOG
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/140
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/140
 Created: 2021-10-14
 License: Apache-2.0
 ---

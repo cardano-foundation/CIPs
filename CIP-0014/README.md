@@ -8,7 +8,7 @@ Authors:
   - Rodney Lorrimar <rodney.lorrimar@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/64
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/64
 Created: 2020-02-01
 License: CC-BY-4.0
 ---

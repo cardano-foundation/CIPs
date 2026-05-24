@@ -11,13 +11,13 @@ Implementors:
   - 5Binaries (Blockfrost)
   - Smaug (Pool.pm)
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/299
-  - https://github.com/cardano-foundation/CIPs/pull/359
-  - https://github.com/cardano-foundation/CIPs/pull/458
-  - https://github.com/cardano-foundation/CIPs/pull/471
-  - https://github.com/cardano-foundation/CIPs/pull/494
-  - https://github.com/cardano-foundation/CIPs/issues/520
-  - https://github.com/cardano-foundation/CIPs/pull/586
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/299
+  - CIP-0068 | Small change in 333 FT sub standard: https://github.com/cardano-foundation/CIPs/pull/359
+  - CIP-0068 | Extra field: https://github.com/cardano-foundation/CIPs/pull/458
+  - CIP-0068 | Clarify label prefixes: https://github.com/cardano-foundation/CIPs/pull/471
+  - CIP-0068 | Add RFT Rich-fungible token support: https://github.com/cardano-foundation/CIPs/pull/494
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/520
+  - CIP-0067, CIP-0068 | Add Clarification for Edits and Modification: https://github.com/cardano-foundation/CIPs/pull/586
 Created: 2022-07-13
 License: CC-BY-4.0
 ---

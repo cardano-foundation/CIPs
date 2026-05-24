@@ -7,7 +7,7 @@ Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/752
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/752
 Created: 2020-01-25
 License: CC-BY-4.0
 ---

@@ -15,8 +15,8 @@ Authors:
 Implementors:
   - Input Output Engineering
 Discussions:
-  - https://github.com/input-output-hk/ouroboros-leios/discussions
-  - https://github.com/cardano-foundation/CIPs/pull/1078
+  - GitHub Discussion: https://github.com/input-output-hk/ouroboros-leios/discussions
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1078
 Solution To:
   - CPS-0018
 Created: 2025-03-07

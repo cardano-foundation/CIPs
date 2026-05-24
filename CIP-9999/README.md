@@ -8,7 +8,7 @@ Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pulls/366
+    - Original PR: https://github.com/cardano-foundation/CIPs/pulls/366
 Created: 2022-10-14
 License: CC-BY-4.0
 ---
@@ -80,7 +80,7 @@ Proposed Solutions:
     - CIP-1234 | Solve the Trilemma: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1234
 Discussions:
     - Forum discussion: https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
-    - Original pull request: https://github.com/cardano-foundation/cips/pulls/9999
+    - Original PR: https://github.com/cardano-foundation/cips/pull/9999
 Created: 2009-02-14
 License: CC-BY-4.0
 ---

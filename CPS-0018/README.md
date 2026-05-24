@@ -9,7 +9,7 @@ Authors:
   - Hans Lahe <hans.lahe@iohk.io>
 Proposed Solutions: []
 Discussions: 
-  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/925
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/925
 Created: 2024-10-11
 License: Apache-2.0
 ---

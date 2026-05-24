@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - BroClanWallet
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/617
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/617
 Created: 2023-10-12
 License: CC-BY-4.0
 ---

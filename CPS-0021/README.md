@@ -9,7 +9,7 @@ Authors:
 Proposed Solutions: 
     - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
 Discussions:
-    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1009
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1009
 Created: 2025-10-03
 License: Apache-2.0
 ---

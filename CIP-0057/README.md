@@ -13,9 +13,9 @@ Implementors:
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/258
-  - https://discord.gg/yUkkhqBnyV
-  - https://github.com/aiken-lang/aiken/issues/972
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/258
+  - Discord: https://discord.gg/yUkkhqBnyV
+  - GitHub Issue: https://github.com/aiken-lang/aiken/issues/972
 Created: 2022-05-15
 License: CC-BY-4.0
 ---

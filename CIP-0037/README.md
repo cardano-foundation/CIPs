@@ -7,7 +7,7 @@ Authors:
   - Casey Gibson <caseygibson@protonmail.ch>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/163
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/163
 Created: 2021-12-03
 License: CC-BY-4.0
 ---

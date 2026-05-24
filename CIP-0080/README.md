@@ -7,7 +7,7 @@ Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/372
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/372
 Created: 2022-11-09
 License: CC-BY-4.0
 ---

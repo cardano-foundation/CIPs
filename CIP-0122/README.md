@@ -8,7 +8,7 @@ Authors:
 Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/806
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/806
 Created: 2024-05-03
 License: Apache-2.0
 ---

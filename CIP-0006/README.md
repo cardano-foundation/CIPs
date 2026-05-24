@@ -10,7 +10,7 @@ Implementors:
   - pooltool.io
   - cexplorer.io
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/15
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/15
 Created: 2020-07-20
 License: CC-BY-4.0
 ---

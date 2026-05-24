@@ -7,9 +7,9 @@ Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors: [ ]
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/632
-  - https://github.com/cardano-foundation/CIPs/pull/748
-  - https://github.com/cardano-foundation/CIPs/issues/757
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/632
+  - CIP-0100 | Add index and hash to references and allow for basic HTML tags: https://github.com/cardano-foundation/CIPs/pull/748
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/757
 Created: 2023-11-23
 License: CC-BY-4.0
 ---

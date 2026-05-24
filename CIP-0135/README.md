@@ -12,7 +12,7 @@ Authors:
     - Nicholas Clarke <nicholas.clarke@tweag.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/893
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/893
 Created: 2024-06-17
 License: CC-BY-4.0
 ---

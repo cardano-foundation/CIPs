@@ -7,8 +7,8 @@ Authors:
   - Ashish Prajapati <ashish@strica.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/845
-  - https://github.com/cardano-foundation/CIPs/pull/857
+  - CIP-0005 | update drep and cc identifier prefixes: https://github.com/cardano-foundation/CIPs/pull/845
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/857
 Created: 2024-07-15
 License: CC-BY-4.0
 ---
