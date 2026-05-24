@@ -7,6 +7,7 @@ Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []
 Discussions:
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/421
     - Cardano Forum: https://forum.cardano.org/t/cip-fair-stakepool-rewards/109368
 Created: 2022-10-21
 License: CC-BY-4.0

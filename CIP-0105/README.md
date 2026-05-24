@@ -17,7 +17,7 @@ Implementors:
   - Yoroi <https://yoroi-wallet.com/>
   - Gero <https://gerowallet.io/>
 Discussions:
-  - Original PR: https://github.com/cardano-foundation/cips/pull/597
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/597
 Created: 2023-09-22
 License: CC-BY-4.0
 ---

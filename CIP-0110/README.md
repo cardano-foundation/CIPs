@@ -8,6 +8,7 @@ Authors:
 Implementors:
     - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Discussions:
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/679
  - Twitter: https://twitter.com/SmaugPool/status/1737454984147390905
  - Twitter: https://twitter.com/Quantumplation/status/1737704936089985339
  - Twitter: https://twitter.com/SmaugPool/status/1737814894710231161

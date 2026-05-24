@@ -10,7 +10,7 @@ Implementors:
     - VeriGlyph Seninel <https://seninel.veriglyph.io>
     - Cardano Signer <https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/cips/pull/467
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/467
 Created: 2023-02-27
 License: CC-BY-4.0
 ---
