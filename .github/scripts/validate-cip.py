@@ -347,7 +347,14 @@ def _validate_authors_field(frontmatter: Dict) -> List[str]:
 
 
 def _validate_implementors_field(frontmatter: Dict) -> List[str]:
-    """Friendly validation of the Implementors field."""
+    """Friendly validation of the Implementors field.
+
+    Accepts:
+      - the string 'N/A' (not applicable),
+      - an empty list [] (no implementor yet), or
+      - a list of 'Name <email-or-URI>' strings (mirroring 'Authors';
+        the bracketed contact may be an email address or a project URI).
+    """
     errors = []
     if 'Implementors' not in frontmatter:
         return errors
@@ -356,18 +363,22 @@ def _validate_implementors_field(frontmatter: Dict) -> List[str]:
         if value != 'N/A':
             errors.append(
                 f"'Implementors' must be 'N/A' (not applicable), '[]' (no implementor yet), "
-                f"or a list of strings. Got: {value!r}"
+                f"or a list of 'Name <email-or-URI>' strings. Got: {value!r}"
             )
         return errors
     if isinstance(value, list):
+        pattern = re.compile(r'^.+\s+<.+>$')
         for i, item in enumerate(value):
-            if not isinstance(item, str) or not item.strip():
+            if not isinstance(item, str) or not pattern.match(item):
                 errors.append(
-                    f"'Implementors' entry {i+1}: must be a non-empty string. Got: {item!r}"
+                    f"'Implementors' entry {i+1}: must be in the form 'Name <email-or-URI>'. "
+                    f"Got: {item!r}. Examples: 'John Doe <john.doe@email.domain>' "
+                    f"or 'Project Catalyst <https://projectcatalyst.io/>'"
                 )
         return errors
     errors.append(
-        f"'Implementors' must be 'N/A', '[]', or a list of strings. Got: {value!r}"
+        f"'Implementors' must be 'N/A', '[]', or a list of 'Name <email-or-URI>' strings. "
+        f"Got: {value!r}"
     )
     return errors
 

@@ -53,7 +53,7 @@
       "minItems": 1
     },
     "Implementors": {
-      "description": "A list of implementors committed to delivering an implementation, 'N/A' when not applicable, or [] when there's currently no implementor. Value-level checks enforced by the script.",
+      "description": "A list of implementors committed to delivering an implementation, formatted as 'Name <email-or-URI>' per entry (same shape as Authors); the bracketed contact may be an email address or a project URI. 'N/A' when not applicable; [] when there is no implementor yet. Per-entry format enforced by the script.",
       "oneOf": [
         { "type": "string" },
         { "type": "array" }

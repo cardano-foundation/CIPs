@@ -29,7 +29,7 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 | **Category** | 3 | Yes | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | Yes | `Proposed`, `Active`, or `Inactive` with a required parenthetical reason (e.g., `Inactive (Superseded by CIP-NNNN)`) |
 | **Authors** | 5 | Yes | Non-empty list, each entry: `Name <email>` |
-| **Implementors** | 6 | Yes | List of strings, `[]` if no implementor yet, or `N/A` when not applicable |
+| **Implementors** | 6 | Yes | List of `Name <email-or-URI>` strings (the bracketed contact may be an email address or a project URI, same shape as `Authors`), `[]` if no implementor yet, or `N/A` when not applicable |
 | **Discussions** | 7 | Yes | Non-empty list, each entry: `Label: URL`. Must include at least one pull request link of the form `https://github.com/cardano-foundation/CIPs/pull/<N>`. |
 | **Solution To** | (between Discussions and Created, if present) | No | Non-empty list. Each entry is `CPS-NNNN[?] [\| optional title]: URL`. The number must be zero-padded to at least 4 digits and refer to a positive number. URL must be a GitHub CIPs repository link: bare `CPS-NNNN` requires a `/tree/<branch>/CPS-NNNN` or `/blob/<branch>/CPS-NNNN` URL whose referent matches the label; `CPS-NNNN?` requires a `/pull/<N>` URL. A bare `CPS-NNNN` must point to an existing folder; a `CPS-NNNN?` must point to one that does not yet exist. |
 | **Created** | 8 | Yes | Date in `YYYY-MM-DD` format |
