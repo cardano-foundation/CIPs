@@ -11,7 +11,7 @@ Discussions:
   - Cardano Forum: https://forum.cardano.org/t/cip-nft-metadata-standard/45687
   - Reddit: https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/85
-  - CIP-0025: Added version 2 and cddl: https://github.com/cardano-foundation/CIPs/pull/267
+  - CIP-0025 | Added version 2 and cddl: https://github.com/cardano-foundation/CIPs/pull/267
   - CIP-0025 | Update "image" Spec Based on Feedback: https://github.com/cardano-foundation/CIPs/pull/341
   - CIP-0025 | Restrict to minting (positive amounts): https://github.com/cardano-foundation/CIPs/pull/527
   - CIP-0025 | Change "NFT" to "token": https://github.com/cardano-foundation/CIPs/pull/593
