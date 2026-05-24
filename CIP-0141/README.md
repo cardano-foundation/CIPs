@@ -4,8 +4,9 @@ Title: Web-Wallet Bridge - Plutus wallets
 Category: Wallets
 Status: Proposed
 Authors:
-  - Leo
-Implementors: BroClan
+  - Leo <https://github.com/leo42>
+Implementors:
+  - BroClan <https://broclan.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/798
 Created: 2023-10-12

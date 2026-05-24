@@ -4,9 +4,9 @@ Title: Web-Wallet Bridge - Multisig wallets
 Category: Wallets
 Status: Proposed
 Authors:
-  - Leo
+  - Leo <https://github.com/leo42>
 Implementors:
-  - BroClanWallet
+  - BroClan <https://broclan.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/617
 Created: 2023-10-12

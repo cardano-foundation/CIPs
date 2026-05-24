@@ -4,7 +4,7 @@ Title: Web-Wallet Bridge - Bulk transaction signing
 Category: Wallets
 Status: Active
 Authors:
-    - Martín Schere
+    - Martín Schere <https://github.com/MartinSchere>
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
 Implementors:
     - JPG Store <https://www.jpg.store>

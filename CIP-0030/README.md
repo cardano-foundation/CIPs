@@ -4,7 +4,7 @@ Title: Cardano dApp-Wallet Web Bridge
 Category: Wallets
 Status: Active
 Authors:
-  - rooooooooob
+  - rooooooooob <https://github.com/github.com>
 Implementors:
   - Begin <https://begin.is/>
   - Eternl <https://eternl.io/>
