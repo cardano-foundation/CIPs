@@ -8,12 +8,12 @@ Authors:
     - Rinor Hoxha <rinor.hoxha@iohk.io>
     - Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
 Implementors:
-    - Daedalus <https://daedaluswallet.io/>,
-    - DcSpark <https://www.dcspark.io/>,
-    - Eternl <https://eternl.io/>,
-    - Flint <https://flint-wallet.com/>,
-    - Project Catalyst <https://projectcatalyst.io/>,
-    - Typhon <https://typhonwallet.io/>,
+    - Daedalus <https://daedaluswallet.io/>
+    - DcSpark <https://www.dcspark.io/>
+    - Eternl <https://eternl.io/>
+    - Flint <https://flint-wallet.com/>
+    - Project Catalyst <https://projectcatalyst.io/>
+    - Typhon <https://typhonwallet.io/>
     - Yoroi <https://yoroi-wallet.com/>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/58

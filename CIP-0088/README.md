@@ -6,9 +6,9 @@ Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
 Implementors:
-    - VeriGlyph Nexus: https://nexus.veriglyph.io
-    - VeriGlyph Seninel: https://seninel.veriglyph.io
-    - Cardano Signer: https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode
+    - VeriGlyph Nexus <https://nexus.veriglyph.io>
+    - VeriGlyph Seninel <https://seninel.veriglyph.io>
+    - Cardano Signer <https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/cips/pull/467
 Created: 2023-02-27

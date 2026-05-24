@@ -8,8 +8,8 @@ Authors:
     - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz>
     - Mad Orkestra <mad@madorkestra.com>
 Implementors:
-    - VESPR Wallet (https://vespr.xyz)
-    - Begin Wallet (https://begin.is)
+    - VESPR Wallet <https://vespr.xyz>
+    - Begin Wallet <https://begin.is>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
 Solution To:

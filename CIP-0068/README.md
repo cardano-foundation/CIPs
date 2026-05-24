@@ -7,9 +7,9 @@ Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
-  - Alessandro Konrad (SpaceBudz)
-  - 5Binaries (Blockfrost)
-  - Smaug (Pool.pm)
+  - Alessandro Konrad (SpaceBudz) <https://spacebudz.io/>
+  - 5Binaries (Blockfrost) <https://blockfrost.io/>
+  - Smaug (Pool.pm) <https://pool.pm/>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/299
   - CIP-0068 | Small change in 333 FT sub standard: https://github.com/cardano-foundation/CIPs/pull/359

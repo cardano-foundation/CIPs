@@ -7,14 +7,14 @@ Authors:
     - Adam Dean <adam@crypto2099.io>
     - Martin Lang <martin@martinlang.at>
 Implementors:
-    -   Cardano Signer: https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0
-    -   pg_cardano: https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1
-    -   Cardano Koios: https://github.com/cardano-community/koios-artifacts/tree/v1.3.2
-    -   CNTools: https://github.com/cardano-community/guild-operators/tree/alpha
-    -   SPO Scripts: https://github.com/gitmachtl/scripts
-    -   Reference Implementation: https://github.com/crypto2099/calidus-demo
-    -   VeriGlyph Sentinel: https://sentinel.veriglyph.io
-    -   Ekklesia: https://ekklesia.vote
+    -   Cardano Signer <https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0>
+    -   pg_cardano <https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1>
+    -   Cardano Koios <https://github.com/cardano-community/koios-artifacts/tree/v1.3.2>
+    -   CNTools <https://github.com/cardano-community/guild-operators/tree/alpha>
+    -   SPO Scripts <https://github.com/gitmachtl/scripts>
+    -   Reference Implementation <https://github.com/crypto2099/calidus-demo>
+    -   VeriGlyph Sentinel <https://sentinel.veriglyph.io>
+    -   Ekklesia <https://ekklesia.vote>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/999
     - Cardano Forum: https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
