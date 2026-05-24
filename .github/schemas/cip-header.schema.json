@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://github.com/cardano-foundation/CIPs/.github/schemas/cip-header.schema.json",
   "title": "CIP Header Schema",
-  "description": "JSON Schema for validating YAML frontmatter headers in Cardano Improvement Proposals (CIPs)",
+  "description": "JSON Schema for validating YAML frontmatter headers in Cardano Improvement Proposals (CIPs). Most field-level value rules are enforced by the validation script with friendly messages; the schema enforces structural/type constraints.",
   "type": "object",
   "required": [
     "CIP",
@@ -17,30 +17,15 @@
   ],
   "properties": {
     "CIP": {
-      "description": "The CIP number (without leading 0), or one or more '?' before being assigned",
+      "description": "The CIP number (positive integer, without leading 0), or one or more '?' before being assigned. Value-level checks (positive, no leading zero) are enforced by the script.",
       "oneOf": [
-        {
-          "type": "string",
-          "pattern": "^\\?+$"
-        },
-        {
-          "type": "integer",
-          "minimum": 1
-        },
-        {
-          "type": "string",
-          "pattern": "^[1-9]\\d*$"
-        }
+        { "type": "string" },
+        { "type": "integer" }
       ]
     },
     "Title": {
-      "description": "A succinct and descriptive title. Don't use backticks (`) in titles since they disrupt formatting in other contexts. Must be less than 100 characters.",
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 100,
-      "not": {
-        "pattern": "`"
-      }
+      "description": "A succinct and descriptive title. Backtick prohibition and length cap enforced by the script.",
+      "type": "string"
     },
     "Category": {
       "description": "One of the editorially accepted categories covering one area of the ecosystem",
@@ -59,34 +44,19 @@
       ]
     },
     "Status": {
-      "description": "Status of the CIP: Proposed, Active, or Inactive with a required parenthetical reason (e.g., 'Inactive (Superseded by CIP-NNNN)')",
-      "type": "string",
-      "pattern": "^(Proposed|Active|Inactive\\s+\\(.+\\))$"
+      "description": "Status of the CIP: Proposed, Active, or Inactive with a required parenthetical reason. Format enforced by the script.",
+      "type": "string"
     },
     "Authors": {
-      "description": "A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)",
+      "description": "A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>). Per-entry format enforced by the script.",
       "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "pattern": "^.+\\s+<.+>$",
-        "description": "Author entry in format: Name <email@domain.com>"
-      }
+      "minItems": 1
     },
     "Implementors": {
-      "description": "A list of implementors committed to delivering an implementation, 'N/A' when not applicable, or [] when there's currently no implementor",
+      "description": "A list of implementors committed to delivering an implementation, 'N/A' when not applicable, or [] when there's currently no implementor. Value-level checks enforced by the script.",
       "oneOf": [
-        {
-          "type": "string",
-          "enum": ["N/A"]
-        },
-        {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
+        { "type": "string" },
+        { "type": "array" }
       ],
       "default": []
     },
@@ -98,8 +68,7 @@
         "oneOf": [
           {
             "type": "string",
-            "pattern": "^.+:\\s+https?://.+$",
-            "description": "Entry in format: 'Label: URL'"
+            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
           },
           {
             "type": "object",
@@ -115,30 +84,18 @@
       }
     },
     "Solution To": {
-      "description": "A list of CPS (Cardano Problem Statements) that this CIP addresses, if any. Omitted when not applicable. Each entry is a bare CPS reference like 'CPS-0001' (or 'CPS-0001?' if the CPS is still an open PR).",
+      "description": "A list of CPS (Cardano Problem Statements) that this CIP addresses, if any. Omitted when not applicable. Each entry is a bare CPS reference like 'CPS-0001' (or 'CPS-0001?' if the CPS is still an open PR). Per-entry format enforced by the script.",
       "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "string",
-        "pattern": "^CPS-(?!0+\\??$)\\d{4,}\\??$",
-        "description": "CPS reference, zero-padded to at least 4 digits (e.g., 'CPS-0001' or 'CPS-0001?')"
-      }
+      "minItems": 1
     },
     "Created": {
-      "description": "Date created on, in ISO 8601 (YYYY-MM-DD) format",
-      "type": "string",
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
-      "format": "date"
+      "description": "Date created on, in ISO 8601 (YYYY-MM-DD) format. Format enforced by the script.",
+      "type": "string"
     },
     "License": {
-      "description": "Abbreviation of an approved license",
-      "type": "string",
-      "enum": [
-        "CC-BY-4.0",
-        "Apache-2.0"
-      ]
+      "description": "Abbreviation of an approved license. Allowed value enforced by the script (with a did-you-mean hint on near-misses).",
+      "type": "string"
     }
   },
   "additionalProperties": false
 }
-

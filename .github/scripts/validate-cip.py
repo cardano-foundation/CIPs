@@ -258,6 +258,208 @@ def _validate_field_order(frontmatter: Dict) -> List[str]:
     return errors
 
 
+def _validate_cip_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the CIP number field.
+
+    Leading-zero detection is performed separately against raw lines.
+    """
+    errors = []
+    if 'CIP' not in frontmatter:
+        return errors
+    value = frontmatter['CIP']
+    if isinstance(value, bool):
+        errors.append(
+            f"'CIP' must be a positive integer (e.g., 30) or '?' if unassigned. Got: {value!r}"
+        )
+        return errors
+    if isinstance(value, int):
+        if value < 1:
+            errors.append(
+                f"'CIP' must be a positive integer (1 or greater) or '?' if unassigned. Got: {value}"
+            )
+        return errors
+    if isinstance(value, str):
+        if re.fullmatch(r'\?+', value):
+            return errors
+        if re.fullmatch(r'[1-9]\d*', value):
+            return errors
+        if re.fullmatch(r'0\d*', value):
+            return errors  # Leading-zero check handles this
+        errors.append(
+            f"'CIP' must be a positive integer (e.g., 30) or '?' if unassigned. Got: {value!r}"
+        )
+        return errors
+    errors.append(
+        f"'CIP' must be a positive integer or '?' if unassigned. Got: {value!r}"
+    )
+    return errors
+
+
+def _validate_title_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the Title field."""
+    errors = []
+    if 'Title' not in frontmatter:
+        return errors
+    value = frontmatter['Title']
+    if not isinstance(value, str):
+        return errors
+    if '`' in value:
+        errors.append(
+            f"'Title' must not contain backticks (`) as they disrupt rendering in other contexts. "
+            f"Got: {value!r}"
+        )
+    if len(value) > 100:
+        errors.append(
+            f"'Title' must be at most 100 characters. Got {len(value)} characters: {value!r}"
+        )
+    if not value.strip():
+        errors.append("'Title' must not be empty")
+    return errors
+
+
+def _validate_status_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the Status field."""
+    errors = []
+    if 'Status' not in frontmatter:
+        return errors
+    value = frontmatter['Status']
+    if not isinstance(value, str):
+        return errors
+    if re.fullmatch(r'Proposed|Active|Inactive\s+\(.+\)', value):
+        return errors
+    errors.append(
+        f"'Status' must be 'Proposed', 'Active', or 'Inactive (reason)' "
+        f"(with a reason in parentheses, e.g. 'Inactive (superseded by CIP-NNNN)'). "
+        f"Got: {value!r}"
+    )
+    return errors
+
+
+def _validate_authors_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of Authors entries."""
+    errors = []
+    entries = frontmatter.get('Authors')
+    if not isinstance(entries, list):
+        return errors
+    pattern = re.compile(r'^.+\s+<.+>$')
+    for i, entry in enumerate(entries):
+        if not isinstance(entry, str) or not pattern.match(entry):
+            errors.append(
+                f"'Authors' entry {i+1}: must be in the form 'Name <email>'. "
+                f"Got: {entry!r}. Example: 'John Doe <john.doe@email.domain>'"
+            )
+    return errors
+
+
+def _validate_implementors_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the Implementors field."""
+    errors = []
+    if 'Implementors' not in frontmatter:
+        return errors
+    value = frontmatter['Implementors']
+    if isinstance(value, str):
+        if value != 'N/A':
+            errors.append(
+                f"'Implementors' must be 'N/A' (not applicable), '[]' (no implementor yet), "
+                f"or a list of strings. Got: {value!r}"
+            )
+        return errors
+    if isinstance(value, list):
+        for i, item in enumerate(value):
+            if not isinstance(item, str) or not item.strip():
+                errors.append(
+                    f"'Implementors' entry {i+1}: must be a non-empty string. Got: {item!r}"
+                )
+        return errors
+    errors.append(
+        f"'Implementors' must be 'N/A', '[]', or a list of strings. Got: {value!r}"
+    )
+    return errors
+
+
+def _validate_created_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the Created field."""
+    errors = []
+    if 'Created' not in frontmatter:
+        return errors
+    value = frontmatter['Created']
+    if hasattr(value, 'isoformat'):
+        value = value.isoformat()
+    if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+        errors.append(
+            f"'Created' must be an ISO 8601 date in YYYY-MM-DD form. "
+            f"Got: {frontmatter['Created']!r}. Example: '2024-05-21'"
+        )
+    return errors
+
+
+def _validate_license_field(frontmatter: Dict) -> List[str]:
+    """Friendly validation of the License field, with a did-you-mean hint on near-misses."""
+    errors = []
+    if 'License' not in frontmatter:
+        return errors
+    value = frontmatter['License']
+    if not isinstance(value, str):
+        return errors
+    valid = ['CC-BY-4.0', 'Apache-2.0']
+    if value in valid:
+        return errors
+    normalized = re.sub(r'\s+', '-', value).lower()
+    valid_normalized = {v.lower(): v for v in valid}
+    suggestion = valid_normalized.get(normalized)
+    if suggestion:
+        errors.append(
+            f"'License' must be one of: {', '.join(valid)}. "
+            f"Got: {value!r} (did you mean {suggestion!r}?)"
+        )
+    else:
+        errors.append(
+            f"'License' must be one of: {', '.join(valid)}. Got: {value!r}"
+        )
+    return errors
+
+
+def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
+    """Friendly validation of Solution To entry format."""
+    errors = []
+    entries = frontmatter.get('Solution To')
+    if not isinstance(entries, list):
+        return errors
+    pattern = re.compile(r'^CPS-(?!0+\??$)\d{4,}\??$')
+    for i, entry in enumerate(entries):
+        if not isinstance(entry, str) or not pattern.match(entry):
+            errors.append(
+                f"'Solution To' entry {i+1}: must be 'CPS-NNNN' zero-padded to "
+                f"at least 4 digits (or 'CPS-NNNN?' for a CPS still in PR). "
+                f"Got: {entry!r}"
+            )
+    return errors
+
+
+def _validate_discussions_format(entries: list) -> List[str]:
+    """Validate that string Discussions entries follow the 'Label: URL' form.
+
+    String entries must be of the form 'Label: URL' (with whitespace after the
+    colon). Dict entries ({Label: URL}) are validated by the JSON schema.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    if not isinstance(entries, list):
+        return errors
+
+    pattern = re.compile(r'^[^:\s][^:]*:\s+https?://\S+')
+    for i, entry in enumerate(entries):
+        if isinstance(entry, str) and not pattern.match(entry):
+            errors.append(
+                f"'Discussions' entry {i+1}: must be in the form 'Label: URL'. "
+                f"Got: {entry!r}. "
+                f"Example: 'Original PR: https://github.com/cardano-foundation/CIPs/pull/123'"
+            )
+    return errors
+
+
 def _validate_label_entries(entries: list, field_name: str, label_prefixes: List[str]) -> List[str]:
     """Validate semantic rules for labeled 'Label: URL' entries.
 
@@ -411,8 +613,19 @@ def validate_header(frontmatter: Dict) -> List[str]:
     except jsonschema.SchemaError as e:
         errors.append(f"Schema error: {e.message}")
 
+    # Friendly per-field value checks (schema enforces only type/structure for these)
+    errors.extend(_validate_cip_field(frontmatter))
+    errors.extend(_validate_title_field(frontmatter))
+    errors.extend(_validate_status_field(frontmatter))
+    errors.extend(_validate_authors_field(frontmatter))
+    errors.extend(_validate_implementors_field(frontmatter))
+    errors.extend(_validate_created_field(frontmatter))
+    errors.extend(_validate_license_field(frontmatter))
+    errors.extend(_validate_solution_to_format(frontmatter))
+
     # Validate CIP/CPS label semantic rules on Discussions
     if 'Discussions' in frontmatter:
+        errors.extend(_validate_discussions_format(frontmatter['Discussions']))
         errors.extend(_validate_label_entries(frontmatter['Discussions'], 'Discussions', ['CIP', 'CPS']))
         errors.extend(_validate_discussions_has_pr(frontmatter['Discussions']))
 
