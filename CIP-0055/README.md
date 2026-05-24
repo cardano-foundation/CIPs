@@ -6,7 +6,7 @@ Status: Active
 Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors:
-  - IOG
+  - Input Output Global <https://iohk.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/265
 Created: 2022-05-19

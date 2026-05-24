@@ -10,7 +10,7 @@ Authors:
   - Yves Hauser <yves.hauser@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
 Implementors:
-  - Intersect
+  - Intersect <https://www.intersectmbo.org>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/872
 Solution To:

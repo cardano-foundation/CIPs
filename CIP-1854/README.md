@@ -7,7 +7,7 @@ Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
   - Pawel Jakubas <pawel.jakubas@cardanofoundation.org>
 Implementors:
-  - Round Table wallet
+  - Round Table <https://github.com/ADAOcommunity/round-table>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/69
 Created: 2021-02-23

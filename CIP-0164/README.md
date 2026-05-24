@@ -13,7 +13,7 @@ Authors:
   - Yves Hauser <yves.hauser@iohk.io>
   - Simon Gellis <simon@sundae.fi>
 Implementors:
-  - Input Output Engineering
+  - Input Output Engineering <https://iohk.io>
 Discussions:
   - GitHub Discussion: https://github.com/input-output-hk/ouroboros-leios/discussions
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1078

@@ -7,7 +7,9 @@ Authors:
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
   - Daniel Main <daniel.main@iohk.io>
-Implementors: ["Lace Wallet dApp Store", "DappsOnCardano dApp Store"]
+Implementors:
+  - Lace Wallet <https://www.lace.io>
+  - DappsOnCardano <https://dappsoncardano.com>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/355
 Created: 2022-10-18

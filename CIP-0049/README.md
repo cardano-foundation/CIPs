@@ -8,7 +8,7 @@ Authors:
   - Michael Peyton-Jones <michael.peyton-jones@iohk.io>
   - Iñigo Querejeta Azurmendi <querejeta.azurmendi@iohk.io>
 Implementors:
-  - MLabs
+  - MLabs <https://mlabs.city>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/250
 Created: 2022-04-27

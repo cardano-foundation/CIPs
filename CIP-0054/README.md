@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
   - Kieran Simkin <hi@clg.wtf>
 Implementors:
-  - Kieran Simkin
+  - Kieran Simkin <hi@clg.wtf>
 Discussions:
   - Cardano Forum: https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/263

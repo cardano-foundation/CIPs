@@ -8,7 +8,7 @@ Authors:
     - Adam Smolarek <adam.smolarek@iohk.io>
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
-    - IOG Plutus team
+    - IOG Plutus Team <https://iohk.io>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/884
 Created: 2024-08-22

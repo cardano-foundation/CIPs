@@ -8,10 +8,10 @@ Authors:
   - Martin Lang <martin@martinlang.at>
   - Ola Ahlman <ola@ahlnet.nu>
 Implementors:
-  - CNCLI
-  - JorManager
-  - StakePoolOperator Scripts
-  - CNTools
+  - CNCLI <https://github.com/cardano-community/cncli>
+  - JorManager <https://bitbucket.org/muamw10/jormanager>
+  - SPO Scripts <https://github.com/gitmachtl/scripts>
+  - CNTools <https://github.com/cardano-community/guild-operators>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/102
 Created: 2021-06-21

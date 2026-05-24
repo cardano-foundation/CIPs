@@ -6,7 +6,7 @@ Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
 Implementors:
-  - IOG
+  - Input Output Global <https://iohk.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/117
 Created: 2020-08-17

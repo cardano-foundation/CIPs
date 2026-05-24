@@ -6,7 +6,7 @@ Status: Active
 Authors:
   - Kevin Hammond <kevin.hammond@iohk.io>
 Implementors:
-  - IOG
+  - Input Output Global <https://iohk.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/140
 Created: 2021-10-14

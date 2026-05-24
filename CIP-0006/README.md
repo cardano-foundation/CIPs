@@ -7,8 +7,8 @@ Authors:
   - Markus Gufler <gufmar@gmail.com>
   - Mike Fullman <mike@fullman.net>
 Implementors:
-  - pooltool.io
-  - cexplorer.io
+  - PoolTool <https://pooltool.io>
+  - Cexplorer <https://cexplorer.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/15
 Created: 2020-07-20
