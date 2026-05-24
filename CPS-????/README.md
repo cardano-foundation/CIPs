@@ -1,6 +1,6 @@
 ---
 CPS: "????"
-Title: Private Voting for Delegated Representatives
+Title: Private Voting for DReps
 Category: Ledger
 Status: Open
 Authors:
