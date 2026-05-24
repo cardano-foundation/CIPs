@@ -23,9 +23,6 @@ concrete vectors for coercion, herding, and cartel coordination that undermine t
 quality and independence of governance decisions. This CPS defines the problem,
 identifies the parties affected, describes the trade-offs that any solution must navigate,
 and lists the open questions that a satisfactory proposal must answer.
-
----
-
 ## Problem
 
 ### All DRep votes are immediately and permanently public
