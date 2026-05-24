@@ -28,7 +28,7 @@ and lists the open questions that a satisfactory proposal must answer.
 
 ## Problem
 
-### 1. All DRep votes are immediately and permanently public
+### All DRep votes are immediately and permanently public
 
 When a DRep submits a `VotingProcedure`, the ledger records their credential alongside
 a plaintext `Yes`, `No`, or `Abstain` for each governance action. This is visible to
