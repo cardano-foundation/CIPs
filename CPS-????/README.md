@@ -95,7 +95,7 @@ and the scope of any proposal made explicit.
 
 ## Use Cases
 
-### UC-1: DRep votes independently under social pressure
+### DRep votes independently under social pressure
 
 A DRep has formed a view on a contentious treasury withdrawal proposal. A large ADA
 holder who disagrees publicly announces they will immediately redelegate away from any
