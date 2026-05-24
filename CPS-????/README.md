@@ -7,7 +7,7 @@ Authors:
   - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
 Proposed Solutions: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/discussions
+  - https://github.com/cardano-foundation/CIPs/pull/1201
 Created: 2026-05-23
 License: CC-BY-4.0
 ---
