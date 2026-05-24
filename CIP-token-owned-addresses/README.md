@@ -21,7 +21,7 @@ A TOA is spendable by any transaction that consumes exactly one unit of the cont
 
 The standard is an off-chain interoperability CIP. It does not introduce a new ledger address type. It standardises the validator artifact, parameter encoding, address derivation, validator rules, wallet and indexer behaviour, and test vectors needed for wallets, explorers, dApps, and libraries to derive and display the same TOA for the same controlling asset class.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 On Cardano, there is no native concept of an account owned by a token. Other ecosystems address this need through different patterns:
 
@@ -371,7 +371,7 @@ Coverage MUST include at minimum:
 - **datum-classification coverage — all four must be spendable:** (i) **Unit Datum**, (ii) **Inline Datum** (non-unit), (iii) **Datum Hash**, (iv) **No Datum** — outstanding;
 - **permissive-policy warning fixture** — a vector documenting (as metadata, not validator proof) that the controlling minting policy permits further mints, so wallets and indexers can verify their warning UX against a concrete example — outstanding.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Design Decisions
 
@@ -515,16 +515,17 @@ However, because TOA uses a parameterised validator, a reference script must cor
 
 ### Acceptance Criteria
 
-These are the concrete, testable conditions for the CIP to move from `Proposed` to `Active`. Items marked **[x]** are satisfied by the reference implementation at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.1.0`](https://github.com/en7angled/toa/releases/tag/0.1.0)); see *Mandatory Normative Artifacts*.
+These are the concrete, testable conditions for the CIP to move from `Proposed` to `Active`.
 
-- [x] Canonical Plinth source for the TOA v1 validator published (external, content-hash-referenced).
-- [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 476 bytes, blake2b-256 = `7f78c5524a00852eb51ee760f86a3f0cce4535b446e0c03d6cdc35eb6de0092b`.
-- [x] Compiler/toolchain versions pinned — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`.
-- [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `129181a58ca3716aada61244d3d4210bff5a7235f709189af2596dc0`.
-- [x] Address-derivation helper published (Haskell reference in `offchain-lib`; supplementary TypeScript/Rust ports encouraged but non-normative — outstanding).
-- [x] At least one non-normative reference off-chain implementation published, including address derivation, deposit, spend, and NFT carry-through (`offchain-lib`, exercised by the test suite via [CLB](https://github.com/mlabs-haskell/clb) scenarios).
+- [x] *Mandatory Normative Artifacts* in the reference implementation at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.1.0`](https://github.com/en7angled/toa/releases/tag/0.1.0))
+  - [x] Canonical Plinth source for the TOA v1 validator published (external, content-hash-referenced).
+  - [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 476 bytes, blake2b-256 = `7f78c5524a00852eb51ee760f86a3f0cce4535b446e0c03d6cdc35eb6de0092b`.
+  - [x] Compiler/toolchain versions pinned — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`.
+  - [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `129181a58ca3716aada61244d3d4210bff5a7235f709189af2596dc0`.
+  - [x] Address-derivation helper published (Haskell reference in `offchain-lib`; supplementary TypeScript/Rust ports encouraged but non-normative — outstanding).
+  - [x] At least one non-normative reference off-chain implementation published, including address derivation, deposit, spend, and NFT carry-through (`offchain-lib`, exercised by the test suite via [CLB](https://github.com/mlabs-haskell/clb) scenarios).
+  - [x] A testnet demonstration or reference workflow exercises address derivation, deposit, spend, and NFT carry-through end-to-end on a public testnet — [toa.e7d.tech](https://toa.e7d.tech) runs the reference frontend against the Cardano Preview testnet (and mainnet) and exercises all four operations.
 - [ ] Normative test vectors published per *Test Vector Format* and verified against **at least two independent implementations**. Address-derivation vectors are published; validator-scenario vectors and second-implementation verification are outstanding.
-- [x] A testnet demonstration or reference workflow exercises address derivation, deposit, spend, and NFT carry-through end-to-end on a public testnet — [toa.e7d.tech](https://toa.e7d.tech) runs the reference frontend against the Cardano Preview testnet (and mainnet) and exercises all four operations.
 - [ ] At least two independent integrations: e.g. one wallet displaying TOA addresses with proper labelling, and one explorer/indexer (Cexplorer, Pool.pm, Cardanoscan, or equivalent) labelling TOA addresses as such.
 
 ### Implementation Plan
@@ -540,7 +541,6 @@ The Implementation Plan describes the **ordered work** required to move TOA v1 f
 7. **Verify against independent implementation #1** — an external party (wallet team, library author, or auditor) reproduces every test vector byte-for-byte for address derivation and pass/fail-correct for validator scenarios.
 8. **Verify against independent implementation #2** — a second independent party does the same against a different stack (e.g. lucid-evolution, MeshJS, cardano-transaction-lib, or PyCardano).
 9. **Integrate explorer and wallet display** — at least one Cardano explorer (Cexplorer / Pool.pm / Cardanoscan / equivalent) and at least one mainstream wallet label TOA addresses as such and surface the policy classification (`ProvenClosed` / `KnownOpen` / `Unknown`) and self-deposit state.
-10. **Editor sign-off** — once steps 1–9 are complete, request CIP editor review for transition from `Proposed` to `Active`.
 
 Steps 1–6 are owned by the CIP authors. Steps 7–9 are owned by the ecosystem and are the primary gating condition for activation.
 
