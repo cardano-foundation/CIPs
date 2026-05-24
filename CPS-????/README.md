@@ -137,7 +137,7 @@ voting window without revealing its direction beforehand.
 
 Goals are ranked by importance. Non-goals are explicitly listed to bound scope.
 
-### G1 — Prevent coercion and vote-buying during the voting window (highest priority)
+### Prevent coercion and vote-buying during the voting window (highest priority)
 
 A solution should make it infeasible for an adversary to observe, and condition
 behaviour on, an individual DRep's vote while the voting period remains open.
