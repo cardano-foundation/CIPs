@@ -24,7 +24,7 @@
       ]
     },
     "Title": {
-      "description": "A succinct and descriptive title. Backtick prohibition and length cap enforced by the script.",
+      "description": "A succinct and descriptive title. Length cap enforced by the script.",
       "type": "string"
     },
     "Category": {

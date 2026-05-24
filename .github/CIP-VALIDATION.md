@@ -25,7 +25,7 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 | Field | Order | Required? | Validation Rules |
 | ----- | ----- | --------- | ---------------- |
 | **CIP** | 1 | Yes | Positive integer (`1`, `42`) or `?`/`??`/etc. for unassigned. No leading zeros. |
-| **Title** | 2 | Yes | 1-100 characters, no backticks (`` ` ``) |
+| **Title** | 2 | Yes | 1-100 characters |
 | **Category** | 3 | Yes | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | Yes | `Proposed`, `Active`, or `Inactive` with a required parenthetical reason (e.g., `Inactive (Superseded by CIP-NNNN)`) |
 | **Authors** | 5 | Yes | Non-empty list, each entry: `Name <email>` |

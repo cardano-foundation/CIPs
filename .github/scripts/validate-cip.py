@@ -303,11 +303,6 @@ def _validate_title_field(frontmatter: Dict) -> List[str]:
     value = frontmatter['Title']
     if not isinstance(value, str):
         return errors
-    if '`' in value:
-        errors.append(
-            f"'Title' must not contain backticks (`) as they disrupt rendering in other contexts. "
-            f"Got: {value!r}"
-        )
     if len(value) > 100:
         errors.append(
             f"'Title' must be at most 100 characters. Got {len(value)} characters: {value!r}"
