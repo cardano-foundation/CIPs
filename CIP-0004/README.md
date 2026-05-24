@@ -1,8 +1,8 @@
 ---
 CIP: 4
 Title: Wallet Checksums
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Ruslan Dudin <ruslan@emurgo.io>
   - Sebastien Guillemot <seba@dcspark.io>

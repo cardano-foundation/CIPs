@@ -1,8 +1,8 @@
 ---
 CIP: 14
 Title: User-Facing Asset Fingerprint
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Rodney Lorrimar <rodney.lorrimar@iohk.io>

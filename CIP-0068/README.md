@@ -1,8 +1,8 @@
 ---
 CIP: 68
 Title: Datum Metadata Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>

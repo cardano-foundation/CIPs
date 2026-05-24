@@ -1,8 +1,8 @@
 ---
 CIP: 42
 Title: New Plutus Builtin `serialiseData`
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Sebastian Nagel <sebastian.nagel@iohk.io>

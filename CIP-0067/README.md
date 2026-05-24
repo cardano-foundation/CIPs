@@ -1,8 +1,8 @@
 ---
 CIP: 67
 Title: Asset Name Label Registry
-Status: Proposed
 Category: Tokens
+Status: Proposed
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>

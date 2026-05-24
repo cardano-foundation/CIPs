@@ -1,8 +1,8 @@
 ---
 CIP: 16
 Title: Cryptographic Key Serialisation Formats
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Luke Nadur <luke.nadur@iohk.io>
 Implementors:

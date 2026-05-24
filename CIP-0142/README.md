@@ -1,8 +1,8 @@
 ---
 CIP: 142
 Title: Web-Wallet Bridge - Network Determination
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
   - Nathan Bogale <nathan.bogale@iohk.io>

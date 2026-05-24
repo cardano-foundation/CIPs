@@ -1,8 +1,8 @@
 ---
 CIP: 112
 Title: Observe Script Type
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
     - Philip DiSarro <info@anastasialabs.com>
 Implementors: []

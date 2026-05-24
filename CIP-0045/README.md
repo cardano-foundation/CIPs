@@ -1,8 +1,8 @@
 ---
 CIP: 45
 Title: Decentralized WebRTC dApp-Wallet Communication
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
     - Fabian Bormann <fabian.bormann@cardanofoundation.org>
     - Jaime Caso <jaime.caso@cardanofoundation.org>

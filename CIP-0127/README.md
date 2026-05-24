@@ -1,8 +1,8 @@
 ---
 CIP: 127
 Title: Integration of `ripemd_160` into Plutus
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
   - Tomasz Rybarczy <tomasz.rybarczyk@iohk.io>
 Implementors: []

@@ -1,8 +1,8 @@
 ---
 CIP: 1854
 Title: Multi-signatures HD Wallets
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
   - Pawel Jakubas <pawel.jakubas@cardanofoundation.org>

@@ -1,8 +1,8 @@
 ---
 CIP: 20
 Title: Transaction message/comment metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
     - Martin Lang <martin@martinlang.at>
     - Ola Ahlman <ola@ahlnet.nu>

@@ -1,8 +1,8 @@
 ---
 CIP: 52
 Title: Cardano audit best practice guidelines
-Status: Proposed
 Category: Meta
+Status: Proposed
 Authors:
   - Simon Thompson <simon.thompson@iohk.io>
 Implementors: []

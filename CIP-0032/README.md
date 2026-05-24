@@ -1,8 +1,8 @@
 ---
 CIP: 32
 Title: Inline datums
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:

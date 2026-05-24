@@ -11,11 +11,11 @@ Authors:
   - Hans Lahe <hans.lahe@iohk.io>
 Implementors:
   - Intersect
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/872
 Solution To:
   - CPS-0017
   - CPS-0021
-Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/872
 Created: 2024-08-15
 License: Apache-2.0
 ---

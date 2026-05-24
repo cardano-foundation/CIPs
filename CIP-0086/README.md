@@ -1,8 +1,8 @@
 ---
 CIP: 86
 Title: NFT Metadata Update Oracles
-Status: Proposed
 Category: Metadata
+Status: Proposed
 Authors:
     - Nicolas Ayotte <nick@equine.gg>
     - George Flerovsky <george@mlabs.city>

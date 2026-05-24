@@ -7,11 +7,11 @@ Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
 Implementors: []
+Discussions:
+  - https://github.com/cardano-foundation/CIPs/pull/1065
 Solution To:
   - CPS-0017
   - CPS-0021
-Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1065
 Created: 2025-07-25
 License: Apache-2.0
 ---

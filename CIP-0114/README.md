@@ -1,8 +1,8 @@
 ---
 CIP: 114
 Title: CBOR Tags Registry
-Status: Proposed
 Category: Tools
+Status: Proposed
 Authors:
   - Steven Johnson <steven.johnson@iohk.io>
 Implementors: N/A

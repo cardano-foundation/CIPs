@@ -1,8 +1,8 @@
 ---
 CIP: 129
 Title: Governance Identifiers
-Status: Proposed
 Category: Tools
+Status: Proposed
 Authors:
   - Ashish Prajapati <ashish@strica.io>
 Implementors: N/A

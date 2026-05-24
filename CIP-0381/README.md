@@ -1,8 +1,8 @@
 ---
 CIP: 381
 Title: Plutus support for Pairings over BLS12-381
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
 Implementors:

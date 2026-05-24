@@ -1,8 +1,8 @@
 ---
 CIP: 33
 Title: Reference scripts
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:

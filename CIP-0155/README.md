@@ -1,8 +1,8 @@
 ---
 CIP: 155
 Title: SRV registry
-Status: Proposed
 Category: Network
+Status: Proposed
 Authors:
   - Marcin Szamotulski <marcin.szamotulski@iohk.io>
 Implementors: N/A

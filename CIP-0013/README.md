@@ -1,8 +1,8 @@
 ---
 CIP: 13
 Title: Cardano URI Scheme
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
     - Robert Phair <rphair@cosd.com>
     - Sebastien Guillemot <sebastien@emurgo.io>

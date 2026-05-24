@@ -1,8 +1,8 @@
 ---
 CIP: 133
 Title: Plutus support for Multi-Scalar Multiplication over BLS12-381
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
     - Dmytro Kaidalov <dmytro.kaidalov@iohk.io>
     - Adam Smolarek <adam.smolarek@iohk.io>

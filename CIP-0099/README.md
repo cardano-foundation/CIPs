@@ -1,8 +1,8 @@
 ---
 CIP: 99
 Title: Proof of Onboarding
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
 - Adam Dean <adam@crypto2099.io>
 - Carl <vegas@hosky.io>

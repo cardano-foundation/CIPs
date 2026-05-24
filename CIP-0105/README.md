@@ -1,8 +1,8 @@
 ---
 CIP: 105
 Title: Conway era Key Chains for HD Wallets
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors:

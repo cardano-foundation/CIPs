@@ -1,8 +1,8 @@
 ---
 CIP: 1855
 Title: Forging policy keys for HD Wallets
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Samuel Leathers <samuel.leathers@iohk.io>
   - John Lotoski <john.lotoski@iohk.io>

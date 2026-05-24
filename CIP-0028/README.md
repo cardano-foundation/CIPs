@@ -1,8 +1,8 @@
 ---
 CIP: 28
 Title: Protocol Parameters (Alonzo Era)
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Kevin Hammond <kevin.hammond@iohk.io>
 Implementors:

@@ -1,8 +1,8 @@
 ---
 CIP: 59
 Title: Terminology Surrounding Core Features
-Status: Active
 Category: Meta
+Status: Active
 Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A

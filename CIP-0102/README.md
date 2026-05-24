@@ -1,6 +1,8 @@
 ---
 CIP: 102
 Title: Royalty Datum Metadata
+Category: Tokens
+Status: Proposed
 Authors:
   - Sam Delaney <sdelaney@ikigaitech.org>
 Implementors:
@@ -10,8 +12,6 @@ Implementors:
 Discussions:
   - https://github.com/ikigai-github/CIPs/pull/1
   - https://github.com/cardano-foundation/CIPs/pull/551
-Status: Proposed
-Category: Tokens
 Created: 2023-08-08
 License: CC-BY-4.0
 ---

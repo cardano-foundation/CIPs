@@ -1,8 +1,8 @@
 ---
 CIP: 19
 Title: Cardano Addresses
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: N/A

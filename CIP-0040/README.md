@@ -1,8 +1,8 @@
 ---
 CIP: 40
 Title: Collateral Output
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Sebastien Guillemot <seba@dcspark.io>
   - Jared Corduan <jared.corduan@iohk.io>

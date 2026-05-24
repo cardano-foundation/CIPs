@@ -1,8 +1,8 @@
 ---
 CIP: 152
 Title: Modules in UPLC
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
   - John Hughes <john.hughes@quviq.com>
 Implementors: []

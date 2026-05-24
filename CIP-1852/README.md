@@ -1,8 +1,8 @@
 ---
 CIP: 1852
 Title: HD (Hierarchy for Deterministic) Wallets for Cardano
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>

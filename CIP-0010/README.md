@@ -1,8 +1,8 @@
 ---
 CIP: 10
 Title: Transaction Metadata Label Registry
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors: N/A

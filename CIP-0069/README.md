@@ -2,10 +2,10 @@
 CIP: 69
 Title: Plutus Script Type Uniformization
 Category: Plutus
+Status: Active
 Authors:
   - Maksymilian 'zygomeb' Brodowicz <zygomeb@gmail.com>
 Implementors: N/A
-Status: Active
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/321
 Created: 2022-08-23

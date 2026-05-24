@@ -1,8 +1,8 @@
 ---
 CIP: 110
 Title: Plutus v1 Script References
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
 Implementors:

@@ -1,8 +1,8 @@
 ---
 CIP: 18
 Title: Multi-Stake-Keys Wallets
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
 Implementors: []

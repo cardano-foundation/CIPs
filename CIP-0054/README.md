@@ -1,8 +1,8 @@
 ---
 CIP: 54
 Title: Cardano Smart NFTs
-Status: Proposed
 Category: Tokens
+Status: Proposed
 Authors:
   - Kieran Simkin <hi@clg.wtf>
 Implementors:

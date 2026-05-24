@@ -1,8 +1,8 @@
 ---
 CIP: 6
 Title: Stake Pool Extended Metadata
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Markus Gufler <gufmar@gmail.com>
   - Mike Fullman <mike@fullman.net>

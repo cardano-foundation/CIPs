@@ -2,12 +2,12 @@
 CIP: 58
 Title: Plutus Bitwise Primitives
 Category: Plutus
+Status: Inactive (superseded by CIP-0121 and CIP-0122)
 Authors:
     - Koz Ross <koz@mlabs.city>
     - Maximilian König <maximilian@mlabs.city>
 Implementors:
     - Las Safin <me@las.rs>
-Status: Inactive (superseded by CIP-0121 and CIP-0122)
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/283
     - https://github.com/input-output-hk/plutus/issues/4252

@@ -1,8 +1,8 @@
 ---
 CIP: 49
 Title: ECDSA and Schnorr signatures in Plutus Core
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
   - Koz Ross <koz@mlabs.city>
   - Michael Peyton-Jones <michael.peyton-jones@iohk.io>

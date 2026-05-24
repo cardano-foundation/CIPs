@@ -1,8 +1,8 @@
 ---
 CIP: 106
 Title: Web-Wallet Bridge - Multisig wallets
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Leo
 Implementors:

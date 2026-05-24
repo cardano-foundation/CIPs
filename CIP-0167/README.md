@@ -2,11 +2,11 @@
 CIP: 167
 Title: Remove isValid from transactions
 Category: Ledger
+Status: Proposed
 Authors:
   - Teodora Danciu <teodora.danciu@iohk.io>
   - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: N/A
-Status: Proposed
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/1089
 Created: 2025-09-01

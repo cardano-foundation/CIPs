@@ -1,8 +1,8 @@
 ---
 CIP: 12
 Title: On-chain stake pool operator to delegates communication
-Status: Proposed
 Category: Metadata
+Status: Proposed
 Authors:
   - Marek Mahut <marek.mahut@fivebinaries.com>
   - Sebastien Guillemot <sebastien@emurgo.io>

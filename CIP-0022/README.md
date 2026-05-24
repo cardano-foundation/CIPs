@@ -1,8 +1,8 @@
 ---
 CIP: 22
 Title: Pool operator verification
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Andrew Westberg <andrewwestberg@gmail.com>
   - Martin Lang <martin@martinlang.at>

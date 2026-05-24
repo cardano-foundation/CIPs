@@ -1,8 +1,8 @@
 ---
 CIP: 150
 Title: Block Data Compression
-Status: Proposed
 Category: Network
+Status: Proposed
 Authors:
   - Alex Sierkov <alex.sierkov@gmail.com>
 Implementors: []

@@ -1,8 +1,8 @@
 ---
 CIP: 82
 Title: Improved Rewards Scheme Parameters
-Status: Proposed
 Category: Ledger
+Status: Proposed
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []

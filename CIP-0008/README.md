@@ -1,8 +1,8 @@
 ---
 CIP: 8
 Title: Message Signing
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors:

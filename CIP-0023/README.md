@@ -1,16 +1,16 @@
 ---
 CIP: 23
 Title: Fair Min Fees
+Category: Ledger
+Status: Proposed
 Authors:
   - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
   - Ryan Wiley <rian222@gmail.com>
-Category: Ledger
-Status: Proposed
-Created: 2021-02-04
+Implementors: []
 Discussions:
  - https://forum.cardano.org/t/fair-min-fees-cip/47534
  - https://github.com/cardano-foundation/CIPs/pull/66
-Implementors: []
+Created: 2021-02-04
 License: CC-BY-4.0
 ---
 

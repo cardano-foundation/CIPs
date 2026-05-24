@@ -1,8 +1,8 @@
 ---
 CIP: 71
 Title: Non-Fungible Token (NFT) Proxy Voting Standard
-Status: Proposed
 Category: Tools
+Status: Proposed
 Authors:
   - Thaddeus Diamond <support@wildtangz.com>
 Implementors: []

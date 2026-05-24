@@ -1,8 +1,8 @@
 ---
 CIP: 26
 Title: Cardano Off-Chain Metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>

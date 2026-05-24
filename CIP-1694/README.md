@@ -1,8 +1,8 @@
 ---
 CIP: 1694
 Title: A First Step Towards On-Chain Decentralized Governance
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
     - Jared Corduan <jared.corduan@iohk.io>
     - Andre Knispel <andre.knispel@iohk.io>

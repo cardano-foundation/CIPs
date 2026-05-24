@@ -1,8 +1,8 @@
 ---
 CIP: 3
 Title: Wallet Key Generation
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Sebastien Guillemot <seba@dcspark.io>

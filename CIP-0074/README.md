@@ -1,15 +1,15 @@
 ---
 CIP: 74
 Title: Set `minPoolCost` to 0
-Authors:
- - Robin of Loxley <adarobinhood@tutanota.com>
 Category: Ledger
 Status: Proposed
-Created: 2022-10-17
+Authors:
+ - Robin of Loxley <adarobinhood@tutanota.com>
+Implementors: []
 Discussions:
  - https://forum.cardano.org/t/cip-69-set-minpoolcost-to-0/109309
  - https://github.com/cardano-foundation/CIPs/pull/358
-Implementors: []
+Created: 2022-10-17
 License: CC-BY-4.0
 ---
 

@@ -1,8 +1,8 @@
 ---
 CIP: 55
 Title: Protocol Parameters (Babbage Era)
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors:

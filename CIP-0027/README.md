@@ -1,8 +1,8 @@
 ---
 CIP: 27
 Title: CNFT Community Royalties Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Huth S0lo <john@digitalsyndicate.io>
   - TheRealAdamDean <adam@crypto2099.io>

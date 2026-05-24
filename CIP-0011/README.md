@@ -1,8 +1,8 @@
 ---
 CIP: 11
 Title: Staking key chain for HD wallets
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
   - Matthias Benkort <matthias.benkort@iohk.io>

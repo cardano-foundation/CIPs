@@ -1,8 +1,8 @@
 ---
 CIP: 30
 Title: Cardano dApp-Wallet Web Bridge
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - rooooooooob
 Implementors:

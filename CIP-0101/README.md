@@ -1,8 +1,8 @@
 ---
 CIP: 101
 Title: Integration of `keccak256` into Plutus
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
   - Sergei Patrikeev <so.patrikeev@gmail.com>
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>

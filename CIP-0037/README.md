@@ -1,8 +1,8 @@
 ---
 CIP: 37
 Title: Dynamic Saturation Based on Pledge
-Status: Proposed
 Category: Ledger
+Status: Proposed
 Authors:
   - Casey Gibson <caseygibson@protonmail.ch>
 Implementors: []

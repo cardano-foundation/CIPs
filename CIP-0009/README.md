@@ -1,8 +1,8 @@
 ---
 CIP: 9
 Title: Protocol Parameters (Shelley Era)
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Kevin Hammond <kevin.hammond@iohk.io>
 Implementors:

@@ -1,8 +1,8 @@
 ---
 CIP: 132
 Title: New Plutus Builtin `dropList`
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
     - Philip DiSarro <info@anastasialabs.com>
 Implementors: []

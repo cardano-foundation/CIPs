@@ -1,8 +1,8 @@
 ---
 CIP: 75
 Title: Fair Stake Pool Rewards
-Status: Proposed
 Category: Ledger
+Status: Proposed
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []

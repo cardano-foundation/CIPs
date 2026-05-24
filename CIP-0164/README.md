@@ -1,8 +1,8 @@
 ---
 CIP: 164
 Title: Ouroboros Linear Leios - Greater transaction throughput
-Status: Proposed
 Category: Consensus
+Status: Proposed
 Authors:
   - William Wolff <william.wolff@iohk.io>
   - Brian W Bush <brian.bush@iohk.io>

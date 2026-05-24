@@ -1,8 +1,8 @@
 ---
 CIP: 25
 Title: Media Token Metadata Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Smaug <smaug@pool.pm>

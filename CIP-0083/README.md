@@ -1,8 +1,8 @@
 ---
 CIP: 83
 Title: Encrypted Transaction message/comment metadata (Addendum to CIP-0020)
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
     - Martin Lang <martin@martinlang.at>
     - Ola Ahlman <ola@ahlnet.nu>

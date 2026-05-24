@@ -1,8 +1,8 @@
 ---
 CIP: 29
 Title: Phase-1 Monetary Scripts Serialization Formats
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
 Implementors:

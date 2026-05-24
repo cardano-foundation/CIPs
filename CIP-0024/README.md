@@ -1,14 +1,14 @@
 ---
 CIP: 24
 Title: Non-Centralizing Rankings
-Authors:
-  - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
 Category: Wallets
 Status: Proposed
+Authors:
+  - Shawn McMurdo <shawn_mcmurdo@yahoo.com>
+Implementors: []
 Discussions:
   - https://forum.cardano.org/t/how-to-improve-daedalus-rankings/40478
   - https://github.com/cardano-foundation/CIPs/pull/21
-Implementors: []
 Created: 2020-09-15
 License: CC-BY-4.0
 ---

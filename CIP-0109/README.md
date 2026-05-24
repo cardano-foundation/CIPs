@@ -1,8 +1,8 @@
 ---
 CIP: 109
 Title: Modular Exponentiation Built-in for Plutus Core
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
     - Kenneth MacKenzie <kenneth.mackenzie@iohk.io>
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>

@@ -1,8 +1,8 @@
 ---
 CIP: 1853
 Title: HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Rafael Korbas <rafael.korbas@vacuumlabs.com>
 Implementors:

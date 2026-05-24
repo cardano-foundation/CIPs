@@ -1,8 +1,8 @@
 ---
 CIP: 57
 Title: Plutus Contract Blueprint
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - KtorZ <matthias.benkort@cardanofoundation.org>
   - scarmuega <santiago@carmuega.me>

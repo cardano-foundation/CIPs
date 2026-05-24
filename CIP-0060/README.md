@@ -1,8 +1,8 @@
 ---
 CIP: 60
 Title: Music Token Metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Andrew Westberg <awestberg@projectnewm.io>
   - Ryan Jones <rjones@projectnewm.io>

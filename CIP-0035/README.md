@@ -1,8 +1,8 @@
 ---
 CIP: 35
 Title: Plutus Core Evolution
-Status: Active
 Category: Meta
+Status: Active
 Authors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: N/A

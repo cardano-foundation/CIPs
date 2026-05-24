@@ -1,8 +1,8 @@
 ---
 CIP: 34
 Title: Chain ID Registry
-Status: Proposed
 Category: Tools
+Status: Proposed
 Authors:
   - Sebastien Guillemot <seba@dcspark.io>
 Implementors: []
