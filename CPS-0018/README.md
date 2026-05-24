@@ -7,7 +7,8 @@ Authors:
   - Arnaud Bailly <arnaud.bailly@iohk.io>
   - Brian W. Bush <brian.bush@iohk.io>
   - Hans Lahe <hans.lahe@iohk.io>
-Proposed Solutions: []
+Proposed Solutions:
+  - CIP-0164 | Ouroboros Linear Leios - Greater transaction throughput: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164
 Discussions: 
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/925
 Created: 2024-10-11

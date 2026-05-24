@@ -10,7 +10,7 @@ Discussions:
     - CIP-0113? | Programmable token-like assets: https://github.com/cardano-foundation/CIPs/pull/444
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/944
 Solution To:
-    - CPS-0003
+    - CPS-0003: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0003
 Created: 2024-12-03
 License: Apache-2.0
 ---

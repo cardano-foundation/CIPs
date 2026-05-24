@@ -6,7 +6,8 @@ Status: Open
 Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
     - Raphael Toledo <raphael.toledo@iohk.io>
-Proposed Solutions: 
+Proposed Solutions:
+    - CIP-0140 | Ouroboros Peras - Faster Settlement: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
     - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1009

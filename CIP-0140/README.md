@@ -14,8 +14,8 @@ Implementors:
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/872
 Solution To:
-  - CPS-0017
-  - CPS-0021
+  - CPS-0017: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0017
+  - CPS-0021: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0021
 Created: 2024-08-15
 License: Apache-2.0
 ---

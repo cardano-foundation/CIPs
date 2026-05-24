@@ -8,6 +8,8 @@ Authors:
 Implementors: N/A
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/556
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2020-09-22
 License: CC-BY-4.0
 ---

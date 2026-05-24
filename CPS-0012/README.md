@@ -6,7 +6,8 @@ Status: Open
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
     - Ryan Williams <ryan.williams@intersectmbo.org>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-0139 | Universal Query Layer: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0139
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/625
 Created: 2023-11-27

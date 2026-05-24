@@ -12,6 +12,8 @@ Implementors:
 - Yoroi Wallet <https://yoroi-wallet.com/>
 Discussions:
 - Original PR: https://github.com/cardano-foundation/CIPs/pull/546
+Solution To:
+- CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2023-06-20
 License: CC-BY-4.0
 ---

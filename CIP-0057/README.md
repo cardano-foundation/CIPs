@@ -16,6 +16,8 @@ Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/258
   - Discord: https://discord.gg/yUkkhqBnyV
   - GitHub Issue: https://github.com/aiken-lang/aiken/issues/972
+Solution To:
+  - CPS-0005: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0005
 Created: 2022-05-15
 License: CC-BY-4.0
 ---

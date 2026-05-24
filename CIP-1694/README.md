@@ -25,6 +25,8 @@ Discussions:
     - Video: https://www.youtube.com/watch?v=2hCnmMG1__8
     - Video: https://www.youtube.com/watch?v=KiLhhOVXQOg
     - CIP-1694 | SPO pre-defined voting options: https://github.com/cardano-foundation/CIPs/pull/916
+Solution To:
+    - CPS-0007: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0007
 Created: 2022-11-18
 License: CC-BY-4.0
 ---

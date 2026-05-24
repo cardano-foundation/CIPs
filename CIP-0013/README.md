@@ -19,6 +19,8 @@ Discussions:
     - Extend URI scheme for delegation portfolio links: https://github.com/cardano-foundation/CIPs/pull/86
     - CIP-0099? | Proof of Onboarding: https://github.com/cardano-foundation/CIPs/pull/546
     - CIP-0013 | Generalise for further protocols: https://github.com/cardano-foundation/CIPs/pull/559
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2020-09-22
 License: CC-BY-4.0
 ---

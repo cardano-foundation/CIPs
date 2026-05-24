@@ -11,7 +11,7 @@ Discussions:
     - Discord: https://discord.gg/MU8vHAgmGy
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/869
 Solution To:
-    - CPS-0012
+    - CPS-0012: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0012
 Created: 2024-05-14
 License: CC-BY-4.0
 ---

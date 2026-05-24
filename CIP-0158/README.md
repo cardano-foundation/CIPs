@@ -12,6 +12,8 @@ Implementors:
     - Begin Wallet (https://begin.is)
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
