@@ -1,5 +1,5 @@
 ---
-CIP: 37 
+CIP: 37
 Title: Dynamic Saturation Based on Pledge
 Status: Proposed
 Category: Ledger
@@ -9,7 +9,7 @@ Implementors: []
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/163
 Created: 2021-12-03
-License: CC-BY-4.0  
+License: CC-BY-4.0
 ---
 
 ## Abstract

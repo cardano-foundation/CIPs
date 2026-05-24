@@ -3,7 +3,7 @@ CIP: 72
 Title: dApp Registration & Verification
 Status: Proposed
 Category: Metadata
-Authors: 
+Authors:
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
   - Daniel Main <daniel.main@iohk.io>

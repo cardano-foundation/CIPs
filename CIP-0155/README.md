@@ -6,7 +6,7 @@ Category: Network
 Authors:
   - Marcin Szamotulski <marcin.szamotulski@iohk.io>
 Implementors: N/A
-Discussions: 
+Discussions:
   - Submission: https://github.com/cardano-foundation/CIPs/pull/1033
 Created: 2025-04-22
 License: CC-BY-4.0

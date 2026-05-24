@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Fergal O'Connor <fergal.oconnor@cardanofoundation.org>
     - Thomas Kammerlocher <thomas.kammerlocher@cardanofoundation.org>
-Implementors: 
+Implementors:
   - reeve.technology
   - veridian.id
 Discussions:

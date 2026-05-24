@@ -3,11 +3,11 @@ CIP: 84
 Title: Cardano Ledger Evolution
 Status: Active
 Category: Meta
-Authors: 
+Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
 Created: 2023-01-30
-Discussions: 
+Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/456
 License: CC-BY-4.0
 ---

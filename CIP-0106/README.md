@@ -3,10 +3,10 @@ CIP: 106
 Title: Web-Wallet Bridge - Multisig wallets
 Status: Proposed
 Category: Wallets
-Authors: 
+Authors:
   - Leo
-Implementors: 
-  - BroClanWallet 
+Implementors:
+  - BroClanWallet
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/617
 Created: 2023-10-12

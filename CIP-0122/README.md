@@ -3,9 +3,9 @@ CIP: 122
 Title: Logical operations over `BuiltinByteString`
 Category: Plutus
 Status: Active
-Authors: 
+Authors:
     - Koz Ross <koz@mlabs.city>
-Implementors: 
+Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/806

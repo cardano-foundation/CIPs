@@ -6,7 +6,7 @@ Category: Meta
 Authors:
   - Simon Thompson <simon.thompson@iohk.io>
 Implementors: []
-Discussions: 
+Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/252
   - https://github.com/cardano-foundation/CIPs/pull/344
   - https://github.com/cardano-foundation/CIPs/pull/406

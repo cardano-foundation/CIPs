@@ -6,7 +6,7 @@ Status: Active
 Authors:
     - Martín Schere
     - Ola Ahlman <ola.ahlman@tastenkunst.io>
-Implementors: 
+Implementors:
     - JPG Store <https://www.jpg.store>
     - Eternl <https://eternl.io/>
     - Typhon <https://typhonwallet.io/>

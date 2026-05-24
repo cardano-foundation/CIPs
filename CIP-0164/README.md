@@ -142,7 +142,7 @@ technical resources, visit the Leios Innovation R&D site at
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano's current throughput generally satisfies the immediate needs of its
 users. However, the Ouroboros Praos consensus protocol imposes inherent
@@ -1498,7 +1498,7 @@ nodes providing client interfaces will provide the modified block to clients.
 
 A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Ouroboros Leios introduces a committee-based voting layer over Nakamoto-style
 consensus to handle transaction surplus beyond current Praos block limits,
@@ -2568,7 +2568,7 @@ with tombstoning to manage storage efficiency. While offering the greatest
 throughput potential, this pathway requires careful analysis of economic
 incentives and conflict resolution trade-offs.
 
-## Path to active
+## Path to Active
 
 ### Acceptance criteria
 

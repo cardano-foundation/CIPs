@@ -5,7 +5,7 @@ Category: Plutus
 Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: 
+Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/747

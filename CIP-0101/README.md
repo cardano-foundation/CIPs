@@ -3,12 +3,12 @@ CIP: 101
 Title: Integration of `keccak256` into Plutus
 Status: Proposed
 Category: Plutus
-Authors: 
+Authors:
   - Sergei Patrikeev <so.patrikeev@gmail.com>
   - Iñigo Querejeta-Azurmendi <inigo.querejeta@iohk.io>
 Implementors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Discussions: 
+Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/524
 Created: 2023-06-13
 License: Apache-2.0

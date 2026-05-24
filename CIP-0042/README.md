@@ -6,7 +6,7 @@ Category: Plutus
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Sebastian Nagel <sebastian.nagel@iohk.io>
-Implementors: 
+Implementors:
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/218

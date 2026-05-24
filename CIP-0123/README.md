@@ -5,7 +5,7 @@ Category: Plutus
 Status: Active
 Authors:
     - Koz Ross <koz@mlabs.city>
-Implementors: 
+Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/825

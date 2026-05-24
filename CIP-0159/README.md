@@ -7,7 +7,7 @@ Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
     - George Flerovsky <george.flerovsky@gmail.com>
 Implementors: N/A
-Discussions: 
+Discussions:
     - https://github.com/cardano-foundation/CIPs/pull/1061
     - https://github.com/IntersectMBO/cardano-ledger/issues/5474
 Created: 2025-07-16
@@ -22,7 +22,7 @@ these addresses. By removing this restriction, and enabling very specific plutus
 Cardano can unlock new use cases **without sacrificing local determinism**. And by still requiring
 UTxO inputs in transactions, these accounts avoid many of the pitfalls from Ethereum-style accounts.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Consider the following use cases:
 
@@ -558,7 +558,7 @@ data AccountState era
   }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP is able to upgrade Cardano's account addresses to full accounts *without* sacrificing local
 determinism and *without* introducing the issues seen with Ethereum-style accounts. The reasons for

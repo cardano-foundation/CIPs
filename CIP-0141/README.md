@@ -3,7 +3,7 @@ CIP: 141
 Title: Web-Wallet Bridge - Plutus wallets
 Status: Proposed
 Category: Wallets
-Authors: 
+Authors:
   - Leo
 Implementors: BroClan
 Discussions:
