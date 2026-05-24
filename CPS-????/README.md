@@ -235,7 +235,6 @@ for the community's needs, or is true on-chain vote secrecy necessary?
 - [CIP-1694](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694) — A First Step Towards On-Chain Decentralized Governance
 - [CIP-0119](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0119) — Governance Metadata - DReps
 - [CIP-0100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100) — Governance Metadata
-- [CIP-9999](https://github.com/cardano-foundation/CIPs/tree/master/CIP-9999) — Cardano Problem Statement format
 - Adida, B., et al. (2008). *Helios: Web-based Open-Audit Voting*. USENIX Security.
 - Cortier, V., et al. (2021). *SoK: Verifiability Notions for E-Voting Protocols*. IEEE S&P.
 
