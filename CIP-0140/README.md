@@ -11,7 +11,7 @@ Authors:
   - Hans Lahe <hans.lahe@iohk.io>
 Implementors:
   - Intersect
-Solution-To:
+Solution To:
   - CPS-0017
   - CPS-0021
 Discussions:

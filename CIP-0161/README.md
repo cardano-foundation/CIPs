@@ -7,7 +7,7 @@ Authors:
   - Nicolas Henin <nicolas.henin@iohk.io>
   - Raphael Toledo <raphael.toledo@iohk.io>
 Implementors: []
-Solution-To:
+Solution To:
   - CPS-0017
   - CPS-0021
 Discussions:

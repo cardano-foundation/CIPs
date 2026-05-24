@@ -10,7 +10,7 @@ Implementors: []
 Discussions:
     - https://discord.gg/MU8vHAgmGy
     - https://github.com/cardano-foundation/CIPs/pull/869
-Solution-To:
+Solution To:
     - CPS-0012
 Created: 2024-05-14
 License: CC-BY-4.0
