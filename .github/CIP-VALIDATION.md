@@ -59,9 +59,9 @@ The following sections must exist in this order with **exact capitalization**.
 | Order | Section |
 | ----- | ------- |
 | 1 | `Abstract` |
-| 2 | `Motivation: why is this CIP necessary?` |
+| 2 | `Motivation: Why is this CIP necessary?` |
 | 3 | `Specification` |
-| 4 | `Rationale: how does this CIP achieve its goals?` |
+| 4 | `Rationale: How does this CIP achieve its goals?` |
 | 5 | `Path to Active` |
 | 6 | `Copyright` |
 

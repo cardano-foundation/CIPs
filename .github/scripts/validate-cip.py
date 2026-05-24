@@ -38,9 +38,9 @@ CIP_FIELDS_ORDER = [
 # Required sections (H2 headers) in required order
 CIP_REQUIRED_SECTIONS_ORDER = [
     'Abstract',
-    'Motivation: why is this CIP necessary?',
+    'Motivation: Why is this CIP necessary?',
     'Specification',
-    'Rationale: how does this CIP achieve its goals?',
+    'Rationale: How does this CIP achieve its goals?',
     'Path to Active',
     'Copyright',
 ]
