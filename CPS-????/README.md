@@ -188,7 +188,7 @@ re-register would impose unjustified friction.
 Solutions to this problem must address the following questions. Where trade-offs exist,
 the proposal should state which side it favours and why.
 
-**OQ-1: At what point does the vote direction become public (if ever)?**
+### At what point does the vote direction become public (if ever)?
 Options include: never (only the tally is revealed); after the voting period closes;
 immediately (no change from today). Each choice has different accountability and
 coercion-resistance properties.
