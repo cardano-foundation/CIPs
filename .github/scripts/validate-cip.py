@@ -415,19 +415,118 @@ def _validate_license_field(frontmatter: Dict) -> List[str]:
 
 
 def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
-    """Friendly validation of Solution To entry format."""
+    """Validate 'Solution To' entries.
+
+    Each entry is ``CPS-NNNN[?] [| optional title]: URL`` (string form) or
+    ``{CPS-NNNN[?] [| optional title]: URL}`` (single-key dict form).
+
+    - The number must be zero-padded to at least 4 digits and refer to a
+      positive number.
+    - Bare ``CPS-NNNN`` requires a ``/tree/<branch>/CPS-NNNN`` or
+      ``/blob/<branch>/CPS-NNNN`` URL whose referent matches the label.
+    - ``CPS-NNNN?`` requires a ``/pull/<N>`` URL.
+    """
     errors = []
     entries = frontmatter.get('Solution To')
     if not isinstance(entries, list):
         return errors
-    pattern = re.compile(r'^CPS-(?!0+\??$)\d{4,}\??$')
+
+    label_pattern = re.compile(r'^CPS-(\d+)(\?)?(?:\s*\|\s*[^:]+)?$')
+    github_url_pattern = re.compile(
+        r'^https://github\.com/cardano-foundation/CIPs/'
+        r'(?:pull/\d+|tree/[^/]+/CPS-\d+|blob/[^/]+/CPS-\d+)(?:[/?#]|$)'
+    )
+    pr_url_pattern = re.compile(
+        r'^https://github\.com/cardano-foundation/CIPs/pull/\d+(?:[/?#]|$)'
+    )
+    merged_url_pattern = re.compile(
+        r'^https://github\.com/cardano-foundation/CIPs/(?:tree|blob)/[^/]+/CPS-(\d+)(?:[/?#]|$)'
+    )
+
     for i, entry in enumerate(entries):
-        if not isinstance(entry, str) or not pattern.match(entry):
+        # Parse (label, url) from string or single-key dict form
+        if isinstance(entry, dict) and len(entry) == 1:
+            label, url = next(iter(entry.items()))
+            if not isinstance(label, str) or not isinstance(url, str):
+                errors.append(
+                    f"'Solution To' entry {i+1}: dict form must have string label and URL. "
+                    f"Got: {entry!r}"
+                )
+                continue
+        elif isinstance(entry, str):
+            m = re.match(r'^([^:]+):\s+(.+)$', entry)
+            if not m:
+                errors.append(
+                    f"'Solution To' entry {i+1}: must be in the form "
+                    f"'CPS-NNNN[?] [| optional title]: URL'. Got: {entry!r}"
+                )
+                continue
+            label, url = m.groups()
+        else:
             errors.append(
-                f"'Solution To' entry {i+1}: must be 'CPS-NNNN' zero-padded to "
-                f"at least 4 digits (or 'CPS-NNNN?' for a CPS still in PR). "
-                f"Got: {entry!r}"
+                f"'Solution To' entry {i+1}: must be a 'Label: URL' string or "
+                f"single-key dict mapping label to URL. Got: {entry!r}"
             )
+            continue
+
+        label = label.strip()
+        url = url.strip()
+
+        label_match = label_pattern.match(label)
+        if not label_match:
+            errors.append(
+                f"'Solution To' entry {i+1}: label must be 'CPS-NNNN' "
+                f"(or 'CPS-NNNN?' for a CPS still in PR), optionally followed by "
+                f"' | descriptive title'. Got label: {label!r}"
+            )
+            continue
+
+        digits = label_match.group(1)
+        is_candidate = label_match.group(2) == '?'
+
+        if len(digits) < 4 or int(digits) == 0:
+            errors.append(
+                f"'Solution To' entry {i+1}: CPS number must be zero-padded to at "
+                f"least 4 digits and refer to a positive number. Got label: {label!r}"
+            )
+            continue
+
+        ref_number = int(digits)
+
+        if not github_url_pattern.match(url):
+            errors.append(
+                f"'Solution To' entry {i+1}: URL must be a GitHub CIPs repository "
+                f"link (a pull request, or tree/blob pointing to a CPS folder). "
+                f"Got: {url}"
+            )
+            continue
+
+        is_pr = pr_url_pattern.match(url) is not None
+        merged_match = merged_url_pattern.match(url)
+
+        if is_candidate:
+            if not is_pr:
+                errors.append(
+                    f"'Solution To' entry {i+1}: 'CPS-{ref_number:04d}?' indicates a "
+                    f"candidate (in PR), so URL must be a pull-request URL. "
+                    f"Got: {url}"
+                )
+        else:
+            if not merged_match:
+                errors.append(
+                    f"'Solution To' entry {i+1}: bare 'CPS-{ref_number:04d}' requires a "
+                    f"/tree/<branch>/CPS-NNNN or /blob/<branch>/CPS-NNNN URL "
+                    f"(use 'CPS-{ref_number:04d}?' with a /pull/<N> URL for an in-PR CPS). "
+                    f"Got: {url}"
+                )
+            else:
+                url_number = int(merged_match.group(1))
+                if url_number != ref_number:
+                    errors.append(
+                        f"'Solution To' entry {i+1}: label 'CPS-{ref_number:04d}' "
+                        f"does not match URL referent 'CPS-{url_number:04d}'."
+                    )
+
     return errors
 
 
@@ -788,7 +887,10 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
     """Validate Solution To entries against on-disk CPS folders.
 
     A bare ``CPS-NNNN`` must point to an existing CPS folder; a ``CPS-NNNN?``
-    must point to one that does not exist yet (still in PR).
+    must point to one that does not exist yet (still in PR). Entry parsing
+    accepts both ``"Label: URL"`` strings (with optional ``| title``) and
+    single-key ``{Label: URL}`` dicts; format errors are reported by
+    ``_validate_solution_to_format`` and silently skipped here.
 
     Returns:
         List of error messages (empty if valid)
@@ -799,14 +901,25 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
         return errors
 
     repo_root = file_path.parent.parent
-    entry_pattern = re.compile(r'^CPS-(\d+)(\?)?$')
+    label_pattern = re.compile(r'^CPS-(\d+)(\?)?(?:\s*\|\s*[^:]+)?$')
 
     for entry in entries:
-        if not isinstance(entry, str):
+        # Extract label from string ("Label: URL") or dict ({Label: URL}) form
+        if isinstance(entry, dict) and len(entry) == 1:
+            label = next(iter(entry.keys()))
+            if not isinstance(label, str):
+                continue
+        elif isinstance(entry, str):
+            m = re.match(r'^([^:]+):\s+.+$', entry)
+            if not m:
+                continue
+            label = m.group(1)
+        else:
             continue
-        match = entry_pattern.match(entry.strip())
+
+        match = label_pattern.match(label.strip())
         if not match:
-            continue  # Format error reported by schema validation
+            continue  # Format error reported by _validate_solution_to_format
         number = int(match.group(1))
         is_candidate = match.group(2) == '?'
         canonical = f"CPS-{number:04d}"

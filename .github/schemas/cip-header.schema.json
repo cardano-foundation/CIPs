@@ -84,9 +84,28 @@
       }
     },
     "Solution To": {
-      "description": "A list of CPS (Cardano Problem Statements) that this CIP addresses, if any. Omitted when not applicable. Each entry is a bare CPS reference like 'CPS-0001' (or 'CPS-0001?' if the CPS is still an open PR). Per-entry format enforced by the script.",
+      "description": "A list of CPSs that this CIP addresses, if any. Omit the field when not applicable. Each entry is 'CPS-NNNN[?] [| optional title]: URL' (string) or {'CPS-NNNN[?] [| optional title]': URL} (dict). Bare 'CPS-NNNN' requires a tree/blob URL to that CPS folder; 'CPS-NNNN?' requires a pull-request URL. Per-entry semantics enforced by the script.",
       "type": "array",
-      "minItems": 1
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^.+:\\s+https?://.+$",
+            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Dictionary format: {'Label': 'URL'}"
+          }
+        ]
+      }
     },
     "Created": {
       "description": "Date created on, in ISO 8601 (YYYY-MM-DD) format. Format enforced by the script.",

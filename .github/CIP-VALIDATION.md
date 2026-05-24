@@ -31,7 +31,7 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 | **Authors** | 5 | Yes | Non-empty list, each entry: `Name <email>` |
 | **Implementors** | 6 | Yes | List of strings, `[]` if no implementor yet, or `N/A` when not applicable |
 | **Discussions** | 7 | Yes | Non-empty list, each entry: `Label: URL`. Must include at least one pull request link of the form `https://github.com/cardano-foundation/CIPs/pull/<N>`. |
-| **Solution To** | (between Discussions and Created, if present) | No | Non-empty list of bare CPS references like `CPS-0001` (or `CPS-0001?` for a CPS still in PR). Each reference must be zero-padded to at least 4 digits and refer to a positive number. A bare `CPS-NNNN` must point to an existing folder; a `CPS-NNNN?` must point to one that does not yet exist. |
+| **Solution To** | (between Discussions and Created, if present) | No | Non-empty list. Each entry is `CPS-NNNN[?] [\| optional title]: URL`. The number must be zero-padded to at least 4 digits and refer to a positive number. URL must be a GitHub CIPs repository link: bare `CPS-NNNN` requires a `/tree/<branch>/CPS-NNNN` or `/blob/<branch>/CPS-NNNN` URL whose referent matches the label; `CPS-NNNN?` requires a `/pull/<N>` URL. A bare `CPS-NNNN` must point to an existing folder; a `CPS-NNNN?` must point to one that does not yet exist. |
 | **Created** | 8 | Yes | Date in `YYYY-MM-DD` format |
 | **License** | 9 | Yes | `CC-BY-4.0` or `Apache-2.0` |
 
@@ -49,6 +49,8 @@ extra validation applies:
 | No `?` for merged | `CIP-0030` (without `?`) required when linking to a merged document |
 
 Non-CIP/CPS labels (e.g., `Forum Post`, `Pull Request`) are allowed with any valid URL.
+
+The **Solution To** field applies a stricter variant of these rules: every label must be a `CPS-NNNN[?]` reference (optionally followed by ` | descriptive title`), the URL is required to be a GitHub CIPs repository link, and a bare `CPS-NNNN` must additionally match the URL referent (e.g. `CPS-0001` must link to `.../CPS-0001`). See the **Solution To** row above for the full rule.
 
 ## Required Sections (H2 Headers)
 
