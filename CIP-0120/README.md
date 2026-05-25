@@ -6,7 +6,7 @@ Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
     - Danielle Stanko <danielle.stanko@iohk.io>
-Implementors: 
+Implementors:
     - Danielle Stanko <danielle.stanko@iohk.io>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/796
