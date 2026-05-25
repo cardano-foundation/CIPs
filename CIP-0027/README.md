@@ -96,4 +96,4 @@ The solution is scalable to any desired royalty percentage.  It is easy to work 
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).
