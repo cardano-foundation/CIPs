@@ -55,6 +55,7 @@ CIP_OPTIONAL_SECTIONS = {
     'Appendices',
     'Acknowledgments',
     'Acknowledgements',
+    'Open Questions',
 }
 
 # Required H3 subsections under "Path to Active"

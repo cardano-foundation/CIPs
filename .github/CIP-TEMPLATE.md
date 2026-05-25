@@ -55,7 +55,17 @@ It must also explain how the proposal affects the backward compatibility of exis
 ### Implementation Plan
 <!-- A plan to meet those criteria or `N/A` if an implementation plan is not applicable. -->
 
-<!-- OPTIONAL SECTIONS: see CIP-0001 > Document > Structure table -->
+<!--
+OPTIONAL SECTIONS (see CIP-0001 > Document > Structure table for details):
+These may appear here, between 'Path to Active' and 'Copyright', in any order
+and at author/editor discretion. To use one, add it as an H2 below.
+
+## Versioning            — if versioning is not addressed in Specification
+## References            — external documents, prior art, related CIPs/CPSs
+## Appendices            — supplementary material
+## Acknowledgements      — contributors and discussion participants
+## Open Questions        — unresolved design questions left for future discussion
+-->
 
 ## Copyright
 <!-- The CIP must be explicitly licensed under acceptable copyright terms. Uncomment the license you wish to use (delete the other one) and ensure it matches the License field in the header.
