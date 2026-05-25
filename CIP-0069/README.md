@@ -137,4 +137,4 @@ Scalus
 
 ## Copyright
 
-This CIP is licensed under Apache-2.0
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
