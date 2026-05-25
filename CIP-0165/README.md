@@ -389,22 +389,6 @@ There are few solutions that we propose:
 1. allow tooling to export (or even generate) raw cbor files, that will have required byte-identical property
 2. set additional restrictions on the policies for the records, and instead of defining variable size records require all the records to have exact number of entries inside. It will harm some properties of the hardware but the files will be byte-identical in case if they have similar metadata. Or the metadata we can place it in separate file, then everything will be byte-identical.
 
-## Open Questions
-
-**What is the exact implementation for data compression, especially for indexing and search?**
-
-There are many ways to write indices, hashtables or btrees, each of them may have interesting
-properties. It's an open question which of them do we want to support.
-
-**Do we want the file be optimized for querying with external tools? If so how to achieve that?**
-
-We are proposing adding additional records types:
-
-- bloom records — they would allow faster search of the values by the key, still require file traversal;
-- index records - it would allow faster search by key without full file traversal.
-
-Both changes will not change the structure of the file.
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -421,6 +405,22 @@ Both changes will not change the structure of the file.
 1. [ ] Integrate into Cardano node CLI.
 1. [ ] Validate with Mithril.
 1. [ ] Rollout and ecosystem tooling.
+
+## Open Questions
+
+**What is the exact implementation for data compression, especially for indexing and search?**
+
+There are many ways to write indices, hashtables or btrees, each of them may have interesting
+properties. It's an open question which of them do we want to support.
+
+**Do we want the file be optimized for querying with external tools? If so how to achieve that?**
+
+We are proposing adding additional records types:
+
+- bloom records — they would allow faster search of the values by the key, still require file traversal;
+- index records - it would allow faster search by key without full file traversal.
+
+Both changes will not change the structure of the file.
 
 ## References
 
