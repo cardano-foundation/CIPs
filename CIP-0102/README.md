@@ -148,11 +148,11 @@ Collections using [CIP-0088][] registration certificates **should** advertise th
 
 This provides an additional discovery path for off-chain tooling: rather than constructing the royalty token name from a reference datum lookup, implementors may read it directly from the CIP-88 registration.
 
-## Examples
+### Examples
 
 In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference). (Up to v1 - v2 coming soon)
 
-### Constructing the Royalty Token
+#### Constructing the Royalty Token
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalty token. The steps are:
 
@@ -160,9 +160,9 @@ A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 2. Check the `extra` field of the reference datum for a `royalty_included` flag - denoted here as [flag].
 3. Construct `royalty NFT` from `user token` and `royalty_included`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty[flag?]`
 
-### Retrieving metadata
+#### Retrieving metadata
 
-#### Retrieve metadata as 3rd party
+##### Retrieve metadata as 3rd party
 
 A third party has a CIP-102 compliant NFT and they want to look up the royalties. The steps are
 
@@ -171,7 +171,7 @@ A third party has a CIP-102 compliant NFT and they want to look up the royalties
 3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
-#### Retrieve metadata in a Plutus validator
+##### Retrieve metadata in a Plutus validator
 
 We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus validator context. To do this we
 
@@ -180,7 +180,7 @@ We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-### Example of onchain variable fee calculation:
+#### Example of onchain variable fee calculation:
 
 ```cddl
 ; Given a royalty fee of 1.6% (0.016)
