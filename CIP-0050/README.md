@@ -5,12 +5,12 @@ Category: Ledger
 Status: Proposed
 Authors:
   - Michael Liesenfelt <michael.liesenfelt@gmail.com>
-  - Ryan Wiley
-  - Rich Manderino [ECP]
-  - Stef M [RABIT]
-  - Wayne [OTG]
-  - Homer J (AAA)
-  - Chad [BBHMM]
+  - Ryan Wiley <https://x.com/Cerkoryn>
+  - Rich Manderino [ECP] <https://x.com/earncoinpool>
+  - Stef M [RABIT] <https://x.com/rabbitholepools>
+  - Wayne [OTG] <https://x.com/Star_Forge_Pool>
+  - Homer J (AAA) <https://x.com/KpunToN00b>
+  - Chad [BBHMM] <https://x.com/BBHMM_Stake>
 Implementors: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/242
