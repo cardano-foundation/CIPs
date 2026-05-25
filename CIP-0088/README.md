@@ -72,11 +72,11 @@ for NFT projects. As such, much information must be manually provided to individ
 creating an undue burden on the project creators to provide a largely static amount of information via different web
 forms and authentication schemes rather than simply publishing this information to the blockchain directly.
 
-### CPS-0001: Metadata Discoverability and Trust
+### CPS-0001?: Metadata Discoverability and Trust
 
 [CPS-0001?](https://github.com/cardano-foundation/CIPs/pull/371) presents a problem of metadata discoverability and
 trust.
-This CIP attempts to address and solve several of the issues proposed in CPS-0001 but is most likely not a "complete"
+This CIP attempts to address and solve several of the issues proposed in CPS-0001? but is most likely not a "complete"
 solution and is rather narrowed (for the time being) to the scope of token projects although with some refinement to
 the schema could potentially be expanded to support additional scopes.
 
@@ -171,7 +171,7 @@ standard.
 
 | Index | Name                                        | Type   | Required | Notes/Examples                                                                                                                                                                                                                                    |
 |-------|---------------------------------------------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Scope                                       | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
+| 1     | Scope                                       | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001?). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
 | 2     | Feature Set                                 | Array  | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
 | 3     | Validation Method                           | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
 | 4     | Nonce                                       | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
@@ -182,7 +182,7 @@ The following fields are required in all token registration submissions.
 
 ##### 1. Scope
 
-Currently, this CIP concerns itself with the scope of *Tokens* with relation to CPS-0001 as described in the Motivation
+Currently, this CIP concerns itself with the scope of *Tokens* with relation to CPS-0001? as described in the Motivation
 section. However, the specification is left flexible to encapsulate additional scopes and contexts (Stake Pools, dApps,
 etc.) should the specification become adopted and the community desire to expand the scope of this CIP.
 
