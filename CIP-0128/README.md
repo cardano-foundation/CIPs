@@ -122,7 +122,7 @@ The strict lexicographical ordering mandated by the ledger requires traversing i
 
 To address these issues, the proposed solution suggests transitioning from an `set` based representation of transaction inputs and reference inputs to an `oset` type, which preserves the order of elements.
 
-This CIP tries to revive the original draft [CIP-0051](https://github.com/cardano-foundation/CIPs/pull/231)
+This CIP tries to revive the original draft [CIP-0051?](https://github.com/cardano-foundation/CIPs/pull/231)
 
 ### Alternatives
 #### 1. Retain the existing set-based representation:

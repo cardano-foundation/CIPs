@@ -74,7 +74,7 @@ forms and authentication schemes rather than simply publishing this information 
 
 ### CPS-0001: Metadata Discoverability and Trust
 
-[CPS-0001](https://github.com/cardano-foundation/CIPs/pull/371) presents a problem of metadata discoverability and
+[CPS-0001?](https://github.com/cardano-foundation/CIPs/pull/371) presents a problem of metadata discoverability and
 trust.
 This CIP attempts to address and solve several of the issues proposed in CPS-0001 but is most likely not a "complete"
 solution and is rather narrowed (for the time being) to the scope of token projects although with some refinement to

@@ -183,8 +183,8 @@ This section is meant to _save time_, especially for problem statement authors w
 
 - [x] Review this proposal with existing actors of the ecosystem
 - [x] Formulate at least one problem statement following this process
-    - [CPS-0001: Metadata Discoverability & Trust](https://github.com/cardano-foundation/CIPs/pull/371)
-    - [CPS-0002: Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374)
+    - [CPS-0001?: Metadata Discoverability & Trust](https://github.com/cardano-foundation/CIPs/pull/371)
+    - [CPS-0002?: Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374)
 
 ### Implementation Plan
 

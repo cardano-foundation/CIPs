@@ -33,7 +33,7 @@ for users willing to make and accept offers, run aggregator services, subsidize 
 ## Motivation: Why is this CIP necessary?
 
 This CIP provides a partial solution to the problems described in
-[CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
+[CPS-0015?](https://github.com/cardano-foundation/CIPs/pull/779).
 In particular, it describes some ledger changes that allow settlement
 of intents that require *counterparty irrelevance*, including many of the swap use cases
 and DApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol
@@ -409,7 +409,7 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 
 ### Comparison with Other Designs
 
-#### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
+#### CIP-0131? "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences
 are :
