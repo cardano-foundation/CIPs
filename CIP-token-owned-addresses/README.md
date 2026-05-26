@@ -51,17 +51,16 @@ This CIP standardises the pattern. A single canonical validator, applied to a si
 
 The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
-The TOA address is obtained as follows:
+The TOA address is derived as follows:
 
-1. A canonical Plutus V3 validator is defined (`TOA Validator v1`).
-2. The validator is parameterised with a **single compile-time parameter**: the PlutusData value `TOAParamsV1` defined in *Canonical Parameter Encoding* below, containing `(toa_version, policy_id, asset_name)`.
-3. The parameterised script is canonically serialised.
-4. The script hash is computed as the Cardano ledger Plutus V3 script hash of the applied script.
-5. The hash becomes the payment credential of a Cardano address.
-6. No stake credential is attached in TOA v1.
-7. The result is a deterministic enterprise script address for that NFT.
+1. The canonical Plutus V3 validator `TOA Validator v1` is defined and a single canonical PlutusData parameter `TOAParamsV1` is bound to it — containing `(toa_version, policy_id, asset_name)`.
+2. The applied script bytes are reconstructed by the byte-level procedure **R** (specified in *Address Derivation*), using the pinned byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` and the canonical PlutusData CBOR of `TOAParamsV1`.
+3. The script hash is the Cardano ledger Plutus V3 script hash of the reconstructed applied script.
+4. The hash becomes the payment credential of the address.
+5. No stake credential is attached in TOA v1.
+6. The result is a deterministic enterprise script address for that NFT.
 
-TOA v1 commits explicitly to **one** parameter. Implementations MUST apply the validator with a single PlutusData argument matching the CDDL `toa_params_v1` shape. An implementation that applies the validator with three separately-encoded arguments produces a different UPLC byte string after parameter application — and therefore a different script hash — even when the three underlying values are identical. Such an implementation is non-conforming.
+TOA v1 commits explicitly to **one** parameter. Implementations MUST treat the controlling-NFT parameters as a single PlutusData value matching the CDDL `toa_params_v1` shape; under R, the canonical PlutusData CBOR `params_cbor` plays that role in address derivation. An implementation that uses a non-conformant CBOR encoding for the parameter — for example, definite-length `Constr 0` field arrays in place of the indefinite-length form produced by the Plutus V3 `serialiseData` builtin — produces a different `params_cbor`, a different reconstructed applied script, and therefore a different script hash, even when the three underlying values are identical. Such an implementation is non-conforming.
 
 Delegated/staking TOAs are explicitly out of scope for v1: any optional stake credential would create multiple valid addresses for the same controlling NFT, breaking the address-per-asset-class invariant. A future CIP may introduce a delegated variant under a new `toa_version`.
 
@@ -382,6 +381,16 @@ Coverage MUST include at minimum:
 ### Design Decisions
 
 - **Why a parameterised validator (vs. a datum-carried params + a single shared validator)?** Parameters baked into the script hash mean the address itself uniquely encodes the controlling NFT. Anyone can pay in to the correct, predictable address without trusting a datum.
+- **Why is the canonical address derivation specified at the byte level (R) rather than via `apply_params`?** `apply_params` is the conventional procedure for parameterised validators in the Cardano ecosystem, but it has two properties that make it a poor fit for the TOA use case. First, it is not executable on-chain — Plutus V3 does not expose a primitive that applies parameters to an unapplied script and serialises the result in ledger form, so a validator cannot derive a TOA address using `apply_params` alone. Second, it requires Plutus tooling to implement off-chain, which is significant friction for an ecosystem-wide standard targeted at wallets, indexers, and libraries written in TypeScript, Rust, Python, and other non-Haskell languages.
+
+  The canonical TOA v1 validator artifact has been empirically verified to admit a byte-level decomposition of its applied form, calculable by simple concatenation and length arithmetic. Specifying address derivation at this byte level — function R — yields a procedure that:
+    - is executable on-chain using standard Plutus V3 builtins (`appendByteString`, `consByteString`, `lengthOfByteString`, `serialiseData`, `blake2b_224`);
+    - is implementable in any language using only bytestring operations and hashing, with no Plutus-specific dependencies;
+    - is identical off-chain and on-chain, eliminating the dual-procedure conformance burden.
+
+  R is normatively grounded in the same compiled artifact that `apply_params` would target — the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are extracted from `ToaV1.uplc` and pinned by content hash. The artifact and its derivation via Plinth and a pinned toolchain remain published for audit, and any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable) that R reproduces the same bytes that `apply_params` would produce. This audit path is documented in *Address Derivation — Derivation of the canonical artifacts* and is informative, not normative.
+
+  **Technical precondition for R.** The standard Plutus V3 primitives are sufficient to derive a TOA address on-chain **if and only if** the ledger-serialised applied script bytes admit a byte-aligned decomposition around the encoded parameter. This is not a property guaranteed by Plinth, `plutus-tx`, or any current Plutus toolchain — UPLC flat encoding is bit-aligned by default, and whether the parameter falls on a byte boundary in the applied script depends on the specific compilation output. For TOA v1, the parameter is delivered via a single UPLC `Constant Data` term (the same shape `cardano-api`'s `applyArguments` produces), and the resulting flat-encoded applied script does admit the byte-aligned decomposition — empirically verified by `toa-verify-reconstruction` for `asset_name` lengths 0, 1, 16, 23, 24, 25, 31, 32 across the canonical artifact. If a future revision of the artifact lost this property, R would no longer be definable for that revision and a new `toa_version` would be required (see *Open Questions and Limitations — Stability of `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`*).
 - **Why a hash-derived address (vs. a CIP-0068-style reference-NFT pointer)?** Determinism: any wallet can compute the address from `(policy_id, asset_name)` alone, with no indexer lookups, no chain queries, no metadata fetches.
 - **Why an off-chain CIP (vs. a ledger change introducing a new address kind)?** TOA works today on Plutus V3 with zero protocol modifications. A future ledger-level token-bound account remains an option for a separate CIP; TOA is the standard that ships now.
 - **Why Plutus V3 specifically?** V3 is the Conway-era Plutus ledger language version and supports the [CIP-0069](https://cips.cardano.org/cip/CIP-0069) unified script interface, where spending validators receive only the redeemer and `ScriptInfo` rather than a separate datum argument. This lets TOA v1 avoid making datum presence part of the authorisation rule (see *Datum and Redeemer Schema*) and keeps the validator's predicate purely about input and output value and minting. V3 is also the intended target for new Conway-era Plutus standards. Any future Plutus ledger language version (V4+) would require a new `toa_version`, because the language tag is part of the script hash and therefore part of every derived TOA address.
@@ -517,6 +526,14 @@ Could publishing the TOA validator as a reference script change the derived addr
 
 However, because TOA uses a parameterised validator, a reference script must correspond to the **applied** script for the specific `(toa_version, policy_id, asset_name)` being spent. A reference script for the *unapplied* template is not sufficient to spend a concrete TOA — each TOA needs (or shares with peers) a reference UTxO carrying its own applied script bytes.
 
+### 6. Stability of `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`
+
+The byte-level constants used by R are extracted from the pinned compiled UPLC artifact. **The byte-aligned decomposition that makes R definable is a property of the specific compiled artifact, not a property of the Plinth source code, nor a property of TOA v1 as a specification.** A future recompilation with a different Plinth, `plutus-tx`, `plutus-tx-plugin`, or `plutus-ledger-api` version may produce applied bytes that do not admit the same decomposition — because flat-encoding bit-alignment around the parameter is not guaranteed by the surface-level Haskell source.
+
+Any recompilation of the canonical validator with a different toolchain version would therefore yield different constants and likely different addresses for the same `(toa_version, policy_id, asset_name)` — exactly as recompilation would under any address-derivation procedure.
+
+**Disposition.** The pinned UPLC artifact and the derived R constants are immutable for `toa_version = 1`. Any change to the underlying validator — including a recompilation with a different toolchain — requires a new `toa_version` per *Versioning*. The CIP authors MUST NOT republish `ToaV1.uplc`, `FLAT_PREFIX_TOA_V1`, or `FLAT_SUFFIX_TOA_V1` under the same `toa_version` after this CIP reaches `Active`. The verification procedure is the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, which is run on every release of the artifact and MUST pass before publication.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -528,7 +545,8 @@ These are the concrete, testable conditions for the CIP to move from `Proposed` 
   - [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 529 bytes, blake2b-256 = `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0`.
   - [x] Compiler/toolchain versions pinned — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`.
   - [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c`.
-  - [x] Address-derivation helper published (Haskell reference in `offchain-lib`; supplementary TypeScript/Rust ports encouraged but non-normative — outstanding).
+  - [x] Canonical byte-level R implementation published (Haskell reference in `offchain-lib` and Plinth implementation in `onchain-lib`; supplementary TypeScript and Rust ports encouraged for ecosystem reach but non-normative — outstanding).
+  - [x] R implementation verified against the compiled UPLC artifact — for every published address-derivation test vector, R reproduces `expected_script_hash` byte-for-byte. This verification is performed by the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository and MUST pass on every release of the artifact.
   - [x] At least one non-normative reference off-chain implementation published, including address derivation, deposit, spend, and NFT carry-through (`offchain-lib`, exercised by the test suite via [CLB](https://github.com/mlabs-haskell/clb) scenarios).
   - [x] A testnet demonstration or reference workflow exercises address derivation, deposit, spend, and NFT carry-through end-to-end on a public testnet — [toa.e7d.tech](https://toa.e7d.tech) runs the reference frontend against the Cardano Preview testnet (and mainnet) and exercises all four operations.
 - [ ] Normative test vectors published per *Test Vector Format* and verified against **at least two independent implementations**. Address-derivation vectors are published; validator-scenario vectors and second-implementation verification are outstanding.
@@ -542,7 +560,7 @@ The Implementation Plan describes the **ordered work** required to move TOA v1 f
 2. **Publish the parameter-encoding CDDL** and confirm it round-trips through at least two independent CBOR libraries. (CDDL published inline in *Canonical Parameter Encoding*; multi-library round-trip verification outstanding.)
 3. **Publish the address-derivation test vectors** (category (a) in *Test Vector Format*) covering ASCII / non-ASCII Unicode / empty / max-length / CIP-0067 label 100 / CIP-0067 label 222 asset names. (Done for ASCII / empty / max-length / label-100 / label-222 plus a `toa_version`-isolation vector; non-ASCII Unicode outstanding — see *Test Vector Format — Coverage*.)
 4. **Publish the validator-scenario test vectors** (category (b)) covering all positive, negative, authorisation-scope, value-shape stress, spend, and reference-input cases enumerated in *Test Vector Format — Coverage*. Each scenario asserts pass/fail correctness only; ExUnit and tx-size measurements are tracked non-normatively in `toa-bench`.
-5. **Publish the address-derivation helper** (Haskell reference; supplementary TypeScript/Rust ports as non-normative). (Done — `offchain-lib` in the reference repository; supplementary ports outstanding.)
+5. **Publish the canonical byte-level R implementation** (Haskell reference in `offchain-lib` and Plinth implementation in `onchain-lib`; supplementary TypeScript and Rust ports as non-normative), and verify it against the compiled UPLC artifact via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable on every artifact release. (Done — `offchain-lib` and `onchain-lib` in the reference repository; supplementary ports outstanding.)
 6. **Publish at least one non-normative reference off-chain implementation**, including address derivation, deposit, spend, and NFT carry-through. (Done — `offchain-lib` + `interaction-api` + [toa.e7d.tech](https://toa.e7d.tech).)
 7. **Verify against independent implementation #1** — an external party (wallet team, library author, or auditor) reproduces every test vector byte-for-byte for address derivation and pass/fail-correct for validator scenarios.
 8. **Verify against independent implementation #2** — a second independent party does the same against a different stack (e.g. lucid-evolution, MeshJS, cardano-transaction-lib, or PyCardano).
