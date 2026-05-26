@@ -1,5 +1,5 @@
 ---
-CPS: "?"
+CPS: 31
 Title: Prioritising Urgent Transactions
 Category: Consensus
 Status: Open
