@@ -91,25 +91,70 @@ toa_params_v1 = #6.121([
 ])
 ```
 
-`#6.121` is the CBOR tag for `Constr 0` in PlutusData. Serialisation MUST be canonical CBOR per RFC 8949 §4.2.1 — definite-length items, smallest integer form. This is the standard PlutusData canonical encoding.
+`#6.121` is the CBOR tag for `Constr 0` in PlutusData. Serialisation MUST be canonical PlutusData CBOR as produced by the Plutus V3 `serialiseData` builtin: `Constr 0` fields are encoded with an *indefinite-length array* (`0x9f` … `0xff`); integers and bytestrings use smallest CBOR major-type form. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`. Note this is **not** strict RFC 8949 §4.2.1 (which mandates definite-length items); see *Mandatory Normative Artifacts — Identity of the parameter encoder*.
 
 ### Address Derivation
 
 TOA v1 targets **Plutus V3**. Validator hashes depend on the Plutus language version, so this is pinned. V2 fallback is out of scope for `toa_version = 1`.
 
+The canonical TOA v1 address-derivation procedure — **R** — is specified at the byte level. It is executable on-chain using standard Plutus V3 builtins (`appendByteString`, `consByteString`, `lengthOfByteString`, `serialiseData`, `blake2b_224`) and implementable off-chain in any language with bytestring concatenation and blake2b-224.
+
 ```
-1. params       := toa_params_v1(toa_version = 1, policy_id, asset_name)
-2. applied      := apply_params(toa_v1_compiled, params)
-3. script_bytes := ledger_serialised_plutus_script(applied)
-4. hash         := blake2b_224(0x03 || script_bytes)        // 0x03 = Plutus V3 language tag
-5. cred         := payment_credential(script_hash = hash)
-6. address      := enterprise_address(network, cred)        // no stake credential in v1
-7. bech32       := encode_bech32(prefix in {addr, addr_test}, address)
+1. params_cbor   := serialiseData(TOAParamsV1(toa_version = 1, policy_id, asset_name))
+2. chunked_param := consByteString(lengthOfByteString(params_cbor), params_cbor)
+                      || consByteString(0x00, "")
+3. flat_body     := FLAT_PREFIX_TOA_V1 || chunked_param || FLAT_SUFFIX_TOA_V1
+4. script_bytes  := cbor_bytestring_header(lengthOfByteString(flat_body)) || flat_body
+5. hash          := blake2b_224(0x03 || script_bytes)        // 0x03 = Plutus V3 language tag
+6. cred          := payment_credential(script_hash = hash)
+7. address       := enterprise_address(network, cred)        // no stake credential in v1
+8. bech32        := encode_bech32(prefix in {addr, addr_test}, address)
 ```
 
-The TOA script hash is the **Cardano ledger Plutus V3 script hash of the applied Plutus V3 script**, not a CIP-defined formula computed in isolation. Implementations MUST compute this hash exactly as `cardano-ledger` / `cardano-api` does for `PlutusScriptV3`; the pseudocode above is an **explanatory form**, not an independent normative algorithm.
+Each ingredient:
 
-The explanatory form unwraps to: `blake2b_224(language_tag ‖ ledger_serialised_script_bytes)`, where the Plutus V3 language tag is `0x03` and `ledger_serialised_script_bytes` is the form documented in `Cardano.Ledger.Plutus.Language.hashPlutusScript`. Concretely, that is the **single** CBOR bytestring wrapping the flat-encoded UPLC program after parameter application — the same bytes that appear in the transaction's `script` field. The CIP test vectors are the authoritative cross-check: any implementation that reproduces them byte-for-byte has the encoding right regardless of which intermediate representation it computes through.
+- `params_cbor` is the canonical PlutusData CBOR as produced by the Plutus V3 `serialiseData` builtin (`Constr 0` fields encoded with indefinite-length array `0x9f…0xff`; integers and bytestrings in smallest CBOR major-type form). The CDDL `toa_params_v1` in *Canonical Parameter Encoding* defines the input.
+- `FLAT_PREFIX_TOA_V1` (528 bytes) and `FLAT_SUFFIX_TOA_V1` (1 byte = `0x01`) are normative byte-level artifacts pinned by blake2b-256 — see *Mandatory Normative Artifacts*.
+- The chunked-bytestring frame (`consByteString(len, paramCbor) || 0x00`) is the on-chain flat encoding of `paramCbor` as a `Constant ByteString`: a single 1-byte length chunk header followed by the chunk content, terminated by a `0x00` byte. This frame is valid for `len(paramCbor) ≤ 255`, a precondition always satisfied for TOA v1 (in practice `len(paramCbor)` is at most ~68 bytes). Longer parameters would require multi-chunk encoding and a new `toa_version`.
+- `cbor_bytestring_header(n)` is a pure deterministic function specified inline below.
+
+The CBOR bytestring-header encoder is specified as:
+
+```
+cbor_bytestring_header(n) :=
+    if n <= 0x17       then [0x40 + n]
+    if n <= 0xff       then [0x58, n]
+    if n <= 0xffff     then [0x59, (n >> 8) & 0xff, n & 0xff]                                  // big-endian
+    if n <= 0xffffffff then [0x5a, (n >> 24) & 0xff, (n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff]
+    otherwise          error
+```
+
+For TOA v1, `n` is always in `[~561, ~593]` so only the `0x59 + 2-byte-length` branch is ever active in practice; the spec defines the full function for forward compatibility.
+
+**Reference recipe in Plinth/Plutus-Tx style** (illustrative; this is the same procedure executed on-chain):
+
+```haskell
+toaScriptHash :: BuiltinByteString  -- policy_id (28 bytes)
+              -> BuiltinByteString  -- asset_name (0..32 bytes)
+              -> BuiltinByteString  -- 28-byte script hash
+toaScriptHash policyId assetName =
+  let paramCbor = serialiseData (Constr 0 [I 1, B policyId, B assetName])
+      paramLen  = lengthOfByteString paramCbor
+      chunked   = consByteString paramLen paramCbor
+                     `appendByteString` consByteString 0x00 ""
+      flatBody  = flat_prefix_toa_v1
+                     `appendByteString` chunked
+                     `appendByteString` flat_suffix_toa_v1
+      hdr       = cborBytestringHeader (lengthOfByteString flatBody)
+      applied   = hdr `appendByteString` flatBody
+  in  blake2b_224 (consByteString 0x03 applied)
+```
+
+The same procedure, executed off-chain in any language with bytestring concatenation and blake2b-224, produces the identical 28-byte hash — which is the payment credential of the TOA address. Consumers compare it against the payment credential of an `Address` extracted from `ScriptInfo`/`TxInfo` (on-chain) or from a UTxO's address field (off-chain).
+
+#### Derivation of the canonical artifacts
+
+The byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived from the compiled, unapplied `validators/ToaV1.uplc` artifact in the reference repository. The derivation procedure — applying a `Constant Data` parameter to the unapplied UPLC, observing that the resulting applied bytes admit a unique byte-aligned decomposition around `params_cbor`, and extracting the invariant prefix/suffix slices — is documented and reproducible via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable. This audit path is informative; the byte-level constants and the procedure above are normative.
 
 Implementations MUST NOT hash a `cardano-cli` TextEnvelope JSON file directly. The two common encoding mistakes that yield non-conforming hashes are:
 
@@ -176,19 +221,23 @@ Wallets, indexers, and other tooling that claim TOA v1 support MUST assign each 
 
 Two hashes are distinguished throughout this CIP:
 
-- **Template hash** — the hash of the un-parameterised `TOA v1` validator (a single value pinned by this CIP), concretely `blake2b_224(0x03 || unapplied_script_bytes)`. It identifies the TOA validator code itself, independently of any NFT.
-- **Applied script hash** — the hash of the validator **after** parameter application; this is the per-NFT TOA script hash and the payment credential of every TOA address, computed the same way over the applied script bytes.
+- **Template hash** — the hash of the un-parameterised `TOA v1` validator (a single value pinned by this CIP), concretely `blake2b_224(0x03 || unapplied_script_bytes)`. It identifies the TOA validator code itself, independently of any NFT. Under R-canonic, the template hash is an **audit reference**: it identifies the compiled artifact from which `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived, but it is NOT on the critical address-derivation path.
+- **Applied script hash** — the per-NFT 28-byte hash produced by *Address Derivation* (R). This is the payment credential of every TOA address. Under R-canonic it is computed directly from `FLAT_PREFIX_TOA_V1`, `FLAT_SUFFIX_TOA_V1`, `params_cbor`, and the CBOR bytestring-header encoder — no parameter-application step is required.
 
-The compiled, **unapplied** Plutus V3 validator artifact, its build toolchain version(s), and its resulting template hash are the normative reference for every derived TOA address. Per *Reference Artifacts — What lives where*, these artifacts are published in an external repository identified by content hash; the CIP folder itself contains only this README and the parameter-encoding CDDL. The Plinth source alone is not sufficient to define the standard, because different compiler/toolchain versions may produce different UPLC bytes for the same source, which would change the template hash and therefore every derived address — implementations MUST verify they hold the exact bytes referenced below.
+Conformance to TOA v1 is determined by R and the byte-level artifacts below, NOT by the compiled validator. The Plinth source, the compiled UPLC artifact, the pinned toolchain, and the template hash are published so that any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form. The byte-level constants are pinned by blake2b-256 content hash so any implementer can verify byte-for-byte that they hold the exact bytes referenced below.
 
-| Artifact | Reference |
-|---|---|
-| Plinth source | [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.1.1/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) at `en7angled/toa@0.1.1` |
-| Compiled unapplied UPLC artifact | [`validators/ToaV1.uplc`](https://github.com/en7angled/toa/blob/0.1.1/validators/ToaV1.uplc) — 476 bytes, blake2b-256 = `7f78c5524a00852eb51ee760f86a3f0cce4535b446e0c03d6cdc35eb6de0092b` |
-| Pinned toolchain | GHC 9.6 series; Plutus Core target version 1.1.0 (`-fplugin-opt PlutusTx.Plugin:target-version=1.1.0`, i.e. `plcVersion110`); `plutus-tx`, `plutus-tx-plugin`, `plutus-ledger-api` (Conway-era IOG CHaP pin). Reproducible via the [`cabal.project.freeze`](https://github.com/en7angled/toa/blob/0.1.1/cabal.project.freeze) snapshot at tag `0.1.1`. |
-| Template hash — `blake2b_224(0x03 \|\| unapplied_script_bytes)` (28-byte output) | `129181a58ca3716aada61244d3d4210bff5a7235f709189af2596dc0` |
+| Artifact | Role | Reference |
+|---|---|---|
+| Plinth source | Audit reference | [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.0/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) at `en7angled/toa@0.2.0` |
+| Compiled unapplied UPLC artifact | Audit reference | [`validators/ToaV1.uplc`](https://github.com/en7angled/toa/blob/0.2.0/validators/ToaV1.uplc) — 529 bytes, blake2b-256 `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0` |
+| Pinned toolchain | Audit reference | GHC 9.6 series; Plutus Core target version 1.1.0; `plutus-tx` / `plutus-tx-plugin` / `plutus-ledger-api` at Conway-era IOG CHaP pins frozen via [`cabal.project.freeze`](https://github.com/en7angled/toa/blob/0.2.0/cabal.project.freeze) at tag `0.2.0` |
+| Template hash | Audit reference | `blake2b_224(0x03 \|\| unapplied_script_bytes)` = `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c` |
+| **`FLAT_PREFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_PREFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.0/validators/FLAT_PREFIX_TOA_V1.bin) — 528 bytes, blake2b-256 `6ab7ef002cda6f7e3c60e5975fce175c6e56a91b51b7d488d2ae69af23520235` |
+| **`FLAT_SUFFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_SUFFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.0/validators/FLAT_SUFFIX_TOA_V1.bin) — 1 byte (`0x01`), blake2b-256 `ee155ace9c40292074cb6aff8c9ccdd273c81648ff1149ef36bcea6ebb8a3e25` |
+| **CBOR bytestring-header encoder** | **Normative for derivation** | Specified inline in *Address Derivation* (function `cbor_bytestring_header(n)`) |
+| **Parameter encoder** | **Normative for derivation** | `serialiseData` over `TOAParamsV1` per the CDDL in *Canonical Parameter Encoding* (canonical PlutusData CBOR) |
 
-The compiled validator artifact is authoritative. Source-level implementation choices (which Plutus ledger API surface is used, which optimisation techniques are applied, etc.) are non-normative except insofar as they produce the referenced compiled artifact and template hash. Such notes belong in the validator's own README, audit notes, or an implementation appendix.
+**Identity of the parameter encoder.** The `serialiseData` referenced in *Address Derivation* and in this table is the **Plutus V3 builtin** `serialiseData`. Its output is the canonical PlutusData CBOR of the input: `Constr 0` is encoded as CBOR tag `121` (`0xd8 0x79`) followed by an *indefinite-length* array (`0x9f` … `0xff`); integers and bytestrings use smallest CBOR major-type headers. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`, allowing off-chain implementations to reproduce the same bytes. Any implementation that uses a non-matching CBOR encoder (e.g. definite-length Constr arrays) does NOT conform.
 
 ### Wallet Behaviour
 
@@ -251,13 +300,14 @@ A non-normative [Tx3](https://github.com/tx3-lang) transaction-shape file (`toa.
 
 The normative components of TOA v1 are:
 
-- the compiled, **unapplied** Plutus V3 validator artifact and its documented template hash (see *Mandatory Normative Artifacts*);
-- the canonical parameter encoding (the CDDL in *Canonical Parameter Encoding*);
-- the address-derivation procedure (in *Address Derivation*);
+- the canonical address-derivation procedure **R** (in *Address Derivation*), comprising:
+  - `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`, pinned by blake2b-256 content hash;
+  - the CBOR bytestring-header encoder specification (inline in *Address Derivation*);
+  - the parameter encoder specification (the CDDL in *Canonical Parameter Encoding* with `serialiseData` per canonical PlutusData CBOR);
 - the validator rules (in *Validator Rules*);
 - the normative test vectors (in *Test Vector Format*).
 
-The Plinth source is required for auditability and reproducibility, but conformance is determined by the compiled, unapplied Plutus V3 validator artifact, its documented template hash, and the normative test vectors. The Haskell reference off-chain library, any `toa.tx3` file, and any generated bindings are **non-normative reference artifacts**.
+The compiled, **unapplied** Plutus V3 validator artifact and the template hash are **audit artifacts**. They are useful for reproducing `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` from source via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, but they are NOT on the critical derivation path. Conformance is determined by R and the byte-level artifacts pinned in *Mandatory Normative Artifacts*, not by the compiled validator. The Plinth source is required for auditability and reproducibility of the byte-level constants, but no implementation needs to compile it or apply parameters to it in order to derive a TOA address. The Haskell reference off-chain library, any `toa.tx3` file, and any generated bindings are **non-normative reference artifacts**.
 
 A conflict between a non-normative reference artifact and any normative component is resolved in favour of the normative component. A conflict among normative components is a specification erratum and MUST be corrected.
 
@@ -268,13 +318,13 @@ The CIP folder contains only:
 - this README;
 - the parameter-encoding CDDL (inline in *Canonical Parameter Encoding*).
 
-Every other normative artifact — the Plinth source, the compiled un-applied Plutus V3 validator artifact, the template hash, the pinned toolchain version(s), and the normative test vectors — is **published in an external repository** ([en7angled/toa](https://github.com/en7angled/toa)) and pinned from this CIP by **immutable git tag**. Binary artifacts whose byte representation determines on-chain behaviour (the compiled UPLC, and the test-vector JSON file) are additionally identified by **blake2b-256 content hash**, so any implementer can verify byte-for-byte that they hold the exact bytes the standard refers to. Text artifacts auditable through the git tag (the Plinth source, the toolchain freeze) are pinned by tag and path only, because their bytes are not directly hashed into ledger state. **The validator artifact specifically** (compiled, unapplied UPLC) is identifiable by an immutable content hash regardless of where it is stored, because every derived TOA address depends on it byte-for-byte; see *Mandatory Normative Artifacts*.
+All other artifacts referenced normatively or for audit — the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` (normative for derivation), the Plinth source, the compiled un-applied Plutus V3 validator artifact, the template hash, the pinned toolchain version(s), and the normative test vectors — are **published in an external repository** ([en7angled/toa](https://github.com/en7angled/toa)) and pinned from this CIP by **immutable git tag**. Binary artifacts whose byte representation determines on-chain behaviour (the `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` `.bin` files, the compiled UPLC, and the test-vector JSON file) are additionally identified by **blake2b-256 content hash**, so any implementer can verify byte-for-byte that they hold the exact bytes the standard refers to. Text artifacts auditable through the git tag (the Plinth source, the toolchain freeze) are pinned by tag and path only, because their bytes are not directly hashed into ledger state. **The byte-level constants specifically** (`FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`) are identifiable by an immutable content hash regardless of where they are stored, because every derived TOA address depends on them byte-for-byte; see *Mandatory Normative Artifacts*.
 
 Non-normative artifacts — transaction-shape files, SDKs, generated bindings, demo frontends, and full reference implementations — also live in external repositories linked from this CIP, not inside the CIP folder. This includes any `toa.tx3` reference file, the Haskell + Atlas reference library, the HTTP API exposing TOA operations, the demo frontend, and any supplementary language bindings.
 
 #### Reference validator (Plinth)
 
-The canonical validator is written in **Plinth** (Haskell compiled to Plutus Core) and published at [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.1.1/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) in the reference repository (see *Mandatory Normative Artifacts* for the compiled artifact, template hash, and pinned toolchain). Anyone can apply the canonical `TOAParamsV1` PlutusData value for a given `(toa_version, policy_id, asset_name)` and verify the resulting per-NFT script hash matches the address-derivation algorithm.
+The canonical TOA v1 validator is written in **Plinth** (Haskell compiled to Plutus Core) and published at [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.0/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) in the reference repository. **Under TOA v1's byte-level R derivation, the Plinth source and the compiled UPLC artifact are audit references, not derivation steps.** Implementers do NOT need to compile the validator or apply parameters to it in order to derive a TOA address; they implement R directly using the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` and the CBOR encoders specified inline. The validator artifact is published so that any implementer can verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form.
 
 #### Address derivation helper
 
@@ -282,15 +332,15 @@ Specified normatively in *Address Derivation* above. A reference implementation 
 
 #### Reference off-chain library — external repository
 
-A non-normative Haskell reference implementation is published at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.1.1`](https://github.com/en7angled/toa/releases/tag/0.1.1)), comprising:
+A non-normative Haskell reference implementation is published at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.2.0`](https://github.com/en7angled/toa/releases/tag/0.2.0)), comprising:
 
-- `onchain-lib` — the canonical Plinth validator (`Onchain.Validators.ToaV1Validator`) and `TOAParamsV1` parameter type;
-- `offchain-lib` — Atlas-based transaction building, queries, CIP-14 fingerprinting, RFC-8949 canonical CBOR encoding of `TOAParamsV1`, and address derivation;
+- `onchain-lib` — the canonical Plinth validator (`Onchain.Validators.ToaV1Validator`), `TOAParamsV1` parameter type, and `Onchain.Derivation.R` (Plinth on-chain R implementation, exposed via the canonical .bin files);
+- `offchain-lib` — Atlas-based transaction building, queries, CIP-14 fingerprinting, canonical PlutusData CBOR encoding of `TOAParamsV1`, and address derivation. It now exposes `TxBuilding.Toa.DerivationR` — a pure-Haskell mirror of R usable without Plutus tooling;
 - `webapi-lib` + `interaction-api` — a Servant HTTP service exposing `/toa/derive`, `/toa/utxos`, `/toa/spend`, and basic transaction submission, with a Swagger UI;
 - `toa-gen-vectors` — the executable that deterministically emits both `test-vectors/toa-v1.json` and `validators/ToaV1.uplc` from a single in-process generation step (no node interaction);
 - `toa-bench` — a synthetic-context micro-benchmark for the validator with baseline-diff support for regression checks on execution units and script size.
 
-The off-chain library, HTTP API, generator, and benchmark are non-normative. Conformance is determined by the validator artifact and the normative test vectors, per *Reference Artifacts — Normative components*.
+The off-chain library, HTTP API, generator, and benchmark are non-normative. Conformance is determined by R and the normative test vectors, per *Reference Artifacts — Normative components*.
 
 #### Generated bindings (supplementary) — external
 
@@ -298,20 +348,20 @@ Supplementary language bindings MAY be generated from the externally-published `
 
 #### Demo frontend — external
 
-A non-normative reference frontend exercising address derivation, deposit, spend, and inspection is hosted at [toa.e7d.tech](https://toa.e7d.tech). The frontend consumes the HTTP API exposed by `interaction-api` in the reference repository and is provided for illustrative purposes only — conformance is determined by the validator artifact and the normative test vectors, not by the frontend.
+A non-normative reference frontend exercising address derivation, deposit, spend, and inspection is hosted at [toa.e7d.tech](https://toa.e7d.tech). The frontend consumes the HTTP API exposed by `interaction-api` in the reference repository and is provided for illustrative purposes only — conformance is determined by R and the normative test vectors, not by the frontend.
 
 ### Test Vector Format
 
-The normative test-vector file is [`test-vectors/toa-v1.json`](https://github.com/en7angled/toa/blob/0.1.1/test-vectors/toa-v1.json) — published at `en7angled/toa@0.1.1`, blake2b-256 = `f835348a178c5da4632d17c79321a7b6fc9274e8602b51bd71def22108c3a515`. The file is regenerated deterministically from the same Plinth source as the validator artifact, by the [`toa-gen-vectors`](https://github.com/en7angled/toa/blob/0.1.1/src/exe/toa-gen-vectors/Main.hs) executable.
+The normative test-vector file is [`test-vectors/toa-v1.json`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/toa-v1.json) — published at `en7angled/toa@0.2.0`, blake2b-256 = `4024deefd5bc9553099d1ac89e857d835fe2e7ab55367b6a3e8b4a8b157c6486`. The file is regenerated deterministically from the same Plinth source as the validator artifact, by the [`toa-gen-vectors`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-gen-vectors/Main.hs) executable.
 
 Test vectors are split into two categories with **distinct conformance rules**:
 
 - **(a) Address-derivation vectors.** Implementations MUST reproduce the `expected_script_hash`, `expected_address_mainnet`, and `expected_address_testnet` fields **byte-for-byte** for the corresponding `(toa_version, policy_id, asset_name)`. Six such vectors are currently published (see *Coverage* below).
 - **(b) Validator scenarios.** Each scenario specifies the situation (inputs, outputs, mint, datums, redeemers) and the expected pass/fail result. Implementations need not produce byte-identical transaction bodies unless a scenario explicitly includes canonical transaction CBOR — different transaction builders may legitimately differ on input ordering, fee balancing, change outputs, collateral selection, and reference-script handling. Validator scenarios are not yet published in `toa-v1.json`; they are tracked as outstanding work in *Path to Active — Acceptance Criteria*.
 
-Conformance for category (b) is **pass/fail correctness only**. Execution-unit usage and transaction-size budgets are deliberately not part of the standard: the validator's correctness is independent of the Plutus cost model, and pinning a cost model would impose ongoing erratum maintenance every time governance amends it. The reference repository's [`toa-bench`](https://github.com/en7angled/toa/blob/0.1.1/src/exe/toa-bench/Main.hs) tool tracks ExUnits and script-size as a non-normative regression baseline; it is informational and has no bearing on conformance.
+Conformance for category (b) is **pass/fail correctness only**. Execution-unit usage and transaction-size budgets are deliberately not part of the standard: the validator's correctness is independent of the Plutus cost model, and pinning a cost model would impose ongoing erratum maintenance every time governance amends it. The reference repository's [`toa-bench`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-bench/Main.hs) tool tracks ExUnits and script-size as a non-normative regression baseline; it is informational and has no bearing on conformance.
 
-Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.1.1/test-vectors/README.md), identified by blake2b-256 content hash `1f321ce00df00d339f5acb4083063050cf9001a09b5cdec6bd3ce3b5ee3284af`.
+Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/README.md), identified by blake2b-256 content hash `234d5a00e9c8a0da08c873f9d9294ac22d8ece4f2de8a8d2f445438249af180a`.
 
 Coverage MUST include at minimum:
 
@@ -473,11 +523,11 @@ However, because TOA uses a parameterised validator, a reference script must cor
 
 These are the concrete, testable conditions for the CIP to move from `Proposed` to `Active`.
 
-- [x] *Mandatory Normative Artifacts* in the reference implementation at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.1.1`](https://github.com/en7angled/toa/releases/tag/0.1.1))
+- [x] *Mandatory Normative Artifacts* in the reference implementation at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.2.0`](https://github.com/en7angled/toa/releases/tag/0.2.0))
   - [x] Canonical Plinth source for the TOA v1 validator published (external, content-hash-referenced).
-  - [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 476 bytes, blake2b-256 = `7f78c5524a00852eb51ee760f86a3f0cce4535b446e0c03d6cdc35eb6de0092b`.
+  - [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 529 bytes, blake2b-256 = `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0`.
   - [x] Compiler/toolchain versions pinned — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`.
-  - [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `129181a58ca3716aada61244d3d4210bff5a7235f709189af2596dc0`.
+  - [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c`.
   - [x] Address-derivation helper published (Haskell reference in `offchain-lib`; supplementary TypeScript/Rust ports encouraged but non-normative — outstanding).
   - [x] At least one non-normative reference off-chain implementation published, including address derivation, deposit, spend, and NFT carry-through (`offchain-lib`, exercised by the test suite via [CLB](https://github.com/mlabs-haskell/clb) scenarios).
   - [x] A testnet demonstration or reference workflow exercises address derivation, deposit, spend, and NFT carry-through end-to-end on a public testnet — [toa.e7d.tech](https://toa.e7d.tech) runs the reference frontend against the Cardano Preview testnet (and mainnet) and exercises all four operations.
