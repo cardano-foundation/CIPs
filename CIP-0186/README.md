@@ -595,7 +595,7 @@ registry entry in Appendix B for runtime validation. Schema:
 
 ```json
 {
-  "$schema": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-deeplink-signing/cip30dl-attestation.schema.json",
+  "$schema": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0186/cip30dl-attestation.schema.json",
   "wallet_id": "<lowercase ASCII id matching Appendix B>",
   "protocol_versions": ["1"],
   "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getRewardAddresses", "getNetworkId"],

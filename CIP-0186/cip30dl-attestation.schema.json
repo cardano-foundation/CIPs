@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-deeplink-signing/cip30dl-attestation.schema.json",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0186/cip30dl-attestation.schema.json",
   "title": "CIP-30-DeepLink vendor attestation manifest",
   "description": "Authoritative runtime source of a wallet's CIP-30-DeepLink protocol commitments. Served by every conforming wallet at https://<wallet-domain>/.well-known/cip30dl-attestation.json with Content-Type application/json and Cache-Control: max-age=86400.",
   "type": "object",

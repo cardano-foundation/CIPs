@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-deeplink-signing/wallet-registry.schema.json",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0186/wallet-registry.schema.json",
   "title": "CIP-30-DeepLink wallet registry",
   "description": "Advisory list of Cardano wallets that implement CIP-30-DeepLink. Mirrors the CIP-10 registry-file pattern. The authoritative runtime source of a wallet's protocol commitments is the vendor-attestation manifest at /.well-known/cip30dl-attestation.json; this registry exists purely as a human-curated convenience for dApps that want a static wallet picker.",
   "type": "array",
