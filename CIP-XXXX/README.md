@@ -7,7 +7,8 @@ Authors:
     - John Shearing <johnshearing@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1193
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1193
+    - Forum: https://forum.cardano.org/t/cip-utilization-scaled-pledge-bonus-the-multi-pool-buster/154614
 Created: 2026-05-15
 License: CC-BY-4.0
 ---
