@@ -155,11 +155,6 @@ The same procedure, executed off-chain in any language with bytestring concatena
 
 The byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived from the compiled, unapplied `validators/ToaV1.uplc` artifact in the reference repository. The derivation procedure — applying a `Constant Data` parameter to the unapplied UPLC, observing that the resulting applied bytes admit a unique byte-aligned decomposition around `params_cbor`, and extracting the invariant prefix/suffix slices — is documented and reproducible via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable. This audit path is informative; the byte-level constants and the procedure above are normative.
 
-Implementations MUST NOT hash a `cardano-cli` TextEnvelope JSON file directly. The two common encoding mistakes that yield non-conforming hashes are:
-
-- Hashing the raw flat bytes without the surrounding CBOR bytestring wrapper.
-- Hashing a `cardano-cli` TextEnvelope `cborHex` field directly: that field is itself a CBOR-encoded bytestring whose *content* is the serialised script, so one CBOR-decode step is required before hashing.
-
 Header bytes follow [CIP-0019](https://cips.cardano.org/cip/CIP-0019); the resulting addresses are type-7 (enterprise script), header byte `0b0111_xxxx` where the low nibble encodes the network (`0x0` testnet, `0x1` mainnet) — i.e., concrete header bytes `0x70` and `0x71`.
 
 ### Validator Rules
@@ -202,7 +197,7 @@ For Plutus V3 spending scripts, the datum is **not** a required validator argume
 
 Deposits MAY use **Inline Datum** when they carry application-specific data — marketplace offer markers, state markers, inventory, badges, receipts. The TOA validator does not inspect or interpret application datums; wallets that do not recognise the schema MUST treat the deposit as opaque value plus an unknown datum payload (and SHOULD surface the `Inline Datum` classification in UI rather than silently swallowing it).
 
-**The TOA v1 validator MUST NOT fail based on the datum classification.** Datum shape determines *wallet and indexer interpretation*, not on-chain spend validity. UTxOs classified as **No Datum**, **Datum Hash**, or non-unit **Inline Datum** remain spendable if and only if the rules in *Validator Rules* are satisfied. See *Definitions — TOA deposit*.
+Per *Definitions — TOA deposit*, the TOA v1 validator MUST NOT fail based on datum classification: UTxOs classified as **No Datum**, **Datum Hash**, or non-unit **Inline Datum** remain spendable if and only if *Validator Rules* are satisfied. Datum shape determines wallet and indexer interpretation, not on-chain spend validity.
 
 **The spend redeemer SHOULD be unit** (`Constr 0 []`, same encoding as above). The validator does not inspect the redeemer; using a canonical redeemer improves recognisability and avoids unnecessary implementation divergence, but a non-unit redeemer does not by itself cause a TOA spend to fail.
 
@@ -291,8 +286,6 @@ Indexers and explorers that claim TOA v1 support address the read-side of TOA: d
 
 The *Validator Rules* and *Test Vector Format* define TOA v1 conformance. Any implementation that derives the expected addresses (per *Address Derivation* and the address-derivation test vectors) and constructs transactions satisfying *Validator Rules* (cross-checked against the validator-scenario test vectors) is conforming. Wallets and libraries are free to construct transactions in any language and using any builder; no specific transaction-template DSL or codegen toolchain is required.
 
-A non-normative [Tx3](https://github.com/tx3-lang) transaction-shape file (`toa.tx3`) MAY be published externally as a reference for implementers. Where any reference artifact (including a Tx3 file or its generated bindings) disagrees with the validator rules or test vectors, the validator rules and test vectors prevail (see *Reference Artifacts — Normative components*).
-
 ### Reference Artifacts
 
 #### Normative components
@@ -306,7 +299,7 @@ The normative components of TOA v1 are:
 - the validator rules (in *Validator Rules*);
 - the normative test vectors (in *Test Vector Format*).
 
-The compiled, **unapplied** Plutus V3 validator artifact and the template hash are **audit artifacts**. They are useful for reproducing `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` from source via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, but they are NOT on the critical derivation path. Conformance is determined by R and the byte-level artifacts pinned in *Mandatory Normative Artifacts*, not by the compiled validator. The Plinth source is required for auditability and reproducibility of the byte-level constants, but no implementation needs to compile it or apply parameters to it in order to derive a TOA address. The Haskell reference off-chain library, any `toa.tx3` file, and any generated bindings are **non-normative reference artifacts**.
+The compiled, **unapplied** Plutus V3 validator artifact and the template hash are **audit artifacts**. They are useful for reproducing `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` from source via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, but they are NOT on the critical derivation path. Conformance is determined by R and the byte-level artifacts pinned in *Mandatory Normative Artifacts*, not by the compiled validator. The Plinth source is required for auditability and reproducibility of the byte-level constants, but no implementation needs to compile it or apply parameters to it in order to derive a TOA address. The Haskell reference off-chain library and any supplementary language bindings are **non-normative reference artifacts**.
 
 A conflict between a non-normative reference artifact and any normative component is resolved in favour of the normative component. A conflict among normative components is a specification erratum and MUST be corrected.
 
@@ -317,9 +310,7 @@ The CIP folder contains only:
 - this README;
 - the parameter-encoding CDDL (inline in *Canonical Parameter Encoding*).
 
-All other artifacts referenced normatively or for audit — the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` (normative for derivation), the Plinth source, the compiled un-applied Plutus V3 validator artifact, the template hash, the pinned toolchain version(s), and the normative test vectors — are **published in an external repository** ([en7angled/toa](https://github.com/en7angled/toa)) and pinned from this CIP by **immutable git tag**. Binary artifacts whose byte representation determines on-chain behaviour (the `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` `.bin` files, the compiled UPLC, and the test-vector JSON file) are additionally identified by **blake2b-256 content hash**, so any implementer can verify byte-for-byte that they hold the exact bytes the standard refers to. Text artifacts auditable through the git tag (the Plinth source, the toolchain freeze) are pinned by tag and path only, because their bytes are not directly hashed into ledger state. **The byte-level constants specifically** (`FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`) are identifiable by an immutable content hash regardless of where they are stored, because every derived TOA address depends on them byte-for-byte; see *Mandatory Normative Artifacts*.
-
-Non-normative artifacts — transaction-shape files, SDKs, generated bindings, demo frontends, and full reference implementations — also live in external repositories linked from this CIP, not inside the CIP folder. This includes any `toa.tx3` reference file, the Haskell + Atlas reference library, the HTTP API exposing TOA operations, the demo frontend, and any supplementary language bindings.
+All other artifacts (normative and audit) — `FLAT_PREFIX_TOA_V1`, `FLAT_SUFFIX_TOA_V1`, Plinth source, compiled UPLC, pinned toolchain, test vectors, and non-normative reference artifacts (SDKs, demo frontend, HTTP API) — live in the external [en7angled/toa](https://github.com/en7angled/toa) repository, pinned by immutable git tag and (for binary artifacts) by blake2b-256 content hash. See *Mandatory Normative Artifacts*.
 
 #### Reference validator (Plinth)
 
@@ -327,7 +318,7 @@ The canonical TOA v1 validator is written in **Plinth** (Haskell compiled to Plu
 
 #### Address derivation helper
 
-Specified normatively in *Address Derivation* above. A reference implementation in Haskell accompanies the CIP and is packaged alongside the off-chain library. The helper is intentionally *outside* Tx3 because Tx3 currently lacks a primitive for parameterised-script-address derivation; if and when that primitive lands upstream, a future revision of the CIP can fold it back in. Supplementary TypeScript and Rust ports of the helper are encouraged for ecosystem reach but are non-normative.
+Specified normatively in *Address Derivation* above. A reference implementation in Haskell accompanies the CIP and is packaged alongside the off-chain library. Supplementary TypeScript and Rust ports of the helper are encouraged for ecosystem reach but are non-normative.
 
 #### Reference off-chain library — external repository
 
@@ -340,10 +331,6 @@ A non-normative Haskell reference implementation is published at [en7angled/toa]
 - `toa-bench` — a synthetic-context micro-benchmark for the validator with baseline-diff support for regression checks on execution units and script size.
 
 The off-chain library, HTTP API, generator, and benchmark are non-normative. Conformance is determined by R and the normative test vectors, per *Reference Artifacts — Normative components*.
-
-#### Generated bindings (supplementary) — external
-
-Supplementary language bindings MAY be generated from the externally-published `toa.tx3` reference file or produced on demand; all such bindings are non-normative.
 
 #### Demo frontend — external
 
@@ -398,7 +385,7 @@ Coverage MUST include at minimum:
 - **Why a hash-derived address (vs. a CIP-0068-style reference-NFT pointer)?** Determinism: any wallet can compute the address from `(policy_id, asset_name)` alone, with no indexer lookups, no chain queries, no metadata fetches.
 - **Why an off-chain CIP (vs. a ledger change introducing a new address kind)?** TOA works today on Plutus V3 with zero protocol modifications. A future ledger-level token-bound account remains an option for a separate CIP; TOA is the standard that ships now.
 - **Why Plutus V3 specifically?** V3 is the Conway-era Plutus ledger language version and supports the [CIP-0069](https://cips.cardano.org/cip/CIP-0069) unified script interface, where spending validators receive only the redeemer and `ScriptInfo` rather than a separate datum argument. This lets TOA v1 avoid making datum presence part of the authorisation rule (see *Datum and Redeemer Schema*) and keeps the validator's predicate purely about input and output value and minting. V3 is also the intended target for new Conway-era Plutus standards. Any future Plutus ledger language version (V4+) would require a new `toa_version`, because the language tag is part of the script hash and therefore part of every derived TOA address.
-- **Why not normative transaction-shape DSL?** Conformance is fully defined by *Validator Rules* and *Test Vector Format*. Constraining the *shape* of valid transactions beyond what the validator enforces would force every implementation through a specific DSL or codegen toolchain without strengthening the on-chain guarantee. A non-normative Tx3 reference file may be published as an aid to implementers, but no implementation is required to consume it.
+- **Why not normative transaction-shape DSL?** Conformance is fully defined by *Validator Rules* and *Test Vector Format*. Constraining the *shape* of valid transactions beyond what the validator enforces would force every implementation through a specific DSL or codegen toolchain without strengthening the on-chain guarantee.
 - **Why no stake credential in v1?** Any optional stake credential is an interop fork — two wallets disagreeing on the canonical choice produce different addresses for the same NFT. v1 picks the safest single value (none); delegated TOAs are deferred to a future CIP.
 - **Why transaction-local NFT uniqueness (`sumSpentInputs(ac) == 1`, `sumOutputs(ac) == 1`) rather than "validator enforces supply = 1"?** The validator cannot prove historical total supply on-chain — it sees only one transaction at a time. Transaction-local uniqueness over *spent* inputs is the strongest invariant the validator can actually enforce: it rules out in-transaction multi-copy edge cases and reference-input attacks (where the NFT is observed but not consumed), while leaving the responsibility of choosing a sound minting policy to the NFT issuer (and to wallet warnings, per *Wallet Behaviour*).
 - **Why total quantity rather than "some input contains the NFT"?** Checking `sumSpentInputs(ac) == 1` and `sumOutputs(ac) == 1` rejects three failure modes that "some input contains the NFT" would miss: (1) zero NFT inputs, (2) multi-copy NFT inputs (only possible if the upstream minting policy is permissive), and (3) an NFT visible only as a *reference* input. The third case is particularly important: a reference input lets a transaction observe a UTxO without consuming it, and treating reference-input visibility as authorisation would let any party who finds a UTxO containing the controlling NFT (anywhere on the ledger) drain the TOA. The validator MUST count only spent inputs.
@@ -424,10 +411,6 @@ TOA is purely additive — no existing standard or implementation changes behavi
 - **[CIP-0067](https://cips.cardano.org/cip/CIP-0067) (asset name labels):** TOA derivation treats `asset_name` as raw bytes. CIP-0067 labels are not interpreted by the TOA validator; they are simply part of the asset name bytes, so different labelled asset names produce different TOAs. No conflict.
 - **[CIP-0068](https://cips.cardano.org/cip/CIP-0068) (datum-based metadata):** TOA derivation is independent of datum content and equally agnostic to CIP-0068 label semantics. A CIP-0068 reference NFT (label 100) and its corresponding user NFT (label 222) have distinct asset names and therefore each have their own TOA. No conflict.
 - **Existing token-gating implementations:** TOA does not invalidate any current pattern. It offers a standard target that new implementations should converge on, with no requirement to migrate existing dApps.
-
-#### L2 Interoperability
-
-Because TOA derivation depends only on the Plutus V3 validator and `(toa_version, policy_id, asset_name)`, the same applied script hash and payment credential can be derived in any Plutus-compatible environment that uses Cardano-ledger address semantics. Cross-ledger semantics — bridge transit, head admission, rollup confirmation windows, and settlement guarantees — are out of scope for TOA v1 and are the responsibility of the specific L2 system.
 
 ## Security Considerations
 
