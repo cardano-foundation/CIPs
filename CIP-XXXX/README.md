@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: \?
 Title: Utilization-Scaled Pledge Bonus
 Category: Ledger
 Status: Proposed
