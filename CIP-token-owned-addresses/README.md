@@ -360,7 +360,9 @@ Test vectors are split into two categories with **distinct conformance rules**:
 
 Conformance for category (b) is **pass/fail correctness only**. Execution-unit usage and transaction-size budgets are deliberately not part of the standard: the validator's correctness is independent of the Plutus cost model, and pinning a cost model would impose ongoing erratum maintenance every time governance amends it. The reference repository's [`toa-bench`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-bench/Main.hs) tool tracks ExUnits and script-size as a non-normative regression baseline; it is informational and has no bearing on conformance.
 
-Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/README.md), identified by blake2b-256 content hash `234d5a00e9c8a0da08c873f9d9294ac22d8ece4f2de8a8d2f445438249af180a`.
+Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/README.md), identified by blake2b-256 content hash `234d5a00e9c8a0da08c873f9d9294ac22d8ece4f2de8a8d2f445438249af180a`. Conformance for category (a) is determined by the `expected_script_hash`, `expected_address_mainnet`, and `expected_address_testnet` fields per vector; other per-vector fields (`params_cbor_hex`, `applied_script_cbor_hex`, `applied_script_bytes`, `flat_body_length`, etc.) are diagnostic aids whose semantics are documented in the external schema.
+
+**Rationale for `asset_name` length coverage at the CBOR-threshold boundaries.** Length 23 is the last `asset_name` length that fits in a single-byte CBOR bytestring header (`0x57 || <23 bytes>`). Length 24 is the first length that requires an explicit length byte (`0x58 0x18 || <24 bytes>`). Covering these two boundary lengths confirms — across the published category-(a) vectors — that `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` remain byte-invariant across the full domain `len(asset_name) ∈ [0, 32]`, and that no CBOR encoding transition (in either `params_cbor` or the outer flat-body envelope) breaks R for any valid input. Lengths 31 and 32 cover the upper boundary of the permitted domain.
 
 Coverage MUST include at minimum:
 
@@ -374,7 +376,9 @@ Coverage MUST include at minimum:
 - **self-deposit spend case** — the controlling NFT is at its own TOA and is spent permissionlessly — outstanding;
 - **reference-input attack case** — the controlling NFT appears only in a reference input; regular spent inputs contain zero units; expected result: **fail** (the reference input does not satisfy `sumSpentInputs(ac) == 1`) — outstanding;
 - **datum-classification coverage — all four must be spendable:** (i) **Unit Datum**, (ii) **Inline Datum** (non-unit), (iii) **Datum Hash**, (iv) **No Datum** — outstanding;
-- **permissive-policy warning fixture** — a vector documenting (as metadata, not validator proof) that the controlling minting policy permits further mints, so wallets and indexers can verify their warning UX against a concrete example — outstanding.
+- **permissive-policy warning fixture** — a vector documenting (as metadata, not validator proof) that the controlling minting policy permits further mints, so wallets and indexers can verify their warning UX against a concrete example — outstanding;
+- **single-`policy_id`-change vectors** — at least one pair of vectors differing only in `policy_id` (same `toa_version`, same `asset_name`), used to isolate which region of R depends on `policy_id` — outstanding;
+- **single-`asset_name`-change vectors** — at least one pair of vectors differing only in `asset_name` (same `toa_version`, same `policy_id`), used to isolate which region of R depends on `asset_name` — outstanding.
 
 ## Rationale: How does this CIP achieve its goals?
 
