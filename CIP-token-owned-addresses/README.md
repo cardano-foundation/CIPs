@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 188
 Title: Token-Owned Addresses
 Category: Tokens
 Status: Proposed
