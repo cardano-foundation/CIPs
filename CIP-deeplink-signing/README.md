@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 186
 Title: Cardano Wallet Deep-Link Signing (CIP-30-DeepLink)
 Category: Wallets
 Status: Proposed
