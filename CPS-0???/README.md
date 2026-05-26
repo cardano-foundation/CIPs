@@ -56,7 +56,7 @@ popular wallets, through no fault of their own.
 
 ### No open participation framework exists
 
-ADA Handle achieved widespread wallet integration and community
+Existing implementors achieved widespread wallet integration and community
 adoption without contributing any open specification or CIP to the
 Cardano ecosystem. New entrants have no defined process for
 participating in the handle namespace on equal terms. Independent
