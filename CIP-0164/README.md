@@ -17,6 +17,7 @@ Implementors:
   - Input Output Engineering
 Discussions:
   - https://github.com/input-output-hk/ouroboros-leios/discussions
+  - https://github.com/cardano-foundation/CIPs/pull/1078
   - https://github.com/cardano-foundation/CIPs/pull/1196
 Solution-To:
   - CPS-0018
