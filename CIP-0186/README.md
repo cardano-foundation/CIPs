@@ -420,6 +420,14 @@ CIP-30:343-347 `api.signTx(tx: cbor<transaction>, partialSign: bool = false)`. T
 return shape is `cbor<transaction_witness_set>` (CIP-30:343); on the wire we base64url-encode the
 same CBOR.
 
+**`result-json.commit` echo verification (MUST).** The dApp MUST verify that
+`result-json.commit` equals the `commit` value it sent in the request. Mismatch indicates that the
+wallet returned a witness set for a different transaction body than the one the dApp asked it to
+sign; the dApp MUST reject the response with `errorCode=-2 CommitMismatch`, discard the witness
+set, and terminate the session (`disconnect`). The echo invariant is the dApp-side complement of
+the wallet's pre-render `BLAKE2b-256(tx_body) == commit` check: together they make tx-body
+substitution impossible across the full request/response loop.
+
 #### signData
 
 Mirrors CIP-30 `signData(addr, payload)` (CIP-30:349). Request encrypted payload:
