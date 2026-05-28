@@ -263,14 +263,24 @@ extraction is well-defined; wallets MAY reject a transaction whose source CBOR i
 with `errorCode=-9 UnsupportedVersion` (`errorMessage="non-canonical CBOR encoding"`) but are not
 required to do this check.
 
+**Reference encoder.** Implementations needing to produce canonical Conway-era CBOR SHOULD use the
+[`cardano-ledger`](https://github.com/IntersectMBO/cardano-ledger) Haskell reference encoder, the
+[`pallas-codec`](https://github.com/txpipe/pallas) Rust reference encoder, or the
+[`cardano-multiplatform-lib`](https://github.com/dcSpark/cardano-multiplatform-lib) JavaScript/Rust
+encoder. Conformance against any of these is sufficient; conformance against none is
+non-interoperable.
+
 **Auxiliary data consistency rule.** If element index 3 (`auxiliary_data`) is non-null, the wallet
 MUST verify that `transaction_body.auxiliary_data_hash` (an OPTIONAL field inside `transaction_body`)
-equals `BLAKE2b-256(canonical-cbor(auxiliary_data))`. If the hashes disagree the wallet MUST reject
-with `errorCode=-11 AuxiliaryDataHashMismatch`. This closes a class of attacks where a malicious
-intermediary swaps the auxiliary-data payload between the wallet's signing-time view and the
-final-submitted transaction: the chain enforces `auxiliary_data_hash` consistency at validation, but
-without this wallet-side check the user could sign a transaction whose displayed metadata is
-unrelated to the on-chain effect.
+equals `BLAKE2b-256(canonical-cbor(auxiliary_data))` where `canonical-cbor` is the same Conway-era
+canonical encoding referenced above. If the hashes disagree the wallet MUST reject with
+`errorCode=-11 AuxiliaryDataHashMismatch`. Unlike the `tx_body` extraction (which is byte-literal),
+the auxiliary-data hash check intentionally re-canonicalises because it is verifying a
+chain-recorded hash, not extracting bytes the chain will validate. This closes a class of attacks
+where a malicious intermediary swaps the auxiliary-data payload between the wallet's signing-time
+view and the final-submitted transaction: the chain enforces `auxiliary_data_hash` consistency at
+validation, but without this wallet-side check the user could sign a transaction whose displayed
+metadata is unrelated to the on-chain effect.
 
 The dApp SHOULD perform the same extraction + hash locally so it can re-verify the wallet's
 `commit` after receiving the witness set; if the dApp's locally-computed `commit` differs from
