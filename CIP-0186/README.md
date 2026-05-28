@@ -1126,7 +1126,7 @@ dApp constants:
 - `dappKey` (X25519 public, 32 bytes hex): `0101010101010101010101010101010101010101010101010101010101010101`
 - base64url(`dappKey`): `AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE`
 - `nonce` (24 bytes hex): `020202020202020202020202020202020202020202020202`
-- base64url(`nonce`): `AgICAgICAgICAgICAgICAgICAgICAgICAgIC`
+- base64url(`nonce`): `AgICAgICAgICAgICAgICAgICAgICAgIC`
 - `dapp-info-json` minified: `{"name":"Aegis","url":"https://aegis.example","iconUrl":"https://aegis.example/icon.png"}`
 - base64url(`dapp-info-json`):
   `eyJuYW1lIjoiQWVnaXMiLCJ1cmwiOiJodHRwczovL2FlZ2lzLmV4YW1wbGUiLCJpY29uVXJsIjoiaHR0cHM6Ly9hZWdpcy5leGFtcGxlL2ljb24ucG5nIn0`
@@ -1140,7 +1140,7 @@ https://lace.io/cip30dl/v1/connect
   &dappKey=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE
   &redirect=https%3A%2F%2Faegis.example%2Fcb
   &chain=cardano%3Apreprod
-  &nonce=AgICAgICAgICAgICAgICAgICAgICAgICAgIC
+  &nonce=AgICAgICAgICAgICAgICAgICAgICAgIC
 ```
 
 Response URL (wallet appends to the dApp's redirect; `walletKey`, `nonce`, `payload`, and
