@@ -763,9 +763,12 @@ The canonical form is constructed as:
    trailing LF). This MUST be the leading prefix of every signed message so that a signature
    minted for CIP-30-DeepLink can never be replayed against a different protocol that happens to
    reuse the same `session_signingPrivateKey`.
-2. Append `<scheme>://<host_lowercased><path>` (host case-folded per
+2. Append `<scheme>://<host_lowercased>[:<port>]<path>` (host case-folded per
    [RFC 3986 §3.2.2](https://datatracker.ietf.org/doc/html/rfc3986#section-3.2.2); path preserved
-   byte-for-byte).
+   byte-for-byte). The explicit port MUST be included if and only if it appears literally in the
+   URL authority. Default ports for the scheme (`443` for `https`, `80` for `http`) MUST NOT be
+   emitted even if equivalent under RFC 3986 §3.2.3. This rule keeps the canonical form
+   byte-deterministic across implementations that disagree on default-port omission.
 3. Append `?`.
 4. Collect every query parameter except `signature`. Sort the parameters by key in **lexicographic
    byte order** (ASCII). For ties (repeated keys), preserve emission order.
