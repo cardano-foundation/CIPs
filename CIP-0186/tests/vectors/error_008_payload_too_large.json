@@ -1,0 +1,15 @@
+{
+  "name": "error_008_payload_too_large",
+  "spec_section": "URI length budget; Appendix A (-32)",
+  "category": "error_response",
+  "input": {
+    "request_url_bytes": 13312,
+    "wallet_max_payload_bytes": 12288
+  },
+  "expected": {
+    "errorCode": -32,
+    "errorName": "PayloadTooLarge"
+  },
+  "should_reject": true,
+  "rejection_reason": "payload_too_large"
+}

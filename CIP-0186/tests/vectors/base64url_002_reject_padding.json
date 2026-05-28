@@ -1,0 +1,11 @@
+{
+  "name": "base64url_002_reject_padding",
+  "spec_section": "URI format (base64url strict-decode rule)",
+  "category": "base64url_decode",
+  "input": {
+    "encoded": "AgICAgICAgICAgICAgICAgICAgICAgICAgIC="
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "padding_present"
+}

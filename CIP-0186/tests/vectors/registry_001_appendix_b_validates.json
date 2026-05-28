@@ -1,0 +1,18 @@
+{
+  "name": "registry_001_appendix_b_validates",
+  "spec_section": "Appendix B - Wallet registry",
+  "category": "wallet_registry",
+  "input": {
+    "registry": [
+      {"id": "lace",   "scheme": "cip30dl-lace",   "https": "https://lace.io/cip30dl/v1/"},
+      {"id": "eternl", "scheme": "cip30dl-eternl", "https": "https://eternl.io/cip30dl/v1/"},
+      {"id": "vespr",  "scheme": "cip30dl-vespr",  "https": "https://vespr.xyz/cip30dl/v1/"},
+      {"id": "yuti",   "scheme": "cip30dl-yuti",   "https": "https://yuti.fluxpointstudios.com/cip30dl/v1/"}
+    ]
+  },
+  "expected": {
+    "schema_valid": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

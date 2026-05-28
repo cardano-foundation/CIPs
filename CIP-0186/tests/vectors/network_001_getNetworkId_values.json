@@ -1,0 +1,16 @@
+{
+  "name": "network_001_getNetworkId_values",
+  "spec_section": "Methods (getNetworkId; CIP-30:272)",
+  "category": "network",
+  "input": {
+    "decrypted_response_testnet": {"networkId": 0},
+    "decrypted_response_mainnet": {"networkId": 1}
+  },
+  "expected": {
+    "testnet_value": 0,
+    "mainnet_value": 1,
+    "other_values_reserved": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

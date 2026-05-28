@@ -1,0 +1,15 @@
+{
+  "name": "error_007_curve25519_low_order_key",
+  "spec_section": "Methods (Curve25519 low-order key rejection); Appendix A (-7)",
+  "category": "error_response",
+  "input": {
+    "received_x25519_public_key_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "note": "All-zero point. Per RFC 7748 §6.1 the eight low-order points produce all-zero DH output."
+  },
+  "expected": {
+    "errorCode": -7,
+    "errorName": "DecryptFailed"
+  },
+  "should_reject": true,
+  "rejection_reason": "low_order_point"
+}

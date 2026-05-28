@@ -1,0 +1,16 @@
+{
+  "name": "response_006_signTx_commit_echo_mismatch",
+  "spec_section": "Methods (signTx; result-json commit echo)",
+  "category": "response_envelope",
+  "input": {
+    "decrypted_result_json": {
+      "commit": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "witnessSet": "oQCBglggAAA",
+      "txHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    "request_commit_b64url": "__________________________________________8"
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "commit_echo_mismatch"
+}
