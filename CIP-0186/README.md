@@ -168,6 +168,7 @@ param            = key "=" value
 key              = "v" / "dapp" / "dappKey" / "redirect"
                  / "nonce" / "commit" / "session"
                  / "payload" / "chain" / "ttl" / "page"
+                 / "aead"
 
 value            = 1*( unreserved / pct-encoded )
 unreserved       = ALPHA / DIGIT / "-" / "." / "_" / "~"
