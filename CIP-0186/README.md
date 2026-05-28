@@ -165,10 +165,13 @@ method           = "connect" / "disconnect" / "signTx" / "signData"
 
 param-list       = param *( "&" param )
 param            = key "=" value
-key              = "v" / "dapp" / "dappKey" / "redirect"
+key              = request-key / response-key
+request-key      = "v" / "dapp" / "dappKey" / "redirect"
                  / "nonce" / "commit" / "session"
                  / "payload" / "chain" / "ttl" / "page"
                  / "aead"
+response-key     = "response" / "walletKey" / "nonce" / "payload"
+                 / "signature" / "errorCode" / "errorMessage"
 
 value            = 1*( unreserved / pct-encoded )
 unreserved       = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -870,12 +873,14 @@ permissive HTTP/Postel convention. The two layers have different threat models a
 different defaults.
 
 - **URL-level (transport boundary) &mdash; strict reject.** A wallet MUST reject any request URL that
-  contains a query-string `key` not listed in the ABNF for the wallet's implemented version, with
-  `errorCode=-9 UnsupportedVersion` and an `errorMessage` naming the offending key. Every URL
-  parameter in this protocol carries security-sensitive state (`redirect` host binding,
-  `nonce` replay window, `commit` binding, encrypted `payload`, `ttl` window). Silent ignore at
-  this layer would let an attacker smuggle additional state past the wallet's parser without
-  surfacing in the user-visible signing UI. The wallet's own ABNF parser MUST be the gate.
+  contains a query-string `key` not listed in the `request-key` ABNF production for the wallet's
+  implemented version, with `errorCode=-9 UnsupportedVersion` and an `errorMessage` naming the
+  offending key. A dApp MUST apply the same strict-reject rule against any response URL it receives
+  that contains a key not listed in the `response-key` ABNF production. Every URL parameter in this
+  protocol carries security-sensitive state (`redirect` host binding, `nonce` replay window,
+  `commit` binding, encrypted `payload`, `ttl` window, `signature` authenticity). Silent ignore at
+  this layer would let an attacker smuggle additional state past the parser without surfacing in
+  the user-visible signing UI. The wallet's and the dApp's own ABNF parsers MUST be the gate.
 
 - **JSON-payload-level (application boundary) &mdash; lenient ignore.** A wallet and dApp MUST tolerate
   unknown fields inside the encrypted JSON payload (`signTx-json`, `session-json`, etc.) and
