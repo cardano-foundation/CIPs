@@ -541,9 +541,14 @@ the same URL &mdash; the second submission MUST still observe `errorCode=-5`.
 - A custom scheme matching `<reverse-DNS of dapp bundle ID>:`.
 
 The wallet MUST persist the `redirect` URL host from `connect` and reject any *subsequent* request
-whose `redirect` host differs. **Defence-in-depth (testable):** a conformance test that connects with
-`redirect=https://aegis.example/cb` and then calls `signTx` with `redirect=https://evil.example/cb`
-MUST observe `errorCode=-4 RedirectHostMismatch`.
+whose `redirect` host differs. The `errorCode=-4 RedirectHostMismatch` envelope MUST be delivered to
+the `connect`-time persisted `redirect` URL, NOT to the offending request's `redirect` URL. Delivering
+to the offending host would defeat the security purpose: the legitimate dApp would never observe the
+attack attempt and would be unable to tear down the session. Wallets MAY additionally surface the
+mismatch in their own UI before redirecting. **Defence-in-depth (testable):** a conformance test
+that connects with `redirect=https://aegis.example/cb` and then calls `signTx` with
+`redirect=https://evil.example/cb` MUST observe `errorCode=-4 RedirectHostMismatch` delivered to
+`https://aegis.example/cb`.
 
 #### Commit binding (anti-swap)
 
