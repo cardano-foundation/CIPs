@@ -428,6 +428,18 @@ set, and terminate the session (`disconnect`). The echo invariant is the dApp-si
 the wallet's pre-render `BLAKE2b-256(tx_body) == commit` check: together they make tx-body
 substitution impossible across the full request/response loop.
 
+**Witness-set merge semantics for `partialSign=true`.** When the dApp combines a wallet-returned
+partial witness set into an in-flight `transaction_witness_set` that already carries vkey witnesses
+(e.g. from a prior co-signer), it MUST concatenate the returned `vkey_witnesses` array (map key `0`
+of the `transaction_witness_set` map per CIP-30:343 and Conway CDDL) to the existing array, NOT
+replace it. Replace semantics would silently drop the prior co-signer's witnesses and produce a
+transaction that fails ledger validation. Non-vkey witness fields (native scripts at key `1`, Plutus
+scripts at keys `3`/`6`/`7`, datums at key `4`, redeemers at key `5`) MUST be merged with the same
+array-append semantics if both maps populate the same field. dApps SHOULD reject a wallet response
+whose returned `transaction_witness_set` carries non-empty entries at any key the dApp did not
+expect the wallet to produce (e.g. unexpected native scripts), as this constitutes injection of
+non-vkey policy material outside the wallet's mandate.
+
 #### signData
 
 Mirrors CIP-30 `signData(addr, payload)` (CIP-30:349). Request encrypted payload:
