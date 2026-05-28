@@ -249,11 +249,19 @@ transaction =
   ]
 ```
 
-The wallet MUST extract `transaction_body` as element index 0 of the top-level CBOR array,
-re-serialise it under [RFC 8949 §4.2](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2)
-canonical deterministic encoding, and compute `commit = BLAKE2b-256` over those exact bytes. The
-wallet MUST NOT introduce or remove tag wrappers, MUST NOT alter the map key ordering inside the
-body, and MUST NOT canonicalise any field that the chain treats as positional.
+The wallet MUST extract the **literal** byte range of `transaction_body` (element index 0 of the
+top-level CBOR array) as it appears in the source transaction CBOR, and compute
+`commit = BLAKE2b-256` over those exact bytes. The wallet MUST NOT re-encode, canonicalise, or
+otherwise mutate the extracted bytes. The literal-bytes rule is load-bearing: the chain's `tx_id`
+is `BLAKE2b-256` of the same source `transaction_body` bytes the ledger validated, and any
+divergence between the wallet's `commit` and the chain's `tx_id` (introduced by, e.g., a wallet
+re-canonicaliser that disagrees with the source encoder on definite-vs-indefinite-length encoding,
+or on sort order for non-text-key maps) breaks every downstream layer that pins the transaction by
+hash. The dApp MUST supply a Conway-era canonical CBOR encoding per
+[RFC 8949 §4.2](https://datatracker.ietf.org/doc/html/rfc8949#section-4.2) so the literal-bytes
+extraction is well-defined; wallets MAY reject a transaction whose source CBOR is non-canonical
+with `errorCode=-9 UnsupportedVersion` (`errorMessage="non-canonical CBOR encoding"`) but are not
+required to do this check.
 
 **Auxiliary data consistency rule.** If element index 3 (`auxiliary_data`) is non-null, the wallet
 MUST verify that `transaction_body.auxiliary_data_hash` (an OPTIONAL field inside `transaction_body`)
