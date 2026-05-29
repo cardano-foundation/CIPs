@@ -17,7 +17,7 @@ Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/258
   - https://discord.gg/yUkkhqBnyV
   - https://github.com/aiken-lang/aiken/issues/972
-  - https://github.com/cardano-foundation/CIPs/pull/1203
+  - https://github.com/aiken-lang/aiken/issues/1270
 Created: 2022-05-15
 License: CC-BY-4.0
 ---
