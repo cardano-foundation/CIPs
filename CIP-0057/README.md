@@ -339,9 +339,12 @@ Examples:
 "$ref": "#/definitions/Pair<Int,ByteArray>"
 ```
 
-#### `title` and the unparameterized name
+#### `title` for parametric instantiations
 
-When a parametric instantiation is registered, its `title` field MUST hold only the **unparameterized constructor name** (e.g. `"Option"`, `"List"`, `"Pair"`), not the parameterized form. The angle-bracket suffix lives in the definition key and the `$ref`, not in `title`. This keeps `title` stable across instantiations and useful as a code-generation hint (e.g. the simple class / type name in the generated language).
+`title` is a human-readable hint and does NOT carry type identity. Type identity for a parametric instantiation lives in the definition key and is reached via `$ref`; consumers MUST derive type identity from those and MUST NOT use `title` to distinguish two entries. As a result, producers retain some discretion here:
+
+- Producers SHOULD emit only the **unparameterized constructor name** in `title` (e.g. `"Option"`, `"List"`, `"Pair"`). This keeps `title` stable across instantiations and lets consumers use it directly as a code-generation hint (e.g. the simple class / type name in the generated language).
+- Producers MAY emit the parameterized form (e.g. `"Pairs<ByteArray, Int>"`). Existing toolchains do so for some type constructors and consumers therefore MUST tolerate either form on read. Consumers that derive identifiers from `title` should strip any trailing angle-bracket suffix before using it.
 
 #### Legacy syntaxes
 
@@ -470,7 +473,7 @@ Angle brackets are the parametric-naming delimiter for three reasons:
 
 JSON Pointer's `~1` escape is reused rather than introducing a new escape mechanism because RFC 6901 is already the substrate `$ref` is built on. Angle brackets and commas are intentionally left unreserved by RFC 6901 and pass through verbatim, so no new escape semantics are introduced.
 
-The unparameterized `title` rule keeps `title` stable across instantiations: putting `<Int>` into `title` would force every code generator to strip it before deriving an identifier, whereas leaving `title` as the bare constructor name lets it serve directly as a code-generation hint.
+`title` is not load-bearing for interop — type identity flows through the definition key and `$ref`, so a normative rule on `title` would constrain producers without unlocking any interoperability. The unparameterized form is recommended (SHOULD) because it makes `title` directly usable as a target-language identifier; the parameterized form is tolerated (MAY) because some producers already emit it and a hard rule there would invalidate existing blueprints without adding interop value.
 
 ### Purpose
 
