@@ -12,6 +12,7 @@ Implementors:
   - OpShin <https://github.com/OpShin>
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
+  - Bloxbean cardano-client-lib <https://github.com/bloxbean/cardano-client-lib>
 Discussions:
   - https://github.com/cardano-foundation/CIPs/pull/258
   - https://discord.gg/yUkkhqBnyV
@@ -278,6 +279,79 @@ This keyword's value must be a non-negative integer. An instance is valid agains
 
 This keyword's value must be an array of valid _Plutus Data Schema_; possibly empty. An instance is valid against this keyword if it represents a Plutus constructor for which each field is valid under each subschema given by this keyword's value. Fields are compared positionally. This keyword is mandatory.
 
+### Parametric (generic) types
+
+Many high-level languages targeting Plutus support parametric polymorphism — type constructors that take other types as arguments (e.g. `Option<a>`, `List<a>`, `Pair<k, v>`, `Map<k, v>`, or user-defined ADTs such as `Wrapped<a>`). Once a compiler instantiates such a constructor with concrete arguments, the resulting type is a distinct on-chain type that may appear in `datum`, `redeemer`, `parameters`, or `fields`. Each distinct instantiation needs a distinct entry in the [`definitions`](#definitions) registry so that `$ref` strings can target it unambiguously.
+
+Earlier revisions of this CIP did not prescribe a syntax for naming such instantiations, and implementations have diverged: some emit `Option$Int` (legacy Aiken `< v1.1`), others emit `Option<Int>` (Aiken `>= v1.1`, Scalus), and bespoke tools have at times used `_` or `-` as separators. This divergence prevents code-generators from interoperating across producers.
+
+This section defines the recommended naming and encoding rules. Implementations producing or consuming `definitions` keys and `$ref` strings SHOULD follow them so that one blueprint can be consumed by tools across the ecosystem.
+
+#### Definition keys
+
+For each instantiation of a parametric type constructor that appears in a blueprint, producers SHOULD register one entry under `definitions` whose key follows this grammar (informal EBNF):
+
+```
+key            = qualified-name [ "<" arg-list ">" ]
+qualified-name = path-segment *( "/" path-segment )
+path-segment   = unreserved-char *( unreserved-char )
+arg-list       = key *( "," key )
+unreserved-char = ALPHA / DIGIT / "_"
+```
+
+In prose:
+
+1. The unparameterized part of the key is the type constructor's **fully qualified name** as the producing compiler understands it (e.g. `Option`, `List`, `cardano/address/Credential`, `MyProject/types/order/Action`). Module separators are written as forward slashes (`/`).
+2. If the type constructor takes type arguments, they appear inside a single pair of angle brackets (`<` and `>`) immediately after the qualified name, separated by commas (`,`), with **no whitespace**.
+3. Each type argument is itself a key matching this grammar — angle brackets nest arbitrarily deep for higher-order instantiations.
+4. Names of built-in / shared types (e.g. `Int`, `ByteArray`) MAY be unqualified (i.e. have no `/`-path prefix), at the producer's discretion.
+
+Examples of well-formed definition keys (from real-world Aiken stdlib v3 blueprints):
+
+```
+Option<Int>
+Option<cardano/address/StakeCredential>
+List<ByteArray>
+List<Option<types/order/Action>>
+Option<List<Option<types/order/Action>>>
+Pair<Int,ByteArray>
+Map<ByteArray,Int>
+aiken/interval/IntervalBound<Int>
+```
+
+##### Tuple keys
+
+For ordered fixed-arity products (n-tuples) that some languages model as a distinct kind from ADTs, producers SHOULD use the reserved name `Tuple` with a single angle-bracket argument list whose contents are themselves wrapped in angle brackets — i.e. `Tuple<<A,B>>`, `Tuple<<A,B,C>>`. The doubled brackets distinguish tuples from a hypothetical single-argument `Tuple<A>` and match what current Aiken implementations emit.
+
+#### `$ref` strings
+
+References to definitions follow [RFC 6901 — JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). The relevant escape rules are:
+
+- `/` (used as a module separator in qualified names) MUST be encoded as `~1` inside a `$ref` value.
+- `~` MUST be encoded as `~0`.
+- Angle brackets (`<`, `>`) and commas (`,`) MUST NOT be percent-encoded; they appear verbatim. JSON Pointer does not reserve them.
+
+Examples:
+
+```
+"$ref": "#/definitions/Option<Int>"
+"$ref": "#/definitions/Option<cardano~1address~1StakeCredential>"
+"$ref": "#/definitions/aiken~1interval~1IntervalBoundType<Int>"
+"$ref": "#/definitions/Pair<Int,ByteArray>"
+```
+
+#### `title` and the unparameterized name
+
+When a parametric instantiation is registered, its `title` field SHOULD hold only the **unparameterized constructor name** (e.g. `"Option"`, `"List"`, `"Pair"`), not the parameterized form. The angle-bracket suffix lives in the definition key and the `$ref`, not in `title`. This keeps `title` stable across instantiations and useful as a code-generation hint (e.g. the simple class / type name in the generated language).
+
+#### Legacy syntaxes
+
+Producers MAY continue to emit, and consumers SHOULD tolerate, the following historical forms when processing blueprints emitted by older toolchains:
+
+- **Dollar-separator form**: `Option$Int`, `List$ByteArray` — used by Aiken `< v1.1` (stdlib `v1` era). Equivalent to the modern `Option<Int>`, `List<ByteArray>`.
+
+Consumers that produce keys themselves (e.g. when synthesising auxiliary definitions during code generation) SHOULD emit the modern angle-bracket form regardless of which form they consumed. New producers SHOULD NOT emit the dollar-separator form.
+
 ## Example(s)
 
 <details>
@@ -384,6 +458,22 @@ One would have written:
 ```
 
 Yet, because we do want `Data` to be the primary binary interface medium, we keep the former notation as it's more succinct and is a unambiguous shorthand. This also allows to segregate all builtins behind a common notation -- that is, prefixed with a `#`.
+
+### Parametric type naming
+
+The original revision of this CIP did not standardize a syntax for naming parametric type instantiations under `definitions`. As blueprints started appearing in the wild — first from Aiken, later from Scalus and others — two conventions emerged for separating a type constructor from its arguments: a dollar separator (`Option$Int`, used by Aiken `< v1.1`) and angle brackets (`Option<Int>`, used by Aiken `>= v1.1` and Scalus). The lack of a normative rule meant any new producer was free to invent a third, breaking interoperability with code-generators that had already been written against the others.
+
+We chose angle brackets as the recommendation for three reasons:
+
+1. **Familiarity.** Angle brackets are the dominant generics syntax in the high-level languages most likely to consume blueprints (Java, TypeScript, Rust, C#, Scala). Code generators can use the key string almost verbatim to produce target-language identifiers, modulo escaping.
+2. **Compositionality.** Angle brackets nest naturally (`List<Option<Foo>>`) without ambiguity. The dollar form requires either escaping or further punctuation to express nested instantiations and tends to collide with valid identifier characters in some languages.
+3. **Existing momentum.** All current Aiken stdlib v3 output and all Scalus output already use the angle-bracket form; the dollar form is confined to legacy Aiken `< v1.1` blueprints. Standardizing on what new producers already emit minimizes churn.
+
+JSON Pointer's `~1` escape is reused rather than introducing a new escape mechanism because RFC 6901 is already the substrate `$ref` is built on. Angle brackets and commas were intentionally left unreserved by RFC 6901 and pass through verbatim, so no new escape semantics are introduced by this amendment.
+
+The unparameterized `title` rule reflects what Aiken and Scalus both already do in practice. Putting `<Int>` into `title` would force every code generator to strip it before deriving an identifier; leaving `title` as the bare constructor name lets it serve directly as a code-generation hint.
+
+This amendment does NOT standardize a registry of shared types (e.g. `cardano/address/Credential`). Such a registry is largely a stdlib concern of individual languages and would expand the scope of CIP-57 beyond syntax. Producers remain free to use whatever qualified names their stdlib defines; this amendment only specifies how those names compose with type arguments.
 
 ### Purpose
 
