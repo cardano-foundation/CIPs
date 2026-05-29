@@ -285,11 +285,11 @@ Many high-level languages targeting Plutus support parametric polymorphism — t
 
 Earlier revisions of this CIP did not prescribe a syntax for naming such instantiations, and implementations have diverged: some emit `Option$Int` (legacy Aiken `< v1.1`), others emit `Option<Int>` (Aiken `>= v1.1`, Scalus), and bespoke tools have at times used `_` or `-` as separators. This divergence prevents code-generators from interoperating across producers.
 
-This section defines the recommended naming and encoding rules. Implementations producing or consuming `definitions` keys and `$ref` strings SHOULD follow them so that one blueprint can be consumed by tools across the ecosystem.
+This section defines the normative naming and encoding rules. Implementations producing `definitions` keys and `$ref` strings MUST follow them so that one blueprint can be consumed by tools across the ecosystem. Consumers MUST accept the modern angle-bracket form defined here; consumer behaviour for legacy forms is described in [Legacy syntaxes](#legacy-syntaxes) below.
 
 #### Definition keys
 
-For each instantiation of a parametric type constructor that appears in a blueprint, producers SHOULD register one entry under `definitions` whose key follows this grammar (informal EBNF):
+For each instantiation of a parametric type constructor that appears in a blueprint, producers MUST register one entry under `definitions` whose key follows this grammar (informal EBNF):
 
 ```
 key            = qualified-name [ "<" arg-list ">" ]
@@ -321,7 +321,7 @@ aiken/interval/IntervalBound<Int>
 
 ##### Tuple keys
 
-For ordered fixed-arity products (n-tuples) that some languages model as a distinct kind from ADTs, producers SHOULD use the reserved name `Tuple` with a single angle-bracket argument list whose contents are themselves wrapped in angle brackets — i.e. `Tuple<<A,B>>`, `Tuple<<A,B,C>>`. The doubled brackets distinguish tuples from a hypothetical single-argument `Tuple<A>` and match what current Aiken implementations emit.
+For ordered fixed-arity products (n-tuples) that some languages model as a distinct kind from ADTs, producers MUST use the reserved name `Tuple` with a single angle-bracket argument list whose contents are themselves wrapped in angle brackets — i.e. `Tuple<<A,B>>`, `Tuple<<A,B,C>>`. The doubled brackets distinguish tuples from a hypothetical single-argument `Tuple<A>` and match what current Aiken implementations emit.
 
 #### `$ref` strings
 
@@ -342,15 +342,17 @@ Examples:
 
 #### `title` and the unparameterized name
 
-When a parametric instantiation is registered, its `title` field SHOULD hold only the **unparameterized constructor name** (e.g. `"Option"`, `"List"`, `"Pair"`), not the parameterized form. The angle-bracket suffix lives in the definition key and the `$ref`, not in `title`. This keeps `title` stable across instantiations and useful as a code-generation hint (e.g. the simple class / type name in the generated language).
+When a parametric instantiation is registered, its `title` field MUST hold only the **unparameterized constructor name** (e.g. `"Option"`, `"List"`, `"Pair"`), not the parameterized form. The angle-bracket suffix lives in the definition key and the `$ref`, not in `title`. This keeps `title` stable across instantiations and useful as a code-generation hint (e.g. the simple class / type name in the generated language).
 
 #### Legacy syntaxes
 
-Producers MAY continue to emit, and consumers SHOULD tolerate, the following historical forms when processing blueprints emitted by older toolchains:
+The following historical forms have appeared in blueprints emitted by older toolchains:
 
 - **Dollar-separator form**: `Option$Int`, `List$ByteArray` — used by Aiken `< v1.1` (stdlib `v1` era). Equivalent to the modern `Option<Int>`, `List<ByteArray>`.
 
-Consumers that produce keys themselves (e.g. when synthesising auxiliary definitions during code generation) SHOULD emit the modern angle-bracket form regardless of which form they consumed. New producers SHOULD NOT emit the dollar-separator form.
+New producers MUST NOT emit any of these legacy forms; they MUST emit the modern angle-bracket form defined above.
+
+Consumers MAY support legacy forms for backwards compatibility with older blueprints, but are NOT required to. A consumer that rejects a blueprint solely because it contains legacy-form keys is conformant with this specification. When a consumer that does support legacy forms produces keys itself (e.g. when synthesising auxiliary definitions during code generation), it MUST emit the modern angle-bracket form regardless of which form it consumed.
 
 ## Example(s)
 
