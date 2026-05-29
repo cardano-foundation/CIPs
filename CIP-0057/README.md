@@ -284,9 +284,7 @@ This keyword's value must be an array of valid _Plutus Data Schema_; possibly em
 
 Many high-level languages targeting Plutus support parametric polymorphism — type constructors that take other types as arguments (e.g. `Option<a>`, `List<a>`, `Pair<k, v>`, `Map<k, v>`, or user-defined ADTs such as `Wrapped<a>`). Once a compiler instantiates such a constructor with concrete arguments, the resulting type is a distinct on-chain type that may appear in `datum`, `redeemer`, `parameters`, or `fields`. Each distinct instantiation needs a distinct entry in the [`definitions`](#definitions) registry so that `$ref` strings can target it unambiguously.
 
-Earlier revisions of this CIP did not prescribe a syntax for naming such instantiations, and implementations have diverged: some emit `Option$Int`, others emit `Option<Int>`, and bespoke tools have at times used `_` or `-` as separators. This divergence prevents code-generators from interoperating across producers.
-
-This section defines the normative naming and encoding rules. Implementations producing `definitions` keys and `$ref` strings MUST follow them so that one blueprint can be consumed by tools across the ecosystem. Consumers MUST accept the modern angle-bracket form defined here; consumer behaviour for legacy forms is described in [Legacy syntaxes](#legacy-syntaxes) below.
+Implementations producing `definitions` keys and `$ref` strings MUST follow the rules below so that one blueprint can be consumed by tools across the ecosystem. Consumers MUST accept the angle-bracket form; consumer behaviour for legacy forms is described in [Legacy syntaxes](#legacy-syntaxes) below.
 
 #### Definition keys
 
@@ -464,19 +462,15 @@ Yet, because we do want `Data` to be the primary binary interface medium, we kee
 
 ### Parametric type naming
 
-The original revision of this CIP did not standardize a syntax for naming parametric type instantiations under `definitions`. As blueprints started appearing in the wild, two conventions emerged across producers for separating a type constructor from its arguments: a dollar separator (`Option$Int`) and angle brackets (`Option<Int>`). The lack of a normative rule meant any new producer was free to invent a third, breaking interoperability with code-generators written against either of the existing two.
-
-We chose angle brackets as the recommendation for three reasons:
+Angle brackets are the parametric-naming delimiter for three reasons:
 
 1. **Familiarity.** Angle brackets are the dominant generics syntax in the high-level languages most likely to consume blueprints (Java, TypeScript, Rust, C#, Scala). Code generators can use the key string almost verbatim to produce target-language identifiers, modulo escaping.
-2. **Compositionality.** Angle brackets nest naturally (`List<Option<Foo>>`) without ambiguity. The dollar form requires either escaping or further punctuation to express nested instantiations and tends to collide with valid identifier characters in some languages.
-3. **Existing momentum.** Current major producers already emit the angle-bracket form, and the dollar form is confined to early blueprints from one of them. Standardizing on what new producers already emit minimizes churn.
+2. **Compositionality.** Angle brackets nest naturally (`List<Option<Foo>>`) without ambiguity. A separator built from identifier characters (such as `$`, `_`, or `-`) tends to collide with valid identifier characters in target languages and requires further escaping to express nested instantiations.
+3. **Ecosystem alignment.** Current major producers emit the angle-bracket form; standardising on it minimises churn for both producers and consumers.
 
-JSON Pointer's `~1` escape is reused rather than introducing a new escape mechanism because RFC 6901 is already the substrate `$ref` is built on. Angle brackets and commas were intentionally left unreserved by RFC 6901 and pass through verbatim, so no new escape semantics are introduced by this amendment.
+JSON Pointer's `~1` escape is reused rather than introducing a new escape mechanism because RFC 6901 is already the substrate `$ref` is built on. Angle brackets and commas are intentionally left unreserved by RFC 6901 and pass through verbatim, so no new escape semantics are introduced.
 
-The unparameterized `title` rule reflects what current implementations already do in practice. Putting `<Int>` into `title` would force every code generator to strip it before deriving an identifier; leaving `title` as the bare constructor name lets it serve directly as a code-generation hint.
-
-This amendment does NOT standardize a registry of shared types (e.g. `cardano/address/Credential`). Such a registry is largely a stdlib concern of individual languages and would expand the scope of CIP-57 beyond syntax. Producers remain free to use whatever qualified names their stdlib defines; this amendment only specifies how those names compose with type arguments.
+The unparameterized `title` rule keeps `title` stable across instantiations: putting `<Int>` into `title` would force every code generator to strip it before deriving an identifier, whereas leaving `title` as the bare constructor name lets it serve directly as a code-generation hint.
 
 ### Purpose
 
