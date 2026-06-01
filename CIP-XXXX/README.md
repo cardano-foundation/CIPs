@@ -22,7 +22,7 @@ The same mechanism is introduced for dReps. The existing dRep deposit parameter 
 
 Pledged stake remains economically active. Pool pledge deposits continue to earn staking rewards through the pool they pledge to and continue to count toward the dRep chosen by the pool operator's voting delegation. dRep pledge deposits continue to count toward that dRep's voting power and continue to earn staking rewards through the stake pool chosen by the dRep.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Current pool pledge is declared, not locked
 
