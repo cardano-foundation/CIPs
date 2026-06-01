@@ -207,7 +207,7 @@ Wallets, CLIs, explorers, and governance tools SHOULD display pool pledge and dR
 
 Tools SHOULD stop presenting pool pledge as both "declared pledge" and "live pledge". Under this CIP, the pledge deposit is the pledge.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Pledge becomes real locked ADA
 
