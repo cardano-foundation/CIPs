@@ -255,9 +255,9 @@ dRep compensation and dRep voting-power concentration are important topics, but 
 
 Future CIPs can use dRep pledge as one input while preserving backward compatibility with the primitive introduced here.
 
-### Relationship to CIP-50 and other pledge proposals
+### Relationship to CIP-0050 and other pledge proposals
 
-CIP-50 and related reward-sharing proposals change how pledge affects rewards. This CIP changes what pledge is.
+CIP-0050 and related reward-sharing proposals change how pledge affects rewards. This CIP changes what pledge is.
 
 The two ideas are complementary. A reward formula can still include pledge influence, leverage caps, or other pledge-based behavior. Under this CIP, those formulas read pledge from locked pool deposits rather than from declared pool parameters and owner stake checks.
 
