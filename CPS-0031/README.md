@@ -94,11 +94,13 @@ From stakeholder interviews during Buidler Fest #3, hosted by Carlos Lopez De La
 
 ### Constraints
 
-1. **Automatable semantics.** The urgency signal must be encodable in smart contract logic and readable by automated systems, not just manually configured.
+1. **Ledger determinism.** To prevent attacks making use of Phase 2 validation, the urgency signal (and any related changes to on-chain transaction processing) should not compromise ledger determinism.
 
-2. **Censorship resistance.** Candidate solutions should preserve censorship resistance and must evaluate whether urgency signalling creates new opportunities for selective exclusion or preferential treatment.
+2. **On-chain record.** The cost of urgency signalling, and the rules by which it is updated, should be recorded on-chain in ledger logic. This ensures everyone has equal access to the current cost of signalling, and that anyone can verify those costs are computed correctly.
 
-3. **Linear-Leios compatibility.** Candidate solutions must target linear-Leios.
+3. **Censorship resistance.** Candidate solutions should preserve censorship resistance and must evaluate whether urgency signalling creates new opportunities for selective exclusion or preferential treatment.
+
+4. **Linear-Leios compatibility.** Candidate solutions must target linear-Leios.
 
 ### Non-Goals
 
