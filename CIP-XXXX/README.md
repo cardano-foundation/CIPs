@@ -34,6 +34,8 @@ First, pledge is operationally more complex than it needs to be. A pool operator
 
 Second, declared pledge is vulnerable to confusing address constructions. CIP-0019 describes Shelley addresses as having a payment part and a delegation part. These parts are usually controlled by the same party, but can be controlled separately in "mangled addresses" or "hybrid addresses". Since current pledge satisfaction follows stake credentials, not payment credentials, ADA controlled by one party's payment credential may still count as another party's pool owner stake if the address uses that pool owner's stake credential. This does not create stake from nowhere and does not double-count stake, but it can inflate apparent pledge without requiring the pool operator to actually lock the claimed amount.
 
+A related long-standing node issue describes "pledge as a service", where pool operators may collect stake keys from third parties and register those credentials as pool owners. This can make pledge collaboration resemble ordinary delegation more than a high-trust owner relationship. This CIP addresses that issue by making pledge depend on ADA locked as a pool pledge deposit rather than on registered owner stake credentials.
+
 ### Deposits already express locked ADA
 
 The ledger already tracks deposits for stake credentials, stake pools, dReps, and governance actions. Deposits are returned only through the relevant deregistration, retirement, or finalization path. This CIP uses that existing accounting concept for pledge: a pool's pledge is the ADA locked under its pool pledge deposit, and a dRep's pledge is the ADA locked under its dRep pledge deposit.
@@ -91,6 +93,7 @@ For an already registered pool:
 - If the new `poolPledgeDeposit` is greater than the existing `poolPledgeDeposit`, the transaction MUST pay and lock the difference.
 - If the new `poolPledgeDeposit` is less than the existing `poolPledgeDeposit`, the transaction MUST refund the difference.
 - An update that sets `poolPledgeDeposit` below `pp.minPoolDeposit` MUST be rejected.
+- An update that changes the pledge owner credential or any reward or refund destination for `poolPledgeDeposit` MUST be authorized by both the pool cold credential and the affected pledge owner credential.
 
 The pool parameter field for declared pledge is removed. Pledge is no longer read from pool parameters. The sole source of pool pledge is `poolPledgeDeposit` recorded in ledger deposit accounting.
 
@@ -231,6 +234,8 @@ CIP-0019 explicitly allows the payment and delegation parts of a Shelley address
 
 Under this CIP, a pool's pledge is not inferred from payment credentials, stake credentials, or address composition. It is the ADA locked under that pool's `PoolDeposit` purpose. A hybrid address can still exist, and stake can still be delegated normally, but it cannot inflate a pool's pledge unless ADA is actually locked as that pool's pledge deposit.
 
+This also addresses the pledge-as-a-service concern described in cardano-node [issue 2109](https://github.com/IntersectMBO/cardano-node/issues/2109). A third party may still fund or provide ADA for a pool pledge deposit, but doing so creates a real locked deposit and therefore a materially different trust relationship from merely sharing or registering stake credentials.
+
 ### CEX and custody risk is reduced, not eliminated
 
 This proposal does not claim to distinguish an operator's own ADA from ADA held in custody for customers. A centralized exchange or custodian that controls a large amount of ADA may still be able to lock that ADA as pledge if its legal and operational model permits doing so.
@@ -301,10 +306,6 @@ The two ideas are complementary. A reward formula can still include pledge influ
    - File any necessary constitutional or governance actions for parameter guardrail changes.
    - Activate through a hard-fork governance action after ecosystem readiness is confirmed.
 
-## Open questions
-
-- Should we allow the same locked pledge to support multiple roles, such as SPO and dRep, simultaneously?
-
 ## References
 
 - CIP-0019: Cardano Addresses. https://github.com/cardano-foundation/CIPs/tree/master/CIP-0019
@@ -314,6 +315,7 @@ The two ideas are complementary. A reward formula can still include pledge influ
 - Pledging and rewards, Cardano Docs. https://docs.cardano.org/about-cardano/learn/pledging-rewards/
 - Stake pool registration, Cardano Developer Docs. https://developers.cardano.org/docs/operate-a-stake-pool/register-stake-pool/
 - Registering a dRep, Cardano Developer Docs. https://developers.cardano.org/docs/get-started/infrastructure/cardano-cli/governance/register%20drep/
+- cardano-node issue 2109: Collaborating on pledge to form a stake pool does not require significant trust between the owners. https://github.com/IntersectMBO/cardano-node/issues/2109
 - A Formal Specification of the Cardano Ledger. https://intersectmbo.github.io/formal-ledger-specifications/cardano-ledger.pdf
 - The Cardano Constitution. https://cardano.org/constitution/
 
