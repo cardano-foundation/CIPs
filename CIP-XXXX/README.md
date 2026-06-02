@@ -14,7 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano currently treats stake pool pledge as a declared value rather than ADA that is directly locked as pledge. This creates operational confusion between "declared pledge" and "live pledge", requires a separate owner-stake satisfaction check, and allows mangled-address constructions where apparent pledge can be inflated through stake credential "frankenwallets". Meanwhile, dReps have only a flat registration deposit and no equivalent pledge primitive, limiting future designs that may want dReps to have visible skin in the game.
+Cardano currently treats stake pool pledge as a declared value rather than ADA that is directly locked as pledge. This creates operational confusion between "declared pledge" and "live pledge", requires a separate owner-stake satisfaction check, and allows mangled-address constructions where apparent pledge can be inflated through stake credential "mangled addresses". Meanwhile, dReps have only a flat registration deposit and no equivalent pledge primitive, limiting future designs that may want dReps to have visible skin in the game.
 
 This CIP replaces declared stake pool pledge with actual locked ADA by making the pool pledge deposit variable and using that deposit as the pool's pledge. Instead of declaring pledge in pool parameters and then checking whether owner stake credentials collectively control enough delegated stake, a pool operator locks the intended pledge amount in the ledger deposit pot. The existing pool deposit parameter is renamed to `minPoolDeposit` and becomes the minimum allowed pool pledge deposit.
 
