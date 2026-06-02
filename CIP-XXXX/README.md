@@ -265,8 +265,8 @@ The two ideas are complementary. A reward formula can still include pledge influ
 
 ### Acceptance Criteria
 
-- [ ] CIP editors confirm that the ledger semantics are complete, unambiguous, and consistent with the CIP process.
-- [ ] Ledger maintainers confirm that pool and dRep deposits can be exposed to the reward calculation, registration rules, and state query interfaces required by this CIP.
+- [x] Ledger reviewers confirm the Ledger part of the specification is complete, unambiguous, and consistent.
+- [x] Ledger maintainers confirm that pool and dRep deposits can be exposed to the reward calculation, registration rules, and state query interfaces required by this CIP.
 - [ ] Wallet, CLI, explorer, and governance-tool maintainers confirm that pledge deposits, effective pledge, pledge owner credentials, and deposit deltas can be displayed clearly.
 - [ ] Any required updates to constitutional guardrails for `minPoolDeposit` and `minDrepDeposit` are identified.
 - [ ] Implementation is present within block-producing nodes used by 80% or more of stake before the proposal is considered Active.
