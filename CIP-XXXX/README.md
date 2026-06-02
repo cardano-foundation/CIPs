@@ -225,7 +225,7 @@ Pool pledge deposits are required to support the pool they pledge to for stake-p
 
 This preserves the expected behavior that locked pledge is still ADA participating in the protocol. Because pledged ADA is held in ledger deposit accounting rather than ordinary UTxOs, the ledger MUST include pledged stake in the relevant stake-pool and governance distributions by explicit deterministic rule.
 
-### The frankenwallet path is removed
+### The mangled address path is removed
 
 CIP-0019 explicitly allows the payment and delegation parts of a Shelley address to be controlled by different entities. This is useful and valid, but it means current pledge satisfaction follows delegation rights rather than payment ownership.
 
