@@ -63,17 +63,24 @@ In order to provide types of the values and be able to store and verify only par
 
 Each logical table/type is a namespace identified by a canonical string (e.g., `"utxo"`, `"gov"`). Namespace identifiers are UTF-8 encoded; all comparisons and ordering use bytewise (lexicographic by Unicode codepoint) ordering on the UTF-8 byte representation.
 
-| Shortname           | Content                         |
-| ------------------- | ------------------------------- |
-| blocks/v0           | Blocks created                  |
-| gov/committee/v0    | Governance action state         |
-| gov/constitution/v0 | Constitution                    |
-| gov/pparams/v0      | Protocol parameters             |
-| gov/proposals/v0    | Update proposals                |
-| pool_stake/v0       | Stake delegation                |
-| nonce/v0            | Nonces                          |
-| snapshots/v0        | snapshots                       |
-| utxo/v0             | UTXOs                           |
+| Shortname                              | Content                    |
+| -------------------------------------- | -------------------------- |
+| blocks/v0                              | Blocks created             |
+| entities/accounts/v0                   | Accounts                   |
+| entities/committee/v0                  | Entities committee         |
+| entities/dreps/v0                      | DReps                      |
+| entities/stake_pools/v0                | Stake pools                |
+| entities/stake_pools_vrf_key_hashes/v0 | Stake pools VRF key hashes |
+| gov/committee/v0                       | Governance action state    |
+| gov/constitution/v0                    | Constitution               |
+| gov/pparams/v0                         | Protocol parameters        |
+| gov/proposals/v0                       | Update proposals           |
+| gov/proposals/roots/v0                 | Update proposals roots     |
+| nonces/v0                              | Nonces                     |
+| snapshots/mark/v0                      | snapshots mark             |
+| snapshots/set/v0                       | snapshots set              |
+| snapshots/go/v0                        | snapshots go               |
+| utxo/v0                                | UTXOs                      |
 
 New namespaces may and will be introduced in the future. With new eras and features, new types of the data will be introduced and stored. In order to define what data is stored in the SCLS file, tools fill the `MANIFEST` record and define namespaces. The order of the namespaces does not change the signatures and other integrity data.
 
@@ -90,24 +97,23 @@ New namespaces may and will be introduced in the future. With new eras and featu
 | 0x30 | DIR      | Directory footer with offsets to metadata/index regions (reserved for future) |
 | 0x31 | META     | Opaque metadata entries (e.g., signatures, notes)                             |
 
-Proposed file layout:
+Proposed file layout (EBNF):
 
-```text
-HDR,
-(CHUNK[, BLOOM])*,
-MANIFEST,
-[INDEX]*,
-[META]*
-[DIR],
-[ (DELTA[, BLOOM])* , MANIFEST, [INDEX]*, [DIR] ]*
+```ebnf
+file          = HDR , chunk_section , MANIFEST ,
+                INDEX* , META* , [ DIR ] ,
+                delta_section* ;
+
+chunk_section = ( CHUNK , [ BLOOM ] )* ;
+
+delta_section = ( DELTA , [ BLOOM ] )* , MANIFEST ,
+                INDEX* , [ DIR ] ;
 ```
 
 At the first steps of implementation it would be enough to have the simpler structure:
 
-```text
-HDR,
-(CHUNK)*,
-MANIFEST
+```ebnf
+file = HDR , CHUNK* , MANIFEST ;
 ```
 
 All the other record types allow the introduction of additional features, like delta-states, querying data and may be omitted in case the user does not want those functionalities.
@@ -120,10 +126,18 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 
 **Structure:**
 
-`REC_HDR` (once at start of file)
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │ 9            │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x00         │
+│ magic            │ u8[4]                  │ "SCLS"       │
+│ version          │ u32                    │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
 
 - `magic` : `b"SCLS"`
-- `version` : `u16` (start with `1`)
+- `version` : `u32` (start with `1`)
 
 **Policy:**
 
@@ -137,17 +151,40 @@ For the additional record types (all except `HDR, CHUNK, MANIFEST`) it's possibl
 
 **Structure:**
 
-- `chunk_seq` : `u64` — sequence number of the record
-- `chunk_format` : `u8` - format of the chunks, indicating compression scheme (see data compression table below)
-- `namespace` : `bstr` — namespace of the values stored in the CHUNK
-- `entries` : `DataEntry` — list of length-prefixed data entries
-- `footer {entries_count: u32, chunk_hash: blake28}` — hash value of the chunk of data, is used to keep integrity of the file.
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x10         │
+│ chunk_seq        │ u64                    │              │
+│ chunk_format     │ u8                     │              │
+│ namespace_len    │ u32                    │              │
+│ namespace        │ u8[namespace_len]      │              │
+│ key_len          │ u32                    │              │
+├── entries ×N ────┼────────────────────────┼──────────────┤
+│ entry_size       │ u32                    │              │
+│ key              │ u8[key_len]            │              │
+│ value            │ u8[entry_size-key_len] │              │
+├── footer ────────┼────────────────────────┼──────────────┤
+│ entries_count    │ u32                    │              │
+│ chunk_hash       │ u8[28]                 │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
 
-`DataEntry` is a blob of a key-valued data. The structure of the `DataEntry` is the following:
+- `chunk_seq` : `u64` — sequence number of the record, partitioned by namespace
+- `chunk_format` : `u8` — compression scheme (see data compression table below)
+- `namespace_len` : `u32` — byte length of the namespace string
+- `namespace` : `u8[namespace_len]` — UTF-8 encoded namespace name
+- `key_len` : `u32` — fixed key size for all entries in this namespace; all keys within a namespace share the same size
+- `entries` : repeated `DataEntry` records (see below)
+- `entries_count` : `u32` — number of entries (footer)
+- `chunk_hash` : `u8[28]` — Blake2b-224 hash of the chunk entries (footer)
 
-- `size` : `u32` - size of the data
-- `key` : `fixed size` - key is a fixed size blob where size depends on the namespace
-- `value` : `bstr` — cbor data entry
+Each `DataEntry` is a key-value pair:
+
+- `entry_size` : `u32` — combined size of key + value
+- `key` : `u8[key_len]` — fixed-size key (size given by `key_len` in the chunk header)
+- `value` : `u8[entry_size - key_len]` — CBOR-encoded value
 
 While the format requires each entry to have a key, it's still possible to support hierarchical structures, either by normalizing them
 and keeping a path or hash as a key or by introducing an artificial key and keeping the entire hierarchy in a single key. The choice depends on each
@@ -165,6 +202,20 @@ and updated as a whole, a single artificial key can be used.
 - readers should verify footer before relying on the data;
 - `chunk_hash = H(concat [ digest(e) | e in entries ])`;
 
+A namespace may span multiple consecutive `CHUNK` records, but once a `CHUNK` for a later namespace appears, no further `CHUNK` records for the earlier namespace are permitted. For example:
+
+```text
+CHUNK ns:"a" [k1:v1, k2:v2]  =>  valid: namespace "a" spans two chunks
+CHUNK ns:"a" [k3:v3]
+CHUNK ns:"b" [k1:v1]         =>  valid: "b" > "a"
+```
+
+```text
+CHUNK ns:"a" [k1:v1, k2:v2]
+CHUNK ns:"b" [k1:v1]
+CHUNK ns:"a" [k3:v3]         =>  invalid: "a" reappears after "b"
+```
+
 The format proposes support of data compression. For future-compatibility the format is described by the `chunk_format` field, and following variants are introduced:
 
 | Code | Name  | Description                                   |
@@ -181,19 +232,56 @@ When calculating and verifying hashes, its built over the uncompressed data.
 
 **Structure:**
 
-- `slot_no` : `u64` identifier of the blockchain point (slot number).
-- `total_entries`: `u64` — number of data entries in the file (integrity purpose only)
-- `total_chunks`: `u64` — number of chunks in the file (integrity purpose only)
-- `root_hash`: `Digest` - **global Merkle root**, computed over the per-namespace Merkle roots in lexicographic namespace order (see [Verification](#verification) section for details)
-- `namespace_info`: a list of `{ entries_count, chunks_count, name, digest }` for each namespace in the file, where:
-  - `entries_count`: `u64` — number of entries in the namespace
-  - `chunks_count`: `u64` — number of chunks for the namespace
-  - `name`: `bstr` — namespace name
-  - `digest`: `Digest` - Merkle root of all `entry_e` in the namespace
-- `prev_manifest`: `u64` — offset of the previous manifest (used with delta files), zero if there is no previous manifest entry
-- `summary`: `{ created_at, tool, comment? }`
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x01         │
+│ slot_no          │ u64                    │              │
+│ total_entries    │ u64                    │              │
+│ total_chunks     │ u64                    │              │
+├── summary ───────┼────────────────────────┼──────────────┤
+│ created_at_len   │ u32                    │              │
+│ created_at       │ u8[created_at_len]     │              │
+│ tool_len         │ u32                    │              │
+│ tool             │ u8[tool_len]           │              │
+│ comment_len      │ u32                    │              │
+│ comment          │ u8[comment_len]        │              │
+├── ns_info ×N ────┼────────────────────────┼──────────────┤
+│ ns_len           │ u32                    │              │
+│ entries_count    │ u64                    │              │
+│ chunks_count     │ u64                    │              │
+│ name             │ u8[ns_len]             │              │
+│ digest           │ u8[28]                 │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ ns_sentinel      │ u32                    │ 0x00000000   │
+│ prev_manifest    │ u64                    │              │
+│ root_hash        │ u8[28]                 │              │
+│ offset           │ u32                    │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
+
+- `slot_no` : `u64` — blockchain slot number identifying the state point
+- `total_entries` : `u64` — number of data entries in the file (integrity purpose only)
+- `total_chunks` : `u64` — number of chunks in the file (integrity purpose only)
+- `summary` : three length-prefixed (`u32` length + `u8[len]` data) UTF-8 strings:
+  - `created_at` — ISO 8601 timestamp when the file was generated
+  - `tool` — name of the generating tool
+  - `comment` — optional comment (may be zero-length)
+- `namespace_info` : per-namespace metadata, terminated by a sentinel (`ns_len = 0`); each entry contains:
+  - `ns_len` : `u32` — byte length of the namespace name
+  - `entries_count` : `u64` — number of entries in the namespace
+  - `chunks_count` : `u64` — number of chunks for the namespace
+  - `name` : `u8[ns_len]` — UTF-8 encoded namespace name
+  - `digest` : `Digest` — Merkle root of all entries in the namespace
+- `ns_sentinel` : `u32 = 0` — terminates the namespace info vector
+- `prev_manifest` : `u64` — absolute offset of the previous manifest record, zero if none (used with delta files)
+- `root_hash` : `Digest` — **global Merkle root**, computed over the per-namespace Merkle roots in lexicographic namespace order (see [Verification](#verification) section for details)
+- `offset` : `u32` — offset to the beginning of this MANIFEST record
 
 `Digest` is defined as a fixed-size 224-bit (28-byte) Blake2b hash.
+
+Note that `offset` should always be equal to `record_size`. This has the effect of bookending MANIFEST records with the same 4 bytes.
 
 **Policy:** used to verify all the chunks.
 
@@ -212,9 +300,25 @@ All updates are written in the following way:
 
 **Structure:**
 
-- `namespace:` `bstr` — namespace name
-- `changes:` `CBOR` — array of the entries, either tombstone entry or value entry
-- `footer:` `{entries_count, chunk_hash}`
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x11         │
+│ namespace_len    │ u32                    │              │
+│ namespace        │ u8[namespace_len]      │              │
+│ changes          │ CBOR array             │              │
+├── footer ────────┼────────────────────────┼──────────────┤
+│ entries_count    │ u32                    │              │
+│ chunk_hash       │ u8[28]                 │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
+
+- `namespace_len` : `u32` — byte length of the namespace string
+- `namespace` : `u8[namespace_len]` — UTF-8 encoded namespace name
+- `changes` : CBOR array of entries, either tombstone or value entries
+- `entries_count` : `u32` — number of entries (footer)
+- `chunk_hash` : `u8[28]` — Blake2b-224 hash (footer)
 
 **Policy:**
 
@@ -233,10 +337,22 @@ Bloom record is reserved for the future use, in case if search in the file will 
 
 **Structure:**
 
-- `chunk_seq: u64` sequence number of the record.
-- `m`: `u32` - total number of bits in the Bloom filter’s bitset (the length of the bit array).
-- `k`: `u8` - number of independent hash functions used to map a key into bit positions in that array.
-- `bitset`: `bytes[ceil(m/8)]` — actual bitset.
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x20         │
+│ chunk_seq        │ u64                    │              │
+│ m                │ u32                    │              │
+│ k                │ u8                     │              │
+│ bitset           │ u8[⌈m/8⌉]              │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
+
+- `chunk_seq` : `u64` — sequence number of the associated chunk record
+- `m` : `u32` — total number of bits in the Bloom filter’s bitset (the length of the bit array)
+- `k` : `u8` — number of independent hash functions used to map a key into bit positions
+- `bitset` : `u8[⌈m/8⌉]` — the actual bitset
 
 #### INDEX Record
 
@@ -258,8 +374,18 @@ Directory record is reserved for the future use, in case if index records or del
 
 **Structure:**
 
-- `metadata_offset:` `u64` offset of the previous metadata record, zero if there is no record
-- `index_offset:` `u64` offset of the last index record, zero if there is no record
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │ 17           │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x30         │
+│ metadata_offset  │ u64                    │              │
+│ index_offset     │ u64                    │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
+
+- `metadata_offset` : `u64` — offset of the previous metadata record, zero if there is none
+- `index_offset` : `u64` — offset of the last index record, zero if there is none
 
 #### META Record
 
@@ -267,13 +393,33 @@ Directory record is reserved for the future use, in case if index records or del
 
 **Structure:**
 
-- `entries: Entry[]` list of metadata entries, stored in lexicographical order
-- `footer: {entries_count: u64, entries_hash}`
+```text
+┌──────────────────┬────────────────────────┬──────────────┐
+│ record_size      │ u32                    │              │
+├──────────────────┼────────────────────────┼──────────────┤
+│ record_type      │ u8                     │ 0x31         │
+├── entries ×N ────┼────────────────────────┼──────────────┤
+│ subject_len      │ u32                    │              │
+│ subject          │ u8[subject_len]        │              │
+│ value_len        │ u32                    │              │
+│ value            │ u8[value_len]          │              │
+├── footer ────────┼────────────────────────┼──────────────┤
+│ entries_count    │ u64                    │              │
+│ entries_hash     │ u8[28]                 │              │
+└──────────────────┴────────────────────────┴──────────────┘
+```
 
-Entry:
+Each entry consists of:
 
-- `subject: URI` — subject stored in the `URI` format
-- `value: cbor` — data stored by the metadata entry owner.
+- `subject_len` : `u32` — byte length of the subject
+- `subject` : `u8[subject_len]` — subject stored in URI format
+- `value_len` : `u32` — byte length of the value
+- `value` : `u8[value_len]` — CBOR-encoded data stored by the metadata entry owner
+
+Footer:
+
+- `entries_count` : `u64` — number of entries in the record
+- `entries_hash` : `u8[28]` — Blake2b-224 hash of the entries
 
 **Policy:**
 
