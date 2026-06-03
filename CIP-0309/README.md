@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - CardanoWall <https://github.com/cardanowall>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/?
+  - https://github.com/cardano-foundation/CIPs/pull/1205
 Created: 2026-06-02
 License: CC-BY-4.0
 ---
