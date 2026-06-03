@@ -1,0 +1,226 @@
+; CIP-309 Proof-of-Existence record — CDDL grammar (RFC 8610).
+;
+; This grammar models the REASSEMBLED record body: the canonical-CBOR bytes
+; obtained AFTER byte-concatenating the array of <=64-byte chunks stored on
+; chain under Cardano transaction-metadata label 309. The chunk-array transport
+; wrapper is not modelled here; it is reassembled before structural validation.
+;
+; The grammar is a deliberately PERMISSIVE structural superset of well-formed
+; record shapes: it captures the closed map shapes and the core byte lengths,
+; but it does NOT express cross-field invariants (e.g. enc key-path
+; exclusivity, the items-or-merkle presence rule, duplicate-algorithm
+; rejection, algorithm-dependent nonce length, registry membership of
+; algorithm identifiers, Merkle leaf-count binding, or signature verification).
+; Those constraints — and the precise typed error codes a conformant verifier
+; emits — are specified in the normative prose, the algorithm registries, and
+; the conformance / validator test vectors that accompany this grammar, NOT in
+; the CDDL itself. A generic CDDL tool consuming this file confirms only that a
+; candidate record matches the permissive superset; a second typed-error pass
+; over the decoded structure is required for full conformance.
+
+; A conformant PoE record MUST carry at least one of `items` (>= 1 entry) or
+; `merkle` (>= 1 entry); a record with both arrays absent (or both present but
+; empty) is rejected as SCHEMA_EMPTY_RECORD. The invariant is enforced in the
+; typed pass, not at the CDDL layer.
+;
+; Extension-key tolerance: keys matching the `^x-.+` or `^[a-z]+-.+` patterns
+; are accepted; unknown keys outside either pattern are rejected as
+; SCHEMA_UNKNOWN_FIELD by the typed pass. The CDDL admits any
+; extension-key text string under the open `extension-key` rule below.
+; Extension values are typed as `metadatum`, mirroring the parent
+; transaction_metadata envelope: the ledger admits only the recursive
+; metadatum type under label 309, so every field — base or
+; extension — MUST be a metadatum or it cannot reach chain.
+;
+; A `metadatum` matches the Cardano ledger's transaction_metadatum
+; recursive type (no floats, no tags, bstr/tstr <= 64 bytes). Every
+; field a CIP-309 record carries — base or extension — MUST be a
+; metadatum, because the entire record sits inside transaction_metadata
+; under label 309 and the ledger rejects non-metadatum values at
+; submission. The ledger CDDL definition of transaction_metadatum is
+; the normative source for this type.
+metadatum =
+    { * metadatum => metadatum }
+  / [ * metadatum ]
+  / int
+  / bstr .size (0..64)
+  / tstr .size (0..64)
+
+poe-record = {
+  poe-common,
+  ? "items": [ 1* item-entry ],
+  ? "crit":  [ 1* tstr ],
+  * extension-key => metadatum
+}
+
+poe-common = (
+  "v": 1,
+  ? "merkle": [ 1* merkle-commit ],
+  ? "supersedes": bytes32,
+  ? "sigs": [ 1* sig-entry ],
+)
+
+extension-key = tstr .regexp "^x-.+"
+              / tstr .regexp "^[a-z]+-.+"
+
+item-entry = {
+  "hashes": hash-map,
+  ? "uris": [ 1* uri-chunk-array ],
+  ? "enc": enc,
+}
+
+; A non-empty CBOR map keyed by a content-hash algorithm identifier (text string
+; from the content-hash registry) with the 32-byte digest as the value. Map-key
+; uniqueness (RFC 8949 §3.1) makes duplicate algorithms structurally impossible.
+hash-map = { + content-hash-alg => bytes32 }
+
+; A merkle-commit binds the record to an ordered leaf list via a registered
+; list-commitment algorithm. The list-commitment registry is disjoint
+; from the content-hash registry: a `merkle[i].alg` text string MUST be a value
+; from the list-commitment registry and MUST NOT be a content-hash identifier.
+; `leaf_count` is REQUIRED and binds the on-chain commitment to the off-chain
+; leaves-list size (rejected as SCHEMA_MERKLE_LEAF_COUNT_MISMATCH on mismatch).
+merkle-commit = {
+  "alg":        merkle-commit-alg,
+  "root":       bytes32,
+  "leaf_count": uint,
+  ? "uris":     [ 1* uri-chunk-array ],
+}
+
+; `enc` is modelled as a permissive superset: a single map rule admits both
+; the recipient-slot key path and the passphrase key path. Cross-field
+; invariants are NOT expressed in the CDDL; the typed pass
+; enforces them. Specifically:
+;   - if `slots` is present, then `kem` and `slots_mac` are REQUIRED, and
+;     `passphrase` is FORBIDDEN;
+;   - if `passphrase` is present, then `kem` / `slots` / `slots_mac` are
+;     FORBIDDEN;
+;   - exactly one of `slots` or `passphrase` MUST be present
+;     (ENC_NO_KEY_PATH and ENC_EXCLUSIVITY_VIOLATION cover the absence /
+;     conflict cases).
+enc = {
+  enc-common,
+  ? "kem":        kem-alg,
+  ? "slots":      [ 1* slot ],
+  ? "slots_mac":  bytes32,
+  ? "passphrase": passphrase-block,
+}
+
+enc-common = (
+  "scheme": 1,
+  "aead":   aead-alg,
+  "nonce":  bstr,
+)
+
+; A slot is one of two KEM-discriminated shapes; `enc.kem` selects which.
+; The CDDL admits either shape structurally — the typed pass binds the
+; chosen shape to `enc.kem` and emits ENC_SLOT_INVALID_SHAPE for a slot whose
+; encapsulation fields do not match `enc.kem`, and the "no mixing" rule
+; (every slot in one envelope shares one `enc.kem`) is enforced there. `wrap`
+; is the KEM-independent 48-byte ChaCha20-Poly1305-wrapped CEK in both shapes.
+slot = classical-slot / hybrid-slot
+
+; enc.kem = "x25519": the per-slot X25519 ephemeral public key + wrapped CEK.
+classical-slot = {
+  "epk":  bytes32,
+  "wrap": bytes48,
+}
+
+; enc.kem = "mlkem768x25519": the X-Wing ciphertext (1120 bytes) chunked into
+; <=64-byte byte-strings, plus the wrapped CEK. There is NO `epk` — the X25519
+; ephemeral is the trailing 32 bytes of the X-Wing ciphertext inside `kem_ct`.
+; The chunks reassemble to exactly 1120 bytes; the typed pass enforces the
+; reassembled length (KEM_CT_LENGTH_MISMATCH).
+hybrid-slot = {
+  "kem_ct": [ 1* bstr .size (1..64) ],
+  "wrap":   bytes48,
+}
+
+; The `passphrase-block` rule pins `alg` as the open `kdf-alg` type (consistent
+; with `merkle-commit-alg`, `aead-alg`, `kem-alg`): the CDDL accepts any text
+; string and the typed pass enforces registry membership, emitting
+; `ENC_PASSPHRASE_ALG_UNSUPPORTED` for an unknown identifier
+; rather than a generic CDDL schema-mismatch. The `params` map is pinned as a
+; CLOSED map for the registered alg:
+;   - "argon2id" — params is exactly { m: uint, t: uint, p: uint }
+; Extra keys in `params` MUST be rejected as `SCHEMA_UNKNOWN_FIELD`.
+passphrase-block = {
+  "alg":    kdf-alg,
+  "salt":   bstr .size (16..64),
+  "params": { "m": uint, "t": uint, "p": uint },
+}
+
+; A sig-entry is a closed CBOR map. "cose_sign1" is REQUIRED and carries the chunked
+; CBOR-encoded COSE_Sign1 produced by the signer. "cose_key" is OPTIONAL and,
+; when present, carries the chunked CBOR-encoded COSE_Key for the CIP-30 wallet
+; path; it is omitted for the in-signature `kid` (identity-key) path. The field
+; names describe what the bytes are on the wire: `cose_sign1` = COSE_Sign1,
+; `cose_key` = COSE_Key. No other keys are permitted. The normative
+; path-selection rules make path 1 (32-byte protected-header `kid`) and
+; path 2 (`cose_key` side-channel) mutually exclusive at the wire level;
+; SIG_ENTRY_KID_COSE_KEY_CONFLICT rejects records carrying both.
+sig-entry = {
+  "cose_sign1":  bytes-chunk-array,
+  ? "cose_key":  bytes-chunk-array,
+}
+
+bytes-chunk-array = [ 1* bytes-chunk ]
+bytes-chunk = bstr .size (1..64)
+
+; A uri-chunk-array reconstructs to one absolute URI string. Each chunk is
+; a tstr (CBOR major type 3) of <= 64 bytes — the Cardano ledger's tstr cap
+; inside transaction_metadatum. Producers MUST NOT split a
+; multi-byte UTF-8 codepoint across chunks.
+uri-chunk-array = [ 1* uri-chunk ]
+uri-chunk = tstr .size (1..64)
+
+bytes32 = bstr .size 32
+
+; bytes48 is the wrap length under enc.scheme: 1: 32-byte CEK + 16-byte
+; ChaCha20-Poly1305 tag. The per-slot wrap is KEM-independent — identical for
+; `x25519` and `mlkem768x25519` slots. A future enc.scheme profile with
+; a different wrap AEAD MAY redefine this constant.
+bytes48 = bstr .size 48
+
+; Algorithm identifier strings are CBOR text strings (major type 3). The CDDL
+; type is deliberately the open `tstr` rather than a closed enum: the algorithm
+; registries are authoritative for the set of accepted values, and a verifier MUST
+; emit the typed code from those registries (`UNSUPPORTED_HASH_ALG`,
+; `UNSUPPORTED_MERKLE_COMMIT_ALG`, `UNSUPPORTED_AEAD_ALG`, `UNSUPPORTED_KEM_ALG`,
+; `ENC_PASSPHRASE_ALG_UNSUPPORTED`) for any unrecognised value — not a generic
+; CDDL schema-mismatch error. Conformant validators perform the registry-membership
+; check in the domain pass, after the CDDL pass has confirmed the field is a
+; CBOR text string of any value.
+content-hash-alg   = tstr  ; see content-hash registry  (e.g. "sha2-256", "blake2b-256")
+merkle-commit-alg  = tstr  ; see list-commitment registry (e.g. "rfc9162-sha256")
+aead-alg           = tstr  ; see AEAD registry
+kem-alg            = tstr  ; see KEM registry
+kdf-alg            = tstr  ; see KDF registry
+
+; ---------------------------------------------------------------------------
+; Cross-field invariants (prose-only, NOT in CDDL).
+;
+; The `enc` rule admits any combination of `kem` / `slots` / `slots_mac` /
+; `passphrase` keys at the CDDL layer; the following cross-field invariants are
+; enforced by the typed-error pass, not the grammar:
+;
+;   - If `slots` is present, then `kem` and `slots_mac` are REQUIRED
+;     (ENC_KEM_REQUIRED, ENC_SLOTS_MAC_REQUIRED) and `passphrase` is FORBIDDEN
+;     (ENC_EXCLUSIVITY_VIOLATION).
+;   - If `passphrase` is present, then `kem`, `slots`, and `slots_mac` are all
+;     FORBIDDEN (ENC_EXCLUSIVITY_VIOLATION).
+;   - Exactly one of `slots` or `passphrase` MUST be present; both absent →
+;     ENC_NO_KEY_PATH.
+;   - `slots_mac` present without `slots` → ENC_SLOTS_REQUIRED.
+;
+; Implementer guidance (non-normative). Implementations MAY consume this CDDL
+; directly with a generic CDDL library (`cuddle`, `cddl-rs`, etc.); conformant
+; typed-error reporting requires a second pass over the decoded structure to
+; emit the precise codes (ENC_EXCLUSIVITY_VIOLATION, ENC_NO_KEY_PATH,
+; ENC_KEM_REQUIRED, EXTENSION_UNSUPPORTED_CRITICAL, SCHEMA_UNKNOWN_FIELD,
+; SCHEMA_MERKLE_LEAF_COUNT_MISMATCH, SIG_ENTRY_INVALID_SHAPE,
+; SIG_ENTRY_KID_COSE_KEY_CONFLICT, SIG_PRIVATE_KEY_LEAKED, and so on). A
+; single-pass implementation that emits a generic CDDL-mismatch error is
+; conformant to the wire format but is NOT conformant to the typed-error
+; contract; conformant verifiers MUST emit the precise codes.
+; ---------------------------------------------------------------------------
