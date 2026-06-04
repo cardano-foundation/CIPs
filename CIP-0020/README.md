@@ -1,8 +1,8 @@
 ---
 CIP: 20
 Title: Transaction message/comment metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
     - Martin Lang <martin@martinlang.at>
     - Ola Ahlman <ola@ahlnet.nu>
@@ -25,8 +25,8 @@ Implementors:
     - Typhon Wallet <https://typhonwallet.io/>
     - Ledger Live <https://www.ledger.com/>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/100
-    - https://github.com/cardano-foundation/CIPs/pull/394
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/100
+    - CIP-0020 | Update with new Implementors, Screenshots: https://github.com/cardano-foundation/CIPs/pull/394
 Created: 2021-06-13
 License: CC-BY-4.0
 ---
@@ -36,7 +36,7 @@ License: CC-BY-4.0
 This describes a basic JSON schema to add messages/comments/memos as transaction metadata by using the metadatum label **674**:
 allowing informational, commerical, or any other text to be included in a transaction on the Cardano blockchain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 We have the utilities on the cardano blockchain now since the introduction of the "allegra-era". A simple consens about adding messages, comments or memos to transactions is still missing.
 So the CIP authors came together to form a first implementation of this. It is straight and simple, additional keys and content can be added later.
@@ -132,7 +132,7 @@ The number of theses **message-strings** must be at least one for a single messa
 **CNTools**:<br>
 ![image](https://user-images.githubusercontent.com/47434720/130353491-fc0f3a69-1937-4e72-b680-c04cc069b5c4.png)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This design is simple, so many tools on the cardano blockchain can implement it easily. The array type was choosen to have consistency, no need to switch between a string or
 an array format, or testing against a string or array format. Updates in the future are possible, like adding a versioning key `"ver":`, adding a key `"utxo":` to provide specific data for every tx-out#idx in the transaction, adding the `"enc":` key like for encrypted messages, making subarrays in the message-strings, etc. But for now, we need a common agreement to provide general messages/comments/memos with this CIP. The starting design war choosen as simple as possible to keep the additional transaction fees as low as possible.

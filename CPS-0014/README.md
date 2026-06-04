@@ -8,7 +8,7 @@ Authors:
 Proposed Solutions:
   - CIP-0114 | CBOR Tags Registry: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0114
 Discussions:
-  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/751
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/751
   - CIP-0114 pull request: https://github.com/cardano-foundation/CIPs/pull/752
 Created: 2024-01-24
 License: CC-BY-4.0

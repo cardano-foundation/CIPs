@@ -1,8 +1,8 @@
 ---
 CIP: 164
 Title: Ouroboros Linear Leios - Greater transaction throughput
-Status: Proposed
 Category: Consensus
+Status: Proposed
 Authors:
   - William Wolff <william.wolff@iohk.io>
   - Brian W Bush <brian.bush@iohk.io>
@@ -14,13 +14,13 @@ Authors:
   - Simon Gellis <simon@sundae.fi>
   - Paul Clark <paul.clark@iohk.io>
 Implementors:
-  - Input Output Engineering
+  - Input Output Engineering <https://iohk.io>
 Discussions:
-  - https://github.com/input-output-hk/ouroboros-leios/discussions
-  - https://github.com/cardano-foundation/CIPs/pull/1078
-  - https://github.com/cardano-foundation/CIPs/pull/1196
+  - GitHub Discussion: https://github.com/input-output-hk/ouroboros-leios/discussions
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1078
+  - Update committee selection: https://github.com/cardano-foundation/CIPs/pull/1196
 Solution-To:
-  - CPS-0018
+  - CPS-0018: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0018
 Created: 2025-03-07
 License: Apache-2.0
 ---
@@ -144,7 +144,7 @@ technical resources, visit the Leios Innovation R&D site at
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano's current throughput generally satisfies the immediate needs of its
 users. However, the Ouroboros Praos consensus protocol imposes inherent
@@ -1509,7 +1509,7 @@ nodes providing client interfaces will provide the modified block to clients.
 
 A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Ouroboros Leios introduces a committee-based voting layer over Nakamoto-style
 consensus to handle transaction surplus beyond current Praos block limits,
@@ -2683,7 +2683,7 @@ with tombstoning to manage storage efficiency. While offering the greatest
 throughput potential, this pathway requires careful analysis of economic
 incentives and conflict resolution trade-offs.
 
-## Path to active
+## Path to Active
 
 ### Acceptance criteria
 

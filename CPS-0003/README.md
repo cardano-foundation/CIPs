@@ -8,6 +8,7 @@ Authors:
     - Robert Phair <rphair@cosd.com>
 Proposed Solutions:
     - CIP-0113?: https://github.com/cardano-foundation/CIPs/pull/444
+    - CIP-0143 | Interoperable Programmable Tokens: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0143
 Discussions:
     - Original abandoned pull request (closed): https://github.com/cardano-foundation/CIPs/pull/382
     - Resuscitate pull request (merged): https://github.com/cardano-foundation/CIPs/pull/947

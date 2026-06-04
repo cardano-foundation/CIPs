@@ -7,7 +7,7 @@ Authors:
     - Koz Ross <koz@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1146
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1146
 Created: 2026-02-04
 License: Apache-2.0
 ---
