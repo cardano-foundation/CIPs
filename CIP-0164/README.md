@@ -19,6 +19,7 @@ Discussions:
   - https://github.com/input-output-hk/ouroboros-leios/discussions
   - https://github.com/cardano-foundation/CIPs/pull/1078
   - https://github.com/cardano-foundation/CIPs/pull/1167
+  - https://github.com/cardano-foundation/CIPs/pull/1196
 Solution-To:
   - CPS-0018
 Created: 2025-03-07
