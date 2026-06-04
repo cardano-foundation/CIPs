@@ -1,4 +1,4 @@
-; CIP-309 Proof-of-Existence record — CDDL grammar (RFC 8610).
+; Proof-of-Existence record (Cardano transaction metadata label 309) — CDDL grammar (RFC 8610).
 ;
 ; This grammar models the REASSEMBLED record body: the canonical-CBOR bytes
 ; obtained AFTER byte-concatenating the array of <=64-byte chunks stored on
@@ -34,7 +34,7 @@
 ;
 ; A `metadatum` matches the Cardano ledger's transaction_metadatum
 ; recursive type (no floats, no tags, bstr/tstr <= 64 bytes). Every
-; field a CIP-309 record carries — base or extension — MUST be a
+; field a PoE record carries — base or extension — MUST be a
 ; metadatum, because the entire record sits inside transaction_metadata
 ; under label 309 and the ledger rejects non-metadatum values at
 ; submission. The ledger CDDL definition of transaction_metadatum is

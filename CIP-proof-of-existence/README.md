@@ -1,5 +1,5 @@
 ---
-CIP: 309
+CIP: \?
 Title: Proof of Existence Transaction Metadata
 Category: Metadata
 Status: Proposed
@@ -15,18 +15,10 @@ License: CC-BY-4.0
 
 > Metadata **label 309** is reserved for "Proof of Existence record" in the
 > [CIP-10 registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json)
-> and is the load-bearing on-chain identifier for this specification. The CIP
-> number 309 is a proposed alignment with that reservation; final assignment of
-> the CIP number is the prerogative of the CIP editors during review.
-> Implementations cite this specification by its on-chain label (309), so the
-> proposed-versus-final distinction has no wire-format consequence.
-
-This document is drafted against the
-[CIP-0001 template](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md)
-so it can be submitted to `cardano-foundation/CIPs` with minimal editorial
-change.
-
----
+> and is the load-bearing on-chain identifier for this specification.
+> Implementations cite this specification by its on-chain metadata label (309);
+> the CIP number is assigned by the CIP editors during review and carries no
+> wire-format consequence.
 
 ## Abstract
 
@@ -34,9 +26,7 @@ This CIP specifies the schema, algorithm registries, canonical encoding rules, a
 
 A conformant verifier needs only the transaction metadata, optionally the content bytes, and a public blockchain explorer — **no issuer server, certificate authority, or trusted intermediary is required at any step**. Alongside the hash claim, the schema carries optional content-addressed discovery URIs (`ar://`, `ipfs://`), an OPTIONAL multi-recipient encryption envelope for off-chain ciphertext, OPTIONAL record-level [CIP-8](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) `COSE_Sign1` signatures, and supersedence pointers to prior records. Signatures attach at the record level only, are never required, and never name a publisher to trust. The record deliberately carries no filename, MIME type, title, description, free-form note, plaintext/ciphertext size field, issuer-identity field, certificate chain, or revocation primitive.
 
----
-
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 A Proof of Existence is one of the simplest and most universally useful primitives an append-only public ledger can offer: "this content existed on or before this block." It underpins notarisation, intellectual-property timestamping, supply-chain attestation, journalism, and — with optional signatures — authorship attribution. Because the claim is content-addressed via a cryptographic hash, it is independent of where the content is hosted.
 
@@ -73,8 +63,6 @@ This CIP is written around five non-negotiable invariants:
 4. **Standalone-verifiable.** A verifier needs only the transaction metadata, optionally the content bytes, and public blockchain explorers. No issuer server is required at any step.
 5. **Algorithm-agile.** Every cryptographic algorithm is referenced by a named identifier drawn from the extensible registries this CIP defines. Post-quantum protection of the sealed-PoE key path ships in v1 (the `mlkem768x25519` X-Wing hybrid KEM is registered alongside classical `x25519`); further post-quantum migration adds new identifiers without breaking existing verifiers.
 
----
-
 ## Conventions and terminology
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **MAY**, and **OPTIONAL** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in capitals.
@@ -90,7 +78,7 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, 
 - **Record body** — the single canonical-CBOR map that constitutes a PoE record, as obtained after reassembling the metadata-label-309 chunk array by byte concatenation (see [Canonical CBOR and metadata label 309 carriage](#canonical-cbor-and-metadata-label-309-carriage)). Every structural and cryptographic rule in this document operates on the reassembled record body, not on the chunk-array transport wrapper.
 - **Item** — one entry in the record's `items` array: a content claim that carries one or more content hashes and OPTIONAL discovery URIs (see [Record model](#record-model)).
 - **Content** — the bytes whose existence is attested. When an encryption envelope (`enc`) is present, "content" means the **plaintext** unless qualified.
-- **Content hash** — a cryptographic digest of the content under a named hash algorithm from the hash registry [`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json); the primary claim of a PoE record.
+- **Content hash** — a cryptographic digest of the content under a named hash algorithm from the hash registry [`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json); the primary claim of a PoE record.
 - **Block time** — the time of the block containing the PoE transaction; the authoritative timestamp of the record. A PoE record carries no submitter-asserted timestamp.
 - **Sealed PoE** — a PoE record whose content is encrypted off-chain, with the content-encryption key wrapped to one or more recipient public keys (or derived from a passphrase) through the on-chain `enc` envelope (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)). The ciphertext lives at a content-addressed `ar://` or `ipfs://` URI.
 - **Slot** — one recipient entry inside a sealed-PoE envelope, holding the key-encapsulation material and the wrapped content-encryption key for a single recipient public key (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)).
@@ -99,10 +87,10 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, 
 ## Specification
 
 The normative grammar for the record body is the CDDL schema in
-[`../cddl/cip-309.cddl`](cip-309.cddl); per-component JSON Schemas in
-[`../schemas/`](https://github.com/cardanowall/cip309/blob/main/schemas) mirror it for tooling. Algorithm identifiers are
-drawn from the registries in [`../registries/`](https://github.com/cardanowall/cip309/blob/main/registries). Conformance
-vectors are pinned under [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance). Where this prose
+[`../cddl/label-309.cddl`](label-309.cddl); per-component JSON Schemas in
+[`../schemas/`](https://github.com/cardanowall/label-309/blob/main/schemas) mirror it for tooling. Algorithm identifiers are
+drawn from the registries in [`../registries/`](https://github.com/cardanowall/label-309/blob/main/registries). Conformance
+vectors are pinned under [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance). Where this prose
 and the machine-readable grammar appear to differ, the grammar and the
 conformance vectors are authoritative.
 
@@ -269,7 +257,7 @@ through optional record-level signatures (see
 which cover every item entry in the record.
 
 `hashes` is a non-empty **CBOR map** whose keys are hash-algorithm identifiers
-(CBOR text strings from [`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json))
+(CBOR text strings from [`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json))
 and whose values are 32-byte digests (CBOR byte strings, not hex-encoded). Every
 entry in `hashes` commits to plaintext bytes: the value is the raw digest of the
 plaintext content under that algorithm. The map form has three byte-level
@@ -304,7 +292,7 @@ recomputation (see
 are what enforce the producer obligation in that case.
 
 `hashes` **MUST** contain at least one entry from the registry (the non-empty
-CBOR map invariant in [`../cddl/cip-309.cddl`](cip-309.cddl)). A
+CBOR map invariant in [`../cddl/label-309.cddl`](label-309.cddl)). A
 single-entry record is fully conformant; producers **MAY** add a second entry
 from a distinct hash family (e.g. `sha2-256` paired with `blake2b-256`) as
 optional defense-in-depth against future cryptanalytic progress against one
@@ -346,7 +334,7 @@ conformant structural validator **MUST** reject any reconstructed URI whose
 scheme is not in `{ar://, ipfs://}` with `INVALID_URI`; this fails records before
 any verifier-side network step. The closed set is a deliberate design choice, not
 a temporary restriction — see
-[Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
+[Rationale: How does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
 for the adoption trade-off.
 
 An item entry **MAY** list multiple URIs (one outer-array entry per URI). This is
@@ -378,7 +366,7 @@ out-of-band context. The full sealed-PoE construction is defined in
 #### Hash algorithms
 
 A Proof of Existence is most often challenged via second-preimage resistance. For
-all 256-bit hashes in [`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json),
+all 256-bit hashes in [`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json),
 known second-preimage attacks are at or near `2^256` classical / `2^128` Grover —
 a single sound 256-bit hash already covers the realistic threat model. This CIP
 therefore requires `hashes` to carry **at least one** entry per item; single-hash
@@ -417,7 +405,7 @@ A `merkle[i]` entry is a closed CBOR map:
 
 | Field        | Type                | Status   | Semantics                                                                                                                                                  |
 | ------------ | ------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `alg`        | tstr                | REQUIRED | Registered list-commitment algorithm identifier (see [`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/merkle-commitment-algorithms.json)) |
+| `alg`        | tstr                | REQUIRED | Registered list-commitment algorithm identifier (see [`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/merkle-commitment-algorithms.json)) |
 | `root`       | bytes .size 32      | REQUIRED | Canonical root over the producer's ordered leaf list                                                                                                       |
 | `leaf_count` | uint                | REQUIRED | Number of leaves committed by `root` (binds the on-chain commitment to the off-chain leaves-list size)                                                     |
 | `uris`       | [+ uri-chunk-array] | OPTIONAL | Content-addressed URI(s) at which the off-chain leaves-list file is fetchable                                                                              |
@@ -512,7 +500,7 @@ The byte-exact leaf-hash, internal-node-hash, single-leaf-identity, and
 inclusion-proof verifier construction is defined alongside the cryptographic
 primitives; the canonical leaves-list CBOR schema is the normative off-chain
 format. Reference implementations and the pinned 4-leaf-tree vector (root plus
-per-leaf inclusion proofs) live under [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance).
+per-leaf inclusion proofs) live under [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance).
 
 #### Supersedence
 
@@ -600,17 +588,17 @@ The record body and every value derived from it (notably the record-level signin
 
 Map keys throughout this CIP are CBOR text strings (major type 3). The same canonical profile applies uniformly: there is no separate "lenient" reader for on-chain records. Explorers and wallets MAY expose transaction metadata through lossy JSON projections, but a conformant verifier **MUST** validate the original transaction CBOR bytes, never a re-encoded JSON view.
 
-Signers and verifiers **MUST** agree on this canonicalisation bit-for-bit; implementations **SHOULD** use a CBOR library that supports RFC 8949 deterministic encoding natively. The complete grammar for the canonical record body is the CDDL at [`../cddl/cip-309.cddl`](cip-309.cddl); conformance vectors that pin exact canonical bytes are at [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance).
+Signers and verifiers **MUST** agree on this canonicalisation bit-for-bit; implementations **SHOULD** use a CBOR library that supports RFC 8949 deterministic encoding natively. The complete grammar for the canonical record body is the CDDL at [`../cddl/label-309.cddl`](label-309.cddl); conformance vectors that pin exact canonical bytes are at [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance).
 
 #### Metadata label 309 and the chunk-array transport
 
 A PoE record **MUST** be placed under Cardano transaction metadata label `309`. A transaction **MUST NOT** carry more than one PoE record — a natural consequence of Cardano metadata being a map from integer label to value. A transaction **MAY** carry additional metadata under other labels; a verifier **MUST** ignore every label other than 309 when processing PoE.
 
-The Cardano ledger caps **both** CBOR byte strings (`bstr`, major type 2) and text strings (`tstr`, major type 3) inside transaction metadata at **64 bytes each**. This is a ledger constraint, not a CIP-309 convention: a transaction carrying any single `bstr` or `tstr` longer than 64 bytes is rejected by Cardano nodes at submission time, before any verifier sees it. CIP-309 therefore transports any logical value that may exceed 64 bytes as a CBOR **array of ≤ 64-byte chunks**, reassembled by byte concatenation before decoding.
+The Cardano ledger caps **both** CBOR byte strings (`bstr`, major type 2) and text strings (`tstr`, major type 3) inside transaction metadata at **64 bytes each**. This is a ledger constraint, not a convention of this CIP: a transaction carrying any single `bstr` or `tstr` longer than 64 bytes is rejected by Cardano nodes at submission time, before any verifier sees it. This CIP therefore transports any logical value that may exceed 64 bytes as a CBOR **array of ≤ 64-byte chunks**, reassembled by byte concatenation before decoding.
 
-**Whole-record-body carriage.** The record body is serialised once to canonical CBOR per the rules above. That single byte string is then split into a CBOR **array of byte strings, each between 1 and 64 bytes inclusive** (`[ 1* bstr .size (1..64) ]`), and stored under label 309 as that array. A verifier **MUST byte-concatenate the array elements in order to reassemble the canonical record body before structural validation.** Chunk boundaries carry **no** semantic meaning. A label-309 value that is a single byte string (a body that fits within 64 bytes) is its own reassembled body; a bare CBOR map directly under label 309 (a degenerate body that fits the 64-byte map cap) is the body with no reassembly step. Everything in the rest of this document operates on the reassembled record-body bytes; the CDDL at [`../cddl/cip-309.cddl`](cip-309.cddl) describes that reassembled body, not the chunk-array transport wrapper.
+**Whole-record-body carriage.** The record body is serialised once to canonical CBOR per the rules above. That single byte string is then split into a CBOR **array of byte strings, each between 1 and 64 bytes inclusive** (`[ 1* bstr .size (1..64) ]`), and stored under label 309 as that array. A verifier **MUST byte-concatenate the array elements in order to reassemble the canonical record body before structural validation.** Chunk boundaries carry **no** semantic meaning. A label-309 value that is a single byte string (a body that fits within 64 bytes) is its own reassembled body; a bare CBOR map directly under label 309 (a degenerate body that fits the 64-byte map cap) is the body with no reassembly step. Everything in the rest of this document operates on the reassembled record-body bytes; the CDDL at [`../cddl/label-309.cddl`](label-309.cddl) describes that reassembled body, not the chunk-array transport wrapper.
 
-The maximum byte size of a label-309 record is bounded only by the live Cardano protocol parameter `maxTxSize`. CIP-309 imposes no schema-level byte ceiling below it: records exceeding `maxTxSize` are rejected by Cardano nodes before any verifier sees them. A structural validator **MUST NOT** reject a record solely on the basis of size below `maxTxSize`, and **MUST NOT** reject on a high entry count below that ceiling; producers pay per-byte fees that naturally bound record size.
+The maximum byte size of a label-309 record is bounded only by the live Cardano protocol parameter `maxTxSize`. This CIP imposes no schema-level byte ceiling below it: records exceeding `maxTxSize` are rejected by Cardano nodes before any verifier sees them. A structural validator **MUST NOT** reject a record solely on the basis of size below `maxTxSize`, and **MUST NOT** reject on a high entry count below that ceiling; producers pay per-byte fees that naturally bound record size.
 
 **Two chunked shapes.** The same ≤ 64-byte discipline appears in two named shapes used by individual fields, in addition to the whole-body carriage above:
 
@@ -628,7 +616,7 @@ A structural validator **MUST** enforce, for every chunked shape:
 - **The major-type discriminator** — a `bytes-chunk-array` chunk **MUST** be major type 2 and a `uri-chunk-array` chunk **MUST** be major type 3; a mismatch is `SCHEMA_TYPE_MISMATCH`.
 - **UTF-8 integrity for `uri-chunk-array`.** A producer **MUST NOT** split a multi-byte UTF-8 codepoint across chunks, so the reconstructed concatenation is valid UTF-8. The canonical decoder already rejects any non-UTF-8 text string as `MALFORMED_CBOR` before reassembly; a concatenation that nonetheless fails to decode as valid UTF-8 surfaces as `INVALID_URI`.
 
-The error codes named above are defined in [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json) and in [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes).
+The error codes named above are defined in [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json) and in [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes).
 
 #### URI shape rules for chunked URIs
 
@@ -650,16 +638,16 @@ The phrase "valid CID" above resolves to the following normative profile. It con
 | **Version**                  | CIDv0, CIDv1                                                                                    | CIDv0 is the fixed shape `Qm…` (46-char base58btc, sha2-256 multihash, no path). New producers **SHOULD** emit CIDv1.                                                                              |
 | **Multibase prefix (CIDv1)** | `b` (base32 lower), `B` (base32 upper), `f` (base16 lower), `F` (base16 upper), `z` (base58btc) | All other prefixes (e.g. `m`/`M` base64) **MUST** be rejected. Producers **SHOULD** prefer `b`.                                                                                                    |
 | **Multicodec (CIDv1)**       | `0x55` (raw), `0x70` (dag-pb), `0x71` (dag-cbor)                                                | Covers single-file payloads (raw), directory roots for `ipfs://<cid>/<path>` (dag-pb), and structured payloads (dag-cbor). Other codecs **MUST** be rejected.                                      |
-| **Multihash**                | `0x12` (sha2-256, 32-byte digest), `0xb220` (blake2b-256, 32-byte digest)                       | Mirrors the content-hash registry ([`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json)), so an implementer can reuse the same primitives. Other codes **MUST** be rejected. |
+| **Multihash**                | `0x12` (sha2-256, 32-byte digest), `0xb220` (blake2b-256, 32-byte digest)                       | Mirrors the content-hash registry ([`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json)), so an implementer can reuse the same primitives. Other codes **MUST** be rejected. |
 
-Future additions to this profile follow CIP-309's algorithm-agility model: any new multibase prefix, multicodec, or multihash code requires an amendment to this document and matching conformance vectors before a producer may emit it.
+Future additions to this profile follow this CIP's algorithm-agility model: any new multibase prefix, multicodec, or multihash code requires an amendment to this document and matching conformance vectors before a producer may emit it.
 
 ### Record-level signatures (COSE_Sign1)
 
-Authorship in CIP-309 is an **opt-in claim, never a requirement.** A record
+Authorship in this CIP is an **opt-in claim, never a requirement.** A record
 verifies as a Proof of Existence on the strength of its content hashes and the
 block time of its transaction alone; a signature adds _who attests to this
-record body_, and its absence does not weaken the existence claim. CIP-309 v1
+record body_, and its absence does not weaken the existence claim. This CIP (v1)
 defines exactly one signature level — **record-level** — carried in the
 top-level `sigs` field. There is **no per-item signature slot**: a single
 `COSE_Sign1` covers the entire record body uniformly (every item, every Merkle
@@ -676,7 +664,7 @@ any later transaction (see [Security and Privacy Considerations](#security-and-p
 
 `sigs` is OPTIONAL. When present it MUST be a non-empty array of **sig-entry**
 maps. The registered signature algorithms are listed in
-[`../registries/signature-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/signature-algorithms.json).
+[`../registries/signature-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/signature-algorithms.json).
 
 #### Sig-entry shape
 
@@ -746,7 +734,7 @@ signature          = Ed25519-Sign(canonical_cbor(Sig_structure), signer key)
    any signing primitive (including a CIP-30 `signData` payload); verifiers MUST
    prepend the same prefix before recomputing `Sig_structure`. The prefix is the
    sole cross-protocol replay defence: a future metadata schema that happens to
-   share the body shape cannot reuse a CIP-309 signature against itself, because
+   share the body shape cannot reuse a PoE signature against itself, because
    its `to_sign` would carry a different prefix (or none).
 
 **Detached payload.** The published `COSE_Sign1[2]` (the payload field of the
@@ -786,7 +774,7 @@ Two COSE protected-header `alg` labels select it:
 | `-19` | `Ed25519`, fully-specified ([RFC 9864 §3.1](https://www.rfc-editor.org/rfc/rfc9864#section-3.1) IANA assignment)                | **Optional.** Verified identically to `-8` under the same strict Ed25519 primitive when accepted.                         |
 
 Both labels are recorded in
-[`../registries/signature-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/signature-algorithms.json).
+[`../registries/signature-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/signature-algorithms.json).
 The `alg` MUST appear in the **protected** header.
 
 **Unrecognised signature algorithms do NOT invalidate the record.** A `sigs[i]`
@@ -845,7 +833,7 @@ invalidating the signature. The producer emits a `sigs[i]` with no `cose_key`
 field. This is the path used by [seed-derived identity keys](#seed-and-key-derivation).
 
 > **`kid`-as-public-key convention.** RFC 9052 §3.1 defines `kid` as an opaque
-> key identifier — typically a pointer to look up a key out of band. CIP-309
+> key identifier — typically a pointer to look up a key out of band. This CIP's
 > path 1 uses a more compact convention: when the protected-header `kid` is
 > **exactly 32 bytes**, it _is_ the raw Ed25519 public key, not a pointer to
 > one. The 32-byte size discriminator is unambiguous because Ed25519 public keys
@@ -949,7 +937,7 @@ body (prefixed with the domain separator) — nothing more. Acceptable phrasings
 
 ### Seed and key derivation
 
-A CIP-309 cryptographic identity is exactly one thing: a 32-byte master
+A PoE cryptographic identity is exactly one thing: a 32-byte master
 seed. Every public-key fact a verifier or sender ever consumes — the
 Ed25519 key that signs PoE records, the X25519 key that receives classical
 sealed PoE records, and the `mlkem768x25519` (X-Wing) hybrid key that
@@ -973,7 +961,7 @@ controls. Two seeds that are byte-equal MUST derive byte-equal keys.
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Length        | 32 bytes (256 bits), REQUIRED exactly                                                                                                                                                                                                                                         |
 | Type          | Opaque entropy — NOT a curve scalar, NOT an algorithm-specific key                                                                                                                                                                                                            |
-| Validity      | Any 32-byte value is a valid input. Implementations MUST NOT reject a seed for low-entropy patterns at the derivation API; the all-zero seed is a valid input and is used by the conformance vectors (see [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance)) for byte-exact reproducibility |
+| Validity      | Any 32-byte value is a valid input. Implementations MUST NOT reject a seed for low-entropy patterns at the derivation API; the all-zero seed is a valid input and is used by the conformance vectors (see [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance)) for byte-exact reproducibility |
 | Re-derivation | Not applicable — no hierarchy, no per-purpose child keys beyond the three defined below                                                                                                                                                                                       |
 
 The seed is a **bare entropy source**, not a key in any algorithm's sense.
@@ -1089,7 +1077,7 @@ working key material) is recomputed from the 32-byte seed. This mirrors the
 seed-vs-expanded-key distinction applied to Ed25519 and X25519 above. The
 hybrid KEM and its slot shape are specified in
 [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption);
-its registry entry is [`../registries/kem-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kem-algorithms.json).
+its registry entry is [`../registries/kem-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kem-algorithms.json).
 
 ##### Published versus private — summary
 
@@ -1103,7 +1091,7 @@ its registry entry is [`../registries/kem-algorithms.json`](https://github.com/c
 | X-Wing decapsulation-key seed | 32 B   | NO                                                      |
 | X-Wing public key             | 1216 B | NO on a PoE record; published only out-of-band          |
 
-A recipient public key never appears on a CIP-309 PoE record. Each
+A recipient public key never appears on a PoE record. Each
 encryption slot carries only per-slot key material and a wrapped CEK; the
 KEM identifier appears once on the encryption block. Senders obtain a
 recipient public key out-of-band; this standard mandates no single discovery
@@ -1112,9 +1100,9 @@ channel, and key provenance is the sender's responsibility.
 #### Recipient public-key and secret encodings
 
 A sealed-PoE sender needs the recipient's KEM public key in a portable
-string form. CIP-309 reuses the age ecosystem's Bech32 encodings, one
+string form. This CIP reuses the age ecosystem's Bech32 encodings, one
 human-readable prefix (HRP) per registered KEM. The HRPs are pinned in the
-KEM registry [`../registries/kem-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kem-algorithms.json).
+KEM registry [`../registries/kem-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kem-algorithms.json).
 
 | KEM              | Recipient public key     | Public-key encoding (HRP)                                            | Secret / identity encoding (HRP)                                                             |
 | ---------------- | ------------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
@@ -1141,7 +1129,7 @@ encodings never collide on the wire. The classical `age1…` string stays
 within ordinary lengths; its handling is unchanged.
 
 Both encodings are recipient-discovery conveniences. The KEM public key
-never appears on a CIP-309 PoE record; senders obtain it out-of-band and the
+never appears on a PoE record; senders obtain it out-of-band and the
 standard mandates no single discovery channel.
 
 ### Sealed PoE: multi-recipient encryption
@@ -1225,7 +1213,7 @@ plaintext only through that digest (see
 [Plaintext-hash binding](#plaintext-hash-binding-and-the-sender-identity-verdict-split)).
 
 The full grammar for `enc`, `slot`, and `passphrase-block` is the authoritative
-machine artifact [`../cddl/cip-309.cddl`](cip-309.cddl); the cross-field
+machine artifact [`../cddl/label-309.cddl`](label-309.cddl); the cross-field
 rules above are not expressible in CDDL and are enforced in a second pass.
 
 #### KEM selection and the no-mixing rule
@@ -1240,8 +1228,8 @@ the KEM, the slot shape, and the KEK derivation.
 | `mlkem768x25519` | X-Wing = ML-KEM-768 + X25519 (hybrid) | 1216 B               | `{ kem_ct: [1* bstr .size (1..64)], wrap: bstr(48) }` | `cardano-poe-kek-mlkem768x25519-v1` | `age1pqc` |
 
 These identifiers are the registry entries
-[`../registries/kem-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kem-algorithms.json); the
-content AEAD is [`../registries/aead-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/aead-algorithms.json).
+[`../registries/kem-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kem-algorithms.json); the
+content AEAD is [`../registries/aead-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/aead-algorithms.json).
 An unregistered `enc.kem` → `UNSUPPORTED_KEM_ALG`; an unregistered `enc.aead` →
 `UNSUPPORTED_AEAD_ALG`.
 
@@ -1332,7 +1320,7 @@ values would be redundant; the distinct `info` label supplies the cross-KEM
 domain separation so that no KEK derived under one KEM can equal a KEK derived
 under the other on an identical 32-byte shared secret. The two `info` labels
 **MUST** match the literals above byte-for-byte. The KDF is registered as an
-internal building block in [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kdf-algorithms.json)
+internal building block in [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kdf-algorithms.json)
 (it carries no wire identifier — it is fixed, not selectable).
 
 **Per-slot wrap: zero-nonce ChaCha20-Poly1305.** The wrap uses RFC 8439
@@ -1412,7 +1400,7 @@ decrypt back to those bytes and only those. The construction does **not** prepen
 append, or encrypt a filename, MIME type, size field, or any metadata wrapper.
 
 The assembled `enc` map (`{ scheme, aead, kem, nonce, slots, slots_mac }`) is
-carried in the on-chain CIP-309 record; the **ciphertext bytes are not placed on
+carried in the on-chain PoE record; the **ciphertext bytes are not placed on
 chain**. The ciphertext is published to a content-addressed store and the
 resulting URI lands in the item's `uris[]` — see
 [Ciphertext storage](#ciphertext-storage-and-integrity).
@@ -1501,7 +1489,7 @@ exhausted) → `WRONG_RECIPIENT_KEY`; a slot opens but no candidate CEK reproduc
 the `slots_mac` (the slot set was tampered) → `TAMPERED_HEADER`; the content AEAD
 fails after a CEK is recovered and the MAC verified (ciphertext, nonce, or
 `slots_mac` modified in transit) → `TAMPERED_CIPHERTEXT`. These three codes are in
-[`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json).
+[`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json).
 
 #### Plaintext-hash binding and the sender-identity verdict split
 
@@ -1575,7 +1563,7 @@ primitive. These two AAD rules (`nonce || slots_mac` for slots, `h''` for
 passphrase) are exhaustive and exclusive.
 
 The `enc.passphrase` map is `{ alg, salt, params }`. The sole registered KDF is
-`argon2id` (see [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kdf-algorithms.json));
+`argon2id` (see [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kdf-algorithms.json));
 an unregistered `alg` → `ENC_PASSPHRASE_ALG_UNSUPPORTED`. The validator enforces:
 
 - `salt` length 16–64 bytes inclusive (`ENC_PASSPHRASE_SALT_TOO_SHORT` /
@@ -1686,31 +1674,31 @@ attacks.
 
 Conformance vectors for the wrap, unwrap, multi-private-key iteration, hybrid
 re-chunking, and the negative input-validation cases are under
-[`../conformance/sealed-poe/`](https://github.com/cardanowall/cip309/blob/main/conformance/sealed-poe).
+[`../conformance/sealed-poe/`](https://github.com/cardanowall/label-309/blob/main/conformance/sealed-poe).
 
 ### Algorithm registries and conformance profiles
 
-CIP-309 references every cryptographic algorithm by a **named string identifier** drawn from one of six registries. An identifier is a stable, opaque token (for example `sha2-256`, `xchacha20-poly1305`, `mlkem768x25519`); each token is bound to exactly one algorithm with a stable public reference (an RFC, a FIPS publication, a CIP, an IANA codepoint, or a named internet-draft). This named-identifier ↔ stable-public-reference model is what makes the standard algorithm-agile: a verifier that does not recognise an identifier rejects the record with a typed error code (see [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes)) — it MUST NOT crash and MUST NOT silently accept.
+This CIP references every cryptographic algorithm by a **named string identifier** drawn from one of six registries. An identifier is a stable, opaque token (for example `sha2-256`, `xchacha20-poly1305`, `mlkem768x25519`); each token is bound to exactly one algorithm with a stable public reference (an RFC, a FIPS publication, a CIP, an IANA codepoint, or a named internet-draft). This named-identifier ↔ stable-public-reference model is what makes the standard algorithm-agile: a verifier that does not recognise an identifier rejects the record with a typed error code (see [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes)) — it MUST NOT crash and MUST NOT silently accept.
 
 The identifier strings in this section are normative. Conformant implementations **MUST** encode them on-wire byte-for-byte as written.
 
-The normative machine-readable form of every registry lives under [`../registries/`](https://github.com/cardanowall/cip309/blob/main/registries):
+The normative machine-readable form of every registry lives under [`../registries/`](https://github.com/cardanowall/label-309/blob/main/registries):
 
 | Registry                          | File                                                                                                 | Wire role                              |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------- |
-| Hash algorithms                   | [`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json)                           | `items[i].hashes` map keys             |
-| Merkle list-commitment algorithms | [`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/merkle-commitment-algorithms.json) | `merkle[i].alg`                        |
-| AEAD algorithms                   | [`../registries/aead-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/aead-algorithms.json)                           | `enc.aead`                             |
-| KEM algorithms                    | [`../registries/kem-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kem-algorithms.json)                             | `enc.kem`                              |
-| KDF algorithms                    | [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/kdf-algorithms.json)                             | `enc.passphrase.alg`                   |
-| Signature algorithms              | [`../registries/signature-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/signature-algorithms.json)                 | `COSE_Sign1` protected `alg`           |
-| Error codes                       | [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json)                                   | structural-validator / verifier output |
+| Hash algorithms                   | [`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json)                           | `items[i].hashes` map keys             |
+| Merkle list-commitment algorithms | [`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/merkle-commitment-algorithms.json) | `merkle[i].alg`                        |
+| AEAD algorithms                   | [`../registries/aead-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/aead-algorithms.json)                           | `enc.aead`                             |
+| KEM algorithms                    | [`../registries/kem-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kem-algorithms.json)                             | `enc.kem`                              |
+| KDF algorithms                    | [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kdf-algorithms.json)                             | `enc.passphrase.alg`                   |
+| Signature algorithms              | [`../registries/signature-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/signature-algorithms.json)                 | `COSE_Sign1` protected `alg`           |
+| Error codes                       | [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json)                                   | structural-validator / verifier output |
 
 Where this prose and the registry JSON differ, the registry JSON is authoritative for the identifier set, the pinned length constants, and the typed error code emitted on each failure mode.
 
 #### Identifier-carriage forms
 
-CIP-309 carries algorithm identifiers in three on-wire shapes, selected by the structural needs of each registry:
+This CIP carries algorithm identifiers in three on-wire shapes, selected by the structural needs of each registry:
 
 1. **Direct value** — `<role>: "<alg-id>"` — for identifiers that carry no algorithm-specific parameters (e.g. `enc.aead: "xchacha20-poly1305"`, `enc.kem: "x25519"`).
 2. **`alg`-field map** — `<role>: {"alg": "<id>", ...parameters}` — for identifiers that require algorithm-specific parameters (e.g. `merkle[i] = {"alg": "rfc9162-sha256", "root": ..., "leaf_count": ..., ...}`, `enc.passphrase = {"alg": "argon2id", "salt": ..., "params": ...}`).
@@ -1720,7 +1708,7 @@ The three forms minimise wire bytes for each role: a single-token identifier is 
 
 #### Conformance profiles
 
-CIP-309 v1 defines four **conformance profiles** so that an implementation can advertise the subset of the standard it supports without having to implement every cryptographic primitive in the registry. A consumer (verifier, indexer, explorer plug-in, archival tool) is conformant if it correctly handles every record that uses **only** algorithms in its declared profile, and cleanly rejects records that require a higher profile with the appropriate `UNSUPPORTED_*` code.
+This CIP (v1) defines four **conformance profiles** so that an implementation can advertise the subset of the standard it supports without having to implement every cryptographic primitive in the registry. A consumer (verifier, indexer, explorer plug-in, archival tool) is conformant if it correctly handles every record that uses **only** algorithms in its declared profile, and cleanly rejects records that require a higher profile with the appropriate `UNSUPPORTED_*` code.
 
 | Profile                | Reads (what records this profile can process)                                                                                                                                                                                                                                  | Implementation surface (algorithms a verifier must implement)                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1847,7 +1835,7 @@ Argon2id is memory-hard, which raises the cost of offline brute-force against th
 
 #### Signature algorithms (`COSE_Sign1` protected `alg`)
 
-Record-level signatures are **always OPTIONAL** in CIP-309: authorship is an opt-in claim, never required for a record to verify. A signature's COSE protected `alg` MUST name a registered label; any other label surfaces as `SIGNATURE_UNSUPPORTED` at info severity and does not fail the record. Verification is strict, non-cofactored Ed25519 (RFC 8032 §5.1.7) regardless of which registered label is used (see [Record-level signatures (COSE_Sign1)](#record-level-signatures-cose_sign1)).
+Record-level signatures are **always OPTIONAL** in this CIP: authorship is an opt-in claim, never required for a record to verify. A signature's COSE protected `alg` MUST name a registered label; any other label surfaces as `SIGNATURE_UNSUPPORTED` at info severity and does not fail the record. Verification is strict, non-cofactored Ed25519 (RFC 8032 §5.1.7) regardless of which registered label is used (see [Record-level signatures (COSE_Sign1)](#record-level-signatures-cose_sign1)).
 
 | COSE alg | Algorithm                                                                                                                                                                                                                                                         | Status                                                                                                                                                                                                                                                                       |
 | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -1856,21 +1844,21 @@ Record-level signatures are **always OPTIONAL** in CIP-309: authorship is an opt
 | `-7`     | (reserved) ES256 — ECDSA w/ SHA-256 over P-256 ([RFC 9053 §2.1](https://www.rfc-editor.org/rfc/rfc9053#section-2.1))                                                                                                                                              | **R.** Not standardised in v1; reported as `SIGNATURE_UNSUPPORTED`.                                                                                                                                                                                                          |
 | `-49`    | (reserved) ML-DSA-65 ([draft-ietf-cose-dilithium](https://datatracker.ietf.org/doc/draft-ietf-cose-dilithium/))                                                                                                                                                   | **R.** Post-quantum signature; not in v1; reported as `SIGNATURE_UNSUPPORTED`.                                                                                                                                                                                               |
 
-The IANA COSE Algorithms registry marks `-8` (EdDSA, curve-agnostic) as deprecated as of RFC 9864 in favour of the fully-specified `-19`. CIP-309 v1 nonetheless **keeps `alg = -8` as the MANDATORY signature identifier** because CIP-30 wallets emit `alg = -8` on the `signData` path, and v1 pins the curve to Ed25519 explicitly at two layers — the COSE_Key carries `kty = 1` (OKP) and `crv = 6` (Ed25519), and the path-1 32-byte protected-header `kid` convention is unambiguously an Ed25519 public key — so the deprecation's curve-ambiguity concern does not apply. The fully-specified `-19` codepoint is registered alongside `-8` at OPT-INFO tier.
+The IANA COSE Algorithms registry marks `-8` (EdDSA, curve-agnostic) as deprecated as of RFC 9864 in favour of the fully-specified `-19`. This CIP (v1) nonetheless **keeps `alg = -8` as the MANDATORY signature identifier** because CIP-30 wallets emit `alg = -8` on the `signData` path, and v1 pins the curve to Ed25519 explicitly at two layers — the COSE_Key carries `kty = 1` (OKP) and `crv = 6` (Ed25519), and the path-1 32-byte protected-header `kid` convention is unambiguously an Ed25519 public key — so the deprecation's curve-ambiguity concern does not apply. The fully-specified `-19` codepoint is registered alongside `-8` at OPT-INFO tier.
 
 #### Registry scope and provenance
 
-The algorithm identifiers above form the **internal CIP-309 algorithm registry**: they live inside this CIP, are normative for it, and are extended only by a future revision of CIP-309 (a new identifier requires a successor version that lists it). CIP-309 deliberately does **not** propose registering these strings in [CIP-10](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json), because CIP-10 registers integer `transaction_metadatum_label` values — its scope is the top-level integer namespace `309` (already reserved by CIP-10 for "Proof of Existence record"), not the algorithm strings that live inside the value under that label.
+The algorithm identifiers above form the **internal algorithm registry**: they live inside this CIP, are normative for it, and are extended only by a future revision of this CIP (a new identifier requires a successor version that lists it). This CIP deliberately does **not** propose registering these strings in [CIP-10](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json), because CIP-10 registers integer `transaction_metadatum_label` values — its scope is the top-level integer namespace `309` (already reserved by CIP-10 for "Proof of Existence record"), not the algorithm strings that live inside the value under that label.
 
-COSE signature algorithm identifiers (the integers `-8`, `-19`, `-7`, `-49`) live in the [IANA COSE registry](https://www.iana.org/assignments/cose), not in CIP-309's internal registry, and are referenced by their IANA codepoints when used inside a `COSE_Sign1` protected header. The `rfc9162-sha256` Merkle identifier likewise references the IANA "COSE Verifiable Data Structure Algorithms" registry (codepoint 1).
+COSE signature algorithm identifiers (the integers `-8`, `-19`, `-7`, `-49`) live in the [IANA COSE registry](https://www.iana.org/assignments/cose), not in this CIP's internal registry, and are referenced by their IANA codepoints when used inside a `COSE_Sign1` protected header. The `rfc9162-sha256` Merkle identifier likewise references the IANA "COSE Verifiable Data Structure Algorithms" registry (codepoint 1).
 
 #### Algorithm agility: the additive-only rule
 
-CIP-309 uses string identifiers for every algorithm slot precisely so the registry can grow without breaking decoders for older records. To add a new identifier:
+This CIP uses string identifiers for every algorithm slot precisely so the registry can grow without breaking decoders for older records. To add a new identifier:
 
 1. The primitive **MUST** have a stable public reference (RFC / FIPS / CIP / IANA codepoint / named internet-draft). **No novel cryptography** is admissible.
-2. Add the identifier to the appropriate registry under [`../registries/`](https://github.com/cardanowall/cip309/blob/main/registries) with its pinned length constant and the typed error code emitted on each failure mode.
-3. Ship a byte-pinned conformance vector under [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance) that exercises the new identifier.
+2. Add the identifier to the appropriate registry under [`../registries/`](https://github.com/cardanowall/label-309/blob/main/registries) with its pinned length constant and the typed error code emitted on each failure mode.
+3. Ship a byte-pinned conformance vector under [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance) that exercises the new identifier.
 
 Registry additions are **additive** and do **NOT** bump the wire `v` integer: an existing v1 verifier rejects the new identifier with the corresponding `UNSUPPORTED_*` code (or, for an OPT-INFO identifier, surfaces it as info), and a new v1 producer MAY emit the identifier as soon as the revision publishes. The algorithm-agility invariant guarantees that an unrecognised identifier produces a clean typed rejection — never silent acceptance, never a crash. Wire-format `v` bumps are reserved for breaking schema changes (a new REQUIRED key, a removed key, a changed type, or a digest length the current grammar cannot express) — not for registry additions.
 
@@ -1894,7 +1882,7 @@ The following are explicitly excluded. Any code path that introduces one is a de
 
 #### CDDL grammar and JSON Schemas
 
-The canonical machine-readable grammar for the record body is the CDDL ([RFC 8610](https://www.rfc-editor.org/rfc/rfc8610)) reproduced below; [`../cddl/cip-309.cddl`](cip-309.cddl) is the extracted canonical copy, and the JSON Schemas under [`../schemas/`](https://github.com/cardanowall/cip309/blob/main/schemas) are the same grammar expressed for JSON tooling. The grammar models the **reassembled record body** — the canonical-CBOR bytes obtained after byte-concatenating the ≤ 64-byte chunk array stored under metadata label 309; the chunk-array transport wrapper is reassembled before structural validation and is not modelled here (see [Canonical CBOR and metadata label 309 carriage](#canonical-cbor-and-metadata-label-309-carriage)).
+The canonical machine-readable grammar for the record body is the CDDL ([RFC 8610](https://www.rfc-editor.org/rfc/rfc8610)) reproduced below; [`../cddl/label-309.cddl`](label-309.cddl) is the extracted canonical copy, and the JSON Schemas under [`../schemas/`](https://github.com/cardanowall/label-309/blob/main/schemas) are the same grammar expressed for JSON tooling. The grammar models the **reassembled record body** — the canonical-CBOR bytes obtained after byte-concatenating the ≤ 64-byte chunk array stored under metadata label 309; the chunk-array transport wrapper is reassembled before structural validation and is not modelled here (see [Canonical CBOR and metadata label 309 carriage](#canonical-cbor-and-metadata-label-309-carriage)).
 
 The grammar and the JSON Schemas model only the **permissive structural superset** of well-formed shapes: the closed map shapes and the core byte lengths. They do **not** express cross-field invariants (e.g. `enc` key-path exclusivity, the items-or-merkle presence rule, algorithm-dependent nonce length, Merkle leaf-count binding) and they do **not** express registry membership of algorithm identifiers — every identifier rule below is the open `tstr` type, deliberately not a closed enum, because the registries above are authoritative for the accepted value set. Those constraints, and the precise typed error code a conformant verifier emits, are the second, typed-error pass over the decoded structure described in [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes). A generic CDDL or JSON-Schema tool confirms only that a candidate record matches the permissive superset; full conformance requires the typed pass.
 
@@ -1915,7 +1903,7 @@ The grammar and the JSON Schemas model only the **permissive structural superset
 ;
 ; A `metadatum` matches the Cardano ledger's transaction_metadatum
 ; recursive type (no floats, no tags, bstr/tstr <= 64 bytes). Every
-; field a CIP-309 record carries — base or extension — MUST be a
+; field a PoE record carries — base or extension — MUST be a
 ; metadatum, because the entire record sits inside transaction_metadata
 ; under label 309 and the ledger rejects non-metadatum values at
 ; submission. The ledger CDDL definition of transaction_metadatum is
@@ -2109,15 +2097,15 @@ kdf-alg            = tstr  ; see KDF registry
 
 ### Structural validation, verifier roles, and error codes
 
-CIP-309 correctness is checked in three layers. Each layer is a strict superset of the one before it, and each can be implemented and shipped independently.
+Correctness in this CIP is checked in three layers. Each layer is a strict superset of the one before it, and each can be implemented and shipped independently.
 
-1. **Structural validator (Part A).** A pure function over the reassembled CBOR bytes that claim to be a CIP-309 record. It performs schema and domain-rule conformance only: it MUST NOT touch the network, MUST NOT verify any signature cryptographically, and MUST NOT decrypt. It is profile-agnostic — it parses the full v1 schema (the grammar in [`../cddl/cip-309.cddl`](cip-309.cddl)) regardless of which subset a downstream verifier validates end-to-end.
+1. **Structural validator (Part A).** A pure function over the reassembled CBOR bytes that claim to be a PoE record. It performs schema and domain-rule conformance only: it MUST NOT touch the network, MUST NOT verify any signature cryptographically, and MUST NOT decrypt. It is profile-agnostic — it parses the full v1 schema (the grammar in [`../cddl/label-309.cddl`](label-309.cddl)) regardless of which subset a downstream verifier validates end-to-end.
 2. **Public verifier (Part B, default mode).** Layers on top of the structural validator. Given a Cardano transaction reference it fetches the transaction metadata from a public blockchain explorer, runs the structural validator, verifies every embedded Ed25519 record signature, and optionally fetches and hash-checks plaintext content at `ar://` / `ipfs://` URIs. It does not decrypt.
 3. **Recipient verifier (Part B, sealed-decrypt mode).** A public verifier that additionally holds one or more recipient KEM private keys — a 32-byte X25519 scalar for `x25519`, or a 32-byte X-Wing decapsulation seed for `mlkem768x25519` — and performs sealed-PoE decryption plus post-decryption plaintext-hash recomputation (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)).
 
-All three layers MUST run **without contacting any single-operator infrastructure**. This is a binding property of CIP-309 — a proof verifies given only the transaction metadata, optionally the content bytes, and a public blockchain explorer. It is restated as the service-independence property at the end of this section.
+All three layers MUST run **without contacting any single-operator infrastructure**. This is a binding property of this CIP — a proof verifies given only the transaction metadata, optionally the content bytes, and a public blockchain explorer. It is restated as the service-independence property at the end of this section.
 
-The authoritative error catalogue is the machine-readable registry [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json); the conformance vectors that pin each failure mode to its code live under [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance) (validator-rejection cases in [`../conformance/validator/`](https://github.com/cardanowall/cip309/blob/main/conformance/validator), cross-service / service-independence cases in [`../conformance/cross-service/`](https://github.com/cardanowall/cip309/blob/main/conformance/cross-service)). A conformant implementation MUST emit exactly the SCREAMING_SNAKE_CASE codes defined there for the failure modes defined there; it MUST NOT introduce lowercase synonyms, `schema_*`-prefixed parser-internal codes, or free-form reason strings. The families summarized below are the index into that registry, not a substitute for it.
+The authoritative error catalogue is the machine-readable registry [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json); the conformance vectors that pin each failure mode to its code live under [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance) (validator-rejection cases in [`../conformance/validator/`](https://github.com/cardanowall/label-309/blob/main/conformance/validator), cross-service / service-independence cases in [`../conformance/cross-service/`](https://github.com/cardanowall/label-309/blob/main/conformance/cross-service)). A conformant implementation MUST emit exactly the SCREAMING_SNAKE_CASE codes defined there for the failure modes defined there; it MUST NOT introduce lowercase synonyms, `schema_*`-prefixed parser-internal codes, or free-form reason strings. The families summarized below are the index into that registry, not a substitute for it.
 
 #### Part A — the structural validator
 
@@ -2149,13 +2137,13 @@ The reassembly of the chunked record body — byte-concatenation of the metadata
 The validator runs a fixed pipeline; any step that produces an `error`-severity issue still allows later steps to run, and all issues are collected and emitted together (sorted by `path`).
 
 1. **Canonical CBOR decode.** The bytes MUST be decoded with a canonical decoder enforcing the deterministic-encoding rules of RFC 8949 §4.2.1: definite lengths, bytewise-lexicographically sorted map keys, no duplicate keys, valid UTF-8 text strings, minimal integer encodings. Any decode failure — including non-canonical ordering, indefinite-length encodings, and duplicate map keys — surfaces as the single code `MALFORMED_CBOR`. There is no separate duplicate-key code: canonical-decode rejection covers it.
-2. **Schema parse.** The decoded value is run through a closed-schema parser ([`../schemas/`](https://github.com/cardanowall/cip309/blob/main/schemas)). The schema is the structural authority: type checks, length bounds (the 64-byte chunk limit on chunked byte/text arrays, the 32-byte length checks on `supersedes` and on commitment roots), and a strict object mode that rejects unknown fields. The schema imposes **no** numeric cap on `items[]`, `sigs[]`, or `slots[]` entry counts — the only ceiling is the ledger's maximum transaction size, enforced at submission by Cardano nodes; a validator MUST NOT emit an error solely because an entry count is high.
+2. **Schema parse.** The decoded value is run through a closed-schema parser ([`../schemas/`](https://github.com/cardanowall/label-309/blob/main/schemas)). The schema is the structural authority: type checks, length bounds (the 64-byte chunk limit on chunked byte/text arrays, the 32-byte length checks on `supersedes` and on commitment roots), and a strict object mode that rejects unknown fields. The schema imposes **no** numeric cap on `items[]`, `sigs[]`, or `slots[]` entry counts — the only ceiling is the ledger's maximum transaction size, enforced at submission by Cardano nodes; a validator MUST NOT emit an error solely because an entry count is high.
 3. **Domain checks.** A second pass enforces cross-field constraints the schema cannot express ergonomically: registry membership for every algorithm identifier, URI reconstruction and scheme checks, per-slot key-material and wrap lengths, COSE structural decode, parallel-array length, and `crit[]` shape. The domain pass walks each item, then the record-level `sigs[]`, then `merkle[]`.
 4. **Result emission.** If any `error`-severity issue was collected, the record is reported `valid: false` with the full sorted issue list. Otherwise it is reported `valid: true` with the decoded record plus any `warnings` / `info` issues.
 
 ##### Error families (Part A)
 
-Every code below is emitted by `validatePoeRecord` and carries `severity: error` unless noted. The registry [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json) is authoritative for the complete list and the exact trigger of each code.
+Every code below is emitted by `validatePoeRecord` and carries `severity: error` unless noted. The registry [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json) is authoritative for the complete list and the exact trigger of each code.
 
 | Family                                 | Codes                                                                                                                                                                                                                                                                                                                                            | Triggered by                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2181,7 +2169,7 @@ v1 records use a closed map schema. Unknown keys at any level are invalid, and u
 
 ##### Service-independence of the validator
 
-Because the validator is a pure function, anyone holding a CIP-309 byte string can validate it offline — no service, no API key, no telemetry. This makes it usable by producers pre-submission, by third-party verifiers built against the public vectors, and by archival tools confirming long-term well-formedness. Implementations in different languages MUST reproduce the same algorithm and the same error codes byte-exact; a record that validates in one language but not another is a conformance bug.
+Because the validator is a pure function, anyone holding a PoE byte string can validate it offline — no service, no API key, no telemetry. This makes it usable by producers pre-submission, by third-party verifiers built against the public vectors, and by archival tools confirming long-term well-formedness. Implementations in different languages MUST reproduce the same algorithm and the same error codes byte-exact; a record that validates in one language but not another is a conformance bug.
 
 #### Part B — the public verifier and the recipient verifier
 
@@ -2200,7 +2188,7 @@ The relevant optional inputs are:
 - A `decryption[]` array whose entries are a discriminated union keyed by the on-wire key path: `recipientSecretKey` (the recipient KEM private key — a 32-byte X25519 scalar or a 32-byte X-Wing decapsulation seed) for the `enc.slots` path, or `passphrase` for the `enc.passphrase` path. Supplying the wrong shape for the on-wire path MUST emit `WRONG_DECRYPTION_INPUT_SHAPE`.
 - Optional out-of-band ciphertext bytes and out-of-band Merkle leaves-list bytes, keyed by item / commit index, used when a producer chose out-of-band delivery.
 
-CIP-309 production is mainnet-only: the report's network identifier is the constant `cardano:mainnet`, and the verifier MUST NOT trust any network value from the record body (records carry none).
+This CIP targets mainnet only: the report's network identifier is the constant `cardano:mainnet`, and the verifier MUST NOT trust any network value from the record body (records carry none).
 
 ##### Pipeline
 
@@ -2217,7 +2205,7 @@ The verifier executes the following steps in order; an `error`-verdict step shor
 
 ##### Error families (Part B)
 
-The verifier-layer codes are never emitted by the structural validator; they appear only in the verifier's report. The registry [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json) is authoritative.
+The verifier-layer codes are never emitted by the structural validator; they appear only in the verifier's report. The registry [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json) is authoritative.
 
 | Family                  | Representative codes                                                                                                                                                                                                                                  | Triggered by                                                                                                                                                                                                               |
 | ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -2243,7 +2231,7 @@ A verifier reading a v1-schema field outside its declared profile (for example, 
 
 #### Service independence
 
-The central property of CIP-309 is that **a proof verifies with no operator server in the loop**. A conformant verifier MUST work using only the operator-configured public Cardano / Arweave / IPFS gateway chains; it MUST NOT embed any operator's domain in its default configuration, and every operator domain MUST be deny-able via `denyHosts` without breaking verification of any conformant record. All record identity comes from the on-chain transaction hash; all signer identity comes from the in-signature `kid` or the inline `cose_key`. There is no proprietary off-chain index, no proprietary record id, and no authentication step.
+The central property of this CIP is that **a proof verifies with no operator server in the loop**. A conformant verifier MUST work using only the operator-configured public Cardano / Arweave / IPFS gateway chains; it MUST NOT embed any operator's domain in its default configuration, and every operator domain MUST be deny-able via `denyHosts` without breaking verification of any conformant record. All record identity comes from the on-chain transaction hash; all signer identity comes from the in-signature `kid` or the inline `cose_key`. There is no proprietary off-chain index, no proprietary record id, and no authentication step.
 
 This claim MUST be **structurally testable**, not a source-code grep heuristic. Two layers establish it:
 
@@ -2266,7 +2254,7 @@ constructions this document defines.
 
 ### Adversary model
 
-CIP-309's security claims hold against the following adversaries. Each row lists
+This CIP's security claims hold against the following adversaries. Each row lists
 what the adversary can and cannot achieve against the on-wire format alone.
 
 | Adversary                                  | Capabilities                                                                                                                              | Cannot                                                                                                                                                                                                                                                                                                                                                                                                            | Can                                                                                                                                                                                                                                                                                                                                                      |
@@ -2282,7 +2270,7 @@ what the adversary can and cannot achieve against the on-wire format alone.
 Two service-level invariants underwrite the format's trust model and are
 testable against the on-wire bytes alone.
 
-- **Standalone verifiability.** A verifier MUST be able to validate any CIP-309
+- **Standalone verifiability.** A verifier MUST be able to validate any PoE
   record using only public Cardano + Arweave + IPFS gateways and, for a
   recipient verifier, the recipient's own decryption material — without
   contacting any issuer-operated domain. A consumer holding the transaction
@@ -2291,7 +2279,7 @@ testable against the on-wire bytes alone.
   is independent of decryption: a verifier MUST emit a structural verdict before
   any decryption is attempted.
 - **Zero server custody.** No publishing service holds private cryptographic
-  material that a verifier must trust. Because CIP-309 has no issuer field, any
+  material that a verifier must trust. Because this CIP has no issuer field, any
   wallet MAY publish a conformant record; compromise of a publisher's signing
   key lets the attacker do only what any Cardano holder can already do — publish
   further conformant records — and is therefore not a privilege escalation
@@ -2302,9 +2290,9 @@ testable against the on-wire bytes alone.
 
 ### Hash collision and second preimage
 
-CIP-309 requires content-hash algorithms with at least 128-bit collision
+This CIP requires content-hash algorithms with at least 128-bit collision
 resistance and at least 256-bit second-preimage resistance. `sha2-256` and
-`blake2b-256` (registered in [`../registries/hash-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/hash-algorithms.json),
+`blake2b-256` (registered in [`../registries/hash-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/hash-algorithms.json),
 both 32-byte digests) qualify; the authoritative threat — a second preimage at
 `2^256` classical / `2^128` Grover — is infeasible in both settings. A record
 that opts into the multi-hash pattern (`sha2-256` _and_ `blake2b-256` in the
@@ -2316,7 +2304,7 @@ without erasing the underlying claim, because the chain is append-only.
 ### Merkle list commitment: second preimage and off-chain backup
 
 The `rfc9162-sha256` list-commitment construction (see
-[`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/cip309/blob/main/registries/merkle-commitment-algorithms.json))
+[`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/merkle-commitment-algorithms.json))
 inherits SHA-256's second-preimage strength: forging a different leaf list whose
 canonical root equals a published root requires an SHA-256 second preimage,
 which is infeasible. The RFC 9162 §2.1.1 prefix discipline — `0x00` for leaves,
@@ -2349,9 +2337,9 @@ replay SHOULD include a `supersedes` pointer, which by definition references a
 unique prior transaction hash.
 
 **Cross-protocol replay.** The 25-byte UTF-8 prefix `cardano-poe-record-sig-v1`,
-prepended to the signing input, binds the signature to its CIP-309 role. A
+prepended to the signing input, binds the signature to its role. A
 future Cardano metadata schema that happens to share the body shape cannot reuse
-a CIP-309 signature against itself: the replayer's signing input would carry a
+a PoE signature against itself: the replayer's signing input would carry a
 different prefix (or none), the byte stream would differ, and verification would
 fail. Implementations MUST embed this literal byte sequence as the leading bytes
 of the signing input exactly. Omitting it — signing only the raw canonical CBOR —
@@ -2392,7 +2380,7 @@ invoking any AEAD primitive:
 Length mismatches MUST emit the typed structural errors `ENC_SLOTS_EMPTY`,
 `KEM_EPK_LENGTH_MISMATCH` / `KEM_CT_LENGTH_MISMATCH`, `WRAP_LENGTH_MISMATCH`, and
 `ENC_SLOTS_MAC_INVALID_LENGTH` (see
-[`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json)) — with no
+[`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json)) — with no
 length-dependent branch reaching the cryptographic primitives. There is no fixed
 numeric slot cap; the upper bound is the per-record byte budget the producer
 enforces before submission and ultimately the Cardano maximum transaction size.
@@ -2442,8 +2430,8 @@ key.
 **Fee-payer correlation is out of scope.** A Cardano transaction is paid for by
 a wallet whose address is on chain. If the same wallet pays for both an unsigned
 and a signed transaction, a chain observer can correlate them by fee-payer,
-independent of CIP-309. The same applies to the producer's IP address as seen by
-gateways and to any metadata in the off-chain ciphertext blob. CIP-309 cannot
+independent of this CIP. The same applies to the producer's IP address as seen by
+gateways and to any metadata in the off-chain ciphertext blob. This CIP cannot
 defend against these channels because it lives inside the metadata, not in the
 transaction inputs or the transport; producers requiring fee-payer-level
 anonymity MUST address it at the transaction-construction layer (rotating
@@ -2490,7 +2478,7 @@ the network.
 
 ### Pre-dating
 
-CIP-309 establishes an **upper bound** on when content existed: the block time of
+This CIP establishes an **upper bound** on when content existed: the block time of
 the transaction carrying the record is a cryptographic witness that the committed
 content existed no later than that moment. It does **not** establish a lower
 bound. A claim such as "I created this in 2020" carried inside a 2026 transaction
@@ -2502,7 +2490,7 @@ becomes part of the hashed plaintext.
 
 ### Privacy
 
-Every byte in a PoE record is on chain forever. CIP-309 deliberately omits
+Every byte in a PoE record is on chain forever. This CIP deliberately omits
 filenames, MIME types, titles, descriptions, language tags, free-form notes, and
 size fields, because each can leak content context — a filename can reveal the
 subject of an encrypted document, a MIME type can reveal the content class, and a
@@ -2511,12 +2499,10 @@ known document. For sensitive claims, encrypt the content off-chain and publish
 only its plaintext hash plus the sealed-PoE envelope. An application that needs
 human-readable context SHOULD carry it inside the hashed content (for example as
 an in-content manifest, see
-[Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)),
+[Rationale: How does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)),
 not as a label-309 field.
 
----
-
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Why CBOR rather than JSON
 
@@ -2599,13 +2585,13 @@ other recipients' slots in the same record.
   verifier inputs and gateway configuration, not in the record.
 - **No descriptive fields.** Filenames, media types, titles, descriptions,
   language tags, notes, and byte sizes are not needed to verify existence, and
-  each leaks context. CIP-309 treats the content bytes as the only semantic
+  each leaks context. This CIP treats the content bytes as the only semantic
   payload. An application that needs human-readable context **MAY** carry it as an
   in-content manifest: assemble the files plus a manifest describing the bundle,
   archive them into one byte sequence, hash the whole sequence into `items`, and
   (when sealed) encrypt the bundle bytes. Any tampering with the manifest changes
   the bundle bytes and therefore the on-chain hash. The manifest format is
-  entirely outside CIP-309's scope.
+  entirely outside this CIP's scope.
 
 ### Why URIs are content-addressed only
 
@@ -2673,12 +2659,12 @@ the earlier record.
 
 A natural choice for cross-protocol replay protection in a `COSE_Sign1` setting
 is to place the domain separator in the `external_aad` field of the
-`Sig_structure`. CIP-309 does **not** do this, for CIP-30 compatibility: the
+`Sig_structure`. This CIP does **not** do this, for CIP-30 compatibility: the
 [CIP-30](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md)
 `signData` interface — the standard wallet-signing path on Cardano — stipulates
 that the payload is not hashed and no `external_aad` is used. A dApp has no way
 to pass an `external_aad` to a CIP-30 wallet, so requiring a non-empty value
-would make every wallet-produced signature fail CIP-309 verification. Embedding
+would make every wallet-produced signature fail PoE verification. Embedding
 the separator as a fixed UTF-8 prefix at the start of the signed input preserves
 the anti-replay property with cryptographic strength equivalent to the
 `external_aad` placement; the difference is purely wire-side, and it is the
@@ -2687,7 +2673,7 @@ this if a future wallet-signing standard lets the dApp supply `external_aad`.
 
 ### Why authorship is expressed only at the record level
 
-CIP-309 places signatures at the record level, not at the per-item level. A
+This CIP places signatures at the record level, not at the per-item level. A
 per-item `sig` field — enabling co-authors of a multi-item record to sign their
 own contributions — is rejected on three grounds: a wallet-signed multi-item PoE
 under that model would require one wallet prompt per signed item, pure friction
@@ -2702,8 +2688,6 @@ map carrying its own optional wallet-key field rather than a parallel array
 indexed in lockstep, which eliminates a cross-field length invariant and the
 placeholder semantics that real implementations get wrong.
 
----
-
 ## Path to Active
 
 Per [CIP-0001 §3.3](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md#document-lifecycle),
@@ -2714,15 +2698,15 @@ this CIP proposes the following Acceptance Criteria and Implementation Plan.
 1. **Reference implementations exist and pass conformance.** At least one
    open-source reference implementation of both a producer (record writer) and a
    verifier (chain reader + structural validator + public verifier). Reference
-   implementations in [TypeScript](https://github.com/cardanowall/cip309-ts),
-   [Python](https://github.com/cardanowall/cip309-py), and
-   [Rust](https://github.com/cardanowall/cip309-rs) are published as open-source
+   implementations in [TypeScript](https://github.com/cardanowall/label-309-ts),
+   [Python](https://github.com/cardanowall/label-309-py), and
+   [Rust](https://github.com/cardanowall/label-309-rs) are published as open-source
    sibling repositories, with worked examples under
-   [`../examples/`](https://github.com/cardanowall/cip309/blob/main/examples); all consume the byte-pinned vectors in
-   [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance).
+   [`../examples/`](https://github.com/cardanowall/label-309/blob/main/examples); all consume the byte-pinned vectors in
+   [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance).
 2. **Conformance suite.** A public conformance suite exists — valid and invalid
    fixtures, with every error code in
-   [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json) covered by
+   [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json) covered by
    at least one fixture — and serves as the cross-implementation interop gate. At
    least one third-party language port demonstrates byte-identical canonical-CBOR
    output against the suite. The valid-fixture set MUST include at least one
@@ -2741,11 +2725,11 @@ this CIP proposes the following Acceptance Criteria and Implementation Plan.
    independently developed wallets agreeing on the byte format make wallet-side
    regression unlikely. Hardware-wallet support remains explicitly best-effort:
    CIP-30 `signData` is unevenly implemented across hardware firmware and is
-   outside CIP-309's scope to enforce. The identity-key signing path (raw Ed25519
+   outside this CIP's scope to enforce. The identity-key signing path (raw Ed25519
    public key in the in-signature `kid`) is the primary signing path and is
    independently testable without any wallet; this criterion covers the wallet
    path on top of it, not in place of it.
-4. **Public mainnet records.** At least three independently authored CIP-309
+4. **Public mainnet records.** At least three independently authored PoE
    records on Cardano mainnet, covering the `core` profile (hash-only), the
    `signed` profile, and the `sealed` profile.
 5. **Standalone public verifier published.** A standalone verifier that contacts
@@ -2764,20 +2748,20 @@ Reaching Proposed and then Active status requires a coordinated rollout. The
 load-bearing artefacts are:
 
 1. **Conformance fixture set.** Publish the machine-readable fixtures under
-   [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance) and a runner that maps every error code in
-   [`../registries/error-codes.json`](https://github.com/cardanowall/cip309/blob/main/registries/error-codes.json) to at least
+   [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance) and a runner that maps every error code in
+   [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json) to at least
    one negative fixture. The suite is the explicit cross-implementation interop
    gate.
-2. **Reference SDKs.** Publish a [TypeScript SDK](https://github.com/cardanowall/cip309-ts),
-   a [Python SDK](https://github.com/cardanowall/cip309-py), and a
-   [Rust SDK](https://github.com/cardanowall/cip309-rs) as open-source packages
+2. **Reference SDKs.** Publish a [TypeScript SDK](https://github.com/cardanowall/label-309-ts),
+   a [Python SDK](https://github.com/cardanowall/label-309-py), and a
+   [Rust SDK](https://github.com/cardanowall/label-309-rs) as open-source packages
    under permissive licenses. All MUST pass the conformance suite, MUST work
    without any implementer-specific account or service, and MUST produce
    byte-identical canonical CBOR for the same logical inputs. Worked examples for
-   the reference implementations live under [`../examples/`](https://github.com/cardanowall/cip309/blob/main/examples).
+   the reference implementations live under [`../examples/`](https://github.com/cardanowall/label-309/blob/main/examples).
 3. **Standalone public verifier and CLI.** Ship a
-   [verifier-only CLI](https://github.com/cardanowall/cip309-cli) and a static
-   web verifier. Both load from [`../conformance/`](https://github.com/cardanowall/cip309/blob/main/conformance) for unit tests
+   [verifier-only CLI](https://github.com/cardanowall/label-309-cli) and a static
+   web verifier. Both load from [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance) for unit tests
    and from a small set of mainnet PoE records for end-to-end tests. The verifier
    MUST run against operator-configured Cardano / Arweave / IPFS gateways without
    requiring any vendor-specific endpoint (Acceptance Criterion 5).
@@ -2787,7 +2771,7 @@ load-bearing artefacts are:
    (Acceptance Criterion 2).
 5. **Wallet outreach.** Coordinate with wallet teams to demonstrate CIP-30
    `signData` interop with the reference implementation (Acceptance Criterion 3)
-   and to surface CIP-309 records as a first-class metadata view.
+   and to surface PoE records as a first-class metadata view.
 6. **Explorer outreach.** Engage major Cardano block-explorer teams to render
    label-309 records as "Proof of Existence" with the canonical hash digests and
    reassembled URIs; without explorer awareness, end-users see raw chunked CBOR.
@@ -2804,12 +2788,10 @@ load-bearing artefacts are:
    a cross-KEM sealed-PoE construction change) or a top-level `v` bump (for a
    record-schema change).
 
-CIP-309 reaches Proposed when Acceptance Criteria 1, 2, 5, and 6 are
+This CIP reaches Proposed when Acceptance Criteria 1, 2, 5, and 6 are
 demonstrated; Criteria 3 (two-wallet signing), 4 (public mainnet records), and 7
 (public review) gate Active.
 
----
-
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://github.com/cardanowall/cip309/blob/main/LICENSE-docs).
+This CIP is licensed under [CC-BY-4.0](https://github.com/cardanowall/label-309/blob/main/LICENSE-docs).
