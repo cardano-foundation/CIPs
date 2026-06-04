@@ -1,8 +1,8 @@
 ---
 CIP: 1855
 Title: Forging policy keys for HD Wallets
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Samuel Leathers <samuel.leathers@iohk.io>
   - John Lotoski <john.lotoski@iohk.io>
@@ -10,8 +10,8 @@ Authors:
   - David Arnold <david.arnold@iohk.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/96
-  - https://github.com/cardano-foundation/CIPs/pull/194
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/96
+  - imp CIP-1855 complement with CIP-0005 prefixes: https://github.com/cardano-foundation/CIPs/pull/194
 Created: 2021-06-02
 License: CC-BY-4.0
 ---
@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 This document describes how to derive forging policy keys used for minting/burning tokens.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Forging tokens is derived from a script policy. The script policy includes hashes of keys needed to forge new tokens and must be witnessed by these keys in such a way as the script stipulates.
 This CIP defines the derivation path at wich parties are expected to derive such keys.
@@ -71,7 +71,7 @@ To distinguish such keys & derived material in the human readable prefix of the 
 - `m/1855’/1815’/1’`
 - `m/1855’/1815’/2’`
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - ERC20 Converter IOHK is developing needs to keep track of policy keys. Rather than having randomly generated policy keys, a policy key can be associated with a mnemonic which is easier to backup.
 - A 3rd party may want to have multiple tokens tied to same mnemonic, so we allow an index to specify the token.

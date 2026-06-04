@@ -5,13 +5,15 @@ Category: Wallets
 Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
-    - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz> 
+    - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz>
     - Mad Orkestra <mad@madorkestra.com>
 Implementors:
-    - VESPR Wallet (https://vespr.xyz)
-    - Begin Wallet (https://begin.is)
+    - VESPR Wallet <https://vespr.xyz>
+    - Begin Wallet <https://begin.is>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
@@ -22,7 +24,7 @@ This CIP proposes a new URI scheme authority, `browse`, under `web+cardano` to
 enable Cardano wallets to launch external or embedded applications and dApps
 with the full path and context, using a standardized, interoperable URI format.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Today, exploring dApps on Cardano — especially on mobile devices — is
 cumbersome. Most Cardano wallets with embedded browsers require users to
@@ -146,7 +148,7 @@ web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
   security in mind, using short-lived or ephemeral tokens where needed and avoid
   embedding sensitive user data.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 A dedicated `browse` authority isolates app navigation and launch intents from
 payment or metadata intents, improving clarity and interoperability.

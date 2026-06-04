@@ -9,9 +9,9 @@ Authors:
     - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/780
-    - https://github.com/cardano-foundation/CIPs/pull/862
-    - https://github.com/cardano-foundation/CIPs/pull/880
+    - CIP-0118? | Validation zones: https://github.com/cardano-foundation/CIPs/pull/780
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/862
+    - CIP-0131? | Transaction swaps: https://github.com/cardano-foundation/CIPs/pull/880
 Created: 2024-03-11
 License: CC-BY-4.0
 ---
@@ -30,10 +30,10 @@ to make and accept swap offers without the need for a centralized exchange or tw
 It gives non-ADA holders a way to engage with the Cardano ecosystem. It also creates new business opportunities
 for users willing to make and accept offers, run aggregator services, subsidize the use of their DApps, etc.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP provides a partial solution to the problems described in
-[CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
+[CPS-0015?](https://github.com/cardano-foundation/CIPs/pull/779).
 In particular, it describes some ledger changes that allow settlement
 of intents that require *counterparty irrelevance*, including many of the swap use cases
 and DApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol
@@ -335,7 +335,7 @@ transactions and also satisfy the batch-level constraints imposed by these scrip
 An additional high-level language may be beneficial to specify what the guard scripts
 actually require of the batch, as Plutus script constraints may be difficult to work with directly.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction
 batching which we call *nested transactions*. The specification we presented includes the features
@@ -409,7 +409,7 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 
 ### Comparison with Other Designs
 
-#### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
+#### CIP-0131? "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences
 are :
