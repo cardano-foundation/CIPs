@@ -1,6 +1,6 @@
 ---
 CIP: 14
-Title: User-Facing Asset Fingerprint 
+Title: User-Facing Asset Fingerprint
 Status: Active
 Category: Tokens
 Authors:

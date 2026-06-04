@@ -1,6 +1,6 @@
 ---
 CIP: 35
-Title: Changes to Plutus Core
+Title: Plutus Core Evolution
 Status: Active
 Category: Meta
 Authors:

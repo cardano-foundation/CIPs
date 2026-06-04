@@ -4,10 +4,6 @@
     "description": "Clarity - DAO creation metadata"
   },
   {
-    "transaction_metadatum_label": 54,
-    "description": "TapDano - Proof Platform"
-  },
-  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
@@ -30,6 +26,10 @@
   {
     "transaction_metadatum_label": 309,
     "description": "Proof of Existence record"
+  },
+  {
+    "transaction_metadatum_label": 544,
+    "description": "TapDano - Proof Platform"
   },
   {
     "transaction_metadatum_label": 620,
@@ -132,6 +132,10 @@
     "description": "cardahub.io services metadata"
   },
   {
+    "transaction_metadatum_label": 3165,
+    "description": "CPE - Cardano Proposal Examiner"
+  },
+  {
     "transaction_metadatum_label": 3692,
     "description": "CIP-0149 - Optional DRep compensation"
   },
@@ -146,6 +150,10 @@
   {
     "transaction_metadatum_label": 8413,
     "description": "commitproof.com lets you prove what you knew and when"
+  },
+  {
+    "transaction_metadatum_label": 8414,
+    "description": "claimpaign.com campaigns"
   },
   {
     "transaction_metadatum_label": 10297,

@@ -2,14 +2,16 @@
 CIP: 158
 Title: Cardano URIs - Browse Application
 Category: Wallets
-Status: Proposed
+Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
     - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz> 
+    - Mad Orkestra <mad@madorkestra.com>
 Implementors:
     - VESPR Wallet (https://vespr.xyz)
+    - Begin Wallet (https://begin.is)
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1058
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
@@ -153,13 +155,13 @@ payment or metadata intents, improving clarity and interoperability.
 
 ### Acceptance Criteria
 
-- [ ] At least two major Cardano wallets implement support for the browse
+- [X] At least two major Cardano wallets implement support for the browse
   authority in web+cardano URIs, including launching its embedded browser with
   the specified path.
-- [ ] Demonstrable user success in navigating from a mobile device (e.g., native
+- [X] Demonstrable user success in navigating from a mobile device (e.g., native
   camera or link) into a wallet and then directly into the dApp or application
   flow.
-- [ ] Positive feedback or validation from the community or wallet/dApp
+- [X] Positive feedback or validation from the community or wallet/dApp
   developers confirming interoperability.
 
 ### Implementation Plan

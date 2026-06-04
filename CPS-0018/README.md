@@ -9,7 +9,7 @@ Authors:
   - Hans Lahe <hans.lahe@iohk.io>
 Proposed Solutions: []
 Discussions: 
-  - https://github.com/cardano-foundation/CIPs/pull/925/
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/925
 Created: 2024-10-11
 License: Apache-2.0
 ---
@@ -89,7 +89,7 @@ More concerning are the situations shown below where consecutive blocks are near
 
 ![Runs of nearly-full blocks](images/block-ex-run.svg)
 
-## Use cases
+## Use Cases
 
 Even with the existing rate of transactions on the Cardano mainnet, there are periods where throughput-limits delay the inclusion of transactions in blocks and hamper settlement. Growing and emerging use cases will exacerbate the situation.
 
@@ -117,7 +117,7 @@ In addition to the goals above, it is advisable to avoid the following:
 3. Minimize changes that increase the resource usages of Cardano nodes or the cost of operating them.
 4. Guard against protocol alterations that adversely impact other scaling metrics such as settlement time.
 
-## Open questions
+## Open Questions
 
 - How much larger can existing Ouroboros Praos blocks be made without affecting Cardano mainnet safety or performance?
 - How much can the block-production rate (the active-slot coefficient) be increased without affecting Cardano mainnet safety or performance?

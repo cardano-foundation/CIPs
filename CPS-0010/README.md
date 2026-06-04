@@ -1,14 +1,14 @@
 ---
 CPS: 10
 Title: Wallet Connectors
-Status: Open
 Category: Wallets
+Status: Open
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
     - Vladimir Kalnitsky <vladimir@mlabs.city>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pull/619
+    - Original pull request: https://github.com/cardano-foundation/cips/pull/619
 Created: 2023-07-28
 License: CC-BY-4.0
 ---
@@ -165,7 +165,7 @@ This prevents anymore downstream issues caused by lack of versioning.
 The hopefully final remediation to CIP-30 is this document.
 We want to discuss CIP-30's drawbacks, so they can be understood moving one step closer to solving them.
 
-## Use cases
+## Use Cases
 
 ### NFT Marketplace
 Alice wishes to buy a NFT from an smart contract based NFT marketplace for an agreed price because she wishes to support the artist.

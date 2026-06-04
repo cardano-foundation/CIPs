@@ -40,6 +40,7 @@ cip-details = {
     ? 60 : cip60-details,  ; ./cip/CIP-60_v1.cddl
     ? 68 : cip68-details,  ; ./cip/CIP-68_v1.cddl
     ? 86 : cip86-details,  ; ./cip/CIP-86_v1.cddl
+    ? 102 : cip102-details, ; ./cip/CIP-102_v1.cddl
 }
 
 ; Registration Scopes

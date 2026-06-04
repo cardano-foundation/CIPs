@@ -1,6 +1,6 @@
 ---
 CIP: 132
-Title: New Plutus Builtin dropList
+Title: New Plutus Builtin `dropList`
 Status: Proposed
 Category: Plutus
 Authors:

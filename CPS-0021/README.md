@@ -7,9 +7,9 @@ Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
     - Raphael Toledo <raphael.toledo@iohk.io>
 Proposed Solutions: 
-  ["CIP-0161 : Ouroboros Phalanx - Breaking Grinding Incentives"]
+    - CIP-0161 | Ouroboros Phalanx - Breaking Grinding Incentives: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0161
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1009
+    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/1009
 Created: 2025-10-03
 License: Apache-2.0
 ---

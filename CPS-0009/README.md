@@ -1,16 +1,17 @@
 ---
 CPS: 9
 Title: Coin Selection Including Native Tokens
-Status: Open
 Category: Wallets
+Status: Open
 Authors:
   - Hinson Wong <wongkahinhinson@gmail.com>
   - Tsz Wai Wu <wu.tszwai@outlook.com>
 Proposed Solutions: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/issues/232
-  - https://github.com/cardano-foundation/CIPs/pull/611
+  - Motivating issue: https://github.com/cardano-foundation/CIPs/issues/232
+  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/611
 Created: 2023-10-20
+License: CC-BY-4.0
 ---
 
 ## Abstract
@@ -106,3 +107,7 @@ Efficient coin selection contributes to overall network performance, making Card
 2. Do we need any support from academia with formal proof to impose the standard?
 3. What methods can be employed to ensure widespread acceptance and adoption? Do we need endorsement from any of IOHK, CF or Emurgo?
 4. If academic formal research is not needed for this consensus, how can we set the bar for an acceptable algorithm? Would there be a core committee making the decision?
+
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
