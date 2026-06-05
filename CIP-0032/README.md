@@ -1,15 +1,15 @@
 ---
 CIP: 32
 Title: Inline datums
-Status: Active
 Category: Plutus
+Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
     - Jared Corduan <jared.corduan@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/160
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/160
 Created: 2021-11-29
 License: CC-BY-4.0
 ---
@@ -19,7 +19,7 @@ License: CC-BY-4.0
 We propose to allow datums themselves to be attached to outputs instead of datum hashes.
 This will allow much simpler communication of datum values between users.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Conceptually, datums are pieces of data that are attached to outputs.
 However, in practice datums are implemented by attaching _hashes_ of datums to outputs, and requiring that the spending transaction provides the actual datum.
@@ -69,7 +69,7 @@ transaction_output =
 ```
 TODO: should there be a dedicated production for datum-hash-or-datum? Does it need to be tagged?
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The key idea of this proposal is simply to restore the conceptually straightforward situation where datums are attached to outputs.
 Historically, this was the way that the EUTXO model was designed, and switching to datum hashes on outputs was done to avoid bloating UTXO entries, which at that time (pre-multiasset) were constant-size (see [^1] page 7).
