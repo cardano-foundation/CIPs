@@ -3367,7 +3367,7 @@ Phase 6: SETTLE (L1)
   └─ (601) token returns to L1 via fanout with final datum
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP was borne out of practical experience running Hydra-based votes for
 Intersect and the broader Cardano community, where the absence of a shared
