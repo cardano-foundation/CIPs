@@ -13,18 +13,18 @@ Created: 2026-06-02
 License: CC-BY-4.0
 ---
 
+## Abstract
+
+This CIP specifies the schema, algorithm registries, canonical encoding rules, and verification procedure for a **Proof of Existence (PoE)** record embedded in Cardano transaction metadata under metadata label **309** ("Proof of Existence record", reserved in [CIP-10](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json)). A PoE record commits one or more cryptographic content hashes to the chain; the block time of the transaction carrying the record is the authoritative witness that the content existed no later than that moment. Because the claim is content-addressed by a cryptographic digest, it is independent of where the content is hosted and of who published it.
+
+A conformant verifier needs only the transaction metadata, optionally the content bytes, and a public blockchain explorer — **no issuer-controlled intermediary is required at any step**; the chain and storage gateways it consults are untrusted data sources, verified cryptographically where possible and cross-checked for inclusion and finality. Alongside the hash claim, the schema carries optional content-addressed discovery URIs (`ar://`, `ipfs://`), an OPTIONAL multi-recipient encryption envelope for off-chain ciphertext, OPTIONAL record-level [CIP-8](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) `COSE_Sign1` signatures, and supersedence pointers to prior records. Signatures attach at the record level only, are never required, and never name a publisher to trust. The record deliberately carries no filename, MIME type, title, description, free-form note, plaintext/ciphertext size field, issuer-identity field, certificate chain, or revocation primitive.
+
 > Metadata **label 309** is reserved for "Proof of Existence record" in the
 > [CIP-10 registry](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json)
 > and is the load-bearing on-chain identifier for this specification.
 > Implementations cite this specification by its on-chain metadata label (309);
 > the CIP number is assigned by the CIP editors during review and carries no
 > wire-format consequence.
-
-## Abstract
-
-This CIP specifies the schema, algorithm registries, canonical encoding rules, and verification procedure for a **Proof of Existence (PoE)** record embedded in Cardano transaction metadata under metadata label **309** ("Proof of Existence record", reserved in [CIP-10](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0010/registry.json)). A PoE record commits one or more cryptographic content hashes to the chain; the block time of the transaction carrying the record is the authoritative witness that the content existed no later than that moment. Because the claim is content-addressed by a cryptographic digest, it is independent of where the content is hosted and of who published it.
-
-A conformant verifier needs only the transaction metadata, optionally the content bytes, and a public blockchain explorer — **no issuer server, certificate authority, or trusted intermediary is required at any step**. Alongside the hash claim, the schema carries optional content-addressed discovery URIs (`ar://`, `ipfs://`), an OPTIONAL multi-recipient encryption envelope for off-chain ciphertext, OPTIONAL record-level [CIP-8](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0008/README.md) `COSE_Sign1` signatures, and supersedence pointers to prior records. Signatures attach at the record level only, are never required, and never name a publisher to trust. The record deliberately carries no filename, MIME type, title, description, free-form note, plaintext/ciphertext size field, issuer-identity field, certificate chain, or revocation primitive.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -590,6 +590,18 @@ Map keys throughout this CIP are CBOR text strings (major type 3). The same cano
 
 Signers and verifiers **MUST** agree on this canonicalisation bit-for-bit; implementations **SHOULD** use a CBOR library that supports RFC 8949 deterministic encoding natively. The complete grammar for the canonical record body is the CDDL at [`../cddl/label-309.cddl`](label-309.cddl); conformance vectors that pin exact canonical bytes are at [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance).
 
+##### `canonicalEncode`: deterministic encoding of protocol context objects
+
+The sealed-PoE construction binds several **context objects** — the slots transcript and the two content-AEAD additional-authenticated-data objects (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)) — into the cryptographic computation by serialising them to a single canonical byte string. That serialisation is the named function `canonicalEncode(obj)`, and producer/verifier byte-identity over it is a **MUST**: a single bit of disagreement silently yields a `slots_mac` or an AEAD tag that another implementation cannot reproduce, with no typed error to localise the fault. The slots transcript and both content-AEAD AAD objects **MUST** be serialised through `canonicalEncode`, and every conformant implementation **MUST** produce byte-identical output for the same logical object.
+
+`canonicalEncode(obj)` is the record-body canonical-CBOR profile above, narrowed to the small closed-map shapes these context objects use:
+
+1. **RFC 8949 §4.2.1 Core Deterministic Encoding.** Shortest-form integers and lengths; definite-length items only (no indefinite-length); map keys sorted in bytewise-lexicographic order of their deterministic encodings; no duplicate map keys.
+2. **Closed-map schema.** Every context object is a **closed map** carrying exactly the keys specified for it — no others. An encoder **MUST NOT** emit an unspecified key and a decoder reconstructing a context object **MUST** reject one.
+3. **Pinned value types.** Text-string values are exact ASCII as written in this document; byte-string values are definite-length byte strings of the pinned length. Integer values are encoded tag-free in shortest form.
+
+Map keys are **never** hand-ordered: the §4.2.1 sort determines wire order, and the key lists this document gives for each context object are **sets**, not an ordering. Because these objects are recomputed independently on both sides of every sealed-PoE operation, the encoder **MUST** be a single shared implementation, or implementations validated against one shared reference vector set, so that the serialisation cannot drift between languages. The conformance vectors at [`../conformance/`](https://github.com/cardanowall/label-309/blob/main/conformance) pin the exact `canonicalEncode` bytes for each context object.
+
 #### Metadata label 309 and the chunk-array transport
 
 A PoE record **MUST** be placed under Cardano transaction metadata label `309`. A transaction **MUST NOT** carry more than one PoE record — a natural consequence of Cardano metadata being a map from integer label to value. A transaction **MAY** carry additional metadata under other labels; a verifier **MUST** ignore every label other than 309 when processing PoE.
@@ -1008,8 +1020,12 @@ newline:
 The salt MUST be a zero-length byte string. Per
 [RFC 5869 §2.2](https://datatracker.ietf.org/doc/html/rfc5869#section-2.2),
 an absent salt is treated as `HashLen` zero bytes — for SHA-256, 32 zero
-bytes. The requested HKDF expansion length MUST be 32 bytes for each of the
-three derivations.
+bytes. The same zero-length-octet-string convention applies wherever this CIP
+writes `salt=""` for an HKDF-Extract step (notably the slot-set MAC-key
+derivation; see [Slot-set MAC](#slot-set-mac)). This is pinned by a byte-exact
+conformance vector rather than left to a library default, so an implementation
+that mishandles the absent salt fails the vector. The requested HKDF expansion
+length MUST be 32 bytes for each of the three derivations.
 
 For all three, the 32-byte HKDF output is the **secret seed**, not the curve
 scalar or expanded private key. RFC 8032 §5.1.5 distinguishes the two: the
@@ -1104,10 +1120,14 @@ string form. This CIP reuses the age ecosystem's Bech32 encodings, one
 human-readable prefix (HRP) per registered KEM. The HRPs are pinned in the
 KEM registry [`../registries/kem-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kem-algorithms.json).
 
-| KEM              | Recipient public key     | Public-key encoding (HRP)                                            | Secret / identity encoding (HRP)                                                             |
-| ---------------- | ------------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `x25519`         | 32 B X25519 public key   | `age1` — a standard age v1 recipient string (`age1…`, 62 characters) | `AGE-SECRET-KEY-` (uppercase Bech32), carrying the 32 B X25519 secret seed                   |
-| `mlkem768x25519` | 1216 B X-Wing public key | `age1pqc` — `age1pqc…`, 1960 characters                              | `AGE-SECRET-KEY-PQ-` (uppercase Bech32), carrying the 32 B X-Wing decapsulation-key **seed** |
+In Bech32 the `1` is the HRP-to-data separator, so the human-visible prefix of a
+string carries the HRP plus that `1`: an `age1…` string has HRP `age`. The two are
+listed separately below.
+
+| KEM              | Recipient public key     | Public-key HRP | Public-key visible prefix          | Secret / identity HRP | Secret visible prefix |
+| ---------------- | ------------------------ | -------------- | ---------------------------------- | --------------------- | --------------------- |
+| `x25519`         | 32 B X25519 public key   | `age`          | `age1…` (standard age v1, 62 chars) | `AGE-SECRET-KEY-`     | `AGE-SECRET-KEY-1…`   |
+| `mlkem768x25519` | 1216 B X-Wing public key | `age1pqc`      | `age1pqc1…` (1960 chars)           | `AGE-SECRET-KEY-PQ-`  | `AGE-SECRET-KEY-PQ-1…` |
 
 **The hybrid identity is the 32-byte X-Wing decapsulation-key seed**, not
 the expanded key: the 1216-byte public key derives from the seed. The value
@@ -1120,7 +1140,7 @@ encodes a 1216-byte public key and is therefore far longer than the
 [BIP-173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki)
 90-character Bech32 cap. That cap exists for human-typed, error-correction-
 bounded payment addresses and does NOT apply here: implementations MUST
-encode and decode the `age1pqc…` string **without** enforcing the
+encode and decode the `age1pqc1…` string **without** enforcing the
 90-character limit, while still applying the Bech32 checksum and charset
 rules. The HRP is `age1pqc` (NOT `age1pq`) by design — the shorter `age1pq`
 prefix is claimed by an upstream native ML-KEM-768 + X25519 encoding for the
@@ -1150,6 +1170,21 @@ independently wrapped to each recipient under a per-slot key. It is **not** RFC
 Reviewers SHOULD evaluate it against the ECIES/DHIES literature and the
 [age v1 specification](https://github.com/C2SP/C2SP/blob/main/age.md), from which
 its stanza pattern derives.
+
+This construction uses the age stanza pattern — per-recipient KEM material plus a
+symmetric wrap of the file key — for **both** registered KEMs. The classical
+`x25519` path closely mirrors age's native X25519 recipient. The hybrid
+`mlkem768x25519` path deliberately **diverges** from age's own post-quantum
+choice: age v1.3.0 ships native post-quantum recipients (human-readable prefix
+`age1pq`) that wrap the file key via HPKE `SealBase`
+([RFC 9180](https://www.rfc-editor.org/rfc/rfc9180)) over an ML-KEM-768 + X25519
+KEM, **not** the stanza pattern. This CIP keeps the stanza wrap for the hybrid
+path so that one uniform wrap and one uniform header-binding (see
+[Slot-set MAC](#slot-set-mac) and [Content encryption](#content-encryption))
+cover both KEMs with no HPKE dependency. The hybrid wrap therefore does **not**
+inherit age's HPKE construction, and no age-inheritance claim is made for it; the
+`age1pqc` recipient encoding (distinct from age's `age1pq`) reflects that the two
+hybrid encodings are independent.
 
 > This sealed-PoE ciphertext envelope is the **content** encryption layer. It is
 > distinct from, and out of scope against, any local at-rest envelope a client
@@ -1182,7 +1217,13 @@ and the per-slot KEK derivation. Verifiers **MUST** require `enc.scheme == 1` an
 reject any other value (`UNSUPPORTED_ENVELOPE_SCHEME`). Adding or changing a
 per-slot KEM is an additive registry entry under the **same** `enc.scheme`; a
 change to the MAC algorithm, its key derivation, or the AAD layout — which applies
-to all KEMs at once — is what bumps `enc.scheme`.
+to all KEMs at once — is what bumps `enc.scheme`. More broadly, `enc.scheme: 1`
+identifies the **entire** cryptographic suite, not merely the MAC and AAD: the
+`canonicalEncode` rules, the slot schema, the HKDF hash, the HMAC hash, the
+per-slot wrap AEAD, the content AEAD, the pinned X-Wing revision, the pinned
+XChaCha construction, the domain-separation labels, the Argon2id version and
+profile, and the passphrase normalization profile are all fixed by it, so a change
+to **any** of them requires a new `enc.scheme` value.
 
 The `enc` map under the multi-recipient path:
 
@@ -1224,7 +1265,7 @@ the KEM, the slot shape, and the KEK derivation.
 
 | `enc.kem`        | KEM                                   | recipient public key | slot shape                                            | KEK info label                      | HRP       |
 | ---------------- | ------------------------------------- | -------------------- | ----------------------------------------------------- | ----------------------------------- | --------- |
-| `x25519`         | X25519 (classical)                    | 32 B                 | `{ epk: bstr(32), wrap: bstr(48) }`                   | `cardano-poe-kek-v1`                | `age1`    |
+| `x25519`         | X25519 (classical)                    | 32 B                 | `{ epk: bstr(32), wrap: bstr(48) }`                   | `cardano-poe-kek-v1`                | `age`     |
 | `mlkem768x25519` | X-Wing = ML-KEM-768 + X25519 (hybrid) | 1216 B               | `{ kem_ct: [1* bstr .size (1..64)], wrap: bstr(48) }` | `cardano-poe-kek-mlkem768x25519-v1` | `age1pqc` |
 
 These identifiers are the registry entries
@@ -1245,12 +1286,14 @@ key all violate the closed 2-key slot map.
 **Producers SHOULD default to `mlkem768x25519`.** The hybrid KEM is secure against
 both classical and harvest-now-decrypt-later quantum adversaries while retaining
 X25519's classical security as a floor — the X-Wing combiner binds both shared
-secrets. The classical `x25519` KEM remains available for recipients whose
-published key is X25519-only.
+secrets. That "never below X25519 classical security" floor is scoped to **validly
+generated** recipient keys: it presumes the public key passes the pinned X-Wing
+revision's key-validity check (see slot construction below). The classical `x25519`
+KEM remains available for recipients whose published key is X25519-only.
 
 The identifier `mlkem768x25519` deliberately omits hyphens, matching the
 X-Wing/age ecosystem name for the construction. X-Wing parameters (see
-[draft-connolly-cfrg-xwing-kem](https://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/)):
+[draft-connolly-cfrg-xwing-kem-10](https://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/10/)):
 
 ```text
 public key   : 1216 bytes = ML-KEM-768 ek (1184) || X25519 pk (32)
@@ -1291,15 +1334,34 @@ implement this transitively.
 **`mlkem768x25519` (hybrid; X-Wing).**
 
 ```text
-(kem_ct_i, shared_i) = XWing.Encapsulate(pub_R_i)    ; ct = 1120 B, ss = 32 B
+enc_i    = XWing.Encapsulate(pub_R_i)    ; named fields — MUST NOT consume positional order
+kem_ct_i = enc_i.ct                       ; 1120 B
+shared_i = enc_i.ss                       ; 32 B
+kek_salt_i : SHA-256("cardano-poe-xwing-kek-salt-v1" || kem_ct_i || pub_R_i)   ; 32 B
 KEK_i  : HKDF-SHA-256(ikm  = shared_i,
-                      salt = "",                                       ; empty
+                      salt = kek_salt_i,                               ; binds kem_ct and pub_R
                       info = "cardano-poe-kek-mlkem768x25519-v1",      ; 33 ASCII bytes
                       L    = 32)
 wrap_i : ChaCha20-Poly1305(key=KEK_i, nonce=zeros(12),
                            ad="cardano-poe-kek-mlkem768x25519-v1", plaintext=CEK)  ; 48 B
 slot_i : { "kem_ct": chunk64(kem_ct_i), "wrap": wrap_i }
 ```
+
+`kem_ct_i` in the salt input is the **reassembled** 1120-byte X-Wing ciphertext
+(the byte-concatenation of the slot's `kem_ct` chunks, independent of chunk
+boundaries), and `pub_R_i` is the 1216-byte X-Wing recipient public key the slot
+is sealed to. `XWing.Encapsulate` **MUST** apply the pinned X-Wing revision's
+public-key validity check to `pub_R_i` and reject an invalid key rather than
+encapsulating to it; this is the precondition under which the hybrid floor never
+drops below X25519 classical security. The construction consumes X-Wing through an
+adapter with **named fields only**: `Encapsulate(pk)` yields `.ct` (1120 B) and
+`.ss` (32 B); `Decapsulate(sk, ct)` yields the 32-byte shared secret.
+Implementations **MUST** map to the pinned revision's API by name and **MUST NOT**
+consume positional return values — the pinned revision returns `(ss, ct)` from
+encapsulation and writes decapsulation as `Decapsulate(ct, sk)`, the reverse of a
+naive left-to-right reading. The salt-label literal
+`cardano-poe-xwing-kek-salt-v1` is exact ASCII with no terminator and no length
+prefix; `||` is byte concatenation.
 
 The X25519 ephemeral is the trailing 32 bytes of `kem_ct_i`; a hybrid slot has
 **no** separate `epk` field. `kem_ct` is the 1120-byte X-Wing ciphertext split
@@ -1309,19 +1371,30 @@ record encoder applies to any oversized metadatum byte string under metadata
 label 309 (the Cardano ledger caps each metadatum byte string at 64 bytes).
 
 **Per-slot KEK domain separation.** Both KEMs derive a 32-byte KEK with
-HKDF-SHA-256 but with KEM-specific salt and `info`. For `x25519` the salt is
+HKDF-SHA-256 but with KEM-specific salt and `info`, and **both** uniformly bind
+the recipient public key `pub_R` into the salt. For `x25519` the salt is
 `pub_epk || pub_R` (ephemeral first, recipient second, no length prefix): the
 ephemeral half anchors the KEK to a slot-unique value, and the recipient half
 binds the KEK to the specific recipient (defeating confused-deputy relay of an
-`epk` against a different recipient). For `mlkem768x25519` the salt is empty —
-the X-Wing combiner already absorbs the full transcript
-(`ss_MLKEM || ss_X25519 || ct_X25519 || pk_X25519 || label`), so re-feeding those
-values would be redundant; the distinct `info` label supplies the cross-KEM
-domain separation so that no KEK derived under one KEM can equal a KEK derived
-under the other on an identical 32-byte shared secret. The two `info` labels
-**MUST** match the literals above byte-for-byte. The KDF is registered as an
-internal building block in [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kdf-algorithms.json)
-(it carries no wire identifier — it is fixed, not selectable).
+`epk` against a different recipient). For `mlkem768x25519` the salt is
+`SHA-256("cardano-poe-xwing-kek-salt-v1" || kem_ct || pub_R)`: the reassembled
+X-Wing ciphertext `kem_ct` anchors the KEK to a slot-unique value, and `pub_R`
+binds it to the specific recipient — the same two bindings the classical salt
+provides, expressed through a fixed-length SHA-256 digest because the hybrid
+inputs are oversized. This binding is computed **outside** the KEM, over the
+slot's own wire bytes, so it holds X-Wing as a black-box KEM and does not rely on
+any property of the combiner's internal hashing. The distinct `info` label
+additionally supplies cross-KEM domain separation, so that no KEK derived under
+one KEM can equal a KEK derived under the other on an identical 32-byte shared
+secret. The `pub_R` term in both salts is the recipient key's **canonical wire
+encoding** — exactly the 32-byte `x25519_publicKey(priv_R)` for `x25519`, exactly
+the pinned 1216-byte X-Wing public-key byte string for `mlkem768x25519`; producer
+and verifier **MUST** use that exact encoding and **MUST NOT** substitute any
+non-canonical or re-encoded equivalent, or the two sides derive different KEKs. The
+two `info` labels and the salt label **MUST** match the literals
+above byte-for-byte. The KDF and the SHA-256 salt-prefix are internal building
+blocks (see [Sealed-PoE internal labels](#sealed-poe-internal-labels)): they
+carry no wire identifier — they are fixed, not selectable.
 
 **Per-slot wrap: zero-nonce ChaCha20-Poly1305.** The wrap uses RFC 8439
 ChaCha20-Poly1305 (the 12-byte-nonce variant, **not** XChaCha20-Poly1305) with a
@@ -1330,10 +1403,19 @@ AAD), producing exactly 48 bytes (32-byte CEK ciphertext + 16-byte Poly1305 tag)
 The zero nonce is safe **only** because `KEK_i` is per-slot and used for exactly
 one wrap: each slot draws fresh KEM randomness (a fresh X25519 ephemeral, or a
 fresh X-Wing encapsulation), so `KEK_i` is unique per slot at negligible
-collision probability. If any future revision lets `KEK_i` be reused (caching by
-`(pub_R, epk)`, deterministic/colliding ephemerals, recipient deduplication that
-reuses a slot), the zero nonce **MUST** be replaced with a fresh nonce in the
-same change. Any modification of either KEM's KEK derivation is security-critical.
+collision probability. The safety condition is therefore exactly **per-slot KEK
+uniqueness**, and every mechanism that could repeat a `(KEK_i, nonce)` pair
+violates it: a CSPRNG failure that repeats KEM randomness; deterministic or
+colliding encapsulation; reuse of a slot across records; caching of a derived KEK
+keyed by `(pub_R, epk)`; or recipient deduplication that reuses one slot for two
+appearances of the same recipient. A producer **MUST NOT** introduce any of these
+(see [Forbidden patterns](#forbidden-patterns)). A verifier cannot detect
+cross-record or cross-key KEK reuse — that stays a producer obligation; the
+verifiable slice is the **within-record duplicate**, so a conformance vector
+**MUST** exercise two slots sharing an `epk` (or `kem_ct`) and require rejection
+with `ENC_SLOTS_DUPLICATE_KEM_MATERIAL`. Were a future revision to permit
+KEK reuse, the zero nonce **MUST** be replaced with a fresh nonce in the same
+change. Any modification of either KEM's KEK derivation is security-critical.
 
 **Slot shuffle (REQUIRED).** The order in which a sender supplies recipient keys
 is privileged metadata (e.g. "primary recipient first"). Publishing slots in
@@ -1342,62 +1424,150 @@ unbiased Fisher-Yates permutation — a plain `u32 % m` index draw skews toward 
 residues and **MUST** be rejection-sampled to a uniform index) **before**
 computing the slot-set MAC. The MAC binds the shuffled on-wire order.
 
+#### Sealed-PoE internal labels
+
+The per-record sealed-PoE construction draws its domain separation from a fixed
+set of internal label literals. Each is exact ASCII with no terminator and no
+length prefix; each is a **fixed constant** of `enc.scheme: 1`, never serialised
+on the wire and never selectable through any registry. They partition into HKDF
+`info` tags, an HKDF `salt`-prefix label, and a SHA-256 transcript-prefix label:
+
+| Label                              | Role                                                                    | Used in                                                |
+| ---------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------ |
+| `cardano-poe-kek-v1`               | HKDF `info` for the per-slot KEK on the `x25519` path                   | [Slot construction](#slot-construction-sender)         |
+| `cardano-poe-kek-mlkem768x25519-v1`| HKDF `info` for the per-slot KEK on the `mlkem768x25519` path           | [Slot construction](#slot-construction-sender)         |
+| `cardano-poe-xwing-kek-salt-v1`    | SHA-256 prefix for the `mlkem768x25519` KEK HKDF `salt`                 | [Slot construction](#slot-construction-sender)         |
+| `cardano-poe-slots-transcript-v1`  | SHA-256 prefix for the slots-transcript hash `slots_hash`               | [Slot-set MAC](#slot-set-mac)                          |
+| `cardano-poe-slots-mac-v1`         | HKDF `info` for the slot-set MAC key                                    | [Slot-set MAC](#slot-set-mac)                          |
+| `cardano-poe-payload-v1`           | HKDF `info` for the slots-path content `payload_key`                    | [Content encryption](#content-encryption)              |
+| `cardano-poe-payload-passphrase-v1`| HKDF `info` for the passphrase-path content `payload_key`               | [Passphrase path](#passphrase-path)                    |
+
+These labels are distinct from the seed-derivation `info` strings of
+[Seed and key derivation](#seed-and-key-derivation) and from the record-signing
+domain prefix `cardano-poe-record-sig-v1`; no per-record sealed-PoE label shares a
+byte sequence with a long-term-key-derivation label, so identity-key derivation
+and per-record key wrapping never collide. A verifier **MUST** use each literal
+byte-for-byte; a single divergent byte yields a `slots_mac` or AEAD tag that the
+honest producer cannot reproduce.
+
 #### Slot-set MAC
 
-After the shuffle, the sender binds the full slot set to the CEK with an HMAC
-keyed by an HKDF of the CEK:
+After the shuffle, the sender binds the full slot set — together with the
+cross-KEM header fields that fix how the slots are interpreted — to the CEK. The
+binding is a two-step construction: a **slots transcript** is hashed once to a
+32-byte `slots_hash`, and that hash is the message of a CEK-keyed HMAC.
 
 ```text
+SLOTS_TRANSCRIPT = {                            ; closed map; keys are a set, not an order
+    "scheme": 1,                                ; uint
+    "path":   "slots",                          ; text
+    "aead":   "xchacha20-poly1305",             ; text
+    "kem":    <enc.kem>,                         ; text: "x25519" | "mlkem768x25519"
+    "nonce":  <24-byte content nonce>,           ; bytes
+    "slots":  canonicalizeSlots(slots)           ; shuffled slots, kem_ct re-chunked canonically
+}
+slots_hash : SHA-256("cardano-poe-slots-transcript-v1" || canonicalEncode(SLOTS_TRANSCRIPT))  ; 32 bytes
 HMAC_KEY   : HKDF-SHA-256(ikm=CEK, salt="", info="cardano-poe-slots-mac-v1", L=32)
                                                 ; info = 24 ASCII bytes
-slots_cbor : canonicalCBOR(slots)               ; RFC 8949 §4.2.1
-slots_mac  : HMAC-SHA-256(key=HMAC_KEY, msg=slots_cbor)   ; 32 bytes
+slots_mac  : HMAC-SHA-256(key=HMAC_KEY, msg=slots_hash)   ; 32 bytes
 ```
 
-The MAC algorithm (HMAC-SHA-256), its key derivation (HKDF-SHA-256 with info
-`cardano-poe-slots-mac-v1`), and the content-AEAD AAD layout (`nonce ||
-slots_mac`) are **fixed by `enc.scheme`** and identical for both KEMs. There is
-no on-wire identifier for the slot-set MAC; exactly one construction is defined
-per `enc.scheme` value. The MAC covers the full per-slot wire content of every
-slot — `{ epk, wrap }` for `x25519`, `{ kem_ct, wrap }` for `mlkem768x25519`, so
-the entire chunked `kem_ct` array is inside the MAC.
+`SLOTS_TRANSCRIPT` is a closed map carrying exactly the six-key set above; it is
+serialised by `canonicalEncode` (see [`canonicalEncode`: deterministic encoding of
+protocol context objects](#canonicalencode-deterministic-encoding-of-protocol-context-objects)),
+and its key order is determined by the RFC 8949 §4.2.1 sort, never hand-arranged.
+The `slots` value is the canonicalised slot structure: the shuffled array of closed slot maps — `{ epk, wrap }` for `x25519`,
+`{ kem_ct, wrap }` for `mlkem768x25519`, with each hybrid `kem_ct` re-chunked into
+its canonical ≤ 64-byte sequence — so the full per-slot wire content of every slot,
+including the entire chunked `kem_ct`, is inside the transcript. The
+transcript additionally pins `scheme`, `path`, `aead`, `kem`, and `nonce`: a
+relay that flips any of those header fields while leaving the slot shapes valid
+produces a different `slots_hash`, so the MAC fails. The `slots_hash` SHA-256
+prefix `cardano-poe-slots-transcript-v1` is exact ASCII with no terminator and no
+length prefix.
 
-**Chunking-invariant `kem_ct`.** The MAC commits to a **canonical** chunking of
+`slots_hash` is computed **once** per record and is **constant** across the
+recipient trial-decrypt loop — the per-slot MAC check re-keys HMAC from each
+candidate CEK but always over the same 32-byte `slots_hash`. The commitment
+property is preserved because the HMAC key is still `HKDF-SHA-256(CEK, …)`: pre-
+hashing the transcript only changes the HMAC **message** from the full transcript
+to its SHA-256, leaving the CEK-keyed binding intact.
+
+The MAC algorithm (HMAC-SHA-256), its key derivation (HKDF-SHA-256 with info
+`cardano-poe-slots-mac-v1`), the slots-transcript schema, and the content-AEAD AAD
+layout (see [Content encryption](#content-encryption)) are **fixed by
+`enc.scheme`** and identical for both KEMs. There is no on-wire identifier for the
+slot-set MAC; exactly one construction is defined per `enc.scheme` value.
+
+**Chunking-invariant `kem_ct`.** The transcript commits to a **canonical** chunking of
 `kem_ct`, not to whatever ≤ 64-byte split landed on the wire. Before encoding
-`slots` for the MAC, an implementation **MUST** canonicalize each hybrid slot's
-`kem_ct`: reassemble the 1120-byte ciphertext, then re-split into the canonical
-≤ 64-byte chunk sequence (full 64-byte chunks followed by a final remainder).
-This makes the MAC depend on the `kem_ct` **bytes**, not on chunk boundaries —
-chunk boundaries carry no semantic meaning. A verifier likewise canonicalizes
-before recomputing the MAC: an honest record already emitting canonical chunks is
-unaffected, a record re-chunked in transit (same bytes, different boundaries)
-still verifies, and any byte flip in `kem_ct` still fails the MAC. Without this,
-an attacker could re-chunk an honest envelope and break an honest recipient's MAC
-match, leaving the ML-KEM ciphertext effectively unauthenticated.
+`slots` into the transcript, an implementation **MUST** canonicalize each hybrid
+slot's `kem_ct`: reassemble the 1120-byte ciphertext, then re-split into the
+canonical ≤ 64-byte chunk sequence (full 64-byte chunks followed by a final
+remainder). This makes `slots_hash` depend on the `kem_ct` **bytes**, not on
+chunk boundaries — chunk boundaries carry no semantic meaning. A verifier likewise
+canonicalizes before recomputing `slots_hash`: an honest record already emitting
+canonical chunks is unaffected, a record re-chunked in transit (same bytes,
+different boundaries) still verifies, and any byte flip in `kem_ct` still changes
+`slots_hash` and fails the MAC. Without this, an attacker could re-chunk an honest
+envelope and break an honest recipient's MAC match, leaving the ML-KEM ciphertext
+effectively unauthenticated.
 
 The `slots_mac` length **MUST** be exactly 32 bytes (`ENC_SLOTS_MAC_INVALID_LENGTH`
 on a wrong length) and **MUST** be verified in constant time.
 
 #### Content encryption
 
-The plaintext is encrypted once under the shared CEK with the content AEAD:
+The plaintext is encrypted once under a content `payload_key` derived from the CEK,
+with a structured AAD that re-binds the slots-path header:
 
 ```text
-ad_content : nonce || slots_mac                  ; 24 + 32 = 56 bytes, nonce first
-ciphertext : XChaCha20-Poly1305(key=CEK, nonce=nonce, ad=ad_content, plaintext=plaintext)
+AD_CONTENT_SLOTS = {                            ; closed map; keys are a set, not an order
+    "scheme":     1,                            ; uint
+    "path":       "slots",                      ; text
+    "aead":       "xchacha20-poly1305",         ; text
+    "kem":        <enc.kem>,                     ; text
+    "nonce":      <24-byte nonce>,               ; bytes
+    "slots_hash": slots_hash,                    ; bytes(32), from the slot-set MAC step
+    "slots_mac":  slots_mac                      ; bytes(32), from the slot-set MAC step
+}
+payload_key : HKDF-SHA-256(ikm=CEK, salt=nonce, info="cardano-poe-payload-v1", L=32)
+ciphertext  : XChaCha20-Poly1305(key=payload_key, nonce=nonce,
+                                 ad=canonicalEncode(AD_CONTENT_SLOTS), plaintext=plaintext)
 ```
 
 The content AEAD is **XChaCha20-Poly1305** with a 24-byte random nonce. The
 extended nonce lets stateless producers (browser tabs, CLI invocations, workers,
 retries) draw a fresh nonce from a CSPRNG without coordinating counters; this is
-its sole content-layer rationale. The AEAD AAD on the multi-recipient path is
-**exactly `nonce || slots_mac`** (56 bytes) — implementations **MUST NOT** pass
-empty AAD on this path. A mismatched AAD between producer and verifier surfaces as
-an AEAD tag-verification failure, not a typed structural error.
+its sole content-layer rationale. The content is encrypted under `payload_key`,
+not under the CEK directly: the CEK is the wrap target the slots deliver, and the
+content key is a separate HKDF leaf of it (salt = `nonce`, info
+`cardano-poe-payload-v1`), so the wrap layer and the content layer never key the
+same primitive on the same bytes.
+
+`AD_CONTENT_SLOTS` is a closed map carrying exactly the seven-key set above,
+serialised by `canonicalEncode` (see [`canonicalEncode`: deterministic encoding of
+protocol context objects](#canonicalencode-deterministic-encoding-of-protocol-context-objects));
+implementations **MUST NOT** pass empty AAD on this path. The AAD carries **both**
+`slots_hash` and `slots_mac`, and this is deliberate, not redundant-by-accident:
+`slots_hash` binds the content ciphertext to the exact slots transcript (header
+fields and slot bytes) the producer committed to, while `slots_mac` additionally
+ties the content layer to the CEK-keyed MAC the recipient matched, so a relay
+cannot pair an honest ciphertext with a substituted slot set. Leave both. A
+mismatched AAD between producer and verifier surfaces as an AEAD tag-verification
+failure, not a typed structural error.
 
 The plaintext input is the exact original content bytes; the ciphertext **MUST**
 decrypt back to those bytes and only those. The construction does **not** prepend,
 append, or encrypt a filename, MIME type, size field, or any metadata wrapper.
+
+**Maximum payload size.** XChaCha20-Poly1305 is used as a single-shot AEAD over
+the whole plaintext. Its 32-bit internal block counter bounds a single
+`(key, nonce)` invocation at on the order of `2^32` 64-byte ChaCha20 blocks
+(≈ 256 GiB). Producers and verifiers **MUST** enforce a maximum payload size
+safely below this bound and **MUST** reject — producers before encrypting,
+verifiers before opening — any payload at or above it, rather than risk a
+counter-overflow keystream collision.
 
 The assembled `enc` map (`{ scheme, aead, kem, nonce, slots, slots_mac }`) is
 carried in the on-chain PoE record; the **ciphertext bytes are not placed on
@@ -1411,11 +1581,14 @@ MUST be exactly 24 bytes (`NONCE_LENGTH_MISMATCH` otherwise); each `x25519` slot
 `epk` MUST be exactly 32 bytes (`KEM_EPK_LENGTH_MISMATCH` otherwise); each
 `mlkem768x25519` slot's `kem_ct` MUST reassemble to exactly 1120 bytes
 (`KEM_CT_LENGTH_MISMATCH` otherwise) and the slot MUST NOT carry an `epk` field;
-`slots[]` MUST contain at least one entry. The canonical-CBOR input to the HMAC
-MUST follow [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949) §4.2.1.
-Implementations **MUST** zeroize `priv_epk_i`, `shared_i`, `KEK_i`, `CEK`, and
-`HMAC_KEY` on scope exit where the language exposes mutable byte buffers, and
-SHOULD limit their lifetime via local scope where byte sequences are immutable.
+`slots[]` MUST contain at least one entry. The `canonicalEncode` input to the
+slots transcript and to both content AADs MUST follow
+[RFC 8949](https://www.rfc-editor.org/rfc/rfc8949) §4.2.1 plus the closed-map
+rules of [`canonicalEncode`](#canonicalencode-deterministic-encoding-of-protocol-context-objects).
+Implementations **MUST** zeroize `priv_epk_i`, `shared_i`, `KEK_i`, `CEK`,
+`payload_key`, and `HMAC_KEY` on scope exit where the language exposes mutable
+byte buffers, and SHOULD limit their lifetime via local scope where byte
+sequences are immutable.
 
 #### Recipient decryption (trial-decrypt)
 
@@ -1431,35 +1604,85 @@ checks (partitioning-oracle defence): `scheme == 1`, `aead` registered, `kem`
 registered, `nonce` 24 bytes, `slots_mac` 32 bytes, `slots` non-empty, the
 recipient secret 32 bytes, and each `slot.wrap` exactly 48 bytes; for `x25519`
 each `epk` 32 bytes with no `kem_ct`; for `mlkem768x25519` each `kem_ct`
-reassembling to 1120 bytes with no `epk`.
+reassembling to 1120 bytes with no `epk`. The encapsulation material **MUST** be
+distinct within one `slots[]`: for `x25519` all `epk` values **MUST** differ, for
+`mlkem768x25519` all reassembled `kem_ct` values **MUST** differ; a duplicate is
+rejected here, before any KEM or AEAD primitive, with `ENC_SLOTS_DUPLICATE_KEM_MATERIAL`.
+Verifiers **MUST** bound parser resource use before invoking any primitive: the
+reference bounds are `MAX_SLOTS = 1024` slots and `65536` bytes for the decoded
+`enc` envelope, both far above the ~16 KiB Cardano transaction-metadata ceiling
+that bounds honest records, so a record exceeding either bound is malformed and is
+rejected here (`ENC_SLOTS_TOO_MANY` / `ENC_ENVELOPE_TOO_LARGE`). These are
+verifier-enforced, deployment-pinned constants — not wire fields, and deployments
+**MAY** tighten them.
 
 ```text
-slots_cbor = canonicalCBOR(canonicalizeSlots(envelope.slots))   ; constant across the loop
+; SLOTS_TRANSCRIPT and slots_hash are recomputed once, before the loop, and held
+; constant across it (see the Slot-set MAC step):
+slots_hash = SHA-256("cardano-poe-slots-transcript-v1" || canonicalEncode(SLOTS_TRANSCRIPT))
 if kem == "x25519": pub_R_local = x25519_publicKey(priv_R)      ; recipient salt half
+else:               pub_R        = XWing.publicKey(priv_R)       ; recipient X-Wing public key, 1216 B
 
-for slot in envelope.slots:
+found        = false
+cek_conflict = false
+selected_CEK = 0^32
+for slot in envelope.slots:                ; iterate ALL slots — no early break
+    kem_ok = true
     if kem == "x25519":
-        shared = x25519_sharedSecret(priv_R, slot.epk)
-        KEK    = HKDF-SHA-256(shared, salt=slot.epk || pub_R_local,
-                              info="cardano-poe-kek-v1", L=32)
-        ad_wrap = "cardano-poe-kek-v1"
+        shared    = x25519_sharedSecret(priv_R, slot.epk)
+        kem_ok    = NOT constantTimeEqual(shared, 0^32)         ; explicit all-zero rejection, secret-independent
+        real_KEK  = HKDF-SHA-256(shared, salt=slot.epk || pub_R_local,
+                                 info="cardano-poe-kek-v1", L=32)
+        dummy_KEK = HKDF-SHA-256(0^32,   salt=slot.epk || pub_R_local,
+                                 info="cardano-poe-kek-v1", L=32)
+        KEK       = ct_select(kem_ok, real_KEK, dummy_KEK)      ; constant-time, no early exit
+        ad_wrap   = "cardano-poe-kek-v1"
     else:                                   ; mlkem768x25519
-        kem_ct = concat(slot.kem_ct)        ; reassemble → 1120 bytes
-        shared = XWing.Decapsulate(priv_R, kem_ct)
-        KEK    = HKDF-SHA-256(shared, salt="",
-                              info="cardano-poe-kek-mlkem768x25519-v1", L=32)
+        kem_ct  = concat(slot.kem_ct)       ; reassemble → 1120 bytes
+        shared  = XWing.Decapsulate(sk=priv_R, ct=kem_ct)    ; pinned API writes Decapsulate(ct, sk)
+        kek_salt = SHA-256("cardano-poe-xwing-kek-salt-v1" || kem_ct || pub_R)
+        KEK     = HKDF-SHA-256(shared, salt=kek_salt,
+                               info="cardano-poe-kek-mlkem768x25519-v1", L=32)
         ad_wrap = "cardano-poe-kek-mlkem768x25519-v1"
 
-    candidate_CEK = ChaCha20-Poly1305_open(KEK, zeros(12), ad_wrap, slot.wrap)
-    if open failed: continue
-    HMAC_KEY = HKDF-SHA-256(candidate_CEK, salt="",
-                            info="cardano-poe-slots-mac-v1", L=32)
-    if constantTimeEqual(HMAC-SHA-256(HMAC_KEY, slots_cbor), envelope.slots_mac):
-        CEK = candidate_CEK; accept
+    open_ok, candidate_CEK = ChaCha20-Poly1305_open_or_dummy(KEK, zeros(12), ad_wrap, slot.wrap)
+    HMAC_KEY = HKDF-SHA-256(candidate_CEK, salt="", info="cardano-poe-slots-mac-v1", L=32)
+    mac_ok   = constantTimeEqual(HMAC-SHA-256(HMAC_KEY, slots_hash), envelope.slots_mac)
+    ok       = kem_ok AND open_ok AND mac_ok                    ; kem_ok folded into acceptance
+    first        = ok AND NOT found                             ; first matching slot
+    cek_conflict = cek_conflict OR (ok AND found AND NOT constantTimeEqual(candidate_CEK, selected_CEK))
+    selected_CEK = ct_select(first, candidate_CEK, selected_CEK)   ; constant-time
+    found        = found OR ok
 
-ad_content = envelope.nonce || envelope.slots_mac
-plaintext  = XChaCha20-Poly1305_open(CEK, envelope.nonce, ad_content, ciphertext)
+if NOT found:    reject (single generic failure)
+if cek_conflict: reject (single generic failure)
+payload_key = HKDF-SHA-256(selected_CEK, salt=envelope.nonce, info="cardano-poe-payload-v1", L=32)
+AD_CONTENT_SLOTS = { "scheme":1, "path":"slots", "aead":"xchacha20-poly1305",
+                     "kem":envelope.kem, "nonce":envelope.nonce,
+                     "slots_hash":slots_hash, "slots_mac":envelope.slots_mac }
+guard: reject if |ciphertext| at or above the maximum payload size
+payload_ok, plaintext = XChaCha20-Poly1305_open_or_dummy(
+                            payload_key, envelope.nonce,
+                            canonicalEncode(AD_CONTENT_SLOTS), ciphertext)
+if NOT payload_ok: reject (single generic failure)
 ```
+
+For `mlkem768x25519`, `pub_R` in `kek_salt` is the recipient's own 1216-byte
+X-Wing public key, recomputed from the held decapsulation seed — the same value
+the producer bound into the salt. The X25519 all-zero shared-secret rejection is
+**explicit** here rather than relied upon transitively: a slot crafted to drive
+the shared secret to `0^32` ([RFC 7748](https://www.rfc-editor.org/rfc/rfc7748)
+§6.1) sets the secret-independent validity bit `kem_ok` to false, the KEK is
+constant-time-selected to a dummy derived from `0^32` so the loop performs the
+same work, and `kem_ok` is folded into `ok` — so an invalid-ECDH slot can never be
+accepted regardless of the wrap or MAC outcome, and the record surfaces the single
+generic failure if nothing else matches.
+
+Both `*_open_or_dummy` primitives are **atomic**: on AEAD tag failure they return
+no plaintext, and the returned candidate (`candidate_CEK` for the wrap open, the
+content `plaintext` for the content open) is a fixed or pseudorandom dummy that is
+independent of the failed ciphertext — no unverified plaintext is ever released to
+the caller.
 
 The folded MAC check is load-bearing. A malicious sender can construct a slot that
 opens under a recipient's `priv_R` with an attacker-chosen CEK (no `priv_R`
@@ -1467,8 +1690,44 @@ knowledge required — standard encryption to the recipient's public key suffice
 If the recipient accepted the first AEAD-success as "ours", that forged slot would
 shadow an honest slot and decryption would fail at the content layer even though a
 valid slot exists later in the array. Requiring the candidate CEK to also produce
-the `slots_mac` defeats slot-substitution, slot-removal, and slot-reorder attacks.
-Implementations **MUST NOT** skip the `slots_mac` verification.
+the `slots_mac` over `slots_hash` defeats slot-substitution, slot-removal, and
+slot-reorder attacks. Implementations **MUST NOT** skip the `slots_mac`
+verification.
+
+**Multiple matching slots: duplication is permitted, a CEK conflict is not.** A
+recipient's private key **MAY** legitimately match more than one slot: a producer
+may seal the same CEK to the same recipient in several slots to pad the recipient
+count, a valid privacy technique. The verifier selects the **first** match's CEK
+and **MUST NOT** reject merely because more than one slot matched. This is
+distinct from the within-record duplicate-encapsulation-material rejection
+(`ENC_SLOTS_DUPLICATE_KEM_MATERIAL`; see [Slot construction](#slot-construction-sender)):
+that rule fires on a repeated `epk` / reassembled `kem_ct`, whereas honest
+duplication still draws **fresh** per-slot KEM randomness for each appearance, so
+its `epk` / `kem_ct` differ and it never collides with that check. The narrow
+anomaly the verifier **MUST** reject is two matching slots that recover
+**different** CEKs (compared in constant time): the loop tracks a `cek_conflict`
+bit across all slots and surfaces the single generic failure if any further match
+recovers a CEK that differs from the selected one. This is defence-in-depth: under
+the [Slot-set commitment assumption](#slot-set-commitment-assumption) a
+distinct-CEK match is already infeasible — it is exactly the multi-key collision
+that assumption rules out — and the check fails closed against a broken
+implementation or a future weakening of that assumption.
+
+**Single generic error to untrusted callers.** An untrusted caller **MUST**
+receive exactly one generic failure **shape** regardless of why decryption failed
+— no slot opened, the slot set was tampered, or the content AEAD failed — and the
+**response** **MUST NOT** distinguish these, nor reveal which slot matched. An
+implementation **MAY** surface internal typed codes (`WRONG_RECIPIENT_KEY` /
+`TAMPERED_HEADER` / `TAMPERED_CIPHERTEXT`; defined in **Decryption outcomes**
+below) to a trusted local caller for diagnostics, but those codes **MUST NOT** leak
+to an external observer through a distinguishable response. On timing: the verifier
+**MAY** return at the no-match check (`if NOT found`) before content decryption.
+This reveals only **recipient-vs-non-recipient**, never which slot matched and no
+key material. Uniform timing between the non-recipient case and a recipient whose
+ciphertext fails to open is **NOT** required, and a dummy content open **MUST NOT**
+be mandated — it would impose content-decryption cost on every non-recipient. The
+constant-time guarantee that does hold is the across-slots invariant of the next
+paragraph, which hides which slot, if any, a given key unwraps.
 
 **Constant-time-across-slots requirement.** Within a single private key's pass,
 the trial-decrypt loop **MUST** run over **all** slots regardless of an early
@@ -1478,18 +1737,26 @@ multiple private keys (e.g. archived keys across an identity rotation) iterates
 private-key × slot; the per-private-key constant-time-N invariant holds for each
 key. The loop **MAY** short-circuit across private keys (variable time leaks only
 the weak "which key matched" signal, a documented trade-off), but **MUST** remain
-constant-time across the slots of any single key. For the `x25519` KEM, when
-iterating multiple keys the `pub_R` half of the HKDF salt **MUST** be re-derived
-per key as `x25519.publicKey(currentKey)` — reusing a single `pub_R` across keys
-computes the wrong KEK for every key but one. The hybrid KEM has no `pub_R` in its
-salt, so this rule does not apply there.
+constant-time across the slots of any single key. Both KEMs bind the recipient's
+own public key into the per-slot KEK salt, so when iterating multiple keys that
+binding **MUST** be re-derived per key from the current private key — the
+`pub_R = x25519.publicKey(currentKey)` half of the `x25519` HKDF salt, and the
+`pub_R` term inside the `mlkem768x25519` salt digest
+`SHA-256("cardano-poe-xwing-kek-salt-v1" || kem_ct || pub_R)`. Reusing a single
+`pub_R` across keys computes the wrong KEK for every key but one under either KEM.
 
-**Decryption outcomes** (typed): no slot opens under `priv_R` (trial-decrypt
+**Decryption outcomes** (typed; internal — surfaced only as the single generic
+failure to untrusted callers): no slot opens under `priv_R` (trial-decrypt
 exhausted) → `WRONG_RECIPIENT_KEY`; a slot opens but no candidate CEK reproduces
-the `slots_mac` (the slot set was tampered) → `TAMPERED_HEADER`; the content AEAD
-fails after a CEK is recovered and the MAC verified (ciphertext, nonce, or
-`slots_mac` modified in transit) → `TAMPERED_CIPHERTEXT`. These three codes are in
-[`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json).
+the `slots_mac` over `slots_hash` (a slot, a header field, or `slots_mac` itself
+was tampered) → `TAMPERED_HEADER`; the content AEAD fails after a CEK is recovered
+and the MAC verified (the ciphertext, the `nonce`, or any `AD_CONTENT_SLOTS`
+field modified in transit) → `TAMPERED_CIPHERTEXT`. These three codes are in
+[`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json); a conformant
+implementation maps all three to one generic external failure that an untrusted
+caller cannot distinguish by response shape. Timing follows variant (b) above: a
+permitted early no-match return separates `WRONG_RECIPIENT_KEY` (non-recipient)
+from the two recipient-side tamper outcomes, which carry no further distinction.
 
 #### Plaintext-hash binding and the sender-identity verdict split
 
@@ -1543,24 +1810,80 @@ across signature-support gaps:
 The alternative key-delivery path replaces recipient slots with a passphrase. The
 producer derives the CEK directly from a normalised passphrase; there is no
 ephemeral keypair, no `epk`, no per-slot wrap, no slot-set MAC, and no
-trial-decrypt loop.
+trial-decrypt loop. The content is encrypted under a `payload_key` derived from
+the CEK, with a structured AAD that binds the passphrase-KDF parameters.
 
 ```text
-passphrase_bytes = utf8(normalize(passphrase))   ; NFKC → whitespace collapse → trim → UTF-8
+passphrase_bytes = utf8(normalize(passphrase))   ; cardano-poe-pw-norm-v1 (see below)
 CEK = argon2id(passphrase_bytes,
                salt   = enc.passphrase.salt,
                params = enc.passphrase.params,
                L      = 32)
-ciphertext = XChaCha20-Poly1305(key=CEK, nonce=enc.nonce, ad=h'', plaintext=file_bytes)
+
+AD_CONTENT_PASSPHRASE = {                        ; closed map; keys are a set, not an order
+    "scheme":     1,                             ; uint
+    "path":       "passphrase",                  ; text
+    "aead":       "xchacha20-poly1305",          ; text
+    "nonce":      <24-byte nonce>,                ; bytes
+    "passphrase": {                              ; closed map
+        "alg":           "argon2id",             ; text
+        "salt":          enc.passphrase.salt,    ; bytes
+        "params":        { "m": m, "t": t, "p": p },   ; closed map of uints
+        "normalization": "cardano-poe-pw-norm-v1"      ; scheme-fixed constant, NOT on the wire
+    }
+}
+payload_key = HKDF-SHA-256(ikm=CEK, salt=nonce, info="cardano-poe-payload-passphrase-v1", L=32)
+ciphertext  = XChaCha20-Poly1305(key=payload_key, nonce=enc.nonce,
+                                 ad=canonicalEncode(AD_CONTENT_PASSPHRASE), plaintext=file_bytes)
 ```
 
-The content AEAD AAD on this path is the **empty byte string** (`h''`) — there is
-no slot set or slot-set MAC to bind; the integrity binding instead comes from the
-canonical-CBOR `enc` map being covered by the Cardano transaction hash (and, when
-present, record-level signatures). Producers and verifiers **MUST** select the AAD
-rule by checking which of `slots`/`passphrase` is present before invoking the AEAD
-primitive. These two AAD rules (`nonce || slots_mac` for slots, `h''` for
-passphrase) are exhaustive and exclusive.
+`AD_CONTENT_PASSPHRASE` is a closed map carrying exactly the five-key set above,
+with `passphrase` itself a closed sub-map; it is serialised by `canonicalEncode`
+(see [`canonicalEncode`: deterministic encoding of protocol context
+objects](#canonicalencode-deterministic-encoding-of-protocol-context-objects)).
+The AAD binds the passphrase KDF parameters into the content tag: the verifier
+recomputes `AD_CONTENT_PASSPHRASE` from the received `enc` map, so tampering with
+`salt` or any `params` value after encryption changes the AAD and makes the AEAD
+open fail. A wrong passphrase is therefore indistinguishable from a tampered
+ciphertext, and both surface as one generic failure.
+
+The `"normalization"` value is a **scheme-fixed constant** fed into the AAD to pin
+the exact normalization profile the CEK was derived under; it is **never**
+serialised on the wire (it is not part of the `enc.passphrase` map a producer
+emits). Producers and verifiers **MUST** select the AAD object by checking which of
+`slots`/`passphrase` is present before invoking the AEAD primitive. The two AAD
+objects (`AD_CONTENT_SLOTS` for slots, `AD_CONTENT_PASSPHRASE` for passphrase) are
+exhaustive and exclusive. The same maximum-payload-size guard the slots path
+enforces (see [Content encryption](#content-encryption)) applies here: a payload at
+or above the XChaCha20-Poly1305 single-shot bound **MUST** be rejected before the
+AEAD is invoked on either side.
+
+##### Passphrase normalization profile
+
+The normalization applied to the passphrase before Argon2id is the fixed profile
+`cardano-poe-pw-norm-v1`. It is normative: two implementations **MUST** derive a
+byte-identical CEK from the same passphrase, and the only way to guarantee that is
+a pinned normalization. The profile, applied in order, is:
+
+1. **NFKC.** Apply Normalization Form KC per [UAX #15](https://www.unicode.org/reports/tr15/) under **Unicode 16.0**.
+2. **Whitespace.** Define "whitespace" as every character carrying the Unicode `White_Space` property under **Unicode 16.0**. Collapse every maximal run of such characters to a single U+0020 SPACE.
+3. **Trim.** Remove leading and trailing whitespace (a leading or trailing collapsed U+0020).
+4. **Encode.** Encode the result as UTF-8; those bytes are the Argon2id password input.
+
+Before normalization and Argon2id, an implementation **MUST** bound the raw
+passphrase input length so an oversized passphrase cannot drive a pre-KDF
+denial-of-service: the reference bound is `4096` UTF-8 bytes of raw input,
+rejected before any normalization or hashing work. Like the `MAX_SLOTS` and
+decoded-`enc`-envelope bounds (see [Sealed PoE: multi-recipient
+encryption](#sealed-poe-multi-recipient-encryption)), this is a verifier-enforced,
+deployment-pinned constant — not a wire field — and deployments **MAY** tighten it.
+
+The Unicode version is pinned at **Unicode 16.0** literally and **MUST NOT** float:
+the `White_Space` property set and the NFKC mapping tables are version-dependent,
+and a verifier resolving the profile against a different Unicode version could
+derive a different CEK from the same passphrase and fail to decrypt an honest
+record. A future revision that adopts a newer Unicode version does so under a new
+profile identifier, not by re-interpreting `cardano-poe-pw-norm-v1`.
 
 The `enc.passphrase` map is `{ alg, salt, params }`. The sole registered KDF is
 `argon2id` (see [`../registries/kdf-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/kdf-algorithms.json));
@@ -1573,7 +1896,7 @@ an unregistered `alg` → `ENC_PASSPHRASE_ALG_UNSUPPORTED`. The validator enforc
   floor violation → `ENC_PASSPHRASE_ARGON2_PARAMS_TOO_LOW`. The output length is
   fixed at 32 bytes and is not carried in `params`.
 
-Implementations MAY also enforce **upper** bounds against verifier-side DoS,
+Implementations **SHOULD** also enforce **upper** bounds against verifier-side DoS,
 reporting `ENC_PASSPHRASE_PARAMS_EXCEED_POLICY`; such ceilings are non-normative
 (hardware-dependent) and **MUST NOT** be conflated with the floor code.
 
@@ -1644,8 +1967,9 @@ searches the slot list with their own private key.
 
 Recipient and identity strings are Bech32-encoded with the same checksum and
 character-set rules as [BIP-173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki):
-the `x25519` recipient uses HRP `age1` (32-byte X25519 public key) with secret-key
-HRP `AGE-SECRET-KEY-`; the `mlkem768x25519` recipient uses HRP `age1pqc`
+the `x25519` recipient uses HRP `age` (visible prefix `age1…`, 32-byte X25519
+public key) with secret-key HRP `AGE-SECRET-KEY-`; the `mlkem768x25519` recipient
+uses HRP `age1pqc` (visible prefix `age1pqc1…`,
 (1216-byte X-Wing public key, with the BIP-173 90-character length cap lifted to
 accommodate the larger payload) with secret-key HRP `AGE-SECRET-KEY-PQ-` over the
 32-byte X-Wing seed. The post-quantum HRP is `age1pqc`, **not** `age1pq`: the
@@ -1672,9 +1996,45 @@ targeting the same recipient — per-slot fresh ephemerals under either KEM
 the critical timeline; wire-level cryptography cannot solve metadata-timing
 attacks.
 
-Conformance vectors for the wrap, unwrap, multi-private-key iteration, hybrid
-re-chunking, and the negative input-validation cases are under
-[`../conformance/sealed-poe/`](https://github.com/cardanowall/label-309/blob/main/conformance/sealed-poe).
+Conformance vectors for the sealed-PoE construction are under
+[`../conformance/sealed-poe/`](https://github.com/cardanowall/label-309/blob/main/conformance/sealed-poe). They are produced from
+deterministic inputs (every normally-random value — CEK, content nonce, per-slot
+X25519 ephemerals, X-Wing encapsulation randomness, passphrase salt, shuffle
+permutation — pinned to recorded test seeds) and derived from one shared
+reference `canonicalEncode` so the slots-transcript and AAD bytes are byte-identical
+across implementations. The vector set **MUST** include:
+
+- **positive:** `x25519` and `mlkem768x25519` single- and multi-recipient,
+  mixed-N, multi-private-key iteration, hybrid `kem_ct` re-chunking
+  (fragmentation invariance against `slots_hash`), and the passphrase path;
+- a vector pinning the `mlkem768x25519` KEK salt
+  `SHA-256("cardano-poe-xwing-kek-salt-v1" || kem_ct || pub_R)`;
+- **negative — header binding:** flip `kem`, `aead`, or `scheme` while leaving
+  the slot shapes structurally valid; the record **MUST** fail (the acceptance
+  test for transcript/AAD header-binding);
+- **negative — cross-path confusion:** a record shaped to look cross-path; it
+  **MUST** fail;
+- **negative — passphrase AAD tamper:** alter `salt` or `params` after
+  encryption; the AEAD open **MUST** fail;
+- **negative — all-zero X25519 shared secret:** a slot crafted to yield an
+  all-zero shared secret; the slot **MUST** be treated as failed;
+- **negative — within-record duplicate slot:** two slots sharing an `epk` (or
+  reassembled `kem_ct`); it **MUST** be rejected with
+  `ENC_SLOTS_DUPLICATE_KEM_MATERIAL`;
+- **positive — recipient/CEK duplication:** the same CEK sealed to the same
+  recipient in two slots (each with fresh per-slot KEM material); it **MUST**
+  decrypt, exercising that multiple matches are not rejected;
+- **negative — CEK conflict:** two slots that both match one recipient and both
+  satisfy `slots_mac` yet recover **distinct** CEKs **MUST** be rejected. No byte
+  vector can pin this case — constructing one is exactly the multi-key collision
+  the commitment assumption rules out — so the property is asserted by
+  implementation-level behavioural tests, like the constant-time properties below;
+- the standard tamper negatives (`slots_mac` flip, ciphertext flip, wrap flip),
+  regenerated against `slots_hash`.
+
+Constant-time behaviour and the single-generic-error property are not fully
+expressible as byte vectors; implementations assert them with timing/structure
+tests alongside the byte-pinned vectors.
 
 ### Algorithm registries and conformance profiles
 
@@ -1799,7 +2159,7 @@ The `enc.aead` field carries the **content AEAD algorithm only** — the symmetr
 
 | Identifier           | Algorithm                                                                                                                                           | Key  | Nonce | Tag  | Status                                                                                                                                                                                   |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ----- | ---- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `xchacha20-poly1305` | XChaCha20-Poly1305 (extended-nonce variant of [RFC 8439](https://www.rfc-editor.org/rfc/rfc8439), per `draft-irtf-cfrg-xchacha`; not itself an RFC) | 32 B | 24 B  | 16 B | **M.** The sole MANDATORY-to-implement content AEAD for `enc.scheme: 1`; producers **MUST** emit this identifier. The 24-byte random nonce is the safer default for stateless producers. |
+| `xchacha20-poly1305` | XChaCha20-Poly1305, 24-byte nonce (extended-nonce variant of [RFC 8439](https://www.rfc-editor.org/rfc/rfc8439), per [`draft-irtf-cfrg-xchacha-03`](https://datatracker.ietf.org/doc/draft-irtf-cfrg-xchacha/03/); an Internet-Draft, not an RFC) | 32 B | 24 B  | 16 B | **M.** The sole MANDATORY-to-implement content AEAD for `enc.scheme: 1`; producers **MUST** emit this identifier. The 24-byte random nonce is the safer default for stateless producers. |
 | `aes-256-gcm`        | (reserved) AES-256-GCM ([NIST SP 800-38D](https://csrc.nist.gov/pubs/sp/800/38/d/final), [RFC 5116](https://www.rfc-editor.org/rfc/rfc5116))        | —    | —     | —    | **R.** Reserved for a future `enc.scheme` profile targeting RFC-only AEAD constraints. Not part of `enc.scheme: 1`; verifiers MUST reject records using it with `UNSUPPORTED_AEAD_ALG`.  |
 
 The AEAD (authenticated-encryption) property is mandatory: unauthenticated ciphers (e.g. AES-CBC without a MAC, AES-CTR, raw ChaCha20) **MUST NOT** be used and **MUST** be rejected with `UNAUTHENTICATED_CIPHER_FORBIDDEN`. The on-wire spelling is exactly the hyphenated form `xchacha20-poly1305`; alternative spellings (e.g. `xchacha20poly1305` without the internal hyphen) **MUST NOT** be produced. The `enc.nonce` length MUST equal the registered nonce length of `enc.aead` (24 bytes for `xchacha20-poly1305`); a mismatch emits `NONCE_LENGTH_MISMATCH`.
@@ -1813,13 +2173,13 @@ Both KEMs below are registered under `enc.scheme: 1` from the first release. `en
 | Identifier       | Algorithm                                                                                                                                                                                                                                                                                                                                         | Public (encapsulation) key                                            | Ciphertext                                                                                                 | Shared secret | Status                                                                                   |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ------------- | ---------------------------------------------------------------------------------------- |
 | `x25519`         | X25519 ECDH ([RFC 7748](https://www.rfc-editor.org/rfc/rfc7748))                                                                                                                                                                                                                                                                                  | 32 B                                                                  | 32 B (the per-slot ephemeral public key carried as `slot.epk`)                                             | 32 B          | **M.** The classical, higher-capacity option; every conformant verifier MUST support it. |
-| `mlkem768x25519` | X-Wing hybrid KEM ([draft-connolly-cfrg-xwing-kem](https://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/)): ML-KEM-768 ([FIPS 203](https://csrc.nist.gov/pubs/fips/203/final)) ⊕ X25519 ([RFC 7748](https://www.rfc-editor.org/rfc/rfc7748)), combined with a SHA3-256 combiner ([FIPS 202](https://csrc.nist.gov/pubs/fips/202/final)) | 1216 B (ML-KEM-768 encapsulation key 1184 B ‖ X25519 public key 32 B) | 1120 B (ML-KEM-768 ciphertext 1088 B ‖ X25519 ephemeral public key 32 B), carried chunked as `slot.kem_ct` | 32 B          | **M.** Post-quantum hybrid; the RECOMMENDED producer default.                            |
+| `mlkem768x25519` | X-Wing hybrid KEM ([draft-connolly-cfrg-xwing-kem-10](https://datatracker.ietf.org/doc/draft-connolly-cfrg-xwing-kem/10/)): ML-KEM-768 ([FIPS 203](https://csrc.nist.gov/pubs/fips/203/final)) ⊕ X25519 ([RFC 7748](https://www.rfc-editor.org/rfc/rfc7748)), combined with a SHA3-256 combiner ([FIPS 202](https://csrc.nist.gov/pubs/fips/202/final)) | 1216 B (ML-KEM-768 encapsulation key 1184 B ‖ X25519 public key 32 B) | 1120 B (ML-KEM-768 ciphertext 1088 B ‖ X25519 ephemeral public key 32 B), carried chunked as `slot.kem_ct` | 32 B          | **M.** Post-quantum hybrid; the RECOMMENDED producer default.                            |
 
-`mlkem768x25519` is the X-Wing KEM. The shared secrets are combined by `SHA3-256(ss_MLKEM ‖ ss_X25519 ‖ ct_X25519 ‖ pk_X25519 ‖ label)`, where `label` is the six bytes `0x5c 0x2e 0x2f 0x2f 0x5e 0x5c`. The decapsulation key is a 32-byte seed (implicit-rejection KEM); the public key is derived from it. The combiner binds the X25519 ephemeral ciphertext and recipient X25519 public key into the shared secret, which is why the hybrid per-slot KEK derivation uses an empty HKDF salt. The full byte-level construction is normative in [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption).
+`mlkem768x25519` is the X-Wing KEM. The shared secrets are combined by `SHA3-256(ss_MLKEM ‖ ss_X25519 ‖ ct_X25519 ‖ pk_X25519 ‖ label)`, where `label` is the six bytes `0x5c 0x2e 0x2f 0x2f 0x5e 0x5c`. The decapsulation key is a 32-byte seed (implicit-rejection KEM); the public key is derived from it. X-Wing is used here as a **black-box** KEM: the sealed-PoE construction consumes only its public interface (encapsulate, decapsulate, the 32-byte shared secret) and makes no assumption about the combiner's internal hashing. The recipient binding that the classical path gets from `pub_R` in its HKDF salt is provided on the hybrid path by an external salt, `SHA-256("cardano-poe-xwing-kek-salt-v1" ‖ kem_ct ‖ pub_R)`, computed over the slot's own wire bytes. The full byte-level construction is normative in [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption).
 
 `mlkem768x25519` (no internal hyphens) is the registry identifier, matching the X-Wing / age ecosystem spelling; this is a deliberate, documented exception to the otherwise-hyphenated identifier convention. Implementations **MUST** emit and accept exactly this spelling. Producers **SHOULD** default to `mlkem768x25519`; `x25519` is the explicit higher-capacity choice (an X25519 slot is ~82 B versus ~1.2 KB for a hybrid slot, fitting far more recipients in one record's byte budget). Verifiers **MUST** reject an unregistered `enc.kem` value with `UNSUPPORTED_KEM_ALG`, a wrong-length `epk` / reassembled `kem_ct` with `KEM_EPK_LENGTH_MISMATCH` / `KEM_CT_LENGTH_MISMATCH`, and a slot whose shape does not match `enc.kem` with `ENC_SLOT_INVALID_SHAPE`.
 
-The Bech32 human-readable prefix of the recipient public-key encoding is `age1` for `x25519` and `age1pqc` for `mlkem768x25519`. The hybrid prefix is `age1pqc` — **NOT** `age1pq`, which collides with an upstream native ML-KEM-768 + X25519 encoding.
+The Bech32 human-readable prefix of the recipient public-key encoding is `age` for `x25519` (visible prefix `age1…`, the `1` being the Bech32 separator) and `age1pqc` for `mlkem768x25519` (visible prefix `age1pqc1…`). The hybrid prefix is `age1pqc` — **NOT** `age1pq`, which collides with an upstream native ML-KEM-768 + X25519 encoding.
 
 #### Passphrase-KDF identifiers (`enc.passphrase.alg`)
 
@@ -1829,7 +2189,7 @@ The KDF registry has two layers — the passphrase-style KDF that MAY appear on 
 | ---------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `argon2id` | Argon2id ([RFC 9106](https://www.rfc-editor.org/rfc/rfc9106)) | `m` (memory KiB, **MUST** be ≥ 65 536 ≈ 64 MiB); `t` (iterations, **MUST** be ≥ 3); `p` (parallelism, **MUST** be ≥ 1). The output length is fixed at 32 bytes and is NOT carried in `params`. | **M.** The sole MANDATORY-to-implement passphrase KDF; v1 producers MUST emit this identifier. |
 
-Argon2id is memory-hard, which raises the cost of offline brute-force against the published parameters, salt, and ciphertext. The `p ≥ 1` floor reflects a deliberate browser-compatibility constraint; security is dominated by the `m × t` product, and with `m ≥ 65 536 KiB` and `t ≥ 3` the margin under `p = 1` is adequate. The accompanying `enc.passphrase.salt` byte string **MUST** be between 16 and 64 bytes inclusive (the 64-byte ceiling reflects the Cardano metadata `bstr` cap, which constrains every `transaction_metadatum` byte string to 64 bytes). Validators **MUST** reject a salt shorter than 16 bytes with `ENC_PASSPHRASE_SALT_TOO_SHORT`, longer than 64 bytes with `ENC_PASSPHRASE_SALT_TOO_LONG`, and `argon2id` params below the minima with `ENC_PASSPHRASE_ARGON2_PARAMS_TOO_LOW`. Implementations MAY enforce non-normative upper bounds against verifier-side DoS, reporting `ENC_PASSPHRASE_PARAMS_EXCEED_POLICY` (a distinct code — the floor and ceiling codes MUST NOT be conflated).
+Argon2id is memory-hard, which raises the cost of offline brute-force against the published parameters, salt, and ciphertext. The `p ≥ 1` floor reflects a deliberate browser-compatibility constraint; security is dominated by the `m × t` product, and with `m ≥ 65 536 KiB` and `t ≥ 3` the margin under `p = 1` is adequate. Where the platform supports it, producers **SHOULD** use `p = 4` (the second recommended profile of [RFC 9106 §4](https://www.rfc-editor.org/rfc/rfc9106#section-4)); verifiers **MAY** accept any `p ≥ 1`, subject to the deployment ceilings (`ENC_PASSPHRASE_PARAMS_EXCEED_POLICY`). The accompanying `enc.passphrase.salt` byte string **MUST** be between 16 and 64 bytes inclusive (the 64-byte ceiling reflects the Cardano metadata `bstr` cap, which constrains every `transaction_metadatum` byte string to 64 bytes). Validators **MUST** reject a salt shorter than 16 bytes with `ENC_PASSPHRASE_SALT_TOO_SHORT`, longer than 64 bytes with `ENC_PASSPHRASE_SALT_TOO_LONG`, and `argon2id` params below the minima with `ENC_PASSPHRASE_ARGON2_PARAMS_TOO_LOW`. Implementations MAY enforce non-normative upper bounds against verifier-side DoS, reporting `ENC_PASSPHRASE_PARAMS_EXCEED_POLICY` (a distinct code — the floor and ceiling codes MUST NOT be conflated).
 
 **Internal building-block KDFs (MUST NOT appear as `enc.passphrase.alg`):** `hkdf-sha256` (HKDF-SHA-256, [RFC 5869](https://www.rfc-editor.org/rfc/rfc5869)) is the fixed extract-and-expand construction used for per-slot KEK derivation, slot-set MAC-key derivation, and seed → key derivation (see [Seed and key derivation](#seed-and-key-derivation) and [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)). It carries no wire identifier and is not selectable. A record carrying `enc.passphrase.alg = "hkdf-sha256"` MUST be rejected as `ENC_PASSPHRASE_ALG_UNSUPPORTED` — HKDF is designed for high-entropy inputs, not for stretching low-entropy passphrases.
 
@@ -2150,7 +2510,7 @@ Every code below is emitted by `validatePoeRecord` and carries `severity: error`
 | `MALFORMED_CBOR`                       | `MALFORMED_CBOR`                                                                                                                                                                                                                                                                                                                                 | any canonical-CBOR decode failure (RFC 8949 §4.2.1) — non-canonical ordering, indefinite length, duplicate keys, invalid UTF-8, non-minimal integers.                                                                                                                                                                                                                                                                        |
 | `SCHEMA_*`                             | `SCHEMA_TYPE_MISMATCH`, `SCHEMA_MISSING_REQUIRED`, `SCHEMA_UNKNOWN_FIELD`, `SCHEMA_INVALID_LITERAL`, `SCHEMA_EMPTY_RECORD`                                                                                                                                                                                                                       | wrong CBOR type; a REQUIRED field absent; an unknown field in a closed map; `v` ≠ `1`; a record committing to neither `items[]` nor `merkle[]` with ≥ 1 entry.                                                                                                                                                                                                                                                               |
 | `HASH_*`                               | `HASH_DIGEST_LENGTH_MISMATCH`, `UNSUPPORTED_HASH_ALG`, `UNSUPPORTED_MERKLE_COMMIT_ALG`                                                                                                                                                                                                                                                           | a digest length ≠ the length pinned for its algorithm; a `hashes` key outside the hash-algorithm registry; a `merkle[].alg` outside the Merkle-commitment registry.                                                                                                                                                                                                                                                          |
-| `ENC_*` (envelope shape)               | `UNAUTHENTICATED_CIPHER_FORBIDDEN`, `UNSUPPORTED_AEAD_ALG`, `NONCE_LENGTH_MISMATCH`, `UNSUPPORTED_ENVELOPE_SCHEME`, `ENC_SLOTS_EMPTY`, `ENC_SLOT_INVALID_SHAPE`, `ENC_SLOTS_MAC_INVALID_LENGTH`, `ENC_SLOTS_MAC_REQUIRED`, `ENC_SLOTS_REQUIRED`, `ENC_EXCLUSIVITY_VIOLATION`, `ENC_NO_KEY_PATH`, `ENC_KEM_REQUIRED`, `ENC_REQUIRES_CONTENT_HASH` | `enc.aead` names an unauthenticated cipher family, or an unknown AEAD; nonce length ≠ the AEAD's (24 for XChaCha20-Poly1305); `enc.scheme` ≠ `1`; empty / malformed / mutually-exclusive key-path violations; `slots` without `slots_mac` (or vice versa); `slots` without `kem`; an `enc`-bearing item carrying no content-hash entry.                                                                                      |
+| `ENC_*` (envelope shape)               | `UNAUTHENTICATED_CIPHER_FORBIDDEN`, `UNSUPPORTED_AEAD_ALG`, `NONCE_LENGTH_MISMATCH`, `UNSUPPORTED_ENVELOPE_SCHEME`, `ENC_SLOTS_EMPTY`, `ENC_SLOT_INVALID_SHAPE`, `ENC_SLOTS_DUPLICATE_KEM_MATERIAL`, `ENC_SLOTS_TOO_MANY`, `ENC_ENVELOPE_TOO_LARGE`, `ENC_SLOTS_MAC_INVALID_LENGTH`, `ENC_SLOTS_MAC_REQUIRED`, `ENC_SLOTS_REQUIRED`, `ENC_EXCLUSIVITY_VIOLATION`, `ENC_NO_KEY_PATH`, `ENC_KEM_REQUIRED`, `ENC_REQUIRES_CONTENT_HASH` | `enc.aead` names an unauthenticated cipher family, or an unknown AEAD; nonce length ≠ the AEAD's (24 for XChaCha20-Poly1305); `enc.scheme` ≠ `1`; empty / malformed / mutually-exclusive key-path violations; two slots sharing `epk` / `kem_ct`; `slots[]` above the verifier's slot-count bound; a decoded `enc` envelope above its size bound (reference bounds `MAX_SLOTS` = 1024 / 65536 bytes, deployment-pinned); `slots` without `slots_mac` (or vice versa); `slots` without `kem`; an `enc`-bearing item carrying no content-hash entry.                                                                                      |
 | `ENC_PASSPHRASE_*`                     | `ENC_PASSPHRASE_ALG_UNSUPPORTED`, `ENC_PASSPHRASE_SALT_TOO_SHORT`, `ENC_PASSPHRASE_SALT_TOO_LONG`, `ENC_PASSPHRASE_ARGON2_PARAMS_TOO_LOW`, `ENC_PASSPHRASE_PARAMS_EXCEED_POLICY`                                                                                                                                                                 | `enc.passphrase.alg` outside the KDF registry (`{argon2id}`); salt length outside `[16, 64]`; Argon2id parameters below the floor (`m ≥ 65536`, `t ≥ 3`, `p ≥ 1`); parameters above an operator-configured upper bound (policy-dependent, not a wire MUST).                                                                                                                                                                  |
 | `KEM_*`                                | `UNSUPPORTED_KEM_ALG`, `KEM_EPK_LENGTH_MISMATCH`, `KEM_CT_LENGTH_MISMATCH`, `WRAP_LENGTH_MISMATCH`                                                                                                                                                                                                                                               | `enc.kem` outside `{x25519, mlkem768x25519}`; `slot.epk` ≠ 32 bytes (`x25519`); reassembled `slot.kem_ct` ≠ 1120 bytes (`mlkem768x25519`); `slot.wrap` ≠ 48 bytes. All four are pure byte-length checks; the validator runs no decapsulation.                                                                                                                                                                                |
 | `SIG_*`                                | `MALFORMED_SIG_COSE_SIGN1`, `SIGNATURE_UNSUPPORTED` (info), `SIG_ENTRY_INVALID_SHAPE`, `SIG_ENTRY_KID_COSE_KEY_CONFLICT`, `SIG_PRIVATE_KEY_LEAKED`                                                                                                                                                                                               | a `sigs[i].cose_sign1` blob that is not a 4-element COSE_Sign1, or carries a non-null (attached) payload, or carries a malformed inline `cose_key`; an unrecognized signature `alg` (tagged, not rejected); a `sigs[i]` entry that is not the closed `{cose_sign1, ?cose_key}` map; both an in-signature `kid` and an inline `cose_key` present (mutually exclusive); a private-key label leaking into an inline `cose_key`. |
@@ -2199,7 +2559,7 @@ The verifier executes the following steps in order; an `error`-verdict step shor
 3. **Check confirmation depth.** A transaction below the verifier's confirmation-depth threshold MUST be reported with `INSUFFICIENT_CONFIRMATIONS` and verdict `pending` (NOT `failed`): the record is structurally well-formed and may settle on retry. The threshold guards the orphaned-block reorg window under Ouroboros Praos; a verifier that reported depth-1 records as valid would let an attacker obtain a "valid" verdict on both sides of a fork.
 4. **Verify record signatures (strict Ed25519, detached-only).** For each `sigs[i]`: concatenate the `cose_sign1` chunks, decode the 4-element COSE_Sign1 (non-null payload → `MALFORMED_SIG_COSE_SIGN1`), preserve the producer's original `protected` bytes verbatim, and rebuild the canonical `Sig_structure` with `external_aad = h''` and a `to_sign` of the 25-byte UTF-8 domain prefix `cardano-poe-record-sig-v1` concatenated with the canonical CBOR of the record body **with `sigs` removed**. Resolve the signer's 32-byte Ed25519 public key via exactly one of the two mutually-exclusive paths (in-signature protected-header `kid`, or the inline `cose_key` CIP-30 wallet side-channel); failure to resolve → `SIGNER_KEY_UNRESOLVED`. Verify with **strict** Ed25519 per RFC 8032 §5.1.7 — canonical R/S, low-order public-key rejection, no cofactor multiplication; the cofactored / ZIP-215 variant MUST NOT be used. A failed verification → `SIGNATURE_INVALID`. For a wallet-path signature, the verifier MUST additionally recompute `network_header || Blake2b-224(pubkey)` and compare it to the protected-header `address`; a mismatch (or a missing `address`) → `WALLET_ADDRESS_MISMATCH`, distinct from `SIGNATURE_INVALID`. An unrecognized signature `alg` surfaces as `SIGNATURE_UNSUPPORTED` (info). Record signatures are OPTIONAL: a public hash-only PoE remains valid even when every signature entry is unverifiable; the proof-of-existence claim rests on the on-chain commitment, not on any identity binding.
 5. **Fetch and hash-check content / Merkle leaves.** For each non-`enc` item that proceeds to fetch, the verifier resolves the item's URIs against the scheme-appropriate gateway chain, enforcing `maxFetchBytes` incrementally and trying gateways in order; a per-attempt failure is `URI_FETCH_FAILED` (warning), an exhausted chain is `CONTENT_UNAVAILABLE` (error, network class). It then recomputes every digest in `item.hashes` (registry `{sha2-256, blake2b-256}`) over the fetched bytes and emits `URI_INTEGRITY_MISMATCH` on any mismatch. A URI scheme outside `{ar://, ipfs://}` that bypassed structural validation is refused defence-in-depth with `URI_TARGET_FORBIDDEN`. For each `merkle[i]`, the verifier obtains the leaves-list (from the supplied bytes or by fetching `merkle[i].uris[]`), validates its `format` and `leaf_count` against the on-chain commitment (`SCHEMA_MERKLE_LEAVES_FORMAT_UNSUPPORTED` / `SCHEMA_MERKLE_LEAVES_MALFORMED` / `SCHEMA_MERKLE_LEAF_COUNT_MISMATCH`), recomputes the RFC 9162 §2.1.1 root, and compares byte-exact (`MERKLE_ROOT_MISMATCH`); a missing leaves-list is the non-fatal `MERKLE_LEAVES_UNAVAILABLE` (warning). A verifier that does not implement Merkle-fold records each commitment as `MERKLE_UNSUPPORTED` — `info` when the record also carries an `items[]` content claim the verifier validated, `error` for the merkle-only case.
-6. **Decrypt (recipient verifier only).** For each `decryption[i]` the verifier acquires the ciphertext (from supplied out-of-band bytes, or by fetching `item.uris[]`; neither available for an `enc`-bearing item → `CIPHERTEXT_UNAVAILABLE`) and dispatches on the on-wire key path. The two paths are mutually exclusive. On the `slots` path it runs the sealed-PoE unwrap (per [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)): per-slot trial-decrypt of `wrap` (all slots reject → `WRONG_RECIPIENT_KEY`), slot-set MAC recomputation (mismatch → `TAMPERED_HEADER`), and content AEAD with AAD `nonce || slots_mac` (tag failure → `TAMPERED_CIPHERTEXT`). On the `passphrase` path it derives the CEK from the on-chain Argon2id parameters (a runtime KDF rejection → `KDF_DERIVATION_FAILED`) and AEAD-decrypts with empty AAD; a wrong passphrase is indistinguishable from a tampered ciphertext and MUST surface as `TAMPERED_CIPHERTEXT`. After a successful unwrap on either path, the verifier MUST recompute every digest in `item.hashes` over the recovered plaintext and report `plaintextHashOk` (mismatch → `URI_INTEGRITY_MISMATCH`). Because every `enc`-bearing item MUST carry at least one content-hash entry, `plaintextHashOk` is always a concrete boolean.
+6. **Decrypt (recipient verifier only).** For each `decryption[i]` the verifier acquires the ciphertext (from supplied out-of-band bytes, or by fetching `item.uris[]`; neither available for an `enc`-bearing item → `CIPHERTEXT_UNAVAILABLE`) and dispatches on the on-wire key path. The two paths are mutually exclusive. On the `slots` path it runs the sealed-PoE unwrap (per [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)): per-slot trial-decrypt of `wrap` (all slots reject → `WRONG_RECIPIENT_KEY`), slot-set MAC recomputation over `slots_hash` (mismatch → `TAMPERED_HEADER`), derivation of `payload_key` from the recovered CEK, and content AEAD under `payload_key` with AAD `canonicalEncode(AD_CONTENT_SLOTS)` (tag failure → `TAMPERED_CIPHERTEXT`). On the `passphrase` path it derives the CEK from the on-chain Argon2id parameters (a runtime KDF rejection → `KDF_DERIVATION_FAILED`), derives `payload_key`, recomputes `AD_CONTENT_PASSPHRASE` from the received `enc` map, and AEAD-decrypts under `payload_key` with that AAD; a wrong passphrase or a tampered `salt`/`params` is indistinguishable from a tampered ciphertext and MUST surface as `TAMPERED_CIPHERTEXT`. After a successful unwrap on either path, the verifier MUST recompute every digest in `item.hashes` over the recovered plaintext and report `plaintextHashOk` (mismatch → `URI_INTEGRITY_MISMATCH`). Because every `enc`-bearing item MUST carry at least one content-hash entry, `plaintextHashOk` is always a concrete boolean.
 7. **Resolve `supersedes` (optional, one hop).** When present, the verifier MAY perform a single-hop existence check of the prior transaction; it MUST NOT recurse (a DoS vector) and MUST NOT treat the pointer as an authoritative invalidation. Supersedence is an advisory pointer; the chain remains append-only and both records remain cryptographically valid.
 8. **Emit the report.** The machine verdict MUST be one of `valid | pending | failed`, with a four-state exit code so callers can distinguish record-attributable failures from transient operational ones without parsing the structured report: `valid` → exit 0; `failed` (integrity / structural / signature / Merkle-mismatch / service-independence-violation class) → exit 1; `failed` (network class — `CONTENT_UNAVAILABLE`, `PROVIDER_UNAVAILABLE`) → exit 2; `pending` (`INSUFFICIENT_CONFIRMATIONS`) → exit 3; verifier-host runtime failures that are not record-attributable → exit 4 and higher. The report MUST include a complete audit trail of every outbound network call (URL, method, status, byte count, purpose); a verifier that omits or pre-filters this trail cannot prove service-independence.
 
@@ -2261,7 +2621,7 @@ what the adversary can and cannot achieve against the on-wire format alone.
 | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Network (passive or active MitM)**       | Observes and modifies traffic between any verifier and the Cardano / Arweave / IPFS gateways it consults.                                 | Decrypt sealed-PoE ciphertext, recover any master seed or recipient private key, or forge a `COSE_Sign1` signature. AEAD-only on-chain encryption (XChaCha20-Poly1305 content layer + ChaCha20-Poly1305 per-slot wrap) defeats payload eavesdropping; per-record ephemeral KEM material defeats traffic-analysis correlation.                                                                                     | Observe transaction identifiers, request timing, and fetch volume — metadata that the format does not attempt to hide.                                                                                                                                                                                                                                   |
 | **Chain observer (permanent global read)** | Full read of every Cardano transaction, forever.                                                                                          | Decrypt the sealed-PoE ciphertext referenced by a content-addressed URI: the ciphertext lives off-chain, and even with both halves the observer lacks the recipient KEM private key and the per-record KEK derived via HKDF-SHA-256.                                                                                                                                                                              | See every record's on-chain metadata: content hashes, signer Ed25519 public keys, `COSE_Sign1` signatures, and slot count. An author signing with a stake-linked CIP-30 wallet key accepts that this binding is permanent and public (see [Privacy](#privacy)).                                                                                          |
-| **Off-chain storage observer**             | Full read of every sealed-PoE ciphertext at its content-addressed `ar://` / `ipfs://` URI, forever.                                       | Decrypt the ciphertext — it is XChaCha20-Poly1305 over a CEK wrapped under a KEM-derived KEK, AAD-bound to `nonce ‖ slots_mac` (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)). Enumerate recipients: recipient public keys never appear on the wire.                                                                                                                      | See the ciphertext bytes and their length.                                                                                                                                                                                                                                                                                                               |
+| **Off-chain storage observer**             | Full read of every sealed-PoE ciphertext at its content-addressed `ar://` / `ipfs://` URI, forever.                                       | Decrypt the ciphertext — it is XChaCha20-Poly1305 under a `payload_key` derived from a CEK that is itself wrapped under a KEM-derived KEK, with the content tag AAD-bound to the header transcript (`AD_CONTENT_SLOTS`, carrying `slots_hash` and `slots_mac`; see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)). Enumerate recipients: recipient public keys never appear on the wire.                                                                                                                      | See the ciphertext bytes and their length.                                                                                                                                                                                                                                                                                                               |
 | **Cardano gateway (malicious indexer)**    | Returns false data to a verifier: a synthetic transaction body, a forged confirmation count, a withheld reorg, or a mis-reported network. | Forge a record that passes signature verification — the verifier reproduces the canonical CBOR of the record body and verifies the `COSE_Sign1` against the embedded `kid`; the gateway does not hold the signer's Ed25519 private key. Induce a verifier to accept a record below the verifier's locally configured confirmation threshold (the threshold is verifier policy, not a normative wire requirement). | Delay verification with slow or incomplete responses (a denial-of-service shape, not a forgery shape). A verifier that consults more than one independent gateway and aborts on byte divergence escalates "single malicious gateway" to "collusion across providers".                                                                                    |
 | **Malicious recipient**                    | Holds a recipient KEM private key; by construction decrypts every sealed PoE addressed to a slot wrapped under that key.                  | Decrypt sealed PoE addressed to a _different_ recipient's key — other slots in the same record are independently wrapped and fail closed under the wrong private key. Retroactively insert itself as a recipient on a published record — `enc.slots` is covered by `slots_mac` and, if the record is signed, by the `COSE_Sign1`; tampering invalidates one or the other.                                         | Do anything a legitimate recipient can do with the recovered plaintext, including leaking it. Sealed PoE has **no recipient forward secrecy by design**: once a record is sealed to a long-term recipient key, the holder of the matching private key can decrypt forever. This is a property of public-key encryption to a long-term key, not a defect. |
 
@@ -2374,16 +2734,26 @@ invoking any AEAD primitive:
 - the KEM-discriminated per-slot encapsulation length — for `x25519`,
   `slot.epk` length `== 32`; for `mlkem768x25519`, the reassembled `slot.kem_ct`
   length `== 1120`;
+- within one `slots[]`, encapsulation material is distinct — all `epk` values
+  differ for `x25519`, all reassembled `kem_ct` values differ for `mlkem768x25519`;
 - each `slot.wrap` length `== 48` (32-byte CEK + 16-byte ChaCha20-Poly1305 tag);
-- `slots_mac` length `== 32`.
+- `slots_mac` length `== 32`;
+- the slot count and the decoded-`enc`-envelope size are within the verifier's
+  deployment-pinned resource bounds (reference values in
+  [Recipient decryption (trial-decrypt)](#recipient-decryption-trial-decrypt)).
 
 Length mismatches MUST emit the typed structural errors `ENC_SLOTS_EMPTY`,
 `KEM_EPK_LENGTH_MISMATCH` / `KEM_CT_LENGTH_MISMATCH`, `WRAP_LENGTH_MISMATCH`, and
-`ENC_SLOTS_MAC_INVALID_LENGTH` (see
+`ENC_SLOTS_MAC_INVALID_LENGTH`; a within-`slots[]` duplicate emits
+`ENC_SLOTS_DUPLICATE_KEM_MATERIAL`; a slot count or decoded-envelope size above
+the resource bounds emits `ENC_SLOTS_TOO_MANY` / `ENC_ENVELOPE_TOO_LARGE` (see
 [`../registries/error-codes.json`](https://github.com/cardanowall/label-309/blob/main/registries/error-codes.json)) — with no
-length-dependent branch reaching the cryptographic primitives. There is no fixed
-numeric slot cap; the upper bound is the per-record byte budget the producer
-enforces before submission and ultimately the Cardano maximum transaction size.
+length-dependent branch reaching the cryptographic primitives. These resource
+bounds are deployment-pinned reference values, not wire fields; they sit far above
+the per-record byte budget the producer enforces before submission and ultimately
+the Cardano maximum transaction size, so a conformant record never trips them. The
+structural validator and the recipient verifier apply the identical bounds before
+invoking any primitive.
 
 ### Constant-time trial decryption
 
@@ -2398,6 +2768,39 @@ identity or position. Byte comparisons on `slots_mac` and on AEAD/MAC tags MUST
 likewise be constant-time; a data-dependent comparison loop on any of these
 surfaces is a timing oracle and is non-conformant.
 
+### Slot-set commitment assumption
+
+The slot-set MAC is what makes the recovered CEK a **commitment** to the slot set
+the recipient matched: a malicious sender cannot construct two distinct slot sets
+that a single recipient accepts as "theirs". The property required here is
+**restricted key commitment for the envelope CEK** in the sense of
+[RFC 9771](https://www.rfc-editor.org/rfc/rfc9771) — the recovered CEK binds to a
+single slot transcript — **not** a full committing AEAD over arbitrary inputs. This
+property rests on the multi-key collision resistance of the map
+
+```
+CEK ↦ HMAC-SHA-256( HKDF-SHA-256(CEK, info="cardano-poe-slots-mac-v1"), slots_hash )
+```
+
+for **adversarially chosen** CEKs and transcripts. Because the adversary controls
+both the CEK and the transcript, the relevant bound is a generic-collision bound:
+finding two `(CEK, transcript)` pairs that produce the same `slots_mac` is a
+~128-bit search (the birthday bound on a 256-bit output), **not** the 256-bit
+second-preimage level. A 128-bit generic-collision margin is the security level
+this commitment relies on, and is adequate for the threat model.
+
+Pre-hashing the transcript to `slots_hash` before the HMAC does not weaken this:
+`slots_hash` is a collision-resistant SHA-256 digest of the full transcript, so a
+`slots_mac` collision implies either a `slots_hash` collision (an SHA-256
+collision) or a collision of the keyed HMAC over equal `slots_hash`, both at the
+~128-bit level. Tamper-evidence of the transcript itself therefore inherits
+SHA-256's ~2^128 collision bound: any change to the committed header fields or slot
+bytes alters `slots_hash`, and forging an unchanged `slots_hash` over a different
+transcript is exactly that ~2^128 collision search. The per-slot `wrap` AEAD
+therefore need **not** be a committing AEAD: the commitment is supplied by
+`slots_mac`, not by the wrap, so a non-committing `wrap` (the default
+ChaCha20-Poly1305) is sound here.
+
 ### Anonymity of unsigned sealed PoE
 
 When a sealed-PoE record carries **no `sigs`**, the on-wire bytes MUST be
@@ -2410,11 +2813,35 @@ independent of the sender's identity. Concretely:
   about the sender. The sender's long-term X25519 and Ed25519 keys never appear.
 - **CSPRNG-shuffled slots.** Slot ordering is not a side-channel for recipient
   metadata.
-- **Hidden recipient keys.** Recipient public keys are not on the wire; an
-  observer learns only `slots.length`, never _who_ the record was sealed to.
+- **No recipient public key on the wire.** Recipient public keys never appear in
+  the record; an observer with no candidate keys learns only `slots.length`, the
+  KEM family (`enc.kem`), and the sealed-vs-open distinction — never the recipient
+  keys themselves.
 - **No descriptive fields.** No filename, MIME type, language tag, or size field
   is on the wire (see [Privacy](#privacy)); nothing constrains who plausibly
   authored the record.
+
+**Recipient anonymity is a per-KEM property, claimed only for `x25519`.** The
+stronger claim — that an adversary who *holds a set of candidate recipient public
+keys* cannot test whether a given slot is addressed to one of them — depends on
+the KEM, and this CIP claims it only for the classical path:
+
+- **`x25519` (key-private).** The per-slot encapsulation is a fresh ephemeral
+  public key `slot.epk` that is statistically independent of the recipient key.
+  An adversary holding candidate recipient public keys cannot, from `slot.epk` and
+  `slot.wrap` alone, decide which candidate (if any) the slot targets without the
+  matching private key. The classical path is therefore key-private.
+- **`mlkem768x25519` (not claimed).** Recipient anonymity against an adversary
+  holding candidate recipient public keys is a **separate property not implied by
+  the IND-CCA security** of the hybrid KEM. This CIP does **not** claim it for the
+  X-Wing path unless and until it is independently justified for X-Wing. A
+  deployment whose threat model requires recipient anonymity against a key-holding
+  adversary **MUST NOT** rely on the hybrid path for that property; the honest
+  leakages below still hold for both KEMs.
+
+For both KEMs the honest leakages are the same — the **slot count**, the
+**sealed-vs-open** distinction, and the **classical-vs-hybrid** KEM family
+(`enc.kem`) are visible to any observer; nothing more about the recipients is.
 
 **Forward anonymity across later signed records.** A producer who publishes a
 sequence of unsigned sealed-PoE records and later publishes a signed record under
@@ -2778,8 +3205,9 @@ load-bearing artefacts are:
    This is a coordination task, not a CIP-text task.
 7. **External cryptographic review.** Commission a short external review of the
    sealed-PoE construction, primarily covering the multi-recipient wrap (per-slot
-   KEK derivation, zero-nonce safety), the slot-set MAC, and the AAD binding to
-   `nonce ‖ slots_mac` (Acceptance Criterion 6).
+   KEK derivation including the hybrid external salt-binding, zero-nonce safety),
+   the slot-set MAC over the slots transcript, and the content-AEAD AAD binding
+   (`AD_CONTENT_SLOTS` / `AD_CONTENT_PASSPHRASE`) (Acceptance Criterion 6).
 8. **Maintenance.** Editorial corrections that do not change wire bytes are
    non-breaking and may land by PR against the merged CIP. Adding a new algorithm
    identifier to a registry is additive and bumps no version — v1 verifiers reject
