@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="350" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="6" markerHeight="4" refX="5" refY="2" orient="auto">
+      <polygon points="0 0, 6 2, 0 4" fill="#595959"/>
+    </marker>
+    
+    <style>
+      .rb-link, .eb-link, .cert-link {
+        cursor: pointer;
+      }
+      .rb-link:hover rect {
+        filter: brightness(1.3);
+      }
+      .eb-link:hover rect {
+        filter: brightness(1.3);
+      }
+      .cert-link:hover polygon {
+        filter: brightness(1.3);
+      }
+    </style>
+  </defs>
+  
+  <rect width="1200" height="350" fill="#ffffff"/>
+  
+  <g id="time-scale">
+    <rect x="50" y="30" width="1100" height="25" fill="#f8f8f8" stroke="#ddd" stroke-width="1" rx="3"/>
+    <text x="600" y="47" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#666">Time (slots) →</text>
+  </g>
+  
+  <g id="block-chain">
+    <line x1="150" y1="140" x2="1100" y2="140" stroke="#999" stroke-width="1.5"/>
+    
+    <line x1="50" y1="140" x2="135" y2="140" stroke="#999" stroke-width="1.5" stroke-dasharray="5,5"/>
+    
+    <line x1="150" y1="160" x2="150" y2="180" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="135" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="125" y="180" width="50" height="30" fill="#f5f5f5" stroke="#666666" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="300" y1="160" x2="300" y2="180" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="285" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="275" y="180" width="50" height="30" fill="#d9ead3" stroke="#274e13" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="550" y1="160" x2="550" y2="220" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="535" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="cert-link">
+      <polygon points="550,150 563,160 563,170 550,180 537,170 537,160" fill="#fff2cc" stroke="#f9a825" stroke-width="2"/>
+    </a>
+    <path d="M 550 180 Q 550 195 325 195" stroke="#f9a825" stroke-width="1.5" stroke-dasharray="3,3" fill="none"/>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="525" y="220" width="50" height="30" fill="#f5f5f5" stroke="#666666" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="650" y1="160" x2="650" y2="180" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="635" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="625" y="180" width="50" height="30" fill="#f5f5f5" stroke="#666666" stroke-width="2" rx="3"/>
+    </a>
+
+    <line x1="725" y1="160" x2="725" y2="180" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="710" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="700" y="180" width="50" height="30" fill="#d9ead3" stroke="#274e13" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="900" y1="160" x2="900" y2="220" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="885" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="cert-link">
+      <polygon points="900,150 913,160 913,170 900,180 887,170 887,160" fill="#fff2cc" stroke="#f9a825" stroke-width="2"/>
+    </a>
+    <path d="M 900 180 Q 900 195 750 195" stroke="#f9a825" stroke-width="1.5" stroke-dasharray="3,3" fill="none"/>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="875" y="220" width="50" height="30" fill="#f5f5f5" stroke="#666666" stroke-width="2" rx="3"/>
+    </a>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="935" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="1100" y1="160" x2="1100" y2="180" stroke="#783f04" stroke-width="1.5"/>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="1085" y="120" width="30" height="40" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="1075" y="180" width="50" height="30" fill="#d9ead3" stroke="#274e13" stroke-width="2" rx="3"/>
+    </a>
+    
+    <line x1="1115" y1="140" x2="1150" y2="140" stroke="#999" stroke-width="1.5" stroke-dasharray="5,5"/>
+  </g>
+  
+  <g id="legend" transform="translate(600, 280)">
+    <text x="0" y="0" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#333" text-anchor="middle">Legend</text>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#ranking-blocks-rbs" class="rb-link">
+      <rect x="-280" y="15" width="25" height="30" fill="#fce5cd" stroke="#783f04" stroke-width="2" rx="3"/>
+    </a>
+    <text x="-250" y="36" font-family="Arial, sans-serif" font-size="14" fill="#333">Ranking Block</text>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="-146" y="18" width="35" height="22" fill="#d9ead3" stroke="#274e13" stroke-width="2" rx="3"/>
+    </a>
+    <text x="-106" y="36" font-family="Arial, sans-serif" font-size="14" fill="#333">Endorser Block</text>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#votes-and-certificates" class="cert-link">
+      <polygon points="15,15 28,25 28,35 15,45 2,35 2,25" fill="#fff2cc" stroke="#f9a825" stroke-width="2"/>
+    </a>
+    <text x="35" y="36" font-family="Arial, sans-serif" font-size="14" fill="#333">Certificate</text>
+    
+    <a href="https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cip/README.md#endorser-blocks-ebs" class="eb-link">
+      <rect x="115" y="18" width="35" height="22" fill="#f5f5f5" stroke="#666666" stroke-width="2" rx="3"/>
+    </a>
+    <text x="155" y="36" font-family="Arial, sans-serif" font-size="14" fill="#333">Announced Endorser Block (uncertified)</text>
+  </g>
+</svg>

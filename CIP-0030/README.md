@@ -1,10 +1,10 @@
 ---
 CIP: 30
 Title: Cardano dApp-Wallet Web Bridge
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
-  - rooooooooob
+  - rooooooooob <https://github.com/github.com>
 Implementors:
   - Begin <https://begin.is/>
   - Eternl <https://eternl.io/>
@@ -16,20 +16,20 @@ Implementors:
   - RayWallet <https://raywallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/88
-  - https://github.com/cardano-foundation/CIPs/pull/148
-  - https://github.com/cardano-foundation/CIPs/pull/151
-  - https://github.com/cardano-foundation/CIPs/pull/183
-  - https://github.com/cardano-foundation/CIPs/pull/208
-  - https://github.com/cardano-foundation/CIPs/pull/323
-  - https://github.com/cardano-foundation/CIPs/issues/169
-  - https://github.com/cardano-foundation/CIPs/issues/178
-  - https://github.com/cardano-foundation/CIPs/issues/204
-  - https://github.com/cardano-foundation/CIPs/issues/253
-  - https://github.com/cardano-foundation/CIPs/issues/386
-  - https://github.com/cardano-foundation/CIPs/issues/404
-  - https://github.com/cardano-foundation/CIPs/issues/419
-  - https://github.com/cardano-foundation/CIPs/pull/446
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/88
+  - CIP-0030 | update to api.signData(): https://github.com/cardano-foundation/CIPs/pull/148
+  - CIP-0030 | Events API: https://github.com/cardano-foundation/CIPs/pull/151
+  - CIP30 experimental api section: https://github.com/cardano-foundation/CIPs/pull/183
+  - CIP-0030 | Add getCollateral function to the connector API: https://github.com/cardano-foundation/CIPs/pull/208
+  - CIP-0030 | Add chain id to differentiate between testnets: https://github.com/cardano-foundation/CIPs/pull/323
+  - CIP-0030 | Upgrade to latest format & propose version / extension scheme: https://github.com/cardano-foundation/CIPs/pull/446
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/169
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/178
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/204
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/253
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/386
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/404
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/419
 Created: 2021-04-29
 License: CC-BY-4.0
 ---
@@ -38,7 +38,7 @@ License: CC-BY-4.0
 
 This documents describes a webpage-based communication bridge allowing webpages (i.e. dApps) to interface with Cardano wallets. This is done via injected javascript code into webpages. This specification defines the manner that such code is to be accessed by the webpage/dApp, as well as defining the API for dApps to communicate with the user's wallet. This document currently concerns the Shelley-Mary era but will have a second version once Plutus is supported. This specification is intended to cover similar use cases as web3 for Ethereum or [EIP-0012](https://github.com/ergoplatform/eips/pull/23) for Ergo. The design of this spec was based on the latter.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In order to facilitate future dApp development, we will need a way for dApps to communicate with the user's wallet. While Cardano does not yet support smart contracts, there are still various use cases for this, such as NFT management. This will also lay the groundwork for an updated version of the spec once the Alonzo hardfork is released which can extend it to allow for Plutus support.
 
@@ -281,9 +281,21 @@ Errors: `APIError`, `PaginateError`
 
 If `amount` is `undefined`, this shall return a list of all UTXOs (unspent transaction outputs) controlled by the wallet. If `amount` is not `undefined`, this request shall be limited to just the UTXOs that are required to reach the combined ADA/multiasset value target specified in `amount`, and if this cannot be attained, `null` shall be returned. The results can be further paginated by `paginate` if it is not `undefined`.
 
-#### `api.getCollateral(params: { amount: cbor<Coin> }): Promise<TransactionUnspentOutput[] | null>`
+#### (DEPRECATED) `api.getCollateral(params: { amount: cbor<Coin> }): Promise<TransactionUnspentOutput[] | null>`
 
 Errors: `APIError`
+
+##### DEPRECATION NOTICE
+
+Since [CIP-0040 | Collateral Output](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0040/README.md) and Babbage era "Collateral Return" and "Total Collateral" fields on a transaction body are supported, a transaction can now use up to three **any** collateral inputs and specify the collateral return outputs to receive extra ada and tokens back as change. Transaction-building SDKs and libraries now all support this functionality as well (see [Blaze](https://blaze.butane.dev/), [Mesh](https://meshjs.dev/), [Lucid Evolution](https://anastasia-labs.github.io/lucid-evolution/), [CSL](https://github.com/Emurgo/cardano-serialization-lib)). The dedicated transaction fields and strong tooling support removes the **need** for dedicated cumbersome API for providing *special* collateral inputs to exist.
+
+DApps should make effort to build transactions using the latest available best methods and practices. In this case it means always utilising collateral return and not risking burning UTxOs with no return. Wallets looking to implement this standard are free to **not** support this deprecated API function, which does require some extra special management of UTxOs within the wallet, beyond normal logic.
+
+Deprecating this method aims to motivate DApp implementors not to use this method, but rather to use newer better techniques.
+
+Any future versions of "wallet-to-dapp" APIs seeking to replace CIP30 should **not ever** include any methods of this kind. This mistake of history should be forgotten forever.
+
+##### Description
 
 The function takes a required object with parameters. With a single **required** parameter for now: `amount`. (**NOTE:** some wallets may be ignoring the amount parameter, in which case it might be possible to call the function without it, but this behavior is not recommended!). Reasons why the `amount` parameter is required:
 1. Dapps must be motivated to understand what they are doing with the collateral, in case they decide to handle it manually.
@@ -372,7 +384,7 @@ The benefits of this are:
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
 1. It provides a clear path to updating the CIP version number (when functions move from experimental -> stable)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 See justification and explanations provided with each API endpoint.
 

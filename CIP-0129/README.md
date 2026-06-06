@@ -1,14 +1,14 @@
 ---
 CIP: 129
 Title: Governance Identifiers
-Status: Proposed
 Category: Tools
+Status: Proposed
 Authors:
   - Ashish Prajapati <ashish@strica.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/845
-  - https://github.com/cardano-foundation/CIPs/pull/857
+  - CIP-0005 | update drep and cc identifier prefixes: https://github.com/cardano-foundation/CIPs/pull/845
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/857
 Created: 2024-07-15
 License: CC-BY-4.0
 ---
@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This Cardano Improvement Proposal (CIP) defines a standardized structure for encoding and representing various governance and credential identifiers, specifically designed for DRep, Constitutional Committee (CC) keys, and Governance Actions within the Conway era. This specification introduces a single-byte header that encapsulates metadata related to the key type and credential type, allowing identifiers to retain critical metadata even when stored as byte arrays. By encoding this metadata directly into the bech32 format, we enhance both usability and interoperability across Cardano infrastructure and tools.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The Conway era on Cardano introduces new governance features, requiring unique and identifiable credentials for roles such as DReps, Constitutional Committee members, and distinct governance actions. Existing infrastructure and tools that process bech32 identifiers often decode and store the raw byte data for efficiency, unintentionally stripping away the metadata embedded in the bech32 prefix. This CIP addresses that limitation by embedding metadata into a structured single-byte header, allowing credentials to be stored in byte form without losing essential metadata. This standardization facilitates seamless linkage, sharing, and compatibility of governance identifiers across the ecosystem, supporting a robust and interoperable governance framework in Cardano.
 
@@ -140,7 +140,7 @@ Identifier - `2200000000000000000000000000000000000000000000000000000000`
 
 Bech32 - `drep1ygqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq7vlc9n`
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP achieves its objectives by introducing a unified header and payload structure for governance-related keys, allowing for metadata to be directly embedded within the byte-level representation of each identifier. By defining a single-byte header that includes both key type and credential type, the proposal provides a consistent, compact format that retains crucial metadata even when stored or transmitted as raw byte arrays. This specification is designed to be forward-compatible, with a capacity to support up to 16 key types, allowing it to evolve with Cardano’s governance and credential requirements.
 
@@ -170,6 +170,7 @@ Tools, Wallets, and Explorers to utilize the identifiers and bech32 prefixes def
   - [x] Eternl
   - [x] Typhon Wallet
   - [ ] Lace
+  - [x] Gero
 
 ### Implementation Plan
 - This CIP uses some bech32 prefixes which are already defined by CIP105 and ref by CIP005, This PR includes updates to both the CIPs with updated vector spec. The suggested changes align with the design of the original CIP005.

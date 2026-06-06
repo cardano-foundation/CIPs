@@ -64,17 +64,17 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0033 | [Reference Scripts](./CIP-0033/) | Active |
 | 0034 | [Chain ID Registry](./CIP-0034/) | Proposed |
 | 0035 | [Plutus Core Evolution](./CIP-0035) | Active |
-| 0036 | [Catalyst Registration Transaction Metadata Format](./CIP-0036) | Proposed |
+| 0036 | [Catalyst Registration Transaction Metadata Format (Updated)](./CIP-0036) | Proposed |
 | 0037 | [Dynamic Saturation Based on Pledge](./CIP-0037) | Proposed |
 | 0040 | [Collateral Output](./CIP-0040) | Active |
-| 0042 | [New Plutus Builtin: serialiseBuiltinData](./CIP-0042) | Active |
+| 0042 | [New Plutus Builtin serialiseData](./CIP-0042) | Active |
 | 0045 | [Decentralized WebRTC dApp-Wallet Communication](./CIP-0045) | Active |
 | 0049 | [ECDSA and Schnorr signatures in Plutus Core](./CIP-0049) | Active |
 | 0050 | [Pledge Leverage-Based Staking Rewards](./CIP-0050) | Proposed |
 | 0052 | [Cardano Audit Best Practice Guidelines](./CIP-0052) | Proposed |
 | 0054 | [Cardano Smart NFTs](./CIP-0054) | Proposed |
 | 0055 | [Protocol Parameters (Babbage Era)](./CIP-0055) | Active |
-| 0057 | [Plutus Smart-Contract Blueprint](./CIP-0057) | Active |
+| 0057 | [Plutus Contract Blueprint](./CIP-0057) | Active |
 | 0058 | [Plutus Bitwise Primitives](./CIP-0058) | Inactive |
 | 0059 | [Terminology Surrounding Core Features](./CIP-0059) | Active |
 | 0060 | [Music Token Metadata](./CIP-0060) | Active |
@@ -82,38 +82,39 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0068 | [Datum Metadata Standard](./CIP-0068) | Active |
 | 0069 | [Plutus Script Type Uniformization](./CIP-0069) | Active |
 | 0071 | [Non-Fungible Token (NFT) Proxy Voting Standard](./CIP-0071) | Proposed |
-| 0072 | [DApp Registration](./CIP-0072) | Proposed |
-| 0074 | [Set min-pool-cost to 0](./CIP-0074) | Proposed |
+| 0072 | [dApp Registration & Verification](./CIP-0072) | Proposed |
+| 0074 | [Set minPoolCost to 0](./CIP-0074) | Proposed |
 | 0075 | [Fair Stake Pool Rewards](./CIP-0075) | Proposed |
 | 0080 | [Transaction Serialization Deprecation Cycle](./CIP-0080) | Active |
 | 0082 | [Improved Rewards Scheme Parameters](./CIP-0082) | Proposed |
 | 0083 | [Encrypted Transaction message/comment metadata (Addendum to CIP-0020)](./CIP-0083) | Active |
 | 0084 | [Cardano Ledger Evolution](./CIP-0084) | Active |
-| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Proposed |
+| 0085 | [Sums-of-products in Plutus Core](./CIP-0085) | Active |
 | 0086 | [NFT Metadata Update Oracles](./CIP-0086) | Proposed |
 | 0088 | [Token Policy Registration](./CIP-0088) | Proposed |
 | 0089 | [Distributed DApps & Beacon Tokens](./CIP-0089) | Active |
 | 0091 | [Don't force Built-In functions](./CIP-0091) | Proposed |
 | 0093 | [Authenticated Web3 HTTP requests](./CIP-0093) | Proposed |
-| 0094 | [SPO On-chain Polls](./CIP-0094) | Active |
+| 0094 | [On-chain SPO polls](./CIP-0094) | Active |
 | 0095 | [Web-Wallet Bridge - Conway ledger era](./CIP-0095) | Active |
 | 0099 | [Proof of Onboarding](./CIP-0099) | Active |
-| 0100 | [Governance Metadata](./CIP-0100) | Proposed |
+| 0100 | [Governance Metadata](./CIP-0100) | Active |
 | 0101 | [Integration of keccak256 into Plutus](./CIP-0101) | Proposed |
 | 0102 | [Royalty Datum Metadata](./CIP-0102) | Proposed |
 | 0103 | [Web-Wallet Bridge - Bulk transaction signing](./CIP-0103) | Active |
 | 0104 | [Web-Wallet Bridge - Account public key](./CIP-0104) | Proposed |
-| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Proposed |
+| 0105 | [Conway Era Key Chains for HD Wallets](./CIP-0105) | Active |
 | 0106 | [Web-Wallet Bridge - Multisig wallets](./CIP-0106) | Proposed |
 | 0107 | [URI Scheme - Block and transaction objects](./CIP-0107) | Proposed |
 | 0108 | [Governance Metadata - Governance Actions](./CIP-0108) | Proposed |
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
-| 0110 | [Plutus v1 compatible script references](./CIP-0110) | Active |
+| 0110 | [Plutus v1 Script References](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
-| 0116 | [Universal JSON Encoding for Domain Types](./CIP-0116) | Proposed |
+| 0116 | [Canonical JSON Encoding for Domain Types](./CIP-0116) | Proposed |
 | 0117 | [Explicit script return values](./CIP-0117) | Active |
+| 0118 | [Nested Transactions](./CIP-0118) | Proposed |
 | 0119 | [Governance Metadata - DReps](./CIP-0119) | Proposed |
 | 0120 | [Constitution specification](./CIP-0120) | Proposed |
 | 0121 | [Integer-ByteString conversions](./CIP-0121) | Active
@@ -123,27 +124,49 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0127 | [Integration of ripemd_160 into Plutus](./CIP-0127) | Active |
 | 0128 | [Preserving Order of Transaction Inputs](./CIP-0128) | Proposed |
 | 0129 | [Governance Identifiers](./CIP-0129) | Proposed |
-| 0132 | [New Plutus Builtin DropList](./CIP-0132) | Proposed |
+| 0132 | [New Plutus Builtin dropList](./CIP-0132) | Proposed |
 | 0133 | [Plutus support for Multi-Scalar Multiplication over BLS12-381](./CIP-0133) | Proposed |
 | 0134 | [Cardano URIs - Address Representation](./CIP-0134) | Proposed |
 | 0135 | [Disaster Recovery Plan for Cardano networks](./CIP-0135) | Active |
 | 0136 | [Governance metadata - Constitutional Committee votes](./CIP-0136) | Proposed |
 | 0137 | [Decentralized Message Queue](./CIP-0137) | Proposed |
 | 0138 | [Plutus Core Builtin Type - Array](./CIP-0138) | Proposed |
+| 0139 | [Universal Query Layer](./CIP-0139) | Proposed |
 | 0140 | [Ouroboros Peras - Faster Settlement](./CIP-0140) | Proposed |
+| 0141 | [Web-Wallet Bridge - Plutus wallets](./CIP-0141) | Proposed |
+| 0142 | [Web-Wallet Bridge - Network Determination](./CIP-0142) | Proposed |
 | 0143 | [Interoperable Programmable Tokens](./CIP-0143) | Inactive |
+| 0146 | [Multi-signature wallet registration and discovery](./CIP-0146) | Proposed |
 | 0149 | [Optional DRep Compensation](./CIP-0149) | Proposed |
 | 0150 | [Block Data Compression](./CIP-0150) | Proposed |
 | 0151 | [On-Chain Registration - Stake Pools](./CIP-0151) | Proposed |
-| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Proposed |
+| 0152 | [Modules in UPLC](./CIP-0152) | Proposed |
+| 0153 | [Plutus Core Builtin Type - MaryEraValue](./CIP-0153) | Proposed |
+| 0155 | [SRV Registry](./CIP-0155) | Proposed |
+| 0156 | [Plutus Core Builtin Function - multiIndexArray](./CIP-0156) | Proposed |
+| 0158 | [Cardano URIs - Browse Application](./CIP-0158) | Proposed |
+| 0159 | [Account Address Enhancement](./CIP-0159) | Proposed |
+| 0160 | [Receiving Script Purpose and Addresses](./CIP-0160) | Proposed |
+| 0161 | [Ouroboros Phalanx - Breaking Grinding Incentives](./CIP-0161) | Proposed |
+| 0162 | [URI Scheme - DRep Links](./CIP-0161) | Proposed |
+| 0163 | [Time-Bound Delegation with Dynamic Rewards](./CIP-0163) | Proposed |
+| 0164 | [Ouroboros Linear Leios - Greater transaction throughput](./CIP-0164) | Proposed |
+| 0165 | [Canonical Ledger State](./CIP-0165) | Proposed |
+| 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
+| 0170 | [KERI-backed metadata attestations](./CIP-0170) | Proposed |
+| 0171 | [On-chain Smart Contract Bytecode Verification](./CIP-0171) | Proposed |
+| 0176 | [Non-segregated Block Body Serialization](./CIP-0176) | Proposed |
+| 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
+| 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
+| 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
 | 1853 | [HD (Hierarchy for Deterministic) Stake Pool Cold Keys for Cardano](./CIP-1853/) | Proposed |
 | 1854 | [Multi-signatures HD Wallets](./CIP-1854/) | Active |
-| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Active |
+| 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2025-06-18</i></p>
+<p align="right"><i>Last updated on 2026-05-12</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -167,13 +190,18 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0011 | [Universal JSON Encoding for Domain Types](./CPS-0011) | Open |
 | 0012 | [Query Layer Standardization](./CPS-0012) | Open |
 | 0013 | [Better builtin data structures in Plutus](./CPS-0013) | Open |
-| 0014 | [Register of CBOR Tags](./CPS-0014) | Open |
+| 0014 | [Register of On-Chain CBOR Tags](./CPS-0014) | Open |
 | 0016 | [Cardano URIs](./CPS-0016) | Open |
 | 0017 | [Settlement Speed](./CPS-0017) | Open |
 | 0018 | [Greater Transaction Throughput](./CPS-0018) | Open |
+| 0020 | [Governance Stakeholder Incentivization](./CPS-0020) | Open |
 | 0021 | [Ouroboros Randomness Manipulation](./CPS-0021) | Open |
+| 0022 | [Lost Stake](./CPS-0022) | Open |
+| 0026 | [Approaches to Fully Homomorphic Encryption](./CPS-0026) | Open |
+| 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
+| 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
 
-<p align="right"><i>Last updated on 2025-04-15</i></p>
+<p align="right"><i>Last updated on 2026-05-12</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
@@ -204,11 +232,10 @@ Proposals stalled without any updates from their authors will eventually be clos
 
 ## Editors
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Adam Dean <br/> [@Crypto2099][] | Thomas Vellekoop <br/> [@perturbing][] |
-| ---                            | ---                            | ---                             | ---                                    |
+| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Thomas Vellekoop <br/> [@perturbing][] |
+| ---                            | ---                            | ---                                    |
 
 [@rphair]: https://github.com/rphair
 [@Ryun1]: https://github.com/Ryun1
-[@Crypto2099]: https://github.com/Crypto2099
 [@perturbing]: https://github.com/perturbing
 

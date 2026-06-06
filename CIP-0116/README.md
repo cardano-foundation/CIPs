@@ -1,6 +1,6 @@
 ---
 CIP: 116
-Title: Standard JSON encoding for Domain Types
+Title: Canonical JSON Encoding for Domain Types
 Category: Tools
 Status: Proposed
 Authors:
@@ -8,8 +8,10 @@ Authors:
 Implementors:
     - Vladimir Kalnitsky <klntsky@gmail.com>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/742
-    - https://github.com/cardano-foundation/CIPs/pull/766
+    - CPS-0011? | Universal JSON Encoding for Domain Types: https://github.com/cardano-foundation/CIPs/pull/742
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/766
+Solution To:
+    - CPS-0011: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0011
 Created: 2024-02-22
 License: CC-BY-4.0
 ---
@@ -18,7 +20,7 @@ License: CC-BY-4.0
 
 Canonical JSON encoding for Cardano domain types lets the ecosystem converge on a single way of serializing data to JSON, thus freeing the developers from repeating roughly the same, but slightly different encoding/decoding logic over and over.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano domain types have canonical CDDL definitions (for every era), but when it comes to use in web apps, where JSON is the universally accepted format, there is no definite standard. This CIP aims to change that.
 
@@ -253,7 +255,7 @@ This CIP should not follow a conventional versioning scheme, rather it should be
 
 Furthermore, for each subsequent schema, the [changelog](./changelog.md) must be updated. Authors must clearly articulate the deltas between schemas.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Scope
 

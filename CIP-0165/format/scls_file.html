@@ -1,0 +1,520 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+    <title>SclsFile format specification</title>
+  </head>
+  <body>
+           <div class="container">
+  <h1>SclsFile format specification</h1>
+
+      
+<a name='type-scls_file'></a>
+<h1>Type: SclsFile</h1>
+
+<p>A seekable, versioned container for CBOR payloads whose structure is defined
+by an external CDDL schema.
+</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>record</td>
+<td><a href="#type-scls_file-scls_record">SclsRecord</a></td>
+<td>Typed records with data</td>
+</tr>
+</table>
+<a name='enum-scls_file-chunk_format'></a>
+<h2>Enum: chunk_format</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>raw</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>zstd</td><td></td></tr>
+</tr>
+<tr>
+<td>2</td><td>zstde</td><td></td></tr>
+</tr>
+</table>
+<a name='enum-scls_file-network_id'></a>
+<h2>Enum: network_id</h2>
+
+<table class="table">
+<tr>
+<th>ID</th><th>Name</th><th>Note</th>
+</tr>
+<tr>
+<td>0</td><td>mainnet</td><td></td></tr>
+</tr>
+<tr>
+<td>1</td><td>testnet</td><td></td></tr>
+</tr>
+</table>
+<a name='type-scls_file-digest'></a>
+<h2>Type: Digest</h2>
+
+<p>Digest of the data</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>data</td>
+<td></td>
+<td>blake28 hash of data</td>
+</tr>
+</table>
+<a name='type-scls_file-entries_metadata_record'></a>
+<h2>Type: EntriesMetadataRecord</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-scls_file-entry_metadata">EntryMetadata</a></td>
+<td></td>
+</tr>
+</table>
+<a name='type-scls_file-entries_record'></a>
+<h2>Type: EntriesRecord</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries</td>
+<td><a href="#type-scls_file-entry">Entry</a></td>
+<td></td>
+</tr>
+</table>
+<a name='type-scls_file-entry'></a>
+<h2>Type: Entry</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_body</td>
+<td>u4be</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>body</td>
+<td><a href="#type-scls_file-entry_body">EntryBody</a></td>
+<td></td>
+</tr>
+</table>
+<a name='type-scls_file-entry_body'></a>
+<h2>Type: EntryBody</h2>
+
+<p>Body of the entry with the key of the fixes size, that depends on the namespace</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>key</td>
+<td></td>
+<td>fixed size key</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>value</td>
+<td></td>
+<td>cbor encoded entry</td>
+</tr>
+</table>
+<a name='type-scls_file-entry_metadata'></a>
+<h2>Type: EntryMetadata</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_subject</td>
+<td>u4be</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>subject</td>
+<td></td>
+<td>subject of entry (URI)</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>len_value</td>
+<td>u4be</td>
+<td></td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>value</td>
+<td></td>
+<td>cbor encoded value</td>
+</tr>
+</table>
+<a name='type-scls_file-metadata_footer'></a>
+<h2>Type: MetadataFooter</h2>
+
+<p>Metadata footer with entry count and digest</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries_count</td>
+<td>u8be</td>
+<td>Number of entries in the record</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>digest</td>
+<td><a href="#type-scls_file-digest">Digest</a></td>
+<td>blake28 hash of the entries in the record</td>
+</tr>
+</table>
+<a name='type-scls_file-namespace_info'></a>
+<h2>Type: NamespaceInfo</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_ns</td>
+<td>u4be</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>ns_info</td>
+<td><a href="#type-scls_file-ns_info">NsInfo</a></td>
+<td></td>
+</tr>
+</table>
+<a name='type-scls_file-ns_info'></a>
+<h2>Type: NsInfo</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>entries_count</td>
+<td>u8be</td>
+<td>number of entries in the namespace</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>chunks_count</td>
+<td>u8be</td>
+<td>number of chunks in the namespace</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>name</td>
+<td>str(UTF-8)</td>
+<td>namespace name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>digest</td>
+<td><a href="#type-scls_file-digest">Digest</a></td>
+<td>merkle-tree hash of the alive entries in the namespace</td>
+</tr>
+</table>
+<a name='type-scls_file-rec_chunk'></a>
+<h2>Type: RecChunk</h2>
+
+<p>Chunk - is a record with data</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>seqno</td>
+<td>u8be</td>
+<td>Sequential number of the chunk</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>format</td>
+<td>u1→ChunkFormat</td>
+<td></td>
+</tr>
+<tr>
+<td>9</td>
+<td>...</td>
+<td>len_ns</td>
+<td>u4be</td>
+<td>size of the namespace</td>
+</tr>
+<tr>
+<td>13</td>
+<td>...</td>
+<td>ns</td>
+<td>str(UTF-8)</td>
+<td>namespace name</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>data</td>
+<td><a href="#type-scls_file-entries_record">EntriesRecord</a></td>
+<td>payload parsed as entries</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>entries_count</td>
+<td>u4be</td>
+<td>Number of entries in the chunk</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>digest</td>
+<td><a href="#type-scls_file-digest">Digest</a></td>
+<td>blake28 hash of the entries in the record</td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(len_data),List(types, rec_chunk, instances, len_data),BinOp(Name(identifier(rec_payload_size)),Sub,BinOp(BinOp(BinOp(BinOp(IntNum(8),Add,IntNum(1)),Add,Name(identifier(ns_size))),Add,IntNum(4)),Add,IntNum(28))),None,Some(CalcIntType),DocSpec(Some(seqno=8, format=1, entries_count=4, digest=28.),List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(len_key),List(types, rec_chunk, instances, len_key),IfExp(Compare(Name(identifier(ns)),Eq,Str(utxo/v0)),IntNum(34),IfExp(Compare(Name(identifier(ns)),Eq,Str(stake)),IntNum(28),IfExp(Compare(Name(identifier(ns)),Eq,Str(pool)),IntNum(28),IntNum(0)))),None,Some(Int1Type(true)),DocSpec(None,List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(ns_size),List(types, rec_chunk, instances, ns_size),BinOp(IntNum(4),Add,Name(identifier(len_ns))),None,Some(CalcIntType),DocSpec(None,List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(rec_payload_size),List(types, rec_chunk, instances, rec_payload_size),BinOp(Attribute(Attribute(Name(identifier(_parent)),identifier(_parent)),identifier(len_payload)),Sub,IntNum(1)),None,Some(CalcIntType),DocSpec(None,List()))
+<a name='type-scls_file-rec_header'></a>
+<h2>Type: RecHeader</h2>
+
+<p>Header record</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>magic</td>
+<td></td>
+<td>Magic bytes "SCLS"</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>version</td>
+<td>u4be</td>
+<td>Version of the file format</td>
+</tr>
+</table>
+<a name='type-scls_file-rec_manifest'></a>
+<h2>Type: RecManifest</h2>
+
+<p>Manifest — is a trailer in the file that describes information of about the file contents</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>slot_no</td>
+<td>u8be</td>
+<td>Slot number that this manifest refers to</td>
+</tr>
+<tr>
+<td>8</td>
+<td>...</td>
+<td>total_entries</td>
+<td>u8be</td>
+<td>total amount of entries in the file</td>
+</tr>
+<tr>
+<td>16</td>
+<td>...</td>
+<td>total_chunks</td>
+<td>u8be</td>
+<td>total amount of chunks in the file</td>
+</tr>
+<tr>
+<td>24</td>
+<td>...</td>
+<td>summary</td>
+<td><a href="#type-scls_file-summary">Summary</a></td>
+<td>information about the file</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>namespace_info</td>
+<td><a href="#type-scls_file-namespace_info">NamespaceInfo</a></td>
+<td>information about the namespaces</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>prev_manifest</td>
+<td>u8be</td>
+<td>absolute offset of the previous manifest, zero if there is no</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>root_hash</td>
+<td><a href="#type-scls_file-digest">Digest</a></td>
+<td>merkle tree root of the live entries</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>offset</td>
+<td>u4be</td>
+<td>relative offset to the beginning of the record</td>
+</tr>
+</table>
+<a name='type-scls_file-rec_metadata'></a>
+<h2>Type: RecMetadata</h2>
+
+<p>Metadata record containing URI-indexed entries with CBOR-encoded values</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>data</td>
+<td><a href="#type-scls_file-entries_metadata_record">EntriesMetadataRecord</a></td>
+<td>payload parsed as entries</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>footer</td>
+<td><a href="#type-scls_file-metadata_footer">MetadataFooter</a></td>
+<td></td>
+</tr>
+</table>
+value instance: ValueInstanceSpec(InstanceIdentifier(len_data),List(types, rec_metadata, instances, len_data),BinOp(Name(identifier(rec_payload_size)),Sub,ByteSizeOfType(typeId(false,List(metadata_footer),false))),None,Some(CalcIntType),DocSpec(Some(entries_count=8, digest=28.),List()))
+value instance: ValueInstanceSpec(InstanceIdentifier(rec_payload_size),List(types, rec_metadata, instances, rec_payload_size),BinOp(Attribute(Attribute(Name(identifier(_parent)),identifier(_parent)),identifier(len_payload)),Sub,IntNum(1)),None,Some(CalcIntType),DocSpec(None,List()))
+<a name='type-scls_file-scls_record'></a>
+<h2>Type: SclsRecord</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_payload</td>
+<td>u4be</td>
+<td>Size of the record, including size and record type</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>payload</td>
+<td><a href="#type-scls_file-scls_record_data">SclsRecordData</a></td>
+<td>payload of the record</td>
+</tr>
+</table>
+<a name='type-scls_file-scls_record_data'></a>
+<h2>Type: SclsRecordData</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>record_type</td>
+<td>u1</td>
+<td>Type of the record</td>
+</tr>
+<tr>
+<td>1</td>
+<td>...</td>
+<td>record_data</td>
+<td>SwitchType(Name(identifier(record_type)),TreeMap(IntNum(0) -> UserTypeFromBytes(List(rec_header),None,List(),BytesEosType(None,false,None,None),None), IntNum(1) -> UserTypeFromBytes(List(rec_manifest),None,List(),BytesEosType(None,false,None,None),None), IntNum(16) -> UserTypeFromBytes(List(rec_chunk),None,List(),BytesEosType(None,false,None,None),None), IntNum(49) -> UserTypeFromBytes(List(rec_metadata),None,List(),BytesEosType(None,false,None,None),None), Name(identifier(_)) -> BytesEosType(None,false,None,None)),true,false)</td>
+<td>Record payload</td>
+</tr>
+</table>
+<a name='type-scls_file-summary'></a>
+<h2>Type: Summary</h2>
+
+<p>Summary</p>
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>created_at</td>
+<td><a href="#type-scls_file-tstr">Tstr</a></td>
+<td>absolute timestamp when file was generated in ISO8601 format</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>tool_bytes</td>
+<td><a href="#type-scls_file-tstr">Tstr</a></td>
+<td>name of the tool that has generated the file</td>
+</tr>
+<tr>
+<td>???</td>
+<td>...</td>
+<td>comment</td>
+<td><a href="#type-scls_file-tstr">Tstr</a></td>
+<td>optional comment</td>
+</tr>
+</table>
+<a name='type-scls_file-tstr'></a>
+<h2>Type: Tstr</h2>
+
+<table class="table">
+<tr><th>Offset</th><th>Size</th><th>ID</th><th>Type</th><th>Note</th></tr>
+<tr>
+<td>0</td>
+<td>...</td>
+<td>len_data</td>
+<td>u4be</td>
+<td>size of the string</td>
+</tr>
+<tr>
+<td>4</td>
+<td>...</td>
+<td>data</td>
+<td>str(UTF-8)</td>
+<td>value of the string</td>
+</tr>
+</table>
+
+  </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+  </body>
+</html>
+      
