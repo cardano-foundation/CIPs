@@ -1,6 +1,6 @@
 ---
 CIP: 138
-Title: Plutus Core Builtin Type - `Array`
+Title: Plutus Core Builtin Type - Array
 Category: Plutus
 Status: Proposed
 Authors:
@@ -8,7 +8,7 @@ Authors:
     - Ana Pantilie <ana.pantilie@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/915
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/915
 Created: 2024-09-18
 License: CC-BY-4.0
 ---
@@ -18,7 +18,7 @@ License: CC-BY-4.0
 We propose an array builtin type for Plutus Core. This type will have constant-time lookup,
 which is a useful feature that is otherwise not possible to achieve. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The first part of [CPS-0013][1] outlines in great detail the motivation for introducing this
 new builtin type.
@@ -63,9 +63,10 @@ We add the following builtin functions:
 As with all Plutus Core builtin types, arrays must have a fixed binary representation.
 
 For arrays, this representation will be based on the one currently implemented in the [flat][8] encoding
-for the [Haskell `Array` type][9].
+for the [Haskell `List` type][9].  Plutus Core arrays must be converted to lists before being serialised,
+and deserialisation is performed by using the flat decoder for lists and converting the result to an array.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Choice of builtin functions and their specification
 
@@ -205,4 +206,4 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [6]: https://github.com/IntersectMBO/cardano-ledger "cardano-ledger"
 [7]: https://github.com/IntersectMBO/cardano-node "cardano-node"
 [8]: https://hackage.haskell.org/package/flat "flat"
-[9]: https://hackage.haskell.org/package/array-0.5.4.0/docs/Data-Array.html#t:Array "Haskell Array"
+[9]: https://hackage.haskell.org/package/base-4.21.0.0/docs/Data-List.html "Haskell List"
