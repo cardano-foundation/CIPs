@@ -38,7 +38,7 @@ CDDL schemas are provided for the two on-chain datums (600, 601) so an
 independent implementer can reproduce the on-chain bytes from this document
 alone.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Existing on-chain voting mechanisms on Cardano face a fundamental tension
 between verifiability and scalability:
