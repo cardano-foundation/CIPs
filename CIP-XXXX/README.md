@@ -1,6 +1,6 @@
 ---
 CIP: XXXX
-Title: Ekklesia - Hydra-Powered L2 Voting Protocol
+Title: Ekklesia - Hydra L2 Voting Protocol
 Category: Tokens
 Status: Proposed
 Authors:
