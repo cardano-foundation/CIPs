@@ -113,15 +113,16 @@ treasury executor) chooses to *do* with that proof set, including how to weight
 it, which voters to count, and what threshold constitutes a "pass" is a
 separate, deliberately unstandardized layer.
 
-The §7.8 auditor verification algorithm reflects this scope: it validates the
-integrity, completeness, and authenticity of the recorded vote set against the
-on-chain commitments. It does **not** opine on whether a ballot "passed."
+The [Auditor verification algorithm](#auditor-verification-algorithm) reflects
+this scope: it validates the integrity, completeness, and authenticity of the
+recorded vote set against the on-chain commitments. It does **not** opine on
+whether a ballot "passed."
 
 ## Specification
 
-### 1. Token architecture
+### Token architecture
 
-#### 1.1. [CIP-67][CIP-0067] label allocation
+#### CIP-67 label allocation
 
 This standard defines two [CIP-67][CIP-0067] asset name labels:
 
@@ -140,7 +141,7 @@ fingerprint = blake2b_224(utf8_encode(namespace))
 Where `namespace` is a human-readable identifier for the ballot (e.g.,
 `"vote.ekklesia.intersect.budget2026"`).
 
-#### 1.2. Asset name construction
+#### Asset name construction
 
 ```text
 asset_name = cip67_prefix (4 bytes) || fingerprint (28 bytes)
@@ -167,7 +168,7 @@ An independent implementer can reproduce these bytes from any BLAKE2b
 implementation configured to emit a 28-byte (224-bit) digest over the UTF-8
 encoding of the namespace string.
 
-#### 1.3. Minting policy
+#### Minting policy
 
 The minting policy **MUST** be a native script with the following structure:
 
@@ -197,10 +198,11 @@ Exactly **one** of each token (600 and 601) **MUST** be minted in a single
 transaction.
 
 The native script shape is chosen so the two properties above are **statically
-verifiable** from the script bytes alone, with no execution required. The §7.8
-auditor relies on this: a structural read of the policy is sufficient to prove
-no late mint or burn could ever have been submitted, independent of what was
-actually observed on-chain.
+verifiable** from the script bytes alone, with no execution required. The
+[Auditor verification algorithm](#auditor-verification-algorithm) relies on
+this: a structural read of the policy is sufficient to prove no late mint or
+burn could ever have been submitted, independent of what was actually observed
+on-chain.
 
 A Plutus minting policy could enforce the same two properties, and potentially
 add useful ones. Such policies are deliberately out of scope for
@@ -210,11 +212,12 @@ reason about the script's behavior under all inputs.
 
 A future revision of this standard **MAY** define a Plutus-policy variant by
 specifying the normative properties any policy **MUST** enforce (decoupled from
-the script type) and the §7.8 augmentations needed to verify those properties
-against an arbitrary Plutus script. Until then, conforming ballots
+the script type) and the
+[Auditor verification algorithm](#auditor-verification-algorithm) augmentations
+needed to verify those properties against an arbitrary Plutus script. Until then, conforming ballots
 **MUST** use the native script defined above.
 
-#### 1.4. Why not [CIP-68][CIP-0068]?
+#### Why not CIP-68?
 
 [CIP-68][CIP-0068] defines reference/user token pairs using labels (100)/(222)
 with an NFT-oriented datum schema (`name`, `image`, `mediaType`). These fields
@@ -225,13 +228,13 @@ The pairing convention is analogous to [CIP-68][CIP-0068]: same policy, same
 fingerprint suffix, different label prefix, with the (600) serving as the
 immutable reference and the (601) as the mutable instance.
 
-### 2. Ballot Definition Token (600)
+### Ballot Definition Token (600)
 
 The (600) token is minted on L1 and remains there for the lifetime of the
 ballot. It serves as the immutable, publicly verifiable record of what was being
 voted on.
 
-#### 2.1. On-chain datum
+#### On-chain datum (600)
 
 The (600) token **MUST** carry an inline datum in Plutus `Constr 0` format
 wrapping a positional fields list and a schema version integer.
@@ -253,7 +256,7 @@ fields = [
   end_epoch:           uint    ; Plutus Int, Cardano epoch at which voting ends
 ]
 
-version = uint                  ; datum schema version (see §8)
+version = uint                  ; datum schema version (see "Versioning")
 ```
 
 The datum is intentionally slim. Full ballot content (questions, options,
@@ -262,16 +265,17 @@ descriptions, role weighting) is stored on IPFS and referenced by
 fetch the IPFS content, recompute the per-question merkle tree, and verify its
 root matches the on-chain value.
 
-#### 2.2. IPFS ballot definition
+#### IPFS ballot definition
 
 The full ballot definition is pinned to IPFS and referenced from the
 (600) on-chain datum via `ballot_cid` (the CID) and `content_hash` (the
-per-question merkle root of `questions`, see §2.3). The top-level fields
+per-question merkle root of `questions`, see
+[Ballot content merkle tree](#ballot-content-merkle-tree)). The top-level fields
 (`specVersion`, `title`, `description`, `questions`, `roleWeighting`,
 `endEpoch`) are [CIP-179][CIP-0179] compatible; the `ekklesia` extension block
 carries Hydra-specific metadata.
 
-##### 2.2.1. Illustrative document
+##### Illustrative document
 
 ```json
 {
@@ -357,14 +361,15 @@ The two `contentHash` values above are `blake2b_256` of each question's
 off-chain content blob (rationale, option detail, etc.), pinned independently of
 this ballot definition; they do **not** hash the question object itself. The
 top-level `merkleRoot` is the root of the per-question merkle tree built per
-§2.3 (leaf prefix `0x00`, internal prefix `0x01`, blake2b_256, lexicographic
-pair sort), whose leaves are `blake2b_256(JSON.stringify(question))` over each
-entire question object using the compact serialization of §7.7. That leaf
-computation binds `contentHash` (and every other question field) to the on-chain
-commitment. The same value appears as `content_hash` in the (600) on-chain
+[Ballot content merkle tree](#ballot-content-merkle-tree) (leaf prefix `0x00`,
+internal prefix `0x01`, blake2b_256, lexicographic pair sort), whose leaves are
+`blake2b_256(JSON.stringify(question))` over each entire question object using
+the compact serialization of [JSON canonicalization](#json-canonicalization).
+That leaf computation binds `contentHash` (and every other question field) to
+the on-chain commitment. The same value appears as `content_hash` in the (600) on-chain
 datum.
 
-##### 2.2.2. JSON Schema
+##### JSON Schema
 
 The following JSON Schema (Draft 2020-12) is normative. A document that fails
 this schema is not a conforming ballot definition.
@@ -389,7 +394,7 @@ this schema is not a conforming ballot definition.
   "properties": {
     "specVersion": {
       "type": "string",
-      "description": "Semver string. See §8.2 for the versioning rules. Current canonical value is '0.3.0'.",
+      "description": "Semver string. See the 'Off-chain document versions' section for the versioning rules. Current canonical value is '0.3.0'.",
       "pattern": "^\\d+\\.\\d+\\.\\d+$"
     },
     "title": {
@@ -613,7 +618,7 @@ this schema is not a conforming ballot definition.
     "RoleWeighting": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Tabulation hint. The voting infrastructure publishes raw participation only (see §7.3). These keys describe how the voting authority intends to interpret results.",
+      "description": "Tabulation hint. The voting infrastructure publishes raw participation only (see the 'Full results object' section). These keys describe how the voting authority intends to interpret results.",
       "properties": {
         "drep": {
           "type": "string",
@@ -655,7 +660,7 @@ this schema is not a conforming ballot definition.
         "namespace": {
           "type": "string",
           "minLength": 1,
-          "description": "Fingerprint source. See §1.1: fingerprint = blake2b_224(utf8(namespace))."
+          "description": "Fingerprint source. See the 'CIP-67 label allocation' section: fingerprint = blake2b_224(utf8(namespace))."
         },
         "votingAuthority": {
           "type": "string",
@@ -702,7 +707,7 @@ this schema is not a conforming ballot definition.
             "open": {
               "type": "string",
               "format": "date-time",
-              "description": "ISO-8601 UTC. Also the timelock anchor for the (600)/(601) minting policy (see §1.3)."
+              "description": "ISO-8601 UTC. Also the timelock anchor for the (600)/(601) minting policy (see the 'Minting policy' section)."
             },
             "close": {
               "type": "string",
@@ -728,25 +733,26 @@ implementations **MUST** enforce in addition to schema validation):
    `options.length`.
 4. For a `likert` question, the `ratingRange` **MUST** be wide enough to
    meaningfully accommodate per-option ratings; voters submit exactly one rating
-   per non-abstain option (see §3.4).
+   per non-abstain option (see [Vote selection](#vote-selection)).
 5. `votingWindow.close` **MUST** be strictly later than `votingWindow.open`.
 6. `endEpoch` **MUST** correspond to a Cardano epoch whose end is at or after
    `votingWindow.close`.
 7. `acceptedCredentials` **MUST** be a subset of the credential HRPs recognized
-   in §5.1.
+   in [Voter token name](#voter-token-name).
 
-#### 2.3. Ballot content merkle tree
+#### Ballot content merkle tree
 
 A merkle tree of the ballot content **MUST** be constructed with one leaf per
 question:
 
 - **Leaf name**: `questionId`.
 - **Leaf content hash**: `blake2b_256(JSON.stringify(question))` over the
-  *entire* `BallotQuestion` object, using the compact serialization of §7.7
-  (no whitespace, key order preserved), including the optional `contentHash`
-  field (§3.1) when present.
+  *entire* `BallotQuestion` object, using the compact serialization of
+  [JSON canonicalization](#json-canonicalization) (no whitespace, key order
+  preserved), including the optional `contentHash` field
+  ([Ballot question](#ballot-question)) when present.
 - **Leaf hash**: `blake2b_256(0x00 || leafContentHash || utf8(questionId))`
-  (`content+path` mode, as in §7.4).
+  (`content+path` mode, as in [Merkle proof structure](#merkle-proof-structure)).
 - **Root**: stored as `content_hash` in the (600) on-chain datum.
 
 This allows auditors to verify that the ballot definition on IPFS matches what
@@ -756,24 +762,26 @@ indirectly: the question's `contentHash` field is hashed into the leaf along
 with every other question field, so tampering with the off-chain blob (and
 updating `contentHash` to match) changes the leaf and breaks the merkle root.
 
-#### 2.4. Extensibility and unknown fields
+#### Extensibility and unknown fields
 
 In `specVersion 0.3.0` the JSON Schemas in this CIP are **strict**: every object
 sets `additionalProperties: false`, and a document carrying fields not defined
 here is non-conforming. Producers emit only the defined fields, so the hash of
-each artifact (§7.7) is taken over a known, closed shape.
+each artifact ([JSON canonicalization](#json-canonicalization)) is taken over a
+known, closed shape.
 
 `specVersion 0.4.0` opens this up: schemas move to `additionalProperties: true`
 and conforming implementations **MUST** accept and **preserve** unknown fields
 through every transform, so extension data survives into the bytes that are
 hashed (a stripped field would change `content_hash`, `vote_hash`, or
 `results_hash` and break verification). The extension model and its namespacing
-rules are introduced in 0.4.0 (see §8.2). Until then, implementations **MUST**
-treat unknown fields as a validation failure.
+rules are introduced in 0.4.0 (see
+[Off-chain document versions](#off-chain-document-versions)). Until then,
+implementations **MUST** treat unknown fields as a validation failure.
 
-### 3. Question and answer format
+### Question and answer format
 
-#### 3.1. Ballot question
+#### Ballot question
 
 Each question in the ballot definition **MUST** include:
 
@@ -782,7 +790,7 @@ Each question in the ballot definition **MUST** include:
 | `questionId`    | string                         | Yes      | Unique identifier within this ballot                                                                                                                                                                                 |
 | `question`      | string                         | Yes      | The question text                                                                                                                                                                                                    |
 | `description`   | string                         | No       | Extended description                                                                                                                                                                                                 |
-| `method`        | VoteMethod (§3.2)              | Yes      | Voting method, determines selection shape                                                                                                                                                                            |
+| `method`        | VoteMethod ([Vote methods](#vote-methods)) | Yes      | Voting method, determines selection shape                                                                                                                                                                            |
 | `options`       | BallotOption[]                 | Varies   | Available choices (all methods except `range`)                                                                                                                                                                       |
 | `minSelections` | integer                        | No       | Minimum selections (multi-choice; default 1)                                                                                                                                                                         |
 | `maxSelections` | integer                        | No       | Maximum selections (multi-choice; default `options.length`)                                                                                                                                                          |
@@ -804,7 +812,7 @@ Where `BallotOption` is:
 
 `value` is always an integer.
 
-#### 3.2. Vote methods
+#### Vote methods
 
 Seven voting methods are defined:
 
@@ -825,7 +833,7 @@ The [CIP-179][CIP-0179] URI table above reflects the state
 of [CIP-179][CIP-0179] at this CIP's draft date; if [CIP-179][CIP-0179]
 finalizes with different URIs, this CIP's URI column will be revised to align.
 
-#### 3.3. Role weighting
+#### Role weighting
 
 Ballots **MAY** specify role-based weighting hints aligned
 with [CIP-179][CIP-0179]:
@@ -838,21 +846,22 @@ with [CIP-179][CIP-0179]:
 }
 ```
 
-The three keys correspond to the canonical role-space defined in §5.1
-(`drep`, `pool`, `stake`). Role is determined by the voter's credential HRP;
-calidus hot keys collapse into the `pool` role.
+The three keys correspond to the canonical role-space defined in
+[Voter token name](#voter-token-name) (`drep`, `pool`, `stake`). Role is
+determined by the voter's credential HRP; calidus hot keys collapse into the
+`pool` role.
 
 > **Important.** Role weighting expresses how results *may* be interpreted by
 > the voting authority at tabulation time. The voting infrastructure itself
 > treats every voter as one voter casting one vote. Weighting is applied at the
-> tabulation layer, not at the voting layer. See §7.3 for the consequence:
-> published results carry raw participation counts only, not pre-weighted
-> tallies.
+> tabulation layer, not at the voting layer. See
+> [Full results object](#full-results-object) for the consequence: published
+> results carry raw participation counts only, not pre-weighted tallies.
 
 Legacy role identifiers (uppercase forms such as `DRep` / `SPO`, and the `CC`
 role) are reserved and rejected at ballot prepare time.
 
-#### 3.4. Vote selection
+#### Vote selection
 
 Each voter's answer to a question is encoded as a `VoteSelection` with a unified
 `selection` field. The shape of `selection` is determined by the question's
@@ -887,13 +896,13 @@ Per method:
 
 Exactly one of `abstain: true` or `selection` **MUST** be present per question.
 
-### 4. Ballot Instance Token (601)
+### Ballot Instance Token (601)
 
 The (601) token is minted alongside the (600) token on L1, then committed into a
 Hydra head for the voting period. After voting concludes, it returns to L1
 carrying the final results.
 
-#### 4.1. On-chain datum
+#### On-chain datum (601)
 
 The (601) token **MUST** carry an inline datum in Plutus `Constr 0` format
 wrapping a positional four-field list and a schema version integer.
@@ -910,7 +919,7 @@ fields = [
   merkle_root:  bstr    ; UTF-8 of 64-char hex (merkle root of vote evidence). Empty bytes pre-finalize.
 ]
 
-version = uint          ; datum schema version (see §8)
+version = uint          ; datum schema version (see "Versioning")
 ```
 
 The datum is intentionally compact. The total voter count, per-role voter
@@ -919,7 +928,7 @@ counts, excluded voters, and per-question tallies all live in the
 carries only the four cryptographic commitments needed to bind the off-chain
 artifacts to the on-chain record.
 
-#### 4.2. Datum evolution
+#### Datum evolution
 
 The (601) datum is initialized empty at mint time and populated during
 finalization while the Hydra head is still open:
@@ -934,12 +943,12 @@ finalization while the Hydra head is still open:
 The finalization update **MUST** occur while the Hydra head is still open.
 Closing the head prevents further datum updates.
 
-### 5. Voter registration tokens
+### Voter registration tokens
 
 Individual voter participation is tracked via per-voter tokens minted inside the
 Hydra head under a native-script policy controlled by the voting authority.
 
-#### 5.1. Voter token name
+#### Voter token name
 
 The voter token asset name is 29 bytes (58 hex characters):
 
@@ -967,7 +976,7 @@ Payment-only credentials (`addr` / `addr_test`) **MUST NOT** be used as voter
 IDs. Voters with only a payment credential register via their stake credential
 instead.
 
-#### 5.2. Voter datum
+#### Voter datum
 
 Each voter token carries an inline datum. The shape is `Constr 0` with five
 positional fields directly (no nested fields list):
@@ -994,7 +1003,7 @@ The `merkle_root` field binds the vote to a specific payload via
 [CIP-8][CIP-0008] signature covers this root, creating a nonrepudiable link
 between identity, choices, and the on-chain record.
 
-#### 5.3. Voter token lifecycle
+#### Voter token lifecycle
 
 1. **Register.** Mint voter token with `version = 0` and all three hash fields
    as empty bytes. The voter is now eligible to cast but has not yet submitted a
@@ -1008,14 +1017,15 @@ between identity, choices, and the on-chain record.
 4. **Settlement burn.** All voter tokens are burned during finalization, after
    their evidence has been captured into the merkle tree.
 
-### 6. Vote evidence and signatures
+### Vote evidence and signatures
 
-#### 6.1. Signed vote payload
+#### Signed vote payload
 
 The voter signs the following payload using [CIP-8][CIP-0008] message signing
-(the Cardano profile of `COSE_Sign1`). Continuing the §2.2.1 example ballot, a
-voter who approves the budget envelope and allocates `30 / 40 / 20 / 10` across
-the four tracks signs:
+(the Cardano profile of `COSE_Sign1`). Continuing the
+[Illustrative document](#illustrative-document) example ballot, a voter who
+approves the budget envelope and allocates `30 / 40 / 20 / 10` across the four
+tracks signs:
 
 ```json
 {
@@ -1053,11 +1063,12 @@ the four tracks signs:
 }
 ```
 
-`ballotId` is the (601) ballot-instance asset name from §1.2 (i.e., the on-chain
+`ballotId` is the (601) ballot-instance asset name from
+[Asset name construction](#asset-name-construction) (i.e., the on-chain
 identifier for this specific ballot). `nonce` matches the voter datum's
-`version` field for this submission (§5.2). The very first cast after
-registration uses `nonce = 1`. A subsequent revision of the same vote increments
-to `nonce = 2`, and so on.
+`version` field for this submission ([Voter datum](#voter-datum)). The very
+first cast after registration uses `nonce = 1`. A subsequent revision of the
+same vote increments to `nonce = 2`, and so on.
 
 The signature **MUST** conform to [CIP-8][CIP-0008] message signing. The
 `COSE_Sign1` envelope contains:
@@ -1072,22 +1083,24 @@ encoding in protected headers, supported algorithms, hashable payload form).
 Implementations **MUST** follow CIP-8 directly, not derive conformance from the
 underlying COSE standards, since the two may diverge over time.
 
-`votes[i].selection` shape is method-dependent per §3.4 (`number[]` for
-`single-choice` and `{ option, value }[]` for `weighted` above). A voter who
+`votes[i].selection` shape is method-dependent per
+[Vote selection](#vote-selection) (`number[]` for `single-choice` and
+`{ option, value }[]` for `weighted` above). A voter who
 chose to skip the second question instead would submit
 `{ "questionId": "track-allocation-2026", "abstain": true }` in place of the
 weighted selection, permitted whenever the question does not set
 `requireAnswer: true`.
 
-#### 6.2. Vote evidence (IPFS)
+#### Vote evidence (IPFS)
 
 Each vote is accompanied by a full evidence file pinned to IPFS. The schema is
 [CIP-179][CIP-0179] surveyResponse core (`specVersion`, `responderRole`,
 `answers`) plus an Ekklesia extension block.
 
-##### 6.2.1. Key-based voter (single witness)
+##### Key-based voter (single witness)
 
-Continuing the §6.1 example, the same DRep voter, same ballot:
+Continuing the [Signed vote payload](#signed-vote-payload) example, the same
+DRep voter, same ballot:
 
 ```json
 {
@@ -1191,7 +1204,7 @@ Within `witnesses[0]`:
   key.
 - `key` is the 28-byte blake2b_224 of the Ed25519 public key (56 hex chars). For
   DRep voters this matches the `credential_hash` portion of the voter token
-  name (§5.1).
+  name ([Voter token name](#voter-token-name)).
 - `signature` is the raw 64-byte Ed25519 signature extracted from the
   COSE_Sign1 (128 hex chars).
 
@@ -1199,7 +1212,7 @@ Within `witnesses[0]`:
 `stake`) derived server-side from `credentialHrp`. The voting infrastructure
 does not accept a client-supplied `responderRole`.
 
-##### 6.2.2. Script-based voter (multisig)
+##### Script-based voter (multisig)
 
 For voters with a script credential (e.g., multisig DReps using
 the [CIP-129][CIP-0129]
@@ -1210,12 +1223,15 @@ one COSE_Sign1 entry per cosigner. Each cosigner signs the same canonical
 `signedPayload`. The script-satisfaction check (e.g. "any 2 of 3") is performed
 against the witness set during evidence assembly.
 
-A 2-of-3 multisig example replaces the `witnesses` array of §6.2.1 with two
+A 2-of-3 multisig example replaces the `witnesses` array of
+[Key-based voter (single witness)](#key-based-voter-single-witness) with two
 cosigner witnesses and adds a `nativeScript` field. The top-level fields outside
 `ekklesia` (`specVersion`, `responderRole`,
 `answers`) and the `ekklesia` fields not shown here (`voterId`,
-`credentialHrp`, `nonce`, `signedPayload`, `merkleProof`) are identical in shape
-to §6.2.1; only the changed paths are reproduced:
+`credentialHrp`, `nonce`, `signedPayload`, `merkleProof`) are identical in
+shape to
+[Key-based voter (single witness)](#key-based-voter-single-witness); only the
+changed paths are reproduced:
 
 ```json
 {
@@ -1260,13 +1276,15 @@ The third `keyHash` in the `nativeScript.scripts` list corresponds to the
 non-signing third cosigner; under the `atLeast: 2` policy the two witnesses
 shown are sufficient.
 
-##### 6.2.3. Calidus hot-key voter ([CIP-151][CIP-0151])
+##### Calidus hot-key voter (CIP-151)
 
 For an SPO voting via a calidus hot key, `credentialHrp` is `calidus`, the
 canonical role is `pool`, and the evidence file additionally carries a
 `calidusDeclaration` field identifying the hot key (`calidusId`) that signed on
 behalf of the pool. Top-level fields outside `ekklesia` and the unchanged
-`ekklesia` fields are as in §6.2.1; only the changed paths are reproduced:
+`ekklesia` fields are as in
+[Key-based voter (single witness)](#key-based-voter-single-witness); only the
+changed paths are reproduced:
 
 ```json
 {
@@ -1280,7 +1298,7 @@ behalf of the pool. Top-level fields outside `ekklesia` and the unchanged
 }
 ```
 
-#### 6.3. Vote-evidence JSON Schema
+#### Vote-evidence JSON Schema
 
 The following JSON Schema (Draft 2020-12) is normative. The
 `vote-{tokenName}-v{version}.json` evidence files in the evidence directory
@@ -1291,7 +1309,7 @@ The following JSON Schema (Draft 2020-12) is normative. The
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://docs.ekklesia.vote/cip/hydra-voting-tokens/vote-evidence.schema.json",
   "title": "VoteEvidence",
-  "description": "Per-voter evidence record pinned to IPFS. blake2b_256 of its compact serialization (§7.7) equals the on-chain vote_hash recorded in the voter datum (§5.2).",
+  "description": "Per-voter evidence record pinned to IPFS. blake2b_256 of its compact serialization (see the 'JSON canonicalization' section) equals the on-chain vote_hash recorded in the voter datum (see the 'Voter datum' section).",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -1679,31 +1697,31 @@ Constraints that JSON Schema cannot express and that implementations **MUST**
 enforce in addition:
 
 1. The `signedPayload.votes` array **MUST** be byte-identical (under the compact
-   serialization of §7.7) to the top-level `answers` array. The signed bytes are
-   what the voter committed to; `answers` is a convenience copy for CIP-179
-   compatibility.
+   serialization of [JSON canonicalization](#json-canonicalization)) to the
+   top-level `answers` array. The signed bytes are what the voter committed to;
+   `answers` is a convenience copy for CIP-179 compatibility.
 2. `signedPayload.nonce` **MUST** equal `ekklesia.nonce`, which **MUST** equal
    `version`
-   in the voter datum (§5.2) at submission time.
+   in the voter datum ([Voter datum](#voter-datum)) at submission time.
 3. For each `CoseWitness`, `key` **MUST** equal
    `blake2b_224(public_key)` where the public key is recovered from the
    [CIP-8][CIP-0008] (`COSE_Sign1`) envelope. For key-based voters
    (`witnesses` has length 1 and `nativeScript` is absent), the `COSE_Sign1`
    signer key hash **MUST** equal the credential-hash portion of `voterId`'s
    bech32 data (the same value used as the voter token name's 28-byte suffix per
-   §5.1).
+   [Voter token name](#voter-token-name)).
 4. For script-based voters, `witnesses[*].key` **MUST** each satisfy at least
    one
    `sig` leaf in `nativeScript`, and the satisfied set **MUST** meet the
    script's
    `all`/`any`/`atLeast` requirements.
 5. `merkleProof.root` **MUST** equal `merkle_root` in the (601) datum
-   (§4.1) after settlement; before settlement, `merkleProof.root`
-   **MAY** be absent or zero-valued.
+   ([On-chain datum (601)](#on-chain-datum-601)) after settlement; before
+   settlement, `merkleProof.root` **MAY** be absent or zero-valued.
 
-### 7. Settlement and results
+### Settlement and results
 
-#### 7.1. Finalization (in-head)
+#### Finalization (in-head)
 
 Before the Hydra head is closed, the voting authority:
 
@@ -1719,17 +1737,18 @@ The (601) datum carries only these four commitments; voter counts, per-role
 breakdowns, exclusions, and tallies all live in
 `results.json` on IPFS, anchored by `results_hash`.
 
-#### 7.2. Evidence directory structure
+#### Evidence directory structure
 
 The evidence directory pinned to IPFS **MUST** contain:
 
 ```text
 evidence/
-  results.json                       -- FullResults object (§7.3)
-  proof-package.json                 -- Merkle proof package (§7.6)
+  results.json                       -- FullResults object (see "Full results object")
+  proof-package.json                 -- Merkle proof package (see "Auditor-companion artifacts")
   pre-burn-ledger.json               -- Snapshot of every voter token minted
                                         in the head, captured before the
-                                        settlement burn (§7.8 Step 10)
+                                        settlement burn (Step 10 of
+                                        "Auditor verification algorithm")
   exclusions.json                    -- Voters excluded with reasons (omitted
                                         when there are none)
   vote-{tokenName}-v{version}.json   -- Per-voter vote evidence (one file per
@@ -1742,13 +1761,15 @@ evidence/
 Per-voter evidence files live in the directory **root** (not a `votes/`
 sub-directory) and are named `vote-{tokenName}-v{version}.json`. The
 `proofs/` files are keyed by the voter **token name** (the 58-hex asset name of
-§5.1). `pre-burn-ledger.json` records every voter token observed in the head
-before burning, and is the reference set for the silent-suppression check in
-§7.8.
+[Voter token name](#voter-token-name)). `pre-burn-ledger.json` records every
+voter token observed in the head before burning, and is the reference set for
+the silent-suppression check in
+[Auditor verification algorithm](#auditor-verification-algorithm).
 
-#### 7.3. Full results object
+#### Full results object
 
-Continuing the §2.2.1 example ballot, after a ballot with 1 000 voters
+Continuing the [Illustrative document](#illustrative-document) example ballot,
+after a ballot with 1 000 voters
 (600 DReps, 250 SPOs, 150 stakeholders) the published `results.json`
 looks as follows. The single-choice Q1 received 900 explicit selections
 (580 Approve, 270 Reject, 50 "Abstain" as an option value) plus 100 voters who
@@ -2214,7 +2235,8 @@ the weighting note below).
 `questionTallies` is the canonical auditor breakdown: a discriminated union per
 method, role-bucketed, with a `"raw"` bucket aggregating across roles.
 Per-method tally shapes follow the per-method `selection`
-shape defined in §3.4: `OptionCount[]` for the four "options-only"
+shape defined in [Vote selection](#vote-selection): `OptionCount[]` for the
+four "options-only"
 methods, `DistributionEntry[]` for `range`, a pairwise preference matrix for
 `ranked`, and per-option point or rating aggregates for
 `weighted` and `likert`. Statistical interpretations (mean, median, Borda
@@ -2235,9 +2257,10 @@ submissions on each question. Abstainers do not contribute to any
 > about how they intend to interpret results, not a directive to the
 > infrastructure.
 
-#### 7.4. Merkle proof structure
+#### Merkle proof structure
 
-Each voter receives a merkle inclusion proof. Continuing the §6.2.1 example
+Each voter receives a merkle inclusion proof. Continuing the
+[Key-based voter (single witness)](#key-based-voter-single-witness) example
 evidence file:
 
 ```json
@@ -2257,13 +2280,16 @@ evidence file:
 }
 ```
 
-- `voterId` is the voter token asset name (58 hex chars per §5.1). It is also
-  the leaf `name` (see `leafHashHex` below).
+- `voterId` is the voter token asset name (58 hex chars per
+  [Voter token name](#voter-token-name)). It is also the leaf `name` (see
+  `leafHashHex` below).
 - `contentHashHex` is the per-voter `vote_hash`:
   `blake2b_256(JSON.stringify(evidence))` over the compact serialization of the
-  `vote-{tokenName}-v{version}.json` evidence file (see §7.7; this standard uses
-  compact JSON, not JCS). Same value as `vote_hash` in the voter datum
-  (§5.2), folded into the (601) datum's `merkle_root` during finalization.
+  `vote-{tokenName}-v{version}.json` evidence file (see
+  [JSON canonicalization](#json-canonicalization); this standard uses compact
+  JSON, not JCS). Same value as `vote_hash` in the voter datum
+  ([Voter datum](#voter-datum)), folded into the (601) datum's `merkle_root`
+  during finalization.
 - `leafHashHex` is `blake2b_256(0x00 || contentHashHex_bytes || utf8(voterId))`.
   The leaf binds the voter's token name in addition to the content hash, so an
   inclusion proof cannot be replayed under a different token name.
@@ -2291,7 +2317,7 @@ Any voter can verify their inclusion by:
    reconstruct the root.
 4. Comparing against `merkle_root` in the (601) token's on-chain datum.
 
-#### 7.5. Full-results and merkle-proof JSON Schema
+#### Full-results and merkle-proof JSON Schema
 
 The following JSON Schema (Draft 2020-12) is normative. The
 `results.json` file and every `proofs/{tokenName}.json` file in the evidence
@@ -2835,7 +2861,7 @@ directory **MUST** validate against it.
         },
         "proof": {
           "type": "array",
-          "description": "Ordered sibling hashes from leaf to root. Order at each level is recovered by ascending-lowercase-hex comparison (§7.4); no direction field is stored.",
+          "description": "Ordered sibling hashes from leaf to root. Order at each level is recovered by ascending-lowercase-hex comparison (see the 'Merkle proof structure' section); no direction field is stored.",
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -2871,7 +2897,7 @@ Constraints not expressible in schema and required of implementations:
    **MUST** appear exactly once in that scope's
    `results[]` array.
 
-#### 7.6. Auditor-companion artifacts
+#### Auditor-companion artifacts
 
 Three further artifacts in the evidence directory let an auditor verify
 completeness, not merely per-voter integrity: `proof-package.json` (the merkle
@@ -2933,7 +2959,7 @@ definition below.
         "name": {
           "type": "string",
           "minLength": 1,
-          "description": "Leaf name. For the evidence tree this is the voter token name (58 hex, §5.1); it is folded into the leaf hash (content+path mode, §7.4)."
+          "description": "Leaf name. For the evidence tree this is the voter token name (58 hex, see the 'Voter token name' section); it is folded into the leaf hash (content+path mode, see the 'Merkle proof structure' section)."
         },
         "contentHashHex": {
           "$ref": "#/$defs/Hex32",
@@ -3078,7 +3104,8 @@ Constraints not expressible in schema and required of implementations:
 2. `ProofPackage.rootHex` **MUST** equal `merkle_root` in the (601) datum.
 3. For every `files[i]`, recomputing the leaf
    (`blake2b_256(0x00 || contentHashHex || utf8(name))`) and folding
-   `merkleProof` upward per §7.4 **MUST** reproduce `rootHex`.
+   `merkleProof` upward per [Merkle proof structure](#merkle-proof-structure)
+   **MUST** reproduce `rootHex`.
 4. In each `history/{voterId}.json` array, `version` **MUST** be strictly
    greater than the previous entry's `version`, and `prevTxHash` (when present)
    **MUST** equal the previous entry's `txHash`. The last entry's `voteHash`
@@ -3091,9 +3118,10 @@ Constraints not expressible in schema and required of implementations:
 > A per-file content-integrity manifest (`cid` + `sha256Hex` + `sizeBytes`
 > per file), enabling an HTTP-only auditor to detect a gateway that serves
 > substituted bytes under a valid CID, is planned for `specVersion 0.4.0`
-> (see §8.2). It is not produced in 0.3.0.
+> (see [Off-chain document versions](#off-chain-document-versions)). It is not
+> produced in 0.3.0.
 
-#### 7.7. JSON canonicalization
+#### JSON canonicalization
 
 This standard does **not** use a sort-based canonicalization such as
 [RFC 8785][] JCS. Every hash input is the output of `JSON.stringify` over the
@@ -3102,17 +3130,18 @@ order**, not lexicographically sorted. Two serialization variants are used:
 
 - **Compact**: `JSON.stringify(value)`, no whitespace. Used for the
   `signedPayload` (the signature pre-image), the per-voter `vote_hash`
-  (evidence), and the ballot-content merkle leaves (§2.3).
+  (evidence), and the ballot-content merkle leaves
+  ([Ballot content merkle tree](#ballot-content-merkle-tree)).
 - **Pretty**: `JSON.stringify(value, null, 2)`, two-space indentation. Used for
   `results.json`; `results_hash` is computed over those exact pretty bytes,
   which are also the bytes pinned to IPFS.
 
-| Hash                              | Serialization      | Computed over                |
-|-----------------------------------|--------------------|------------------------------|
-| `merkle_root` (voter datum, §5.2) | compact            | the `signedPayload`          |
-| `vote_hash` (§5.2, §7.4)          | compact            | the `VoteEvidence` object    |
-| ballot-content merkle leaf (§2.3) | compact            | each `BallotQuestion` object |
-| `results_hash` (§4.1, §7.3)       | pretty (`null, 2`) | the `FullResults` object     |
+| Hash                                                                                                                              | Serialization      | Computed over                |
+|-----------------------------------------------------------------------------------------------------------------------------------|--------------------|------------------------------|
+| `merkle_root` (voter datum, [Voter datum](#voter-datum))                                                                          | compact            | the `signedPayload`          |
+| `vote_hash` ([Voter datum](#voter-datum), [Merkle proof structure](#merkle-proof-structure))                                      | compact            | the `VoteEvidence` object    |
+| ballot-content merkle leaf ([Ballot content merkle tree](#ballot-content-merkle-tree))                                            | compact            | each `BallotQuestion` object |
+| `results_hash` ([On-chain datum (601)](#on-chain-datum-601), [Full results object](#full-results-object))                         | pretty (`null, 2`) | the `FullResults` object     |
 
 Key ordering is significant: a verifier MUST serialize with the same key order
 the producer used. Parsing the published JSON and re-serializing it with an
@@ -3130,20 +3159,21 @@ Two consequences for auditors:
   *pretty*-printed. To verify `vote_hash`, an auditor MUST parse the evidence
   file and re-serialize it compact (`JSON.stringify` with no whitespace,
   preserving key order) before hashing. This is corrected in a later version
-  (see §8.2).
+  (see [Off-chain document versions](#off-chain-document-versions)).
 
 Signature verification recomputes `blake2b_256(compact(signedPayload))` from the
 `ekklesia.signedPayload` object carried in the evidence and checks it against
 the value the [CIP-8][CIP-0008] witness signed.
 
-The optional per-question `contentHash` (§3.1) is the one hash in this standard
+The optional per-question `contentHash` ([Ballot question](#ballot-question))
+is the one hash in this standard
 computed over arbitrary external bytes rather than over JSON: it is
 `blake2b_256` of the raw bytes of the question's off-chain content blob, so the
 serialization rules above do not apply to it. Its *presence* on the question
 still participates in that question's merkle leaf via the compact serialization
 of the whole `BallotQuestion` object.
 
-#### 7.8. Auditor verification algorithm
+#### Auditor verification algorithm
 
 The following procedure is the normative end-to-end verification algorithm. An
 auditor running this procedure against a settled ballot produces a pass/fail
@@ -3167,66 +3197,85 @@ influence are all out of scope (see "Scope and non-goals" above).
 - BLAKE2b implementation (224-bit and 256-bit output).
 - Ed25519 verification library and a [CIP-8][CIP-0008] (`COSE_Sign1`) parser.
 - A JSON serializer that preserves object key order and can emit both compact
-  and two-space-pretty output (§7.7). No sort-based canonicalizer is required.
+  and two-space-pretty output (see
+  [JSON canonicalization](#json-canonicalization)). No sort-based canonicalizer
+  is required.
 
 ##### Procedure
 
 **Step 1: Locate ballot tokens.** Query the policy ID for assets whose names
-match the (600) and (601) CIP-67 prefixes (§1.1). Confirm exactly one of each
-token exists under the policy and that both share the same 28-byte fingerprint
-suffix. **Fail** if zero or multiple tokens match either prefix.
+match the (600) and (601) CIP-67 prefixes
+([CIP-67 label allocation](#cip-67-label-allocation)). Confirm exactly one of
+each token exists under the policy and that both share the same 28-byte
+fingerprint suffix. **Fail** if zero or multiple tokens match either prefix.
 
 **Step 2: Decode the (600) datum.** Read the inline datum from the
-(600) token's UTxO. Decode against the §2.1 CDDL schema. **Fail** if decoding
+(600) token's UTxO. Decode against the
+[On-chain datum (600)](#on-chain-datum-600) CDDL schema. **Fail** if decoding
 does not produce a valid `ballot_definition_datum`. Confirm that the fingerprint
-derived from `namespace` per §1.1 equals the fingerprint suffix observed in Step
-1.
+derived from `namespace` per
+[CIP-67 label allocation](#cip-67-label-allocation) equals the fingerprint
+suffix observed in Step 1.
 
 **Step 3: Fetch and validate the ballot definition.** Fetch the IPFS object at
-`ballot_cid`. Validate against the §2.2.2 JSON Schema. Recompute the
-per-question merkle tree per §2.3 over the
+`ballot_cid`. Validate against the [JSON Schema](#json-schema) for the
+ballot definition. Recompute the per-question merkle tree per
+[Ballot content merkle tree](#ballot-content-merkle-tree) over the
 `questions` array and confirm the root equals both `content_hash`
 on the (600) datum AND `ekklesia.merkleRoot` inside the document.
 **Fail** on any mismatch.
 
 **Step 4: Decode the (601) datum.** Read the inline datum from the
-(601) token's UTxO. Decode against the §4.1 CDDL schema. Confirm
+(601) token's UTxO. Decode against the
+[On-chain datum (601)](#on-chain-datum-601) CDDL schema. Confirm
 `version == 1` and that all four byte fields are populated. **Fail**
 if the datum is in any pre-finalize state at audit time.
 
 **Step 5: Fetch and validate the evidence directory.** Fetch the IPFS directory
 at `evidence_cid` from the (601) datum. Locate
-`proof-package.json` and validate against §7.6. **Fail** if absent or invalid.
+`proof-package.json` and validate against
+[Auditor-companion artifacts](#auditor-companion-artifacts). **Fail** if absent
+or invalid.
 Cross-check `proof-package.json.rootHex` equals `(601).fields.merkleRoot`. (The
 0.3.0 `proof-package.json` carries only the merkle commitment; the `ballotId`,
 `resultsHash`, and `evidenceCid` bindings are checked directly against
 `results.json` and the (601) datum in the steps below.)
 
 **Step 6: (reserved for 0.4.0).** The per-file content-integrity manifest and
-the gateway-tamper check are introduced in `specVersion 0.4.0` (see §7.6, §8.2).
+the gateway-tamper check are introduced in `specVersion 0.4.0` (see
+[Auditor-companion artifacts](#auditor-companion-artifacts) and
+[Off-chain document versions](#off-chain-document-versions)).
 In 0.3.0 there is no manifest to validate; file integrity rests on IPFS
 content-addressing (the CID) plus the per-voter and results hashes verified in
 the following steps. Proceed to Step 7.
 
 **Step 7: Validate `results.json`.** Locate `results.json` in the directory.
-Validate against the §7.5 `FullResults` schema. `results.json` is byte-faithful
-(§7.7): compute `blake2b_256` over the retrieved file bytes directly and confirm
-it equals `(601).fields.resultsHash`. **Fail** on any mismatch.
+Validate against the
+[Full-results and merkle-proof JSON Schema](#full-results-and-merkle-proof-json-schema)
+`FullResults` schema. `results.json` is byte-faithful
+([JSON canonicalization](#json-canonicalization)): compute `blake2b_256` over
+the retrieved file bytes directly and confirm it equals
+`(601).fields.resultsHash`. **Fail** on any mismatch.
 
 **Step 8: Per-voter evidence verification.** For every
 `vote-{tokenName}-v{version}.json` in the directory:
 
-- a) Validate against the §6.3 `VoteEvidence` schema.
+- a) Validate against the
+  [Vote-evidence JSON Schema](#vote-evidence-json-schema) `VoteEvidence` schema.
 - b) Re-serialize the parsed evidence compact (`JSON.stringify`, no whitespace,
-  preserving key order, §7.7) and compute `vote_hash = blake2b_256` of those
-  bytes.
+  preserving key order, see
+  [JSON canonicalization](#json-canonicalization)) and compute
+  `vote_hash = blake2b_256` of those bytes.
 - c) Recover the voter's public key(s) from
   `ekklesia.witnesses[*].coseSign1Hex`.
 - d) Verify each `COSE_Sign1` signature against
-  `blake2b_256(JSON.stringify(signedPayload))` (compact, §7.7) per §6.1,
-  applying [CIP-8][CIP-0008]'s verification rules.
+  `blake2b_256(JSON.stringify(signedPayload))` (compact, see
+  [JSON canonicalization](#json-canonicalization)) per
+  [Signed vote payload](#signed-vote-payload), applying [CIP-8][CIP-0008]'s
+  verification rules.
 - e) For key-based voters: confirm the recovered key hash matches the
-  credential-hash portion of `tokenName` per §5.1.
+  credential-hash portion of `tokenName` per
+  [Voter token name](#voter-token-name).
 - f) For script-based voters: confirm the witness set satisfies
   `ekklesia.nativeScript`.
 - g) For calidus voters: resolve `ekklesia.calidusDeclaration.calidusId` to its
@@ -3238,15 +3287,18 @@ it equals `(601).fields.resultsHash`. **Fail** on any mismatch.
   `voteHash` equals the `vote_hash` computed in (b) and that `version`s are
   strictly increasing.
 - i) Verify the merkle inclusion: load `proofs/{tokenName}.json`, validate
-  against the §7.5 `VoterInclusionProof` schema, recompute the leaf and fold the
-  proof per §7.4, and confirm the reconstructed root equals
-  `(601).fields.merkleRoot`.
+  against the
+  [Full-results and merkle-proof JSON Schema](#full-results-and-merkle-proof-json-schema)
+  `VoterInclusionProof` schema, recompute the leaf and fold the proof per
+  [Merkle proof structure](#merkle-proof-structure), and confirm the
+  reconstructed root equals `(601).fields.merkleRoot`.
 
 > **Fail** the ballot on the first per-voter check that fails.
 
 **Step 9: Recompute the tally.** Independently aggregate the per-voter evidence
 (`vote-*-v*.json`) per each question's `method`, produce a `FullResults`-shaped
-output, serialize it pretty (`JSON.stringify(..., null, 2)`, §7.7) with the same
+output, serialize it pretty (`JSON.stringify(..., null, 2)`, see
+[JSON canonicalization](#json-canonicalization)) with the same
 field order, and confirm it matches `results.json` byte-for-byte. (Because
 `results.json` is byte-faithful, an auditor MAY instead rely on the Step 7 hash
 check and treat this as a structural re-tally cross-check.)
@@ -3270,13 +3322,13 @@ ballot's political outcome. Whether the recorded set satisfies any specific
 quorum, supermajority, or weighting rule is the voting authority's determination
 to make against this CIP's output, not part of this CIP's scope.
 
-### 8. Versioning
+### Versioning
 
 This standard implements versions for the on-chain datums and the off-chain
 documents independently. Both schemes follow rules that allow non-breaking
 additions without superseding the CIP.
 
-#### 8.1. On-chain datum versions
+#### On-chain datum versions
 
 Each on-chain datum (600, 601, voter) carries a `version` integer in its Plutus
 `Constr 0` envelope. Datum-schema changes that add fields, relax constraints, or
@@ -3292,14 +3344,14 @@ Current versions at this CIP draft date:
 - **(601) `ballot_result_datum`**: `version = 1` (mint-time placeholder and
   finalized state). `version = 2` is the analog edited-pre-open case.
 - **Voter datum**: no datum-schema versioning; the `version` field is the
-  per-voter monotonic nonce (§5.2), not a schema version.
+  per-voter monotonic nonce ([Voter datum](#voter-datum)), not a schema version.
 
 Breaking changes to any of the three datums (renaming a field, changing the byte
 encoding, adding a non-optional field) requires either a new schema version with
 explicit deprecation of the prior or a new top-level CIP that supersedes this
 one.
 
-#### 8.2. Off-chain document versions
+#### Off-chain document versions
 
 The IPFS documents (ballot definition, vote evidence, full results)
 carry a top-level `specVersion` string. Current value: `"0.3.0"`.
@@ -3321,19 +3373,23 @@ current minting policy. The following changes are defined for
 
 - **Byte-faithful hashing.** Every artifact is hashed over the exact bytes
   pinned to IPFS, and the signed payload is committed as verbatim bytes,
-  removing the compact-vs-pretty re-serialization step described in §7.7.
+  removing the compact-vs-pretty re-serialization step described in
+  [JSON canonicalization](#json-canonicalization).
 - **Per-question `reference { uri, hash }`** replacing the flat `contentHash`
-  string (§3.1), for durable content-addressable supplementary material.
+  string ([Ballot question](#ballot-question)), for durable
+  content-addressable supplementary material.
 - **Open schemas (`additionalProperties: true`) plus the extensibility model**
-  of §2.4: conforming readers accept and preserve unknown fields through
-  hashing.
+  of [Extensibility and unknown fields](#extensibility-and-unknown-fields):
+  conforming readers accept and preserve unknown fields through hashing.
 - **Rich `calidusDeclaration`** (`poolId`, `calidusKeyHashHex`,
   `registrationTxHash`, `validFromSlot`, `validToSlot`) enabling the
-  self-contained calidus→pool binding check in §7.8 Step 8(g).
+  self-contained calidus→pool binding check in Step 8(g) of
+  [Auditor verification algorithm](#auditor-verification-algorithm).
 - **Per-file content-integrity manifest** (`cid` + `sha256Hex` + `sizeBytes`)
-  enabling the gateway-tamper check in §7.8 Step 6.
+  enabling the gateway-tamper check in Step 6 of
+  [Auditor verification algorithm](#auditor-verification-algorithm).
 
-### 9. Ballot lifecycle summary
+### Ballot lifecycle summary
 
 ```text
 Phase 1: PREPARE (L1)
@@ -3429,16 +3485,21 @@ otherwise undermine role-stratified tallies.
 - **[CIP-67][CIP-0067]** (Asset Name Labels). Allocates the (600) and (601)
   labels used by this standard.
 - **[CIP-68][CIP-0068]** (Datum Metadata Standard). Inspires the reference /
-  instance pairing pattern but is unsuitable for voting datums (see §1.4).
+  instance pairing pattern but is unsuitable for voting datums (see
+  [Why not CIP-68?](#why-not-cip-68)).
 - **[CIP-129][CIP-0129]** (Governance Credentials). Source of the `0x22` DRep
   credential-type byte and the `0x23` script-based credential type referenced in
-  §6.2.
+  [Vote evidence (IPFS)](#vote-evidence-ipfs).
 - **[CIP-151][CIP-0151]** (Stake Pool Hot Credentials). Defines the calidus
-  hot-key mechanism that powers `calidus`-prefixed voter IDs in §5.1.
+  hot-key mechanism that powers `calidus`-prefixed voter IDs in
+  [Voter token name](#voter-token-name).
 - **[CIP-179][CIP-0179]** (On-Chain Surveys and Polls). The question / answer
-  schema in §2.2 and §3 is CIP-179 compatible for the four core voting methods;
-  URIs in §3.2 reflect the state of CIP-179 PR #1107 at this CIP's draft date
-  and will be revised to match if CIP-179 finalizes with different identifiers.
+  schema in [IPFS ballot definition](#ipfs-ballot-definition) and
+  [Question and answer format](#question-and-answer-format) is CIP-179
+  compatible for the four core voting methods; URIs in
+  [Vote methods](#vote-methods) reflect the state of CIP-179 PR #1107 at this
+  CIP's draft date and will be revised to match if CIP-179 finalizes with
+  different identifiers.
 
 ## Path to Active
 
@@ -3450,7 +3511,8 @@ otherwise undermine role-stratified tallies.
   (Ekklesia has conducted ballots on preprod and mainnet, including CIWG and
   Intersect-affiliated votes).
 - [ ] Independent auditor successfully verifies a ballot using only on-chain
-  data and IPFS evidence per the procedure in §7.4.
+  data and IPFS evidence per the procedure in
+  [Auditor verification algorithm](#auditor-verification-algorithm).
 - [ ] Reference implementation published as open source.
 
 ### Implementation Plan
