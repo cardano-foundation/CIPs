@@ -1,10 +1,10 @@
 ---
 CIP: 30
 Title: Cardano dApp-Wallet Web Bridge
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
-  - rooooooooob
+  - rooooooooob <https://github.com/github.com>
 Implementors:
   - Begin <https://begin.is/>
   - Eternl <https://eternl.io/>
@@ -16,20 +16,20 @@ Implementors:
   - RayWallet <https://raywallet.io/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/88
-  - https://github.com/cardano-foundation/CIPs/pull/148
-  - https://github.com/cardano-foundation/CIPs/pull/151
-  - https://github.com/cardano-foundation/CIPs/pull/183
-  - https://github.com/cardano-foundation/CIPs/pull/208
-  - https://github.com/cardano-foundation/CIPs/pull/323
-  - https://github.com/cardano-foundation/CIPs/issues/169
-  - https://github.com/cardano-foundation/CIPs/issues/178
-  - https://github.com/cardano-foundation/CIPs/issues/204
-  - https://github.com/cardano-foundation/CIPs/issues/253
-  - https://github.com/cardano-foundation/CIPs/issues/386
-  - https://github.com/cardano-foundation/CIPs/issues/404
-  - https://github.com/cardano-foundation/CIPs/issues/419
-  - https://github.com/cardano-foundation/CIPs/pull/446
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/88
+  - CIP-0030 | update to api.signData(): https://github.com/cardano-foundation/CIPs/pull/148
+  - CIP-0030 | Events API: https://github.com/cardano-foundation/CIPs/pull/151
+  - CIP30 experimental api section: https://github.com/cardano-foundation/CIPs/pull/183
+  - CIP-0030 | Add getCollateral function to the connector API: https://github.com/cardano-foundation/CIPs/pull/208
+  - CIP-0030 | Add chain id to differentiate between testnets: https://github.com/cardano-foundation/CIPs/pull/323
+  - CIP-0030 | Upgrade to latest format & propose version / extension scheme: https://github.com/cardano-foundation/CIPs/pull/446
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/169
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/178
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/204
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/253
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/386
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/404
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/419
 Created: 2021-04-29
 License: CC-BY-4.0
 ---
@@ -38,7 +38,7 @@ License: CC-BY-4.0
 
 This documents describes a webpage-based communication bridge allowing webpages (i.e. dApps) to interface with Cardano wallets. This is done via injected javascript code into webpages. This specification defines the manner that such code is to be accessed by the webpage/dApp, as well as defining the API for dApps to communicate with the user's wallet. This document currently concerns the Shelley-Mary era but will have a second version once Plutus is supported. This specification is intended to cover similar use cases as web3 for Ethereum or [EIP-0012](https://github.com/ergoplatform/eips/pull/23) for Ergo. The design of this spec was based on the latter.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In order to facilitate future dApp development, we will need a way for dApps to communicate with the user's wallet. While Cardano does not yet support smart contracts, there are still various use cases for this, such as NFT management. This will also lay the groundwork for an updated version of the spec once the Alonzo hardfork is released which can extend it to allow for Plutus support.
 
@@ -384,7 +384,7 @@ The benefits of this are:
 1. New features can be added to CIP30 as experimental features and only moved to non-experimental once multiple wallets implement it
 1. It provides a clear path to updating the CIP version number (when functions move from experimental -> stable)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 See justification and explanations provided with each API endpoint.
 

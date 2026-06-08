@@ -7,7 +7,7 @@ Authors:
     - Philip DiSarro <philipdisarro@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/921
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/921
 Created: 2024-10-03
 License: CC-BY-4.0
 ---
@@ -18,7 +18,7 @@ We propose to extend the `Data` type in Plutus Core with a new constructor `Valu
 
 This addition enables on-chain scripts to operate on multi-asset values directly and efficiently, without resorting to nested map encodings. It eliminates the need for costly emulation of value operations, reduces validator script size, enables faster execution, and significantly lowers the ex-unit budgets required to process multi-asset logic. By elevating multi-asset values to a primitive type, this change aligns Plutus Core more closely with its primary domain—expressing constraints over the transfer of value—and unlocks substantial improvements in performance, safety, and consistency across the smart contract ecosystem.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 UPLC is not a general-purpose programming language. It is a language specifically designed to write validation logic to set constraints for the creation and transfer of Value and Data across the Cardano blockchain. **Given that half of the entire purpose of this language is to express constraints over the creation and transfer of** `Value`, why is Value treated as a standard library concept rather than a first-class language primitive?
 
@@ -106,14 +106,23 @@ We propose the following set of builtin functions to accompany the new builtin t
     - encodes a `BuiltinValue` as `BuiltinData`.
 6. `unValueData :: BuiltinData -> BuiltinValue`
     - decodes a `BuiltinData` into a `BuiltinValue`, or fails if it is not one.
+    - This builtin MUST reject non-canonical `Data`-encoded values.
+    - The outer `Map` must be strictly ascending by `CurrencySymbol` key and contain no duplicate keys; otherwise, the builtin fails.
+    - Each inner `Map` must be strictly ascending by `TokenName` key and contain no duplicate keys; otherwise, the builtin fails.
+    - It fails on empty inner maps.
+    - It fails on zero-amount entries in inner maps.
     - All currency symbols and token names must be no longer than 32 bytes.
-    - All amounts must lie between -2<sup>127</sup> and 2<sup>127</sup>-1 (inclusive).
+    - All amounts must lie between -2<sup>127</sup> and 2<sup>127</sup>-1 (inclusive), and be non-zero.
+7. `scaleValue :: BuiltinInteger -> BuiltinValue -> BuiltinValue`
+    - it multiplies all token quantities in the provided value by the provided integer scale factor.
+    - Any entries whose resulting quantity is zero are removed, and any currency symbols whose inner maps become empty are removed, preserving the Mary-era Value invariants.
+    - It fails if any resulting quantity lies outside -2<sup>127</sup> ≤ amount ≤ 2<sup>127</sup>-1.
 
 A note on `valueData` and `unValueData`: in Plutus V1, V2 and V3, the encoding of `BuiltinValue` in `BuiltinData` is identical to that of the [existing `Value` type](https://plutus.cardano.intersectmbo.org/haddock/latest/plutus-ledger-api/PlutusLedgerApi-V1-Value.html#t:Value) in plutus-ledger-api.
 This ensures backwards compatibility.
 Beginning in the Dijkstra era, a new `Value` constructor will be added to `BuiltinData`, making `valueData` and `unValueData` constant time operations for Plutus V4 onwards.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Efficiency
 

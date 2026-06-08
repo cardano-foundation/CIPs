@@ -969,7 +969,7 @@
       "items": {
         "$ref": "cardano-conway.json#/definitions/Int128"
       },
-      "maxItems": 166,
+      "maxItems": 332,
       "minItems": 166
     },
     "PlutusV2CostModel": {
@@ -978,7 +978,7 @@
       "items": {
         "$ref": "cardano-conway.json#/definitions/Int128"
       },
-      "maxItems": 175,
+      "maxItems": 332,
       "minItems": 175
     },
     "PlutusV3CostModel": {
@@ -987,7 +987,7 @@
       "items": {
         "$ref": "cardano-conway.json#/definitions/Int128"
       },
-      "maxItems": 251,
+      "maxItems": 350,
       "minItems": 251
     },
     "CostModels": {
