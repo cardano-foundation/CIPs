@@ -5,10 +5,10 @@ Category: Plutus
 Status: Active
 Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: 
+Implementors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/747
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/747
 Created: 2024-01-22
 License: CC-BY-4.0
 ---
@@ -19,7 +19,7 @@ Today, Plutus Core scripts signal success or failure exclusively by whether the 
 This leads to some false positives, where a script terminates normally, but this was not intended by the author.
 We propose to additionally look at what the script evaluates to when checking for success or failure.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Consider the following Plutus scripts, intended to be used as minting policy scripts:
 
@@ -54,7 +54,7 @@ The specification for checking whether a Plutus Core script accepts a transactio
 
 This change is not backwards-compatible and will need to go into a new Plutus ledger language.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Since the return value of a script will now be significant, a script will only succeed if the whole thing evaluates to 'unit'.
 This is very unlikely to happen by accident: mistakes in the number of arguments or in what to return will result in failure.

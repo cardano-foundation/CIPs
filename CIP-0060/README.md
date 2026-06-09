@@ -1,8 +1,8 @@
 ---
 CIP: 60
 Title: Music Token Metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Andrew Westberg <awestberg@projectnewm.io>
   - Ryan Jones <rjones@projectnewm.io>
@@ -23,10 +23,10 @@ Implementors:
   - SoundRig <soundrig.io>
   - SickCityNFT <sickcity.xyz>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/307
-  - https://github.com/cardano-foundation/CIPs/pull/367
-  - https://github.com/cardano-foundation/CIPs/pull/502
-  - https://github.com/cardano-foundation/CIPs/pull/868
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/307
+  - CIP-0060 | Add more optional fields and update state to Active: https://github.com/cardano-foundation/CIPs/pull/367
+  - CIP-0060 | Update to v2: https://github.com/cardano-foundation/CIPs/pull/502
+  - CIP-0060 | v3 metadata restructuring: https://github.com/cardano-foundation/CIPs/pull/868
 Created: 2022-07-26
 License: CC-BY-4.0
 ---
@@ -35,7 +35,7 @@ License: CC-BY-4.0
 
 This proposal defines an extension to CIP-25 and CIP-68 for token metadata specific to music tokens.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Music tokens on Cardano can be either NFTs or FTs and contain links to audio files. In order for players, indexers, and wallets to be able to properly search and categorize a user's music collection, we need to define a common schema for creating music on Cardano. If all parties creating these music tokens follow similar patterns, apps can consume this information and make proper use of it. The existing CIP-25 is a good base to build upon, but for a good music experience, we need to standardize additional fields that will be required specifically for music tokens.
 
@@ -690,7 +690,7 @@ Version 3 reorders identifiers like IPN, ISNI, etc into objects tied with the en
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Implementing this simplifies and commonizes the process for creating music tokens on Cardano. It greatly simplifies the work that apps have to make when consuming such tokens.
 

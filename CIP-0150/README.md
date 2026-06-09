@@ -1,13 +1,13 @@
 ---
 CIP: 150
 Title: Block Data Compression
-Status: Proposed
 Category: Network
+Status: Proposed
 Authors:
   - Alex Sierkov <alex.sierkov@gmail.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/993
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/993
 Created: 2025-02-24
 License: CC-BY-4.0
 ---
@@ -19,7 +19,7 @@ This proposal presents a lightweight extension to the Cardano Network protocol t
 - Accelerates blockchain synchronization by optimizing the download process for new and lagging nodes.
 - Lowers network traffic costs for Cardano stake pool operators through improved data transmission efficiency.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### The Status Quo
 
@@ -247,7 +247,7 @@ and enabling direct transmission of compressed block sequences from disk when a 
 
 To be ready for testnet testing, all implementations should provide at least minimal support, and at least one implementation should support the intermediate level.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - Analyzes how support for data compression can serve as a technical foundation for drastically improving Cardano's scalability.
 - Evaluates the performance of the ZStandard compression algorithm on Cardano mainnet data.

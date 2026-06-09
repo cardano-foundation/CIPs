@@ -1,8 +1,8 @@
 ---
 CIP: 57
 Title: Plutus Contract Blueprint
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - KtorZ <matthias.benkort@cardanofoundation.org>
   - scarmuega <santiago@carmuega.me>
@@ -14,10 +14,11 @@ Implementors:
   - Mesh.js <https://martify.io/>
   - Bloxbean cardano-client-lib <https://github.com/bloxbean/cardano-client-lib>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/258
-  - https://discord.gg/yUkkhqBnyV
-  - https://github.com/aiken-lang/aiken/issues/972
-  - https://github.com/aiken-lang/aiken/issues/1270
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/258
+  - GitHub Issue: https://github.com/aiken-lang/aiken/issues/972
+  - Parametric naming: https://github.com/aiken-lang/aiken/issues/1270
+Solution To:
+  - CPS-0005: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0005
 Created: 2022-05-15
 License: CC-BY-4.0
 ---
@@ -28,7 +29,7 @@ This document specifies a language for documenting Plutus contracts in a machine
 
 This document is therefore a meta-specification defining the vocabulary and validation rules with which one can specify a Plutus contract interface, a.k.a **Plutus contract blueprint**.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 While publicly accessible, on-chain contracts are currently inscrutable. Ideally, one would want to get an understanding of transactions revolving around script executions. This is both useful to visualize and to control the evolution of a contract life-cycle; but also, as a user interacting with a contract, to ensure that one is authorizing a transaction to do what it's intended to. Having a machine-readable specification in the form of a JSON-schema makes it easier (or even, possible) to enable a wide variety of use cases from a single concise document, such as:
 
@@ -356,7 +357,7 @@ New producers MUST NOT emit any of these legacy forms; they MUST emit the modern
 
 Consumers MAY support legacy forms for backwards compatibility with older blueprints, but are NOT required to. A consumer that rejects a blueprint solely because it contains legacy-form keys is conformant with this specification. When a consumer that does support legacy forms produces keys itself (e.g. when synthesising auxiliary definitions during code generation), it MUST emit the modern angle-bracket form regardless of which form it consumed.
 
-## Example(s)
+### Example(s)
 
 <details>
   <summary>Aiken's Hello World</summary>
@@ -429,7 +430,7 @@ Consumers MAY support legacy forms for backwards compatibility with older bluepr
 ```
 </details>
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Documenting binary interfaces
 
