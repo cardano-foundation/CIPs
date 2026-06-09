@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: 189
 Title: Variable Deposits as Pledge
 Category: Ledger
 Status: Proposed
