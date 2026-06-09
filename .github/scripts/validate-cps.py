@@ -106,11 +106,60 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
         return None, content, None
 
 
+def _strip_fenced_code_blocks(content: str) -> str:
+    """Blank out lines inside fenced code blocks, preserving line count.
+
+    Recognises CommonMark fenced code blocks: an opening fence is a line
+    indented up to 3 spaces whose first non-whitespace run is 3+ backticks or
+    3+ tildes. For backtick fences the info string (rest of the line) must
+    not contain backticks — this excludes inline code like '```X``` is a ...'
+    which is not a valid fence. The closing fence must use the same character
+    and be at least as long as the opening, followed only by whitespace.
+
+    Lines inside a fence — including the fence lines themselves — are
+    replaced with '' so that line-based regex extraction skips them. An
+    unclosed fence treats all trailing lines as fenced, which is the safe
+    default for the validator (no false positives).
+    """
+    backtick_open_re = re.compile(r'^ {0,3}(`{3,})([^`]*)$')
+    tilde_open_re = re.compile(r'^ {0,3}(~{3,})')
+    result = []
+    in_fence = False
+    fence_char = None
+    fence_len = 0
+    for line in content.split('\n'):
+        if in_fence:
+            close_re = re.compile(
+                r'^ {0,3}(' + re.escape(fence_char) + r'{' + str(fence_len) + r',})\s*$'
+            )
+            if close_re.match(line):
+                in_fence = False
+                fence_char = None
+                fence_len = 0
+            result.append('')
+        else:
+            m_b = backtick_open_re.match(line)
+            m_t = tilde_open_re.match(line) if not m_b else None
+            if m_b:
+                in_fence = True
+                fence_char = '`'
+                fence_len = len(m_b.group(1))
+                result.append('')
+            elif m_t:
+                in_fence = True
+                fence_char = '~'
+                fence_len = len(m_t.group(1))
+                result.append('')
+            else:
+                result.append(line)
+    return '\n'.join(result)
+
+
 def extract_h2_headers(content: str) -> List[str]:
-    """Extract all H2 headers (##) from markdown content."""
+    """Extract all H2 headers (##) from markdown content, ignoring fenced code blocks."""
     h2_pattern = r'^##\s+(.+)$'
     headers = []
-    for line in content.split('\n'):
+    for line in _strip_fenced_code_blocks(content).split('\n'):
         match = re.match(h2_pattern, line)
         if match:
             headers.append(match.group(1).strip())
@@ -118,10 +167,10 @@ def extract_h2_headers(content: str) -> List[str]:
 
 
 def extract_h1_headers(content: str) -> List[str]:
-    """Extract all H1 headers (#) from markdown content."""
+    """Extract all H1 headers (#) from markdown content, ignoring fenced code blocks."""
     h1_pattern = r'^#\s+(.+)$'
     headers = []
-    for line in content.split('\n'):
+    for line in _strip_fenced_code_blocks(content).split('\n'):
         match = re.match(h1_pattern, line)
         if match:
             headers.append(match.group(1).strip())

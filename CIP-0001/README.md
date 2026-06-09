@@ -85,7 +85,7 @@ Motivation: Why is this CIP necessary?          | A clear explanation that intro
 Specification                                   | The technical specification should describe the proposed improvement in sufficient technical detail. In particular, it should provide enough information that an implementation can be performed solely based on the design outlined in the CIP. A complete and unambiguous design is necessary to facilitate multiple interoperable implementations. <br/><br/>This section must address the [Versioning](#versioning) requirement unless this is addressed in an optional Versioning section.<br/><br/> If a proposal defines structure of on-chain data it must include a CDDL schema.
 Rationale: How does this CIP achieve its goals? | The rationale fleshes out the specification by describing what motivated the design and what led to particular design decisions. It should describe alternate designs considered and related work. The rationale should provide evidence of consensus within the community and discuss significant objections or concerns raised during the discussion. <br/><br/>It must also explain how the proposal affects the backward compatibility of existing solutions when applicable. If the proposal responds to a [CPS][], the 'Rationale' section should explain how it addresses the CPS and answer any questions that the CPS poses for potential solutions.
 Path to Active                                  | Organised in two sub-sections (see [Path to Active](#path-to-active) for detail):<br/><h5>Acceptance Criteria</h5>Describes what are the acceptance criteria whereby a proposal becomes _'Active'_.<br/><h5>Implementation Plan</h5>Either a plan to meet those criteria or `N/A` if not applicable.
-_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**
+_optional sections_                             | May appear in any order, or with custom titles, at author and editor discretion:<br/>**Versioning**: if [Versioning](#versioning) is not addressed in Specification<br/>**References**<br/>**Appendices**<br/>**Acknowledgements**<br/>**Open Questions**: unresolved design questions left for future discussion
 Copyright                                       | The CIP must be explicitly licensed under acceptable copyright terms ([see below](#licensing)).
 
 > [!NOTE]
@@ -102,9 +102,9 @@ Field          | Description
 `Category`     | One of the editorially accepted [categories](#categories) covering one area of the ecosystem.
 `Status`       | Proposed \| Active \| Inactive (.._reason_..)
 `Authors`      | A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>)
-`Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. `N/A` when not applicable and `[]` when there's currently no implementor.
+`Implementors` | A list of implementors committed to delivering an implementation of the proposal, when applicable. Each entry uses the same `Name <email-or-URI>` shape as `Authors` — the bracketed contact may be an email address or a project URI. `N/A` when not applicable and `[]` when there's currently no implementor.
 `Discussions`  | A list of links where major technical discussions regarding this CIP happened. Links should include any discussion before submission, and _must_ include a link to the pull request that created the CIP and any pull request that modifies it.
-`Solution-To`  | A list of [CPS][] that this CIP addresses, if any. Omitted when not applicable.
+`Solution To`  | A list of [CPS][] that this CIP addresses, if any, as `CPS-NNNN[?] [\| optional title]: URL` entries (mirrors the `Proposed Solutions` field of a CPS). Omitted when not applicable.
 `Created`      | Date created on, in ISO 8601 (YYYY-MM-DD) format
 `License`      | Abbreviation of an approved license(s)
 
