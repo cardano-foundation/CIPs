@@ -10,6 +10,9 @@ Authors:
 Implementors:
 - VESPR Wallet <https://www.vespr.xyz/>
 - Yoroi Wallet <https://yoroi-wallet.com/>
+- Lace <https://www.lace.io/>
+- Begin Wallet <https://begin.is/>
+- Eternl Mobile <https://eternl.io/>
 Discussions:
 - Original PR: https://github.com/cardano-foundation/CIPs/pull/546
 Solution To:
