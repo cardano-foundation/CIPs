@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 191
 Title: Ekklesia - Hydra L2 Voting Protocol
 Category: Tokens
 Status: Proposed
