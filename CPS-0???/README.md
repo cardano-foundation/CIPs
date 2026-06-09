@@ -10,7 +10,7 @@ Created: 2026-05-28
 License: CC-BY-4.0
 Proposed Solutions: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1187
+  - Early discussion: https://github.com/cardano-foundation/CIPs/pull/1187
   - https://github.com/cardano-foundation/CIPs/pull/1199
 ---
 
