@@ -1,0 +1,21 @@
+{
+  "@context": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/cip-0169.common.jsonld",
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "title": "Increase Block Size to 96KB",
+    "abstract": "Update maxBlockBodySize parameter from 90112 to 98304 bytes.",
+    "motivation": "Current block size limits are constraining transaction throughput.",
+    "rationale": "Analysis shows network can safely handle larger blocks, improving user experience.",
+    "onChain": {
+      "deposit": "100000000000",
+      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
+      "gov_action": {
+        "tag": "parameter_change_action",
+        "protocol_param_update": {
+          "max_block_body_size": 98304
+        }
+      }
+    }
+  },
+  "authors": []
+}
