@@ -1,6 +1,8 @@
 ---
 CIP: 102
 Title: Royalty Datum Metadata
+Category: Tokens
+Status: Proposed
 Authors:
   - Sam Delaney <sdelaney@ikigaitech.org>
 Implementors:
@@ -8,10 +10,8 @@ Implementors:
   - Nebula <https://github.com/spacebudz/nebula/>
   - Mintun <https://mintun.io/>
 Discussions:
-  - https://github.com/ikigai-github/CIPs/pull/1
-  - https://github.com/cardano-foundation/CIPs/pull/551
-Status: Proposed
-Category: Tokens
+  - First draft discussion: https://github.com/ikigai-github/CIPs/pull/1
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/551
 Created: 2023-08-08
 License: CC-BY-4.0
 ---
@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 This proposal makes use of the onchain metadata pattern established in [CIP-0068][] to provide a way to store royalties with greater assurance and customizability.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The inability to create trustless onchain royalty validation with [CIP-0027][] is a major drawback to Cardano NFTs. The pattern defined in CIP-68 represents an opportunity to upgrade the standard to support onchain validation. This CIP aims to eliminate that drawback and demonstrate better support for developers, NFT creators, and NFT collectors, ultimately attracting dapps & NFT projects that would otherwise have taken their talents to another blockchain.
 
@@ -148,11 +148,11 @@ Collections using [CIP-0088][] registration certificates **should** advertise th
 
 This provides an additional discovery path for off-chain tooling: rather than constructing the royalty token name from a reference datum lookup, implementors may read it directly from the CIP-88 registration.
 
-## Examples
+### Examples
 
 In-code examples can be found in the [reference implementation](https://github.com/SamDelaney/CIP_102_Reference). (Up to v1 - v2 coming soon)
 
-### Constructing the Royalty Token
+#### Constructing the Royalty Token
 
 A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(222)TestToken` and they want to look up the royalty token. The steps are:
 
@@ -160,9 +160,9 @@ A third party has the following NFT `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5c
 2. Check the `extra` field of the reference datum for a `royalty_included` flag - denoted here as [flag].
 3. Construct `royalty NFT` from `user token` and `royalty_included`: `d5e6bf0500378d4f0da4e8dde6becec7621cd8cbf5cbb9b87013d4cc.(500)Royalty[flag?]`
 
-### Retrieving metadata
+#### Retrieving metadata
 
-#### Retrieve metadata as 3rd party
+##### Retrieve metadata as 3rd party
 
 A third party has a CIP-102 compliant NFT and they want to look up the royalties. The steps are
 
@@ -171,7 +171,7 @@ A third party has a CIP-102 compliant NFT and they want to look up the royalties
 3. Get the datum from the output and look up metadata by going into the first field of constructor 0.
 4. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
 
-#### Retrieve metadata in a Plutus validator
+##### Retrieve metadata in a Plutus validator
 
 We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus validator context. To do this we
 
@@ -180,7 +180,7 @@ We want to bring the royalty metadata of a CIP-102 compliant NFT into the Plutus
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `royalty NFT` and `user token` and their asset names without the `asset_name_label` prefix match. (on-chain)
 
-### Example of onchain variable fee calculation:
+#### Example of onchain variable fee calculation:
 
 ```cddl
 ; Given a royalty fee of 1.6% (0.016)
@@ -196,7 +196,7 @@ Because the computational complexity of Plutus primitives scales with size, this
 
 To prevent abuse, it is **recommended** that the `royalty NFT` is stored at the script address of a validator that ensures the specified fees are not arbitrarily changed, such as an always-fails validator.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The specification here is made to be as minimal as possible. This is done with expediency in mind and the expectation that additional changes to the specification may be made in the future. The sooner we have a standard established, the sooner we can make use of it. Rather than attempting to anticipate all use cases, we specify with forward-compatibility in mind.
 
@@ -220,7 +220,7 @@ In addition to providing a way to create guaranteed royalties, this has several 
 
 To keep metadata compatibility with changes coming in the future, we introduce a `version` field in the datum.
 
-## Extending & Modifying this CIP
+### Extending & Modifying this CIP
 
 See the [CIP-0068 Extension Boilerplate](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0068/extension_boilerplate.md)
 

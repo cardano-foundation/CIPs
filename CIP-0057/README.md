@@ -1,8 +1,8 @@
 ---
 CIP: 57
 Title: Plutus Contract Blueprint
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - KtorZ <matthias.benkort@cardanofoundation.org>
   - scarmuega <santiago@carmuega.me>
@@ -13,9 +13,11 @@ Implementors:
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/258
-  - https://discord.gg/yUkkhqBnyV
-  - https://github.com/aiken-lang/aiken/issues/972
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/258
+  - Discord: https://discord.gg/yUkkhqBnyV
+  - GitHub Issue: https://github.com/aiken-lang/aiken/issues/972
+Solution To:
+  - CPS-0005: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0005
 Created: 2022-05-15
 License: CC-BY-4.0
 ---
@@ -26,7 +28,7 @@ This document specifies a language for documenting Plutus contracts in a machine
 
 This document is therefore a meta-specification defining the vocabulary and validation rules with which one can specify a Plutus contract interface, a.k.a **Plutus contract blueprint**.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 While publicly accessible, on-chain contracts are currently inscrutable. Ideally, one would want to get an understanding of transactions revolving around script executions. This is both useful to visualize and to control the evolution of a contract life-cycle; but also, as a user interacting with a contract, to ensure that one is authorizing a transaction to do what it's intended to. Having a machine-readable specification in the form of a JSON-schema makes it easier (or even, possible) to enable a wide variety of use cases from a single concise document, such as:
 
@@ -278,7 +280,7 @@ This keyword's value must be a non-negative integer. An instance is valid agains
 
 This keyword's value must be an array of valid _Plutus Data Schema_; possibly empty. An instance is valid against this keyword if it represents a Plutus constructor for which each field is valid under each subschema given by this keyword's value. Fields are compared positionally. This keyword is mandatory.
 
-## Example(s)
+### Example(s)
 
 <details>
   <summary>Aiken's Hello World</summary>
@@ -351,7 +353,7 @@ This keyword's value must be an array of valid _Plutus Data Schema_; possibly em
 ```
 </details>
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Documenting binary interfaces
 

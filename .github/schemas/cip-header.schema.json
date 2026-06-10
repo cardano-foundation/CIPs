@@ -1,0 +1,120 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cardano-foundation/CIPs/.github/schemas/cip-header.schema.json",
+  "title": "CIP Header Schema",
+  "description": "JSON Schema for validating YAML frontmatter headers in Cardano Improvement Proposals (CIPs). Most field-level value rules are enforced by the validation script with friendly messages; the schema enforces structural/type constraints.",
+  "type": "object",
+  "required": [
+    "CIP",
+    "Title",
+    "Category",
+    "Status",
+    "Authors",
+    "Implementors",
+    "Discussions",
+    "Created",
+    "License"
+  ],
+  "properties": {
+    "CIP": {
+      "description": "The CIP number (positive integer, without leading 0), or one or more '?' before being assigned. Value-level checks (positive, no leading zero) are enforced by the script.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "integer" }
+      ]
+    },
+    "Title": {
+      "description": "A succinct and descriptive title. Length cap enforced by the script.",
+      "type": "string"
+    },
+    "Category": {
+      "description": "One of the editorially accepted categories covering one area of the ecosystem",
+      "type": "string",
+      "enum": [
+        "Meta",
+        "Wallets",
+        "Tokens",
+        "Metadata",
+        "Tools",
+        "Plutus",
+        "Ledger",
+        "Consensus",
+        "Network",
+        "?"
+      ]
+    },
+    "Status": {
+      "description": "Status of the CIP: Proposed, Active, or Inactive with a required parenthetical reason. Format enforced by the script.",
+      "type": "string"
+    },
+    "Authors": {
+      "description": "A list of authors' real names and email addresses (e.g. John Doe <john.doe@email.domain>). Per-entry format enforced by the script.",
+      "type": "array",
+      "minItems": 1
+    },
+    "Implementors": {
+      "description": "A list of implementors committed to delivering an implementation, formatted as 'Name <email-or-URI>' per entry (same shape as Authors); the bracketed contact may be an email address or a project URI. 'N/A' when not applicable; [] when there is no implementor yet. Per-entry format enforced by the script.",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "array" }
+      ],
+      "default": []
+    },
+    "Discussions": {
+      "description": "A list of links where major technical discussions regarding this CIP happened. Must include a link to the pull request that created the CIP. Each entry must have a label followed by a colon and URL. Can be a string 'Label: URL' or a dictionary {'Label': 'URL'}.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Dictionary format: {'Label': 'URL'}"
+          }
+        ]
+      }
+    },
+    "Solution To": {
+      "description": "A list of CPSs that this CIP addresses, if any. Omit the field when not applicable. Each entry is 'CPS-NNNN[?] [| optional title]: URL' (string) or {'CPS-NNNN[?] [| optional title]': URL} (dict). Bare 'CPS-NNNN' requires a tree/blob URL to that CPS folder; 'CPS-NNNN?' requires a pull-request URL. Per-entry semantics enforced by the script.",
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "pattern": "^.+:\\s+https?://.+$",
+            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
+          },
+          {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "additionalProperties": {
+              "type": "string",
+              "format": "uri"
+            },
+            "description": "Dictionary format: {'Label': 'URL'}"
+          }
+        ]
+      }
+    },
+    "Created": {
+      "description": "Date created on, in ISO 8601 (YYYY-MM-DD) format. Format enforced by the script.",
+      "type": "string"
+    },
+    "License": {
+      "description": "Abbreviation of an approved license. Allowed value enforced by the script (with a did-you-mean hint on near-misses).",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}
