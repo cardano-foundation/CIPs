@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - CardanoWall <https://github.com/cardanowall>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1205
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1205
 Created: 2026-06-02
 License: CC-BY-4.0
 ---
@@ -62,7 +62,9 @@ This CIP is written around five non-negotiable invariants:
 4. **Standalone-verifiable.** A verifier needs only the transaction metadata, optionally the content bytes, and public blockchain explorers. No issuer server is required at any step.
 5. **Algorithm-agile.** Every cryptographic algorithm is referenced by a named identifier drawn from the extensible registries this CIP defines. Post-quantum protection of the sealed-PoE key path ships in v1 (the `mlkem768x25519` X-Wing hybrid KEM is registered alongside classical `x25519`); further post-quantum migration adds new identifiers, and existing verifiers degrade predictably rather than break — an envelope under an identifier a verifier does not implement becomes opaque to it while the record's content-hash claim still validates (see [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes)).
 
-## Conventions and terminology
+## Specification
+
+### Conventions and terminology
 
 The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, **MAY**, and **OPTIONAL** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in capitals.
 
@@ -82,8 +84,6 @@ The key words **MUST**, **MUST NOT**, **REQUIRED**, **SHOULD**, **SHOULD NOT**, 
 - **Sealed PoE** — a PoE record whose content is encrypted off-chain, with the content-encryption key wrapped to one or more recipient public keys (or derived from a passphrase) through the on-chain `enc` envelope (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)). The ciphertext lives off-chain, published at a content-addressed `ar://` or `ipfs://` URI or delivered out of band.
 - **Slot** — one recipient entry inside a sealed-PoE envelope, holding the key-encapsulation material and the wrapped content-encryption key for a single recipient public key (see [Sealed PoE: multi-recipient encryption](#sealed-poe-multi-recipient-encryption)).
 - **Verifier** — software that checks a PoE record against this specification. Three roles are distinguished and defined in [Structural validation, verifier roles, and error codes](#structural-validation-verifier-roles-and-error-codes): a **structural validator** (a pure function over the record-body CBOR; no I/O, no signature cryptography, no decryption), a **public verifier** (fetches on-chain metadata, runs structural validation, and verifies record signatures; does not decrypt), and a **recipient verifier** (a public verifier that additionally holds decryption credentials — recipient KEM private keys and/or passphrases — and performs sealed-PoE decryption plus plaintext-hash recomputation). Used without a qualifier, "verifier" denotes whichever role is relevant in context; prose that requires a specific role names it explicitly.
-
-## Specification
 
 The machine-readable grammar for the record body is the CDDL schema in
 [`../cddl/label-309.cddl`](label-309.cddl); per-component JSON Schemas in
@@ -2972,6 +2972,28 @@ interface ValidatorOptions {
   // Default: the empty set — a default-configured validator therefore fails
   // every `crit`-bearing record with EXTENSION_UNSUPPORTED_CRITICAL, by design.
   supportedCriticalExtensions?: Set<string>;
+
+  // The validation reading applied to an `enc` envelope whose
+  // scheme / kem / aead identifier the validator does not fully implement:
+  // 'public' (default) degrades it to an opaque bounded map with
+  // ENC_UNSUPPORTED at info severity; 'recipient_or_strict' (the recipient
+  // verifier and strict sealed-crypto mode) hard-rejects it — ENC_UNSUPPORTED
+  // escalates to error and co-fires with the identifier-specific
+  // UNSUPPORTED_* code (see the unknown-envelope rule below).
+  role?: 'public' | 'recipient_or_strict';
+
+  // Deployment-pinned resource bounds on a decoded `enc` envelope, in slot
+  // count and re-encoded bytes (reference values 1024 / 65536; deployments
+  // MAY tighten).
+  maxSlots?: number;
+  maxEncEnvelopeBytes?: number;
+
+  // Upper policy ceiling on Argon2id work factors
+  // (ENC_PASSPHRASE_PARAMS_EXCEED_POLICY) — a verifier-side
+  // denial-of-service backstop, distinct from the normative floors.
+  // Default: { m: 2097152, t: 16, p: 8 } (m in KiB), enforced; null
+  // disables the ceiling.
+  passphraseParamsCeiling?: { m: number; t: number; p: number } | null;
 }
 
 type ValidationResult =
@@ -3125,7 +3147,7 @@ This claim MUST be **structurally testable**, not a source-code grep heuristic. 
 
 Trust-anchor analysis — how a deployment binds an on-record signer public key to a real-world identity — is out of scope for the verifier algorithm. The verifier resolves the on-record public key and reports the strict-Ed25519 result; whether that key represents the identity a consumer should attribute the record to is a deployment policy, addressed in [Security and Privacy Considerations](#security-and-privacy-considerations).
 
-## Security and Privacy Considerations
+### Security and Privacy Considerations
 
 This section states the security and privacy properties that follow directly
 from the record schema and the sealed-PoE construction. Every claim here is a
@@ -3137,7 +3159,7 @@ rotated is OUT OF SCOPE (see [Seed and key derivation](#seed-and-key-derivation)
 the properties below depend only on the format and the cryptographic
 constructions this document defines.
 
-### Adversary model
+#### Adversary model
 
 This CIP's security claims hold against the following adversaries. Each row lists
 what the adversary can and cannot achieve against the on-wire format alone.
@@ -3151,7 +3173,7 @@ what the adversary can and cannot achieve against the on-wire format alone.
 | **Malicious recipient**                    | Holds a recipient KEM private key; by construction decrypts every sealed PoE addressed to a slot wrapped under that key.                  | Decrypt sealed PoE addressed to a _different_ recipient's key — other slots in the same record are independently wrapped and fail closed under the wrong private key. Retroactively insert itself as a recipient on a published record — `enc.slots` is covered by `slots_mac` and, if the record is signed, by the `COSE_Sign1`; tampering invalidates one or the other.                                         | Do anything a legitimate recipient can do with the recovered plaintext, including leaking it. Sealed PoE has **no recipient forward secrecy by design**: once a record is sealed to a long-term recipient key, the holder of the matching private key can decrypt forever. This is a property of public-key encryption to a long-term key, not a defect. |
 | **Quantum-capable adversary (future CRQC)** | Archives today's permanent public artifacts — on-chain envelopes, signer public keys, content-addressed ciphertext — and applies a cryptographically relevant quantum computer to them at some future date.                                | Break the content-hash claim, the `mlkem768x25519` confidentiality (while ML-KEM-768 holds), the `slots_mac` commitment, or the symmetric layer — every one is Grover-bounded or post-quantum by construction (see [Quantum adversaries and per-claim durability](#quantum-adversaries-and-per-claim-durability)).                                                                                                | Retroactively decrypt every record sealed under `x25519` alone, and forge Ed25519 signatures from the CRQC epoch onward. The per-claim durability table below is the authoritative breakdown; producer-side guidance follows from it.                                                                                                                    |
 
-### Quantum adversaries and per-claim durability
+#### Quantum adversaries and per-claim durability
 
 A PoE record outlives cryptographic eras: the chain is append-only, the
 ciphertext URI is permanent, and nothing published can be recalled when a
@@ -3213,7 +3235,7 @@ requires Category-5 margins is not stranded: a higher-category KEM enters the
 KEM registry as an additive identifier under the same `enc.scheme` — no schema
 change, no version bump — per the additive-only rule.
 
-### Harvest-now, decrypt-later and the `x25519` KEM
+#### Harvest-now, decrypt-later and the `x25519` KEM
 
 Sealed PoE is an unusually favourable target for a harvest-now, decrypt-later
 adversary — one who archives ciphertext today and decrypts when a CRQC exists.
@@ -3243,7 +3265,7 @@ This exposure is a confidentiality property only. It does not weaken the
 record's hash claim, and it does not apply to the `slots_mac` commitment, whose
 relevant adversary acts at sealing time (see [Slot-set MAC](#slot-set-mac)).
 
-### Ed25519 authorship across the quantum transition
+#### Ed25519 authorship across the quantum transition
 
 Every signed record publishes its signer's Ed25519 public key on chain forever,
 and Shor's algorithm recovers an Ed25519 private key from its public key. From
@@ -3273,7 +3295,7 @@ signature algorithm surfaces as `SIGNATURE_UNSUPPORTED` at info severity without
 failing the record — so an older verifier verifies the Ed25519 entry and the
 content claim exactly as before, while an updated verifier verifies both.
 
-### X-Wing revision pinning
+#### X-Wing revision pinning
 
 The identifier `mlkem768x25519` denotes the byte behaviour of X-Wing exactly as
 specified in
@@ -3302,7 +3324,7 @@ the slot's full wire bytes and the envelope-unique nonce **outside** the KEM, as
 defence in depth — the security argument holds X-Wing as a black-box IND-CCA KEM
 (see [Slot construction (sender)](#slot-construction-sender)).
 
-### Standalone verifiability and zero server custody
+#### Standalone verifiability and zero server custody
 
 Two service-level invariants underwrite the format's trust model and are
 testable against the on-wire bytes alone.
@@ -3330,7 +3352,7 @@ testable against the on-wire bytes alone.
   resolves those facts from two or more independent providers and aborts on
   divergence raises that residual bar to collusion across providers.
 
-### Hash collision and second preimage
+#### Hash collision and second preimage
 
 This CIP requires content-hash algorithms with at least 128-bit collision
 resistance and at least 256-bit second-preimage resistance. `sha2-256` and
@@ -3343,7 +3365,7 @@ families. If a registered algorithm is later weakened, a successor revision MUST
 remove the identifier; verifiers SHOULD then mark dependent records "unreliable"
 without erasing the underlying claim, because the chain is append-only.
 
-### Merkle list commitment: second preimage and off-chain backup
+#### Merkle list commitment: second preimage and off-chain backup
 
 The `rfc9162-sha256` list-commitment construction (see
 [`../registries/merkle-commitment-algorithms.json`](https://github.com/cardanowall/label-309/blob/main/registries/merkle-commitment-algorithms.json))
@@ -3365,7 +3387,7 @@ the same content-addressed URI carried in the `merkle` entry's `uris`, so the
 list is discoverable from the chain itself; the `merkle` and `items` arrays are
 independent and the structural validator enforces no cross-array binding.
 
-### Signature replay
+#### Signature replay
 
 A `COSE_Sign1` is bound to its signing input — the domain-prefixed canonical
 CBOR of the record body with `sigs` removed (see
@@ -3388,7 +3410,7 @@ of the signing input exactly. Omitting it — signing only the raw canonical CBO
 leaves the door open to cross-protocol replay if a future schema reuses the body
 shape, and is non-conformant.
 
-### Plaintext-hash binding
+#### Plaintext-hash binding
 
 `hashes` commits to the **plaintext**, even when an `enc` envelope is present. A
 verifier holding only ciphertext cannot confirm the plaintext claim without
@@ -3402,7 +3424,7 @@ so a public verifier can confirm that the fetched bytes match the producer's
 published bytes from the URI alone. There is no separate ciphertext hash and no
 ciphertext-size field in the record.
 
-### Sender authenticity of sealed PoE
+#### Sender authenticity of sealed PoE
 
 The sealed-PoE construction authenticates **delivery to recipients**, never
 **origin**. Three properties follow from the construction and are stated plainly
@@ -3437,7 +3459,7 @@ record-level signatures by policy and MUST verify them. Absent a verified
 signature, the only claims a sealed record supports are the timestamped hash
 commitment and "decryptable by whoever holds a matching private key".
 
-### Cross-record envelope replay
+#### Cross-record envelope replay
 
 For an unsigned record, every input to a valid sealed item is public: the
 `hashes` map, the `enc` envelope (including `slots_mac`), and the `uris[]`. A
@@ -3466,7 +3488,7 @@ plaintext claim, such an application SHOULD collapse the duplicates to the
 record with the earliest block time, surfacing later copies as duplicates of it
 rather than as new deliveries.
 
-### Pre-decryption structural validation
+#### Pre-decryption structural validation
 
 A multi-recipient sealed-PoE record carries an unauthenticated structure — the
 `slots` array — that is parsed before any cryptographic primitive is invoked. An
@@ -3502,7 +3524,7 @@ the Cardano maximum transaction size, so a conformant record never trips them. T
 structural validator and the recipient verifier apply the identical bounds before
 invoking any primitive.
 
-### Partitioning-oracle resistance
+#### Partitioning-oracle resistance
 
 Multi-recipient encryption whose acceptance test is a non-committing AEAD tag is
 the setting of partitioning-oracle attacks
@@ -3549,7 +3571,7 @@ the format keeps off the chain. Passphrase decryption is a local,
 recipient-side operation; rate-unlimited remote testing of a record's
 passphrase is a deployment defect, not a wire-format property.
 
-### Constant-time trial decryption
+#### Constant-time trial decryption
 
 A recipient verifier decrypts a sealed PoE by trial-decapsulating each slot with
 its private key. To preserve the hidden-recipient property, recipient decryption
@@ -3577,7 +3599,7 @@ the guarantee extends only down to the runtime. Deployments whose threat model
 includes a co-located timing adversary SHOULD prefer implementations backed by
 native constant-time primitives.
 
-### Recipient-match timing and feed scanning
+#### Recipient-match timing and feed scanning
 
 The constant-time requirement above is scoped to the slot loop; it is
 deliberately not extended to the whole pipeline. A verifier MAY return at the
@@ -3600,7 +3622,7 @@ ciphertext fetching from match time — deferring or batching fetches rather tha
 fetching at the moment of match — and SHOULD avoid issuing match-triggered
 fetches from a network identity linkable to the scanning key's owner.
 
-### Slot-set commitment assumption
+#### Slot-set commitment assumption
 
 The slot-set MAC is what makes the recovered CEK a **commitment** to the
 envelope the recipient matched. The slots transcript binds the cross-KEM header
@@ -3646,7 +3668,7 @@ structurally excludes the over-block-length HMAC key ambiguity (see the
 "Why 32 bytes is enough" analysis in [Slot-set MAC](#slot-set-mac), with which
 this section is aligned).
 
-### Recipient-string transport integrity
+#### Recipient-string transport integrity
 
 Recipient public keys travel out-of-band as Bech32 strings (see
 [Recipient public-key and secret encodings](#recipient-public-key-and-secret-encodings)),
@@ -3672,7 +3694,7 @@ in transit, which no checksum addresses; key provenance remains the sender's
 trust decision (see
 [Recipient public-key discovery](#recipient-public-key-discovery-out-of-scope-non-normative)).
 
-### Anonymity of unsigned sealed PoE
+#### Anonymity of unsigned sealed PoE
 
 When a sealed-PoE record carries **no `sigs`**, the on-wire bytes MUST be
 independent of the sender's identity. Concretely:
@@ -3748,7 +3770,7 @@ public-attribution use case, not a defect. Producer-side interfaces SHOULD
 default wallet signing to off and SHOULD warn the producer that opting in binds
 the record to their wallet address before they do so.
 
-### Supersedence semantics
+#### Supersedence semantics
 
 Supersedence is advisory, not deletion. A verifier MUST treat the prior record
 as existent and valid; the `supersedes` pointer affects only how records are
@@ -3759,7 +3781,7 @@ signed by a key also present in the superseded record. There is no on-chain
 primitive that deletes or invalidates a prior record; doing so would violate the
 durability property that makes proof-of-existence meaningful.
 
-### Signer-key compromise
+#### Signer-key compromise
 
 Because issuer identity is not part of the standard, a leaked signing key cannot
 retroactively change, alter, or invalidate records signed before the compromise —
@@ -3779,7 +3801,7 @@ rejects any `sigs` entry whose decoded `cose_key` carries the COSE_Key private
 scalar `d` (label `-4`) with `SIG_PRIVATE_KEY_LEAKED` before the record reaches
 the network.
 
-### Pre-dating
+#### Pre-dating
 
 This CIP establishes an **upper bound** on when content existed: the block time of
 the transaction carrying the record is a cryptographic witness that the committed
@@ -3795,7 +3817,7 @@ fact defined in
 an explorer-asserted quantity that deployments with load-bearing dates MUST
 cross-check across independent explorers, per that section.
 
-### Privacy
+#### Privacy
 
 Every byte in a PoE record is on chain forever. This CIP deliberately omits
 filenames, MIME types, titles, descriptions, language tags, free-form notes, and
