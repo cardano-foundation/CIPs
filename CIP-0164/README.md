@@ -20,7 +20,7 @@ Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1078
   - Update post Buidler Fest: https://github.com/cardano-foundation/CIPs/pull/1167
   - Update committee selection: https://github.com/cardano-foundation/CIPs/pull/1196
-Solution-To:
+Solution To:
   - CPS-0018: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0018
 Created: 2025-03-07
 License: Apache-2.0
