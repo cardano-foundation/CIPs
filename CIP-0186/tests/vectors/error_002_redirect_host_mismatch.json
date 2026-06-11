@@ -1,0 +1,17 @@
+{
+  "name": "error_002_redirect_host_mismatch",
+  "spec_section": "Callback host binding (anti-phish); Appendix A (-4)",
+  "category": "error_response",
+  "input": {
+    "connect_time_redirect_host": "aegis.example",
+    "subsequent_signTx_redirect": "https://evil.example/cb"
+  },
+  "expected": {
+    "response_url_pattern": "https://evil.example/cb?response=rejected&errorCode=-4&errorMessage=*",
+    "errorCode": -4,
+    "errorName": "RedirectHostMismatch",
+    "note": "Wallet rejects before signing UI. The wallet MUST still redirect to the supplied redirect host (it is the only contact channel back to the caller) but with the rejected envelope."
+  },
+  "should_reject": true,
+  "rejection_reason": "redirect_host_mismatch"
+}

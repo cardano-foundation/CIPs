@@ -1,0 +1,14 @@
+{
+  "name": "decode_006_wrong_method_path",
+  "spec_section": "URI format",
+  "category": "deep_link_decode",
+  "input": {
+    "url": "https://lace.io/cip30dl/v1/signEverything?v=1&dappKey=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&redirect=https%3A%2F%2Faegis.example%2Fcb&nonce=BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF&commit=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&ttl=1810000300&payload=cGF5bG9hZA"
+  },
+  "expected": {
+    "errorCode": -9,
+    "errorName": "UnsupportedVersion"
+  },
+  "should_reject": true,
+  "rejection_reason": "unknown_method"
+}

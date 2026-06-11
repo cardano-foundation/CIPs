@@ -1,0 +1,25 @@
+{
+  "name": "decode_002_signTx_custom_scheme",
+  "spec_section": "URI format",
+  "category": "deep_link_decode",
+  "input": {
+    "url": "cip30dl-lace:/v1/signTx?v=1&dappKey=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&redirect=https%3A%2F%2Faegis.example%2Fcb&nonce=BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF&commit=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&ttl=1810000300&payload=cGF5bG9hZC1zaWdudHgtdmFsaWQtZml4dHVyZS1iYXNlNjR1cmw"
+  },
+  "expected": {
+    "form": "scheme",
+    "wallet_domain": null,
+    "wallet_id": "lace",
+    "method": "signTx",
+    "params": {
+      "v": "1",
+      "dappKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "redirect": "https://aegis.example/cb",
+      "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF",
+      "commit": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "ttl": "1810000300",
+      "payload": "cGF5bG9hZC1zaWdudHgtdmFsaWQtZml4dHVyZS1iYXNlNjR1cmw"
+    }
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

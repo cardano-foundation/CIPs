@@ -1,0 +1,18 @@
+{
+  "name": "cbor_002_tx_body_extraction_index_0",
+  "spec_section": "Conway transaction body extraction",
+  "category": "cbor_extract",
+  "input": {
+    "transaction_cbor_hex": "84a0a0f5f6",
+    "shape_description": "[tx_body=a0, witness_set=a0, isValid=true(f5), auxiliary_data=null(f6)] as definite-length CBOR array of 4 items"
+  },
+  "expected": {
+    "tx_body_cbor_hex": "a0",
+    "witness_set_cbor_hex": "a0",
+    "is_valid": true,
+    "auxiliary_data": null,
+    "commit_hex": "d36a2619a672494604e11bb447cbcf5231e9f2ba25c2169177edc941bd50ad6c"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

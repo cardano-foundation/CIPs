@@ -1,0 +1,17 @@
+{
+  "name": "data_001_signData_request_shape",
+  "spec_section": "Methods (signData)",
+  "category": "sign_data",
+  "input": {
+    "decrypted_request": {
+      "session": "c2Vzc2lvbi1pZA",
+      "addr": "addr_test1qz_example",
+      "payload": "aGVsbG8td29ybGQ"
+    }
+  },
+  "expected": {
+    "required_keys": ["session", "addr", "payload"]
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

@@ -1,0 +1,19 @@
+{
+  "name": "response_004_session_json_reject_too_many_addresses",
+  "spec_section": "Privacy budget",
+  "category": "response_envelope",
+  "input": {
+    "decrypted_session_json": {
+      "session": "c2Vzc2lvbi1pZA",
+      "network": 0,
+      "addresses": ["a1", "a2", "a3", "a4", "a5", "a6"],
+      "chain": "cardano:preprod",
+      "walletId": "lace",
+      "expiresAt": 1810000000,
+      "signingPublicKey": "c2Vzc2lvbi12a2V5LWVkMjU1MTktZXhhbXBsZS0zMi1ieXRlcy0wMA"
+    }
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "addresses_exceed_privacy_budget"
+}

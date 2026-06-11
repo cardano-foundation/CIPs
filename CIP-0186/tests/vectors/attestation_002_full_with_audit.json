@@ -1,0 +1,26 @@
+{
+  "name": "attestation_002_full_with_audit",
+  "spec_section": "Vendor attestation manifest",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "yuti",
+      "protocol_versions": ["1", "2"],
+      "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getUnusedAddresses", "getRewardAddresses", "getNetworkId", "submitTx", "signGovernance"],
+      "https_prefix": "https://yuti.fluxpointstudios.com/cip30dl/v1/",
+      "scheme": "cip30dl-yuti",
+      "supports_governance": true,
+      "supports_submit": true,
+      "max_payload_bytes": 16384,
+      "audit_reports": [
+        {"vendor": "Trail of Bits", "url": "https://example.com/report.pdf", "report_date": "2026-08-01"}
+      ],
+      "vulnerability_disclosure": "https://yuti.fluxpointstudios.com/.well-known/security.txt"
+    }
+  },
+  "expected": {
+    "schema_valid": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

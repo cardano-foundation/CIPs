@@ -1,0 +1,15 @@
+# This directory holds INFORMATIVE example artifacts only, not the full
+# reference implementations. Per CIP-0001, the bulk of any implementation
+# lives in repositories belonging to the author / maintainer / implementor.
+#
+# Reference implementation repositories (created alongside this CIP):
+#   - dApp-side SDK:        https://github.com/Flux-Point-Studios/cip30-deeplink-client
+#   - Wallet-side handler:  https://github.com/Flux-Point-Studios/yuti
+#   - Aegis on-chain validators (companion smart-contract suite, not part of this CIP):
+#                           https://github.com/Flux-Point-Studios/aegis-contracts
+#
+# Planned contents to be added in Wave 2 (each kept under ~100 lines):
+#   - dapp-side TypeScript client snippet
+#   - wallet-side Swift URL-handler snippet (iOS reference)
+#   - wallet-side Kotlin URL-handler snippet (Android reference)
+#   - conformance test runner README (pointer to the harness repo)
