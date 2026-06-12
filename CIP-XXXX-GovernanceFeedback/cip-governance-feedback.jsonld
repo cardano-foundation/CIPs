@@ -1,0 +1,78 @@
+{
+    "@context": {
+        "DraftProposal": "https://314pool.com/cips/governance-feedback#DraftProposal",
+        "ProposalFeedback": "https://314pool.com/cips/governance-feedback#ProposalFeedback",
+        "ProposalAddendum": "https://314pool.com/cips/governance-feedback#ProposalAddendum",
+
+        "body": {
+            "@id": "https://cips.cardano.org/cip/CIP-0100#body",
+            "@context": {
+                "subject": {
+                    "@id": "https://314pool.com/cips/governance-feedback#subject",
+                    "@context": {
+                        "GovernanceMetadata": "https://cips.cardano.org/cip/CIP-0100#GovernanceMetadataReference",
+                        "GovernanceAction":   "https://314pool.com/cips/governance-feedback#GovernanceActionReference",
+                        "DraftProposal":      "https://314pool.com/cips/governance-feedback#DraftProposalReference",
+                        "uri":      "https://cips.cardano.org/cip/CIP-0100#reference-uri",
+                        "hash":     "https://314pool.com/cips/governance-feedback#subject-hash",
+                        "actionId": "https://314pool.com/cips/governance-feedback#subject-actionId",
+                        "label":    "https://cips.cardano.org/cip/CIP-0100#reference-label"
+                    }
+                },
+
+                "content":            "https://314pool.com/cips/governance-feedback#content",
+                "proposedActionType": "https://314pool.com/cips/governance-feedback#proposedActionType",
+                "revision":           "https://314pool.com/cips/governance-feedback#revision",
+                "status":             "https://314pool.com/cips/governance-feedback#status",
+                "submittedAs":        "https://314pool.com/cips/governance-feedback#submittedAs",
+
+                "feedbackType":  "https://314pool.com/cips/governance-feedback#feedbackType",
+                "inReplyTo": {
+                    "@id": "https://314pool.com/cips/governance-feedback#inReplyTo",
+                    "@container": "@set"
+                },
+                "conditions": {
+                    "@id": "https://314pool.com/cips/governance-feedback#conditions",
+                    "@container": "@set",
+                    "@context": {
+                        "description":  "https://314pool.com/cips/governance-feedback#condition-description",
+                        "criticality":  "https://314pool.com/cips/governance-feedback#condition-criticality",
+                        "addressedBy":  "https://314pool.com/cips/governance-feedback#condition-addressedBy"
+                    }
+                },
+                "votingIntent": {
+                    "@id": "https://314pool.com/cips/governance-feedback#votingIntent",
+                    "@context": {
+                        "role":       "https://314pool.com/cips/governance-feedback#votingIntent-role",
+                        "identifier": "https://314pool.com/cips/governance-feedback#votingIntent-identifier",
+                        "stance":     "https://314pool.com/cips/governance-feedback#votingIntent-stance"
+                    }
+                },
+
+                "addendumType": "https://314pool.com/cips/governance-feedback#addendumType",
+                "supersedes": {
+                    "@id": "https://314pool.com/cips/governance-feedback#supersedes",
+                    "@container": "@set"
+                },
+                "bindingStatements": {
+                    "@id": "https://314pool.com/cips/governance-feedback#bindingStatements",
+                    "@container": "@set",
+                    "@context": {
+                        "field":        "https://314pool.com/cips/governance-feedback#bindingStatement-field",
+                        "originalText": "https://314pool.com/cips/governance-feedback#bindingStatement-originalText",
+                        "revisedText":  "https://314pool.com/cips/governance-feedback#bindingStatement-revisedText",
+                        "rationale":    "https://314pool.com/cips/governance-feedback#bindingStatement-rationale"
+                    }
+                },
+                "addresses": {
+                    "@id": "https://314pool.com/cips/governance-feedback#addresses",
+                    "@container": "@set",
+                    "@context": {
+                        "uri":         "https://cips.cardano.org/cip/CIP-0100#reference-uri",
+                        "disposition": "https://314pool.com/cips/governance-feedback#addresses-disposition"
+                    }
+                }
+            }
+        }
+    }
+}
