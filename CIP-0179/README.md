@@ -689,7 +689,7 @@ Only Info Actions are guaranteed to complete their validity period without on-ch
 
 Linkage is discovery plus epoch alignment, not an eligibility gate: an Info Action linking a survey advertises it, which should widen reach, not narrow it. Requiring linked responses to carry a governance vote would make the vote the proof mechanism and silently exclude the two roles without a Conway voter type (Stakeholder, Owner); since standalone credential proof and role validation already cover every role, the vote binding is optional. It exists at all because it is the only mechanism yielding ledger-evaluated verification of Plutus-script credentials, which `required_signers` cannot provide.
 
-## Limitations and Future Extensions
+### Limitations and Future Extensions
 
 ### CIP-8 message-signing proof (and calidus support)
 
