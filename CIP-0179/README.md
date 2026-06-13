@@ -6,6 +6,7 @@ Status: Proposed
 Authors:
     - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
     - Ryan Wiley <rian222@gmail.com>
+    - Matthieu Pizenberg <matthieu.pizenberg@gmail.com>
 Implementors: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1107
