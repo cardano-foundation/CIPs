@@ -1,0 +1,38 @@
+{
+  "17": {
+    "msg": [
+      "Dijkstra parameter calibration bundle"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Dijkstra parameter calibration bundle",
+      "description": "Collect numeric preferences for multiple related parameters in one survey.",
+      "questions": [
+        {
+          "questionId": "max_block_body_size",
+          "question": "Select preferred max block body size (kB).",
+          "methodType": "urn:cardano:poll-method:numeric-range:v1",
+          "numericConstraints": {
+            "minValue": 64,
+            "maxValue": 256,
+            "step": 8
+          }
+        },
+        {
+          "questionId": "max_tx_size",
+          "question": "Select preferred max transaction size (kB).",
+          "methodType": "urn:cardano:poll-method:numeric-range:v1",
+          "numericConstraints": {
+            "minValue": 8,
+            "maxValue": 64,
+            "step": 1
+          }
+        }
+      ],
+      "roleWeighting": {
+        "Stakeholder": "StakeBased"
+      },
+      "endEpoch": 504
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "17": {
+    "msg": [
+      "Shared mixed-role weighting survey"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Shared mixed-role weighting survey",
+      "description": "Shared survey used for both linked and standalone mixed-role validation contexts.",
+      "questions": [
+        {
+          "questionId": "gov_priority",
+          "question": "Which governance implementation stream should be prioritized?",
+          "methodType": "urn:cardano:poll-method:single-choice:v1",
+          "options": [
+            "Ledger simplification",
+            "Governance UX",
+            "Committee tooling"
+          ]
+        }
+      ],
+      "roleWeighting": {
+        "DRep": "StakeBased",
+        "SPO": "PledgeBased"
+      },
+      "endEpoch": 523
+    }
+  }
+}

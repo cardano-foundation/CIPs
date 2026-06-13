@@ -1,0 +1,51 @@
+{
+  "17": {
+    "msg": [
+      "Dijkstra governance preference bundle"
+    ],
+    "surveyDetails": {
+      "specVersion": "1.0.0",
+      "title": "Dijkstra governance preference bundle",
+      "description": "Collect mixed-method preferences in a single survey with mixed role weighting.",
+      "questions": [
+        {
+          "questionId": "cip_shortlist",
+          "question": "Which CIPs should be shortlisted for Dijkstra?",
+          "methodType": "urn:cardano:poll-method:multi-select:v1",
+          "options": [
+            "CIP-0108",
+            "CIP-0119",
+            "CIP-0136",
+            "CIP-0149"
+          ],
+          "maxSelections": 3
+        },
+        {
+          "questionId": "release_timing",
+          "question": "Preferred delivery window for the bundle?",
+          "methodType": "urn:cardano:poll-method:single-choice:v1",
+          "options": [
+            "Q4 2026",
+            "Q1 2027",
+            "Defer"
+          ]
+        },
+        {
+          "questionId": "block_budget",
+          "question": "Select a block budget target.",
+          "methodType": "urn:cardano:poll-method:numeric-range:v1",
+          "numericConstraints": {
+            "minValue": 1,
+            "maxValue": 10,
+            "step": 1
+          }
+        }
+      ],
+      "roleWeighting": {
+        "DRep": "StakeBased",
+        "SPO": "PledgeBased"
+      },
+      "endEpoch": 504
+    }
+  }
+}

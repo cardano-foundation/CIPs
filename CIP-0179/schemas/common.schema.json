@@ -1,0 +1,388 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "./common.schema.json",
+  "title": "CIP-00XX Shared Schema Definitions",
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "hex_tx_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "hex_blake2b_256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "role_weighting": {
+      "type": "object",
+      "properties": {
+        "CC": {
+          "const": "CredentialBased"
+        },
+        "DRep": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased"
+          ]
+        },
+        "SPO": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased",
+            "PledgeBased"
+          ]
+        },
+        "Stakeholder": {
+          "const": "StakeBased"
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1
+    },
+    "responder_role": {
+      "type": "string",
+      "enum": [
+        "DRep",
+        "SPO",
+        "CC",
+        "Stakeholder"
+      ]
+    },
+    "builtin_method_type": {
+      "type": "string",
+      "enum": [
+        "urn:cardano:poll-method:single-choice:v1",
+        "urn:cardano:poll-method:multi-select:v1",
+        "urn:cardano:poll-method:numeric-range:v1"
+      ]
+    },
+    "numeric_constraints": {
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "type": "integer"
+        },
+        "maxValue": {
+          "type": "integer"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "minValue",
+        "maxValue"
+      ],
+      "additionalProperties": false,
+      "description": "Note: JSON Schema does not enforce minValue <= maxValue; tooling MUST enforce per CIP prose."
+    },
+    "survey_question": {
+      "type": "object",
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "methodType": {
+          "type": "string",
+          "minLength": 1
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "maxSelections": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "numericConstraints": {
+          "$ref": "#/$defs/numeric_constraints"
+        },
+        "methodSchemaUri": {
+          "$ref": "#/$defs/uri"
+        },
+        "methodSchemaHash": {
+          "$ref": "#/$defs/hex_blake2b_256"
+        }
+      },
+      "required": [
+        "questionId",
+        "question",
+        "methodType"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "methodType": {
+                "const": "urn:cardano:poll-method:single-choice:v1"
+              }
+            },
+            "required": [
+              "methodType"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              },
+              "maxSelections": {
+                "const": 1
+              }
+            },
+            "not": {
+              "required": [
+                "numericConstraints"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "methodType": {
+                "const": "urn:cardano:poll-method:multi-select:v1"
+              }
+            },
+            "required": [
+              "methodType"
+            ]
+          },
+          "then": {
+            "required": [
+              "options",
+              "maxSelections"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 2
+              },
+              "maxSelections": {
+                "type": "integer",
+                "minimum": 1
+              }
+            },
+            "not": {
+              "required": [
+                "numericConstraints"
+              ]
+            },
+            "description": "Note: JSON Schema does not enforce maxSelections <= len(options); tooling MUST enforce per CIP prose."
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "methodType": {
+                "const": "urn:cardano:poll-method:numeric-range:v1"
+              }
+            },
+            "required": [
+              "methodType"
+            ]
+          },
+          "then": {
+            "required": [
+              "numericConstraints"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "options"
+                  ]
+                },
+                {
+                  "required": [
+                    "maxSelections"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "methodType": {
+                "not": {
+                  "$ref": "#/$defs/builtin_method_type"
+                }
+              }
+            },
+            "required": [
+              "methodType"
+            ]
+          },
+          "then": {
+            "required": [
+              "methodSchemaUri",
+              "methodSchemaHash"
+            ]
+          }
+        }
+      ]
+    },
+    "survey_details_inner": {
+      "type": "object",
+      "properties": {
+        "specVersion": {
+          "$ref": "#/$defs/semver"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/survey_question"
+          },
+          "minItems": 1
+        },
+        "roleWeighting": {
+          "$ref": "#/$defs/role_weighting"
+        },
+        "endEpoch": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "specVersion",
+        "title",
+        "description",
+        "questions",
+        "roleWeighting",
+        "endEpoch"
+      ],
+      "additionalProperties": false,
+      "description": "Note: endEpoch is required for all surveys; linked compatibility and epoch semantics are enforced by CIP prose."
+    },
+    "answer_item": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "questionId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "selection": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "required": [
+            "questionId",
+            "selection"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "questionId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "numericValue": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "questionId",
+            "numericValue"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "questionId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "customValue": {}
+          },
+          "required": [
+            "questionId",
+            "customValue"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "survey_response_inner": {
+      "type": "object",
+      "properties": {
+        "specVersion": {
+          "$ref": "#/$defs/semver"
+        },
+        "surveyTxId": {
+          "$ref": "#/$defs/hex_tx_id"
+        },
+        "responderRole": {
+          "$ref": "#/$defs/responder_role"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/answer_item"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "specVersion",
+        "surveyTxId",
+        "responderRole",
+        "answers"
+      ],
+      "additionalProperties": false
+    },
+    "msg_array": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    }
+  }
+}

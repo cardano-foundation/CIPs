@@ -1,0 +1,18 @@
+{
+  "17": {
+    "msg": [
+      "Response to initial parameter calibration"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "responderRole": "DRep",
+      "answers": [
+        {
+          "questionId": "parameter_x_initial_value",
+          "numericValue": 325
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "17": {
+    "msg": [
+      "Response to Dijkstra governance preference bundle"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "abababababababababababababababababababababababababababababababab",
+      "responderRole": "DRep",
+      "answers": [
+        {
+          "questionId": "cip_shortlist",
+          "selection": [
+            0,
+            2
+          ]
+        },
+        {
+          "questionId": "release_timing",
+          "selection": [
+            1
+          ]
+        },
+        {
+          "questionId": "block_budget",
+          "numericValue": 6
+        }
+      ]
+    }
+  }
+}

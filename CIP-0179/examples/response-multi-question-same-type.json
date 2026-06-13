@@ -1,0 +1,22 @@
+{
+  "17": {
+    "msg": [
+      "Response to Dijkstra parameter calibration bundle"
+    ],
+    "surveyResponse": {
+      "specVersion": "1.0.0",
+      "surveyTxId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "responderRole": "Stakeholder",
+      "answers": [
+        {
+          "questionId": "max_block_body_size",
+          "numericValue": 160
+        },
+        {
+          "questionId": "max_tx_size",
+          "numericValue": 32
+        }
+      ]
+    }
+  }
+}
