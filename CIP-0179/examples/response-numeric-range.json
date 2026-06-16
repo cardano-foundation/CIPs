@@ -1,18 +1,26 @@
 {
-  "17": {
-    "msg": [
-      "Response to initial parameter calibration"
-    ],
-    "surveyResponse": {
-      "specVersion": "1.0.0",
-      "surveyTxId": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-      "responderRole": "DRep",
-      "answers": [
-        {
-          "questionId": "parameter_x_initial_value",
-          "numericValue": 325
-        }
-      ]
-    }
-  }
+  "17": [
+    1,
+    [
+      {
+        "0": 4,
+        "1": [
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          0
+        ],
+        "2": 0,
+        "3": [
+          0,
+          "33333333333333333333333333333333333333333333333333333333"
+        ],
+        "4": [
+          [
+            4,
+            0,
+            325
+          ]
+        ]
+      }
+    ]
+  ]
 }

@@ -1,30 +1,43 @@
 {
-  "17": {
-    "msg": [
-      "Dijkstra hard-fork CIP shortlist"
-    ],
-    "surveyDetails": {
-      "specVersion": "1.0.0",
-      "title": "Dijkstra hard-fork CIP shortlist",
-      "description": "Select any number of candidate CIPs for potential inclusion in the Dijkstra hard fork.",
-      "questions": [
-        {
-          "questionId": "cip_shortlist",
-          "question": "Which CIPs should be shortlisted for potential inclusion in Dijkstra?",
-          "methodType": "urn:cardano:poll-method:multi-select:v1",
-          "options": [
-            "CIP-0108",
-            "CIP-0119",
-            "CIP-0136",
-            "CIP-0149"
-          ],
-          "maxSelections": 4
-        }
-      ],
-      "roleWeighting": {
-        "DRep": "CredentialBased"
-      },
-      "endEpoch": 504
-    }
-  }
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Dijkstra hard-fork CIP shortlist",
+        "3": [
+          "Select candidate CIPs for potential",
+          " inclusion in the Dijkstra hard fork."
+        ],
+        "4": [
+          0
+        ],
+        "5": 504,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            2,
+            [
+              "Which CIPs should be shortlisted",
+              " for Dijkstra?"
+            ],
+            [
+              "CIP-0108",
+              "CIP-0119",
+              "CIP-0136",
+              "CIP-0149"
+            ],
+            0,
+            4
+          ]
+        ]
+      }
+    ]
+  ]
 }

@@ -1,19 +1,19 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "survey-details.schema.json",
-  "title": "CIP-0179 Survey Definition Payload (Label 17)",
+  "$id": "survey-cancellation.schema.json",
+  "title": "CIP-0179 Survey Cancellation Payload (Label 17)",
   "type": "object",
   "properties": {
     "17": {
       "type": "array",
       "prefixItems": [
         {
-          "const": 0
+          "const": 2
         },
         {
           "type": "array",
           "items": {
-            "$ref": "common.schema.json#/$defs/survey_definition"
+            "$ref": "common.schema.json#/$defs/survey_cancellation"
           },
           "minItems": 1
         }

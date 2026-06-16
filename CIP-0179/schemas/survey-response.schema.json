@@ -1,23 +1,26 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "./survey-response.schema.json",
-  "title": "CIP-00XX Survey Response Payload (Label 17)",
+  "$id": "survey-response.schema.json",
+  "title": "CIP-0179 Survey Response Payload (Label 17)",
   "type": "object",
   "properties": {
     "17": {
-      "type": "object",
-      "properties": {
-        "surveyResponse": {
-          "$ref": "./common.schema.json#/$defs/survey_response_inner"
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
         },
-        "msg": {
-          "$ref": "./common.schema.json#/$defs/msg_array"
+        {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/survey_response"
+          },
+          "minItems": 1
         }
-      },
-      "required": [
-        "surveyResponse"
       ],
-      "additionalProperties": false
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
     }
   },
   "required": [
