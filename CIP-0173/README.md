@@ -26,7 +26,7 @@ If the ledger check fails, the Treasury Withdrawal action is not ratified and no
 - `netChangeLimit`: integer percentage (`>= 0`), and
 - `netChangePeriod`: positive integer number of epochs.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The current NCL process relies on repeated social coordination around Info Actions. These references are not directly enforced by ledger rules and can conflict in period assumptions, approval timing, and interpretation.
 
@@ -131,7 +131,7 @@ When this CIP's mechanism is first activated, the ledger MUST initialize the rin
 
 After activation, normal epoch rollover semantics apply, and seeded entries are progressively overwritten by real epoch data. Later changes to `netChangePeriod` follow the resizing behavior defined above.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 - **Direct ledger enforcement.** The ledger provides deterministic state and enforces NCL during Treasury Withdrawal ratification.
 - **Single canonical calculation.** The ledger computes window sums, the cap, and ratification admissibility from canonical state.
