@@ -704,7 +704,9 @@ Tallies are derived independently from on-chain data and no tally artifact is co
 
 Key-based and native-script credentials are provable via `required_signers` in any survey. Plutus-script credentials are not. They need a redeemer, and metadata has none. So their only path is the optional governance-vote binding of a linked survey: Conway voters include Plutus script voters (tags 1 and 3), and the ledger evaluates the voting redeemer. This is the concrete reason the optional binding exists even though linkage itself is pure discovery. There is **no standalone path** for Plutus-script credentials today; a future version could define one.
 
-### Versioning granularity
+## Versioning
+
+### Version granularity
 
 A single integer `spec_version` suffices: the integer-keyed top-level maps already absorb backward-compatible additions (new optional field at a new key; decoders ignore unrecognized keys), and any breaking change increments the version and defines the new layout. A finer scheme (e.g. `[major, minor]`) could be adopted if needed.
 
