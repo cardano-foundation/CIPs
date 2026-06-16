@@ -1,5 +1,6 @@
 {
-  "specVersion": "1.0.0",
+  "specVersion": 4,
   "kind": "cardano-governance-survey-link",
-  "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  "surveyTxId": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "surveyIndex": 0
 }

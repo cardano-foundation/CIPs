@@ -1,31 +1,39 @@
 {
-  "17": {
-    "msg": [
-      "Response to Dijkstra governance preference bundle"
-    ],
-    "surveyResponse": {
-      "specVersion": "1.0.0",
-      "surveyTxId": "abababababababababababababababababababababababababababababababab",
-      "responderRole": "DRep",
-      "answers": [
-        {
-          "questionId": "cip_shortlist",
-          "selection": [
+  "17": [
+    1,
+    [
+      {
+        "0": 4,
+        "1": [
+          "abababababababababababababababababababababababababababababababab",
+          0
+        ],
+        "2": 0,
+        "3": [
+          0,
+          "66666666666666666666666666666666666666666666666666666666"
+        ],
+        "4": [
+          [
+            2,
             0,
-            2
-          ]
-        },
-        {
-          "questionId": "release_timing",
-          "selection": [
+            [
+              0,
+              2
+            ]
+          ],
+          [
+            1,
+            1,
             1
+          ],
+          [
+            4,
+            2,
+            6
           ]
-        },
-        {
-          "questionId": "block_budget",
-          "numericValue": 6
-        }
-      ]
-    }
-  }
+        ]
+      }
+    ]
+  ]
 }

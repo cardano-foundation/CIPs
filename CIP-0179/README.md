@@ -434,6 +434,30 @@ In large surveys most bytes are human-readable text. A definition carrying a `co
 
 The anchored document supplies the missing presentation text: at minimum a title, description, and, per question in definition order, a prompt and option labels in option-index order. Its `blake2b-256` hash MUST equal the anchor hash (tamper-evidence).
 
+For generic web rendering, publishers SHOULD use the JSON profile below (schema: `schemas/external-survey-presentation.schema.json`). Tools SHOULD ignore unrecognized fields.
+
+```json
+{
+  "specVersion": 4,
+  "kind": "cardano-survey-presentation",
+  "title": "Dijkstra budget allocation",
+  "description": "Allocate priority points across proposed work streams.",
+  "questions": [
+    {
+      "prompt": "Allocate 100 points across these work streams.",
+      "options": [
+        "Ledger simplification",
+        "Governance UX",
+        "Committee tooling",
+        "Developer experience"
+      ]
+    }
+  ]
+}
+```
+
+The `questions` array is in survey-definition order. `options`, when present, is in option-index order. Rating questions whose on-chain `rating_scale` is a level count SHOULD use `ratingLabels` in rating-index order.
+
 Because answers reference option *indices* and every constraint is on-chain, responses are validated and tallied entirely from on-chain data; if the off-chain document is unavailable, only labels cannot be rendered. The on-chain structure is never replaced by a bare reference, so a survey is never uninterpretable for protocol purposes.
 
 ### Responder Identity and Deduplication
@@ -717,11 +741,11 @@ Version 2 (breaking, over v1): integer keys and enum values replace string-based
 Version 3 (breaking, over v2): `submission_mode` added to `survey_definition` (`[0]` public, `[1, chain_hash, round, padding_size]` sealed), enabling sealed responses via timelock encryption (Drand `tlock`), delayed reveal, not permanent secrecy; definition fields reordered so the variable-length `questions` array comes last; `spec_version` restored as the first element of `survey_response`.
 
 Version 4 (breaking, over v3):
-- **Question tags renumbered; custom moves to tag 0** (stable extension point; built-ins follow at 1–4).
+- **Question tags renumbered; custom moves to tag 0** (stable extension point; built-ins follow at 1–6).
 - **Two new question types:** `points_allocation` (tag 5) and `rating` (tag 6, numeric grid or ordered text labels, always integer-encoded).
 - **`min` constraints added** to multi-select (`min_selections`, may be `0`: a present empty selection is a counted "none selected") and ranking (`min_ranked >= 1`).
 - **Per-question `required` flag** (optional trailing bool, default false) forcing an explicit answer.
-- **Abstain by omission**: an answerless question is an abstain; the empty-multi-select special case is removed.
+- **Abstain by omission**: an answerless question is an abstain; present empty multi-select answers are valid only when `min_selections = 0` and mean "none selected".
 - **`role_weighting` → `eligible_roles`; weighting modes removed** (purely interpretive, inexpressive enumeration, same set re-talliable under any rule); new `Owner` role added.
 - **`content_anchor` primitive** introduced for external presentation text, custom-method schemas, and voter rationales.
 - **Method Identifier Registry** added (URNs off-chain only); `single-choice`/`multi-select`/`numeric-range` URNs bumped to `:v2`, the rest start at `:v1`.

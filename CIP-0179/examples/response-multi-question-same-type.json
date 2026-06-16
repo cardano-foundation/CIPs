@@ -1,22 +1,31 @@
 {
-  "17": {
-    "msg": [
-      "Response to Dijkstra parameter calibration bundle"
-    ],
-    "surveyResponse": {
-      "specVersion": "1.0.0",
-      "surveyTxId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-      "responderRole": "Stakeholder",
-      "answers": [
-        {
-          "questionId": "max_block_body_size",
-          "numericValue": 160
-        },
-        {
-          "questionId": "max_tx_size",
-          "numericValue": 32
-        }
-      ]
-    }
-  }
+  "17": [
+    1,
+    [
+      {
+        "0": 4,
+        "1": [
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          0
+        ],
+        "2": 3,
+        "3": [
+          0,
+          "55555555555555555555555555555555555555555555555555555555"
+        ],
+        "4": [
+          [
+            4,
+            0,
+            160
+          ],
+          [
+            4,
+            1,
+            32
+          ]
+        ]
+      }
+    ]
+  ]
 }

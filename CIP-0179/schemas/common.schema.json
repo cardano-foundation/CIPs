@@ -1,11 +1,15 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "./common.schema.json",
-  "title": "CIP-00XX Shared Schema Definitions",
+  "$id": "common.schema.json",
+  "title": "CIP-0179 Shared Schema Definitions",
   "$defs": {
-    "semver": {
+    "hex_hash28": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+      "pattern": "^[0-9a-fA-F]{56}$"
+    },
+    "hex_bytes64_or_less": {
+      "type": "string",
+      "pattern": "^([0-9a-fA-F]{2}){0,64}$"
     },
     "hex_tx_id": {
       "type": "string",
@@ -15,374 +19,718 @@
       "type": "string",
       "pattern": "^[0-9a-fA-F]{64}$"
     },
-    "uri": {
+    "bounded_text": {
       "type": "string",
-      "format": "uri"
+      "maxLength": 64
     },
-    "role_weighting": {
-      "type": "object",
-      "properties": {
-        "CC": {
-          "const": "CredentialBased"
+    "chunked_text": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bounded_text"
         },
-        "DRep": {
-          "type": "string",
-          "enum": [
-            "CredentialBased",
-            "StakeBased"
-          ]
-        },
-        "SPO": {
-          "type": "string",
-          "enum": [
-            "CredentialBased",
-            "StakeBased",
-            "PledgeBased"
-          ]
-        },
-        "Stakeholder": {
-          "const": "StakeBased"
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/bounded_text"
+          },
+          "minItems": 1
         }
-      },
-      "additionalProperties": false,
-      "minProperties": 1
-    },
-    "responder_role": {
-      "type": "string",
-      "enum": [
-        "DRep",
-        "SPO",
-        "CC",
-        "Stakeholder"
       ]
     },
-    "builtin_method_type": {
-      "type": "string",
+    "chunked_bytes": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hex_bytes64_or_less"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hex_bytes64_or_less"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "content_anchor": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/hex_blake2b_256"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "credential": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "enum": [
+            0,
+            1
+          ]
+        },
+        {
+          "$ref": "#/$defs/hex_hash28"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "role": {
+      "type": "integer",
       "enum": [
-        "urn:cardano:poll-method:single-choice:v1",
-        "urn:cardano:poll-method:multi-select:v1",
-        "urn:cardano:poll-method:numeric-range:v1"
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "eligible_roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/role"
+      },
+      "minItems": 1
+    },
+    "survey_ref": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/hex_tx_id"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "survey_cancellation": {
+      "$ref": "#/$defs/survey_ref"
+    },
+    "public_submission_mode": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        }
+      ],
+      "items": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    "sealed_submission_mode": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "$ref": "#/$defs/hex_blake2b_256"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "submission_mode": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/public_submission_mode"
+        },
+        {
+          "$ref": "#/$defs/sealed_submission_mode"
+        }
+      ]
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/bounded_text"
+      },
+      "minItems": 2
+    },
+    "option_count": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "options_or_count": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/options"
+        },
+        {
+          "$ref": "#/$defs/option_count"
+        }
       ]
     },
     "numeric_constraints": {
-      "type": "object",
-      "properties": {
-        "minValue": {
+      "type": "array",
+      "prefixItems": [
+        {
           "type": "integer"
         },
-        "maxValue": {
+        {
           "type": "integer"
         },
-        "step": {
+        {
           "type": "integer",
           "minimum": 1
         }
-      },
-      "required": [
-        "minValue",
-        "maxValue"
       ],
-      "additionalProperties": false,
-      "description": "Note: JSON Schema does not enforce minValue <= maxValue; tooling MUST enforce per CIP prose."
+      "items": false,
+      "minItems": 2,
+      "maxItems": 3,
+      "description": "Semantic bounds are defined in README.md."
     },
-    "survey_question": {
-      "type": "object",
-      "properties": {
-        "questionId": {
-          "type": "string",
-          "minLength": 1
-        },
-        "question": {
-          "type": "string",
-          "minLength": 1
-        },
-        "methodType": {
-          "type": "string",
-          "minLength": 1
-        },
-        "options": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "minItems": 1
-        },
-        "maxSelections": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "numericConstraints": {
+    "rating_scale": {
+      "oneOf": [
+        {
           "$ref": "#/$defs/numeric_constraints"
         },
-        "methodSchemaUri": {
-          "$ref": "#/$defs/uri"
+        {
+          "$ref": "#/$defs/options"
         },
-        "methodSchemaHash": {
-          "$ref": "#/$defs/hex_blake2b_256"
+        {
+          "$ref": "#/$defs/option_count"
         }
-      },
-      "required": [
-        "questionId",
-        "question",
-        "methodType"
-      ],
-      "additionalProperties": false,
-      "allOf": [
+      ]
+    },
+    "transaction_metadatum": {
+      "oneOf": [
         {
-          "if": {
-            "properties": {
-              "methodType": {
-                "const": "urn:cardano:poll-method:single-choice:v1"
-              }
+          "type": "integer"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/bounded_text"
             },
-            "required": [
-              "methodType"
-            ]
-          },
-          "then": {
-            "required": [
-              "options"
-            ],
-            "properties": {
-              "options": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "minItems": 2
-              },
-              "maxSelections": {
-                "const": 1
-              }
-            },
-            "not": {
-              "required": [
-                "numericConstraints"
-              ]
+            {
+              "$ref": "#/$defs/hex_bytes64_or_less"
             }
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transaction_metadatum"
           }
         },
         {
-          "if": {
-            "properties": {
-              "methodType": {
-                "const": "urn:cardano:poll-method:multi-select:v1"
-              }
-            },
-            "required": [
-              "methodType"
-            ]
-          },
-          "then": {
-            "required": [
-              "options",
-              "maxSelections"
-            ],
-            "properties": {
-              "options": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "minItems": 2
-              },
-              "maxSelections": {
-                "type": "integer",
-                "minimum": 1
-              }
-            },
-            "not": {
-              "required": [
-                "numericConstraints"
-              ]
-            },
-            "description": "Note: JSON Schema does not enforce maxSelections <= len(options); tooling MUST enforce per CIP prose."
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "methodType": {
-                "const": "urn:cardano:poll-method:numeric-range:v1"
-              }
-            },
-            "required": [
-              "methodType"
-            ]
-          },
-          "then": {
-            "required": [
-              "numericConstraints"
-            ],
-            "not": {
-              "anyOf": [
-                {
-                  "required": [
-                    "options"
-                  ]
-                },
-                {
-                  "required": [
-                    "maxSelections"
-                  ]
-                }
-              ]
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "methodType": {
-                "not": {
-                  "$ref": "#/$defs/builtin_method_type"
-                }
-              }
-            },
-            "required": [
-              "methodType"
-            ]
-          },
-          "then": {
-            "required": [
-              "methodSchemaUri",
-              "methodSchemaHash"
-            ]
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/transaction_metadatum"
           }
         }
       ]
     },
-    "survey_details_inner": {
+    "custom_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/content_anchor"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "single_choice_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "multi_select_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 2
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 6,
+      "description": "Semantic bounds are defined in README.md."
+    },
+    "ranking_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 3
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 6,
+      "description": "Semantic bounds are defined in README.md."
+    },
+    "numeric_range_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 4
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/numeric_constraints"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "points_allocation_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 5
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 5
+    },
+    "rating_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 6
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "$ref": "#/$defs/rating_scale"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 5
+    },
+    "survey_question": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/custom_question"
+        },
+        {
+          "$ref": "#/$defs/single_choice_question"
+        },
+        {
+          "$ref": "#/$defs/multi_select_question"
+        },
+        {
+          "$ref": "#/$defs/ranking_question"
+        },
+        {
+          "$ref": "#/$defs/numeric_range_question"
+        },
+        {
+          "$ref": "#/$defs/points_allocation_question"
+        },
+        {
+          "$ref": "#/$defs/rating_question"
+        }
+      ]
+    },
+    "survey_definition": {
       "type": "object",
+      "propertyNames": {
+        "pattern": "^(0|[1-9][0-9]*)$"
+      },
       "properties": {
-        "specVersion": {
-          "$ref": "#/$defs/semver"
+        "0": {
+          "const": 4
         },
-        "title": {
-          "type": "string",
-          "minLength": 1
+        "1": {
+          "$ref": "#/$defs/credential"
         },
-        "description": {
-          "type": "string",
-          "minLength": 1
+        "2": {
+          "$ref": "#/$defs/chunked_text"
         },
-        "questions": {
+        "3": {
+          "$ref": "#/$defs/chunked_text"
+        },
+        "4": {
+          "$ref": "#/$defs/eligible_roles"
+        },
+        "5": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "6": {
+          "$ref": "#/$defs/submission_mode"
+        },
+        "7": {
           "type": "array",
           "items": {
             "$ref": "#/$defs/survey_question"
           },
           "minItems": 1
         },
-        "roleWeighting": {
-          "$ref": "#/$defs/role_weighting"
-        },
-        "endEpoch": {
-          "type": "integer",
-          "minimum": 0
+        "8": {
+          "$ref": "#/$defs/content_anchor"
         }
       },
       "required": [
-        "specVersion",
-        "title",
-        "description",
-        "questions",
-        "roleWeighting",
-        "endEpoch"
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
       ],
-      "additionalProperties": false,
-      "description": "Note: endEpoch is required for all surveys; linked compatibility and epoch semantics are enforced by CIP prose."
+      "additionalProperties": true
+    },
+    "custom_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "$ref": "#/$defs/transaction_metadatum"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "single_choice_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "multi_select_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 2
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uniqueItems": true
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "ranking_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 3
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "numeric_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 4
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "points_allocation_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 5
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "integer",
+                "minimum": 0
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "rating_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 6
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
     },
     "answer_item": {
       "oneOf": [
         {
-          "type": "object",
-          "properties": {
-            "questionId": {
-              "type": "string",
-              "minLength": 1
-            },
-            "selection": {
-              "type": "array",
-              "items": {
-                "type": "integer",
-                "minimum": 0
-              }
-            }
-          },
-          "required": [
-            "questionId",
-            "selection"
-          ],
-          "additionalProperties": false
+          "$ref": "#/$defs/custom_answer"
         },
         {
-          "type": "object",
-          "properties": {
-            "questionId": {
-              "type": "string",
-              "minLength": 1
-            },
-            "numericValue": {
-              "type": "integer"
-            }
-          },
-          "required": [
-            "questionId",
-            "numericValue"
-          ],
-          "additionalProperties": false
+          "$ref": "#/$defs/single_choice_answer"
         },
         {
-          "type": "object",
-          "properties": {
-            "questionId": {
-              "type": "string",
-              "minLength": 1
-            },
-            "customValue": {}
-          },
-          "required": [
-            "questionId",
-            "customValue"
-          ],
-          "additionalProperties": false
+          "$ref": "#/$defs/multi_select_answer"
+        },
+        {
+          "$ref": "#/$defs/ranking_answer"
+        },
+        {
+          "$ref": "#/$defs/numeric_answer"
+        },
+        {
+          "$ref": "#/$defs/points_allocation_answer"
+        },
+        {
+          "$ref": "#/$defs/rating_answer"
         }
       ]
     },
-    "survey_response_inner": {
+    "public_response_answers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/answer_item"
+      },
+      "minItems": 1
+    },
+    "response_answers": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/public_response_answers"
+        },
+        {
+          "$ref": "#/$defs/chunked_bytes"
+        }
+      ]
+    },
+    "survey_response": {
       "type": "object",
+      "propertyNames": {
+        "pattern": "^(0|[1-9][0-9]*)$"
+      },
       "properties": {
-        "specVersion": {
-          "$ref": "#/$defs/semver"
+        "0": {
+          "const": 4
         },
-        "surveyTxId": {
-          "$ref": "#/$defs/hex_tx_id"
+        "1": {
+          "$ref": "#/$defs/survey_ref"
         },
-        "responderRole": {
-          "$ref": "#/$defs/responder_role"
+        "2": {
+          "$ref": "#/$defs/role"
         },
-        "answers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/answer_item"
-          },
-          "minItems": 1
+        "3": {
+          "$ref": "#/$defs/credential"
+        },
+        "4": {
+          "$ref": "#/$defs/response_answers"
+        },
+        "5": {
+          "$ref": "#/$defs/content_anchor"
         }
       },
       "required": [
-        "specVersion",
-        "surveyTxId",
-        "responderRole",
-        "answers"
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
       ],
-      "additionalProperties": false
-    },
-    "msg_array": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "minItems": 1
+      "additionalProperties": true
     }
   }
 }
