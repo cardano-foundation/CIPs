@@ -740,7 +740,7 @@ Version 4 (breaking, over v3):
 
 - [ ] Finalize CIP text from PR review feedback.
 - [ ] Publish reference test vectors and validation notes.
-- [ ] Implement end-to-end survey creation + response + tally in at least one toolchain.
+- [x] Implement end-to-end survey creation + response + tally in at least one toolchain.
 - [ ] Document interoperability results and edge-case handling.
 
 ## Copyright
