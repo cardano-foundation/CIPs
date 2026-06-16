@@ -67,7 +67,7 @@ The ledger MUST maintain a logical ring buffer with:
 Semantically, the window is the current epoch plus the previous `netChangePeriod - 1` completed epochs.
 Immediately before an epoch transition, the pointed entry represents the oldest retained epoch in that window.
 
-All monetary values are integer lovelace.
+All monetary values are integer lovelace. If Cardano later supports a Multi-Asset Treasury, the same NCL semantics apply independently per treasury asset: for example, 1,000,000 HOSKY of revenue over the `netChangePeriod` with `netChangeLimit = 100` permits up to 1,000,000 HOSKY to be withdrawn over that same window.
 
 `revenue` for an entry is the cumulative treasury revenue accounted for that entry's epoch. Revenue MUST be non-negative and includes treasury inflows such as emissions, fees, donations, and returned proposal deposits.
 
