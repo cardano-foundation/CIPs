@@ -8,7 +8,7 @@ Authors:
     - Danielle Stanko <danielle.stanko@iohk.io>
 Proposed Solutions: []
 Discussions:
-    - Original pull request: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original pull request: - https://github.com/cardano-foundation/CIPs/pull/1211
 Created: 2026-06-11
 License: CC-BY-4.0
 ---
