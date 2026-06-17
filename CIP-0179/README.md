@@ -729,6 +729,24 @@ Tallies are derived independently from on-chain data and no tally artifact is co
 
 Key-based and native-script credentials are provable via `required_signers` in any survey. Plutus-script credentials are not. They need a redeemer, and metadata has none. So their only path is the optional governance-vote binding of a linked survey: Conway voters include Plutus script voters (tags 1 and 3), and the ledger evaluates the voting redeemer. This is the concrete reason the optional binding exists even though linkage itself is pure discovery. There is **no standalone path** for Plutus-script credentials today; a future version could define one.
 
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] At least two independent tools can create survey definition payloads.
+- [ ] At least two independent tools can ingest survey responses and produce matching tallies for shared test vectors.
+- [ ] At least one governance-facing tool implements the Info Action profile.
+- [x] Label `17` is registered in `CIP-0010/registry.json`.
+- [ ] At least one cooperative test demonstrates cross-tool interoperability (survey created by one tool, tallied by another).
+
+### Implementation Plan
+
+- [ ] Finalize CIP text from PR review feedback.
+- [ ] Publish reference test vectors and validation notes.
+- [x] Implement end-to-end survey creation + response + tally in at least one toolchain.
+  - [x] Civitas Explorer — surveys live on Cardano mainnet (https://www.civitasexplorer.com/surveys).
+- [ ] Document interoperability results and edge-case handling.
+
 ## Versioning
 
 ### Version granularity
@@ -752,24 +770,6 @@ Version 4 (breaking, over v3):
 - **Method Identifier Registry** added (URNs off-chain only); `single-choice`/`multi-select`/`numeric-range` URNs bumped to `:v2`, the rest start at `:v1`.
 - **Top-level records become integer-keyed maps** (Conway `transaction_body` pattern) for renumbering-free future fields; nested tagged unions stay positional.
 - **Governance linkage decoupled from eligibility**: all `eligible_roles` may respond to a linked survey (previously only `{DRep, SPO, CC}`, each required to cast a governance vote); the `voting_procedures` vote becomes an optional binding, retained as the only ledger-evaluated path for Plutus-script credentials.
-
-## Path to Active
-
-### Acceptance Criteria
-
-- [ ] At least two independent tools can create survey definition payloads.
-- [ ] At least two independent tools can ingest survey responses and produce matching tallies for shared test vectors.
-- [ ] At least one governance-facing tool implements the Info Action profile.
-- [x] Label `17` is registered in `CIP-0010/registry.json`.
-- [ ] At least one cooperative test demonstrates cross-tool interoperability (survey created by one tool, tallied by another).
-
-### Implementation Plan
-
-- [ ] Finalize CIP text from PR review feedback.
-- [ ] Publish reference test vectors and validation notes.
-- [x] Implement end-to-end survey creation + response + tally in at least one toolchain.
-  - [x] Civitas Explorer — surveys live on Cardano mainnet (https://www.civitasexplorer.com/surveys).
-- [ ] Document interoperability results and edge-case handling.
 
 ## Copyright
 
