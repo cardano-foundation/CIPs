@@ -143,45 +143,44 @@ After activation, normal epoch rollover semantics apply, and seeded entries are 
 
 ### Acceptance Criteria
 
-- **CIP process acceptance** by CIP Editors with complete and unambiguous state and ratification semantics.
-- **Ledger implementation available** in a released node/ledger version that:
-  - stores the normative ring state and pointer,
-  - applies deterministic epoch rollover behavior, and
-  - applies direct NCL checks during Treasury Withdrawal ratification.
-- **Parameter update implementation available** in a released node/ledger version for both `netChangeLimit` and `netChangePeriod`, including deterministic `netChangePeriod` resizing.
-- **Ratification enforcement implementation available** in a released node/ledger version such that failed NCL checks mark the Treasury Withdrawal action as not ratified and prevent treasury movement.
-- **Conformance tests available** covering at least:
-  - under-cap, exact-cap, and over-cap withdrawals,
-  - `netChangeLimit = 0`,
-  - `netChangePeriod` positive-integer validation,
-  - NCL evaluation against the current canonical rolling window,
-  - epoch-boundary ordering (account, write, then pointer advance),
-  - epoch rollover pointer advancement in zero-activity epochs,
-  - entry overwrite behavior after full `netChangePeriod` rotation,
-  - shortening `netChangePeriod` drops oldest entries,
-  - lengthening `netChangePeriod` adds oldest `(0, 0)` entries,
-  - sequential processing of multiple Treasury Withdrawal actions in existing ledger order,
-  - immediately counting returned proposal deposits as revenue before subsequent same-epoch withdrawal checks,
-  - bootstrap initialization (`73 x (bootstrapRevenueSeed, 0)`) and progressive overwrite with measured data,
-  - no treasury movement and not-ratified status on failed NCL checks.
-- **Governance activation complete** through required governance / protocol rollout and initial on-chain parameter settings.
+- [ ] **Ledger implementation available** in a released node/ledger version that:
+  - [ ] stores the normative ring state and pointer,
+  - [ ] applies deterministic epoch rollover behavior, and
+  - [ ] applies direct NCL checks during Treasury Withdrawal ratification.
+- [ ] **Parameter update implementation available** in a released node/ledger version for both `netChangeLimit` and `netChangePeriod`, including deterministic `netChangePeriod` resizing.
+- [ ] **Ratification enforcement implementation available** in a released node/ledger version such that failed NCL checks mark the Treasury Withdrawal action as not ratified and prevent treasury movement.
+- [ ] **Conformance tests available** covering at least:
+  - [ ] under-cap, exact-cap, and over-cap withdrawals,
+  - [ ] `netChangeLimit = 0`,
+  - [ ] `netChangePeriod` positive-integer validation,
+  - [ ] NCL evaluation against the current canonical rolling window,
+  - [ ] epoch-boundary ordering (account, write, then pointer advance),
+  - [ ] epoch rollover pointer advancement in zero-activity epochs,
+  - [ ] entry overwrite behavior after full `netChangePeriod` rotation,
+  - [ ] shortening `netChangePeriod` drops oldest entries,
+  - [ ] lengthening `netChangePeriod` adds oldest `(0, 0)` entries,
+  - [ ] sequential processing of multiple Treasury Withdrawal actions in existing ledger order,
+  - [ ] immediately counting returned proposal deposits as revenue before subsequent same-epoch withdrawal checks,
+  - [ ] bootstrap initialization (`73 x (bootstrapRevenueSeed, 0)`) and progressive overwrite with measured data,
+  - [ ] no treasury movement and not-ratified status on failed NCL checks.
+- [ ] **Governance activation complete** through required governance / protocol rollout and initial on-chain parameter settings.
 
 ### Implementation Plan
 
-- **Specification finalization**
-  - Incorporate review feedback from governance bodies, implementors, and CIP Editors.
-  - Lock terminology against existing governance and ledger documentation.
-- **Ledger and node work**
-  - Add/confirm protocol parameters `netChangeLimit` and `netChangePeriod`.
-  - Implement normative ring state, revenue measurement, rollover, resizing, and bootstrap initialization behavior.
-  - Implement direct NCL admissibility logic during Treasury Withdrawal ratification.
-  - Ensure failed NCL checks mark the action as not ratified and block treasury movement.
-- **Testing and validation**
-  - Add deterministic conformance tests for window sums, arithmetic, rollover semantics, resizing, same-epoch sequential processing, and bootstrap behavior.
-  - Validate no treasury movement occurs when NCL checks fail.
-- **Governance rollout**
-  - Submit and ratify required governance actions to activate implementation.
-  - Set initial parameter values on-chain.
+- [ ] **Specification finalization**
+  - [ ] Incorporate review feedback from governance bodies, implementors, and CIP Editors.
+  - [ ] Lock terminology against existing governance and ledger documentation.
+- [ ] **Ledger and node work**
+  - [ ] Add/confirm protocol parameters `netChangeLimit` and `netChangePeriod`.
+  - [ ] Implement normative ring state, revenue measurement, rollover, resizing, and bootstrap initialization behavior.
+  - [ ] Implement direct NCL admissibility logic during Treasury Withdrawal ratification.
+  - [ ] Ensure failed NCL checks mark the action as not ratified and block treasury movement.
+- [ ] **Testing and validation**
+  - [ ] Add deterministic conformance tests for window sums, arithmetic, rollover semantics, resizing, same-epoch sequential processing, and bootstrap behavior.
+  - [ ] Validate no treasury movement occurs when NCL checks fail.
+- [ ] **Governance rollout**
+  - [ ] Submit and ratify required governance actions to activate implementation.
+  - [ ] Set initial parameter values on-chain.
 
 ## References
 
