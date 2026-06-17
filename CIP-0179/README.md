@@ -7,7 +7,8 @@ Authors:
     - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
     - Ryan Wiley <rian222@gmail.com>
     - Matthieu Pizenberg <matthieu.pizenberg@gmail.com>
-Implementors: []
+Implementors:
+    - Civitas Explorer <https://www.civitasexplorer.com/surveys>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1107
 Created: 2025-10-28
@@ -767,6 +768,7 @@ Version 4 (breaking, over v3):
 - [ ] Finalize CIP text from PR review feedback.
 - [ ] Publish reference test vectors and validation notes.
 - [x] Implement end-to-end survey creation + response + tally in at least one toolchain.
+  - [x] Civitas Explorer — surveys live on Cardano mainnet (https://www.civitasexplorer.com/surveys).
 - [ ] Document interoperability results and edge-case handling.
 
 ## Copyright
