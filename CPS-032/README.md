@@ -6,12 +6,12 @@ Status: Open
 Authors:
   - Slavcho King <support@getmyid.today>
   - Jesse Anderson <papa.goose@koralabs.io>
-Created: 2026-05-28
-License: CC-BY-4.0
 Proposed Solutions: []
 Discussions:
   - Early discussion: https://github.com/cardano-foundation/CIPs/pull/1187
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1199
+Created: 2026-05-28
+License: CC-BY-4.0
 ---
 
 ## Abstract
