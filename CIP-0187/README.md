@@ -48,7 +48,7 @@ This defect produces five interacting problems:
 
 The obvious direct fix — lowering `a₀` — is unacceptable because `a₀` carries the Sybil-resistance load. Removing or weakening it reopens the stake-splitting channel. Any acceptable fix must preserve `a₀`'s deterrent role while removing the dilution.
 
-A fuller treatment — the derivation of the proposed formula, numerical worked examples, and game-theoretic analysis of `a₀` under both regimes — is in [the Appendix](#appendix-detailed-derivation-and-worked-examples) below. An [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) with adjustable parameters and four guided tutorials accompanies the proposal.
+A fuller treatment — the derivation of the proposed formula, numerical worked examples, and game-theoretic analysis of `a₀` under both regimes — is in [the Appendix](#appendix) below. An [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) with adjustable parameters and four guided tutorials accompanies the proposal.
 
 ## Specification
 
@@ -214,7 +214,7 @@ The proposal's net effect across stakeholder classes:
 | Whales "self-delegate" to lift utilization | Whale's parked ADA earns only as a delegator (after `F`, margin, pro-rata split). No arbitrage advantage over delegating to any equivalent pool. |
 | Sybil whales attract delegators to recoup split bonus | Each of `N` split pools must individually reach competitive utilization. The split whale would need `N` times the delegator base, which by assumption they do not have. |
 
-A fuller game-theoretic analysis, including numerical anchors and edge cases, is in [the Appendix](#appendix-detailed-derivation-and-worked-examples). Readers can also explore both formulas interactively, with adjustable parameters and four guided tutorials, at the [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html).
+A fuller game-theoretic analysis, including numerical anchors and edge cases, is in [the Appendix](#appendix). Readers can also explore both formulas interactively, with adjustable parameters and four guided tutorials, at the [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html).
 
 ## Path to Active
 
@@ -250,7 +250,7 @@ Implementors have not yet committed; the `Implementors:` field is empty pending 
 
 This proposal was drafted with assistance from Claude (Anthropic). The mathematical derivation, the constraint that `a₀` must be preserved, the proposed `u` scaling, and the analysis of cooperative-delegation effects emerged from extended dialog between the author and the model. All claims have been independently re-derived by the author. Any errors are the author's.
 
-## Appendix: Detailed Derivation and Worked Examples
+## Appendix
 
 This appendix provides the full derivation, numerical worked examples, expanded stakeholder analysis, and extended risk discussion that underlies the more compact treatment in the body. Readers can follow the body of this CIP without it; reviewers who want to verify the math, work through the Sybil deterrent quantitatively, or examine the per-stakeholder mechanics in detail will find that material here.
 
