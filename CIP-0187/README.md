@@ -21,7 +21,7 @@ This CIP proposes a parameter-free reshape of the existing pledge bonus by multi
 
 ## Motivation: Why is this CIP necessary?
 
-The standard Cardano delegator return formula (Reward Sharing Scheme, CIP-0084) reduces to:
+The standard Cardano delegator return formula (Reward Sharing Scheme) reduces to:
 
 ```
 ROA = (1 − m) · [ r/(1 + a₀) + (A − F)/S ] · 73 · 100%
