@@ -48,7 +48,7 @@ This defect produces five interacting problems:
 
 The obvious direct fix — lowering `a₀` — is unacceptable because `a₀` carries the Sybil-resistance load. Removing or weakening it reopens the stake-splitting channel. Any acceptable fix must preserve `a₀`'s deterrent role while removing the dilution.
 
-A fuller treatment — the derivation of the proposed formula, numerical worked examples, and game-theoretic analysis of `a₀` under both regimes — is in [Appendix A](#appendix-a-detailed-derivation-and-worked-examples) below. An [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) with adjustable parameters and four guided tutorials accompanies the proposal.
+A fuller treatment — the derivation of the proposed formula, numerical worked examples, and game-theoretic analysis of `a₀` under both regimes — is in [the Appendix](#appendix-detailed-derivation-and-worked-examples) below. An [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html) with adjustable parameters and four guided tutorials accompanies the proposal.
 
 ## Specification
 
@@ -214,7 +214,7 @@ The proposal's net effect across stakeholder classes:
 | Whales "self-delegate" to lift utilization | Whale's parked ADA earns only as a delegator (after `F`, margin, pro-rata split). No arbitrage advantage over delegating to any equivalent pool. |
 | Sybil whales attract delegators to recoup split bonus | Each of `N` split pools must individually reach competitive utilization. The split whale would need `N` times the delegator base, which by assumption they do not have. |
 
-A fuller game-theoretic analysis, including numerical anchors and edge cases, is in [Appendix A](#appendix-a-detailed-derivation-and-worked-examples). Readers can also explore both formulas interactively, with adjustable parameters and four guided tutorials, at the [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html).
+A fuller game-theoretic analysis, including numerical anchors and edge cases, is in [the Appendix](#appendix-detailed-derivation-and-worked-examples). Readers can also explore both formulas interactively, with adjustable parameters and four guided tutorials, at the [interactive simulator](https://johnshearing.github.io/pool_ranger/CIP_UTILIZATION_SCALED_PLEDGE_BONUS.html).
 
 ## Path to Active
 
@@ -250,11 +250,11 @@ Implementors have not yet committed; the `Implementors:` field is empty pending 
 
 This proposal was drafted with assistance from Claude (Anthropic). The mathematical derivation, the constraint that `a₀` must be preserved, the proposed `u` scaling, and the analysis of cooperative-delegation effects emerged from extended dialog between the author and the model. All claims have been independently re-derived by the author. Any errors are the author's.
 
-## Appendix A: Detailed Derivation and Worked Examples
+## Appendix: Detailed Derivation and Worked Examples
 
 This appendix provides the full derivation, numerical worked examples, expanded stakeholder analysis, and extended risk discussion that underlies the more compact treatment in the body. Readers can follow the body of this CIP without it; reviewers who want to verify the math, work through the Sybil deterrent quantitatively, or examine the per-stakeholder mechanics in detail will find that material here.
 
-### A.1 The problem in precise terms
+### 1. The problem in precise terms
 
 The standard Cardano delegator ROA formula is:
 
@@ -279,7 +279,7 @@ The deeper issue: the reward formula's pledge bonus `A` does not scale with the 
 
 This is the root cause behind every observed pathology of the current incentive: dilution, the structural conflict between concentration-for-leverage and concentration-for-ROA, the inability of cooperators to negotiate, and the protocol's silence toward "rational delegator" behavior. Fix `A`'s independence from `S` and every symptom resolves at once.
 
-### A.2 Why `a₀` must be preserved
+### 2. Why `a₀` must be preserved
 
 `a₀` is Cardano's primary defense against Sybil-style stake splitting — the scenario in which a single ADA whale creates many small pools to gain disproportionate block production while appearing as many independent operators. The mechanism works through delegator preference, not direct restriction:
 
@@ -291,7 +291,7 @@ Lowering or removing `a₀` would solve the dilution problem but reopen the Sybi
 
 This proposal preserves `a₀` as a parameter — same name, same governance dial. It only changes what `a₀` multiplies. The Sybil deterrent strengthens under the proposal: splitting a whale's pledge across `N` pools now reduces the *total* pledge bonus across those pools by a factor of `N`, rather than leaving it unchanged. The delegator-preference channel that does the Sybil work today continues to do it, with mathematical reinforcement.
 
-### A.3 Why utilization scaling fixes the dilution
+### 3. Why utilization scaling fixes the dilution
 
 Under the proposed formula, `A_new/S = r · a₀ · P / (S_sat · (1+a₀))` — a quantity independent of `S`. The per-ADA pledge bonus share is fixed per unit pledge, regardless of how many delegators arrive.
 
@@ -339,7 +339,7 @@ The `(A − F)/S` term *rises* from `5.47 × 10⁻⁵` to `5.70 × 10⁻⁵` —
 
 Both formulas land at the same value (`5.70 × 10⁻⁵`) at saturation. This is by construction: `A_new = A_current` when `u = 1`. The saturated pool — the equilibrium point — is unchanged. What changes is the *path* into saturation: under the current formula, delegators are punished for taking that path; under the proposal, they are rewarded for it.
 
-### A.4 Extended stakeholder analysis
+### 4. Extended stakeholder analysis
 
 This section expands the compact `Stakeholder summary` in the body with the mechanism-level reasoning behind each effect.
 
@@ -381,7 +381,7 @@ This subsection treats cooperatives as a class. Pool Ranger is cited as an examp
 - **Treasury impact is governance-tunable.** Below-saturation pools emit less pledge bonus than today, so total emission is slightly reduced when the network operates below average saturation. The unused share stays in the reserve and is distributed in later epochs (consistent with how the reserve depletes today). Governance can recalibrate `a₀` upward to compensate exactly if it wants to preserve the current total emission profile, or accept slower reserve depletion as a side effect.
 - **The change is observable, monotone, and reversible.** Every effect — on every pool, every delegator, every SPO — is computable from public quantities. The blending coefficient `b` makes adoption arbitrarily gradual. Governance can move it back toward `b = 0` if the equilibrium turns out worse than predicted.
 
-### A.5 Extended risks and mitigations
+### 5. Extended risks and mitigations
 
 The body lists the primary risks compactly. The expanded analysis below covers the same risks and three additional cases (whale self-delegation, single-pool high-pledge SPOs, implementation complexity).
 
