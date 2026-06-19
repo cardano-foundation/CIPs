@@ -241,7 +241,6 @@ Implementors have not yet committed; the `Implementors:` field is empty pending 
 
 ## References
 
-- [CIP-0001](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0001) — CIP process and document structure.
 - [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) — Reward Sharing Scheme (the formula this CIP modifies).
 - [CIP-1694](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694) — On-chain governance actions (the mechanism this CIP would be activated through).
 - [CIP-0050](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0050) — Pool leverage cap proposal (related; addresses a different symptom).
