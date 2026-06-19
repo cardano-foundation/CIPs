@@ -54,7 +54,7 @@ A fuller treatment — the derivation of the proposed formula, numerical worked 
 
 ### Notation
 
-All symbols carry their standard CIP-0084 / Reward Sharing Scheme meaning:
+All symbols carry their standard Ledger Specification / Reward Sharing Scheme meaning:
 
 - `r` — per-epoch reward rate (fraction of total ADA supply distributed per epoch). Drifts down slowly as the reserve depletes; currently ≈ 0.000400.
 - `a₀` — pledge influence factor (existing protocol parameter, currently `0.3`, governance-tunable).
