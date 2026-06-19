@@ -15,9 +15,9 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Stake-weighted voting models have a structural tendency to concentrate power over time, where those with more voting power tend to gain even more over time, [1], and empirically, this leads to low voting participation where small holders cannot justify the cost of analyzing proposals when they perceive their vote to be powerless [2, 3]. The mitigations tend to require identity-based mechanisms that tie voting weight to verified entities rather than to stake alone [1]. Cardano governance, by design, does not rely on identity. This creates an open and unsolved question: can voting power concentration, voter apathy and principal-agent problems [4] be managed effectively in a stake-weighted governance system without identity? The risk of delegation being split across multiple credentials to circumvent any concentration mechanism remains a vulnerability that any proposed solution must consider in its design.
+Stake-weighted voting models have a structural tendency to concentrate power over time, where those with more voting power tend to gain even more over time, [^1], and empirically, this leads to low voting participation where small holders cannot justify the cost of analyzing proposals when they perceive their vote to be powerless [^2][^3]. The mitigations tend to require identity-based mechanisms that tie voting weight to verified entities rather than to stake alone [^1]. Cardano governance, by design, does not rely on identity. This creates an open and unsolved question: can voting power concentration, voter apathy and principal-agent problems [^4] be managed effectively in a stake-weighted governance system without identity? The risk of delegation being split across multiple credentials to circumvent any concentration mechanism remains a vulnerability that any proposed solution must consider in its design.
 
-This CPS surfaces DRep voting power concentration as a priority governance challenge for Cardano and opens an investigation into whether Cardano's unique governance structure offers novel technical mechanisms for managing concentration in the absence of identity. The CPS does not propose a specific solution; it frames the problem, surveys community discussions to date, and outlines the open questions any future CIP responding to this CPS should answer. It is connected to but distinct from CPS-020, which addresses DRep incentives. The two efforts must be coordinated so that incentive design does not work against concentration mitigation, or vice versa.
+This CPS surfaces DRep voting power concentration as a priority governance challenge for Cardano and opens an investigation into whether Cardano's unique governance structure offers novel technical mechanisms for managing concentration in the absence of identity. The CPS does not propose a specific solution; it frames the problem, surveys community discussions to date, and outlines the open questions any future CIP responding to this CPS should answer. It is connected to but distinct from CPS-0020, which addresses DRep incentives. The two efforts must be coordinated so that incentive design does not work against concentration mitigation, or vice versa.
 
 ## Problem
 
@@ -70,9 +70,9 @@ The goals of this CPS, ranked by importance:
 
 1. **Establish DRep voting power concentration as a recognized technical problem** in the Cardano protocol and standards ecosystem, with shared understanding of which technical artifacts (ledger rules, metadata standards, and wallet behavior) contribute to it and could address it.
 
-2. **Open investigation into protocol-level and standards-level mechanisms** for managing concentration in a stake-weighted governance system that does not use identity. Mechanisms under investigation may include ledger rule changes (saturation curves, self-cap signaling at the credential level), metadata extensions (CIP-119 successors defining optional saturation or distribution fields), and wallet and explorer behavior standards.
+2. **Open investigation into protocol-level and standards-level mechanisms** for managing concentration in a stake-weighted governance system that does not use identity. Mechanisms under investigation may include ledger rule changes (saturation curves, self-cap signaling at the credential level), metadata extensions (CIP-0119 successors defining optional saturation or distribution fields), and wallet and explorer behavior standards.
 
-3. **Coordinate with CPS-020 (DRep incentives)** so that any concentration solution and any incentive solution are designed to be compatible. The two problems are connected: poorly designed incentives can worsen concentration, and poorly designed concentration limits can undermine incentives.
+3. **Coordinate with CPS-0020 (DRep incentives)** so that any concentration solution and any incentive solution are designed to be compatible. The two problems are connected: poorly designed incentives can worsen concentration, and poorly designed concentration limits can undermine incentives.
 
 4. **Surface and address the technical vulnerabilities** any solution must navigate, including the risk that any cap or saturation mechanism is circumvented by splitting delegation across multiple DRep credentials, and the risk that wallet and explorer defaults continue to undo any protocol-level mitigation.
 
@@ -97,11 +97,11 @@ Any proposed CIP responding to this CPS should address the following:
 - Should the ledger enforce a hard upper bound on delegation to a single DRep credential, or rely on saturation curves only?
 - How does any ledger-level mechanism interact with the existing delegation lifecycle (registration, update, retirement) defined in the Conway era?
 
-### On DRep Metadata (CIP-119 and Successors)
+### On DRep Metadata (CIP-0119 and Successors)
 
-- Should CIP-119 be extended with optional metadata fields for a self-declared delegation cap or saturation preference, even before any ledger enforcement exists?
-- Should CIP-119 include fields that wallets can use to surface activity signals (rationale rate, voting record completeness, recent participation)?
-- Should CIP-119 include a field for the DRep to signal that they are closed to new delegation?
+- Should CIP-0119 be extended with optional metadata fields for a self-declared delegation cap or saturation preference, even before any ledger enforcement exists?
+- Should CIP-0119 include fields that wallets can use to surface activity signals (rationale rate, voting record completeness, recent participation)?
+- Should CIP-0119 include a field for the DRep to signal that they are closed to new delegation?
 
 ### On Wallet and Explorer Standards
 
@@ -117,8 +117,8 @@ Any proposed CIP responding to this CPS should address the following:
 ### On Unintended Consequences
 
 - Could concentration mitigation reduce the quality of governance work, if smaller DReps lack the accountability, expertise, or capacity of larger ones?
-- Could payment for governance work (CPS-020) create voters who do the bare minimum to qualify for compensation, reducing rationale and vote quality? How should concentration mechanisms be designed to avoid amplifying this risk?
-- How should concentration mechanisms and incentive mechanisms (CPS-020) be designed so they support rather than undermine each other?
+- Could payment for governance work (CPS-0020) create voters who do the bare minimum to qualify for compensation, reducing rationale and vote quality? How should concentration mechanisms be designed to avoid amplifying this risk?
+- How should concentration mechanisms and incentive mechanisms (CPS-0020) be designed so they support rather than undermine each other?
 - Should solutions in both areas be sequenced or developed in parallel?
 
 ## References
@@ -134,15 +134,15 @@ Any proposed CIP responding to this CPS should address the following:
 
 ### Related CPS / CIP Discussions
 
-- CPS-020 (DRep incentives), coordinated effort referenced throughout this CPS
+- CPS-0020 (DRep incentives), coordinated effort referenced throughout this CPS
 - Governance tagging discussion in CIP repo: https://github.com/cardano-foundation/CIPs/issues/937#issuecomment-2575800139
 
 ### Cross-Ecosystem Research
 
-- [1] "Concave is the New Linear: The Impossibility of Anti-Plutocratic DAO Governance": https://arxiv.org/html/2605.18990v1
-- [2] Empirical study of DAO voting power and concentration (arXiv): https://arxiv.org/pdf/2204.01176
-- [3] Gov/Acc research program: https://gov-acc.metagov.org/Phase-1-Results
-- [4] "Fairness in Token Delegation: Mitigating Voting Power Concentration in DAOs": https://arxiv.org/html/2510.05830v2
+- [^1] "Concave is the New Linear: The Impossibility of Anti-Plutocratic DAO Governance": https://arxiv.org/html/2605.18990v1
+- [^2] Empirical study of DAO voting power and concentration (arXiv): https://arxiv.org/pdf/2204.01176
+- [^3] Gov/Acc research program: https://gov-acc.metagov.org/Phase-1-Results
+- [^4] "Fairness in Token Delegation: Mitigating Voting Power Concentration in DAOs": https://arxiv.org/html/2510.05830v2
 - Uniswap Delegate Reward Working Group: https://gov.uniswap.org/t/temp-check-uniswap-delegate-reward-3-months-cycle-1/23837
 
 ## Copyright
