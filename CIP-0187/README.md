@@ -241,7 +241,6 @@ Implementors have not yet committed; the `Implementors:` field is empty pending 
 
 ## References
 
-- [CIP-0084](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0084) — Reward Sharing Scheme (the formula this CIP modifies).
 - [CIP-1694](https://github.com/cardano-foundation/CIPs/tree/master/CIP-1694) — On-chain governance actions (the mechanism this CIP would be activated through).
 - [CIP-0050](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0050) — Pool leverage cap proposal (related; addresses a different symptom).
 - Brünjes, Kiayias, Koutsoupias, Stouka — [*Reward Sharing Schemes for Stake Pools*](https://eprint.iacr.org/2018/1145) (the original RSS paper formalizing the formula this CIP modifies).
