@@ -120,7 +120,8 @@ Any proposed CIP responding to this CPS should address the following:
 - Could payment for governance work (CPS-0020) create voters who do the bare minimum to qualify for compensation, reducing rationale and vote quality? How should concentration mechanisms be designed to avoid amplifying this risk?
 - How should concentration mechanisms and incentive mechanisms (CPS-0020) be designed so they support rather than undermine each other?
 - Should solutions in both areas be sequenced or developed in parallel?
-
+  
+## References
 ### Cardano Community Discussions
 
 - ["Do you think that a DRep's voting power should be capped?" Cardano Forum poll and discussion](https://forum.cardano.org/t/do-you-think-that-a-dreps-voting-power-should-be-capped/142533)
