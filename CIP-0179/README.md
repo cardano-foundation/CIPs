@@ -302,7 +302,7 @@ Built-in question types are identified on-chain solely by their integer tag. For
 | 5 | Points-allocation | `urn:cardano:poll-method:points-allocation:v1` |
 | 6 | Rating | `urn:cardano:poll-method:rating:v1` |
 
-**URN versioning.** The suffix versions a method's *semantic contract*, not this CIP's document version, and bumps only on incompatible answer-semantics changes. `single-choice`, `multi-select`, and `numeric-range` are at `:v2` because their `:v1` (CIP-179 v1's string-based encoding) is materially redefined here (CBOR-first encoding, abstain-by-omission, meaningful empty multi-select). The other three begin at `:v1` as first definitions under this namespace. The correspondence with CIP-191 (Ekklesia) method names, which reference the `:v1` URNs, is tabulated in [CIP-179 vs CIP-191](./cip-179-vs-cip-191.md).
+**URN versioning.** The suffix versions a method's *semantic contract*, not this CIP's document version, and bumps only on incompatible answer-semantics changes. `single-choice`, `multi-select`, and `numeric-range` are at `:v2` because their `:v1` (CIP-179 v1's string-based encoding) is materially redefined here (CBOR-first encoding, abstain-by-omission, meaningful empty multi-select). The other three begin at `:v1` as first definitions under this namespace. The correspondence with CIP-0191? (Ekklesia) method names, which reference the `:v1` URNs, is tabulated in [CIP-179 vs CIP-0191?](./cip-179-vs-cip-191.md).
 
 ### Survey Definition
 
@@ -679,7 +679,7 @@ Metadata is paid per byte and stored forever, so the encoding mirrors the ledger
 
 ### Tagged sum types; custom type at tag 0
 
-Each question type has distinct required fields; a tagged sum type makes invalid combinations unrepresentable (a single-choice question cannot carry numeric constraints), moving validation from prose into the data model. The custom (extension) type sits at the fixed tag `0` so appending built-in types at higher tags never disturbs the extension point. Points-allocation and rating earn their own tags because budget distribution and discrete rating scales are common polling needs the option-only types cannot express, keeping the method space aligned with other polling standards ([CIP-179 vs CIP-191](./cip-179-vs-cip-191.md)).
+Each question type has distinct required fields; a tagged sum type makes invalid combinations unrepresentable (a single-choice question cannot carry numeric constraints), moving validation from prose into the data model. The custom (extension) type sits at the fixed tag `0` so appending built-in types at higher tags never disturbs the extension point. Points-allocation and rating earn their own tags because budget distribution and discrete rating scales are common polling needs the option-only types cannot express, keeping the method space aligned with other polling standards ([CIP-179 vs CIP-0191?](./cip-179-vs-cip-191.md)).
 
 ### Abstain by omission
 
