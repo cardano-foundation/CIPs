@@ -121,33 +121,37 @@ Any proposed CIP responding to this CPS should address the following:
 - How should concentration mechanisms and incentive mechanisms (CPS-0020) be designed so they support rather than undermine each other?
 - Should solutions in both areas be sequenced or developed in parallel?
 
-## References
-
 ### Cardano Community Discussions
 
-- [Do you think that a DRep's voting power should be capped?](https://forum.cardano.org/t/do-you-think-that-a-dreps-voting-power-should-be-capped/142533) - Cardano Forum poll and discussion
-- "Delegation saturation for DReps" Cardano Forum discussion: https://forum.cardano.org/t/delegation-saturation-for-dreps/137589
-- [Cardano's Governance Game Problem and How to Solve It](https://coffeepool.jp/notes/cardanos-governance-game-problem-and-how-to-solve-it-eng/) - Coffee Pool analysis
+- ["Do you think that a DRep's voting power should be capped?" Cardano Forum poll and discussion](https://forum.cardano.org/t/do-you-think-that-a-dreps-voting-power-should-be-capped/142533)
+
+- ["Delegation saturation for DReps" Cardano Forum discussion](https://forum.cardano.org/t/delegation-saturation-for-dreps/137589)
+
+- ["Cardano's Governance Game Problem and How to Solve It" Coffee Pool analysis](https://coffeepool.jp/notes/cardanos-governance-game-problem-and-how-to-solve-it-eng/)
+
 - [Cardano Foundation governance commitment and delegation strategy](https://cardanofoundation.org/blog/strengthens-commitment-governance-drep)
-- DRep Voting Power Saturation Research, Project Catalyst Fund 14: https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research
-- Cardano State of Governance Report 2026 (Beyond MVG project deliverable): https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view?usp=drive_link
+
+- [DRep Voting Power Saturation Research, Project Catalyst Fund 14](https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research)
+
+- [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view?usp=drive_link)
 
 ### Related CPS / CIP Discussions
 
-- CPS-0020 (DRep incentives), coordinated effort referenced throughout this CPS
-- Governance tagging discussion in CIP repo: https://github.com/cardano-foundation/CIPs/issues/937#issuecomment-2575800139
+- [CPS-0020: Governance Stakeholder Incentivization](https://cips.cardano.org/cps/CPS-0020), coordinated effort referenced throughout this CPS
+
+- [Governance tagging discussion in CIP repo](https://github.com/cardano-foundation/CIPs/issues/937#issuecomment-2575800139)
 
 ### Cross-Ecosystem Research
 
-- Uniswap Delegate Reward Working Group: https://gov.uniswap.org/t/temp-check-uniswap-delegate-reward-3-months-cycle-1/23837
+- [Uniswap Delegate Reward Working Group](https://gov.uniswap.org/t/temp-check-uniswap-delegate-reward-3-months-cycle-1/23837)
 
-[^1]: "Concave is the New Linear: The Impossibility of Anti-Plutocratic DAO Governance" https://arxiv.org/html/2605.18990v1
+[^1]: ["Concave is the New Linear: The Impossibility of Anti-Plutocratic DAO Governance"](https://arxiv.org/html/2605.18990v1)
 
-[^2]: Empirical study of DAO voting power and concentration (arXiv) https://arxiv.org/pdf/2204.01176
+[^2]: [Empirical study of DAO voting power and concentration (arXiv)](https://arxiv.org/pdf/2204.01176)
 
-[^3]: Gov/Acc research program https://gov-acc.metagov.org/Phase-1-Results
+[^3]: [Gov/Acc research program](https://gov-acc.metagov.org/Phase-1-Results)
 
-[^4]: "Fairness in Token Delegation: Mitigating Voting Power Concentration in DAOs" https://arxiv.org/html/2510.05830v2
+[^4]: ["Fairness in Token Delegation: Mitigating Voting Power Concentration in DAOs"](https://arxiv.org/html/2510.05830v2)
 
 ## Copyright
 
