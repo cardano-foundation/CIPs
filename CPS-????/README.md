@@ -128,7 +128,7 @@ Any proposed CIP responding to this CPS should address the following:
 - [Do you think that a DRep's voting power should be capped?](https://forum.cardano.org/t/do-you-think-that-a-dreps-voting-power-should-be-capped/142533) - Cardano Forum poll and discussion
 - "Delegation saturation for DReps" Cardano Forum discussion: https://forum.cardano.org/t/delegation-saturation-for-dreps/137589
 - [Cardano's Governance Game Problem and How to Solve It](https://coffeepool.jp/notes/cardanos-governance-game-problem-and-how-to-solve-it-eng/) - Coffee Pool analysis
-- Cardano Foundation governance commitment and delegation strategy: https://cardanofoundation.org/blog/strengthens-commitment-governance-drep
+- [Cardano Foundation governance commitment and delegation strategy](https://cardanofoundation.org/blog/strengthens-commitment-governance-drep)
 - DRep Voting Power Saturation Research, Project Catalyst Fund 14: https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research
 - Cardano State of Governance Report 2026 (Beyond MVG project deliverable): https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view?usp=drive_link
 
