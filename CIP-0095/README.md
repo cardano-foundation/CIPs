@@ -77,7 +77,7 @@ connector, this specification could be applied to similar standards.
 #### CIP-30 Inherited Data Types
 
 From
-[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-003/README.md#data-types)
+[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#data-types)
 we inherit:
 
 ##### [Address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#address)
