@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: 33
 Title: DRep Voting Power Concentration
 Category: Tools
 Status: Open
