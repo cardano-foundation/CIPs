@@ -2972,7 +2972,7 @@ usual mechanisms of governing a hard-fork will be employed.
 <!-- Other protocol references -->
 
 [cps-17]:
-  https://github.com/cardano-scaling/CIPs/blob/settlement-cps/CPS-0017/README.md
+  https://github.com/cardano-foundation/CIPs/blob/master/CPS-0017/README.md
   "CPS-0017"
 [praos-performance]:
   https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md

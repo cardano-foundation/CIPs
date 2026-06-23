@@ -18,7 +18,7 @@ Implementors:
     - Nami Wallet <https://namiwallet.io>
     - CNFT <https://cnft.io>
     - Cardano Explorer <https://cexplorer.io>
-    - SundaeSwap <https://https://sundaeswap.finance/>
+    - SundaeSwap <https://sundaeswap.finance/>
     - Minswap <https://minswap.org/>
     - MuesliSwap <https://muesliswap.com/>
     - DripDropz.io <https://dripdropz.io/>
@@ -53,7 +53,7 @@ Some of the current Tools/Sites/Explorers that have implemented it already:
 * [Nami Wallet](https://namiwallet.io)
 * [CNFT](https://cnft.io)
 * [Cardano Explorer](https://cexplorer.io)
-* [SundaeSwap](https://https://sundaeswap.finance/)
+* [SundaeSwap](https://sundaeswap.finance/)
 * [Minswap](https://minswap.org/)
 * [MuesliSwap](https://muesliswap.com/)
 * [DripDropz.io](https://dripdropz.io/)

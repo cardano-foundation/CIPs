@@ -30,7 +30,7 @@ the proof-of-stake consensus mechanism used in Cardano.
 
 This CIP aims to give guidance for future CIPs related to the ledger,
 making it a registered category of the CIP process[^1].
-[^1]: See [CIP-1](https://github.com/cardano-foundation/CIPs/blob/cip-cps-rework/CIP-0001/README.md#categories).
+[^1]: See [CIP-1](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md#categories).
 While nothing new is added to the usual CIP process,
 expectations for ledger CIPs are made explicit and some background information is provided.
 
