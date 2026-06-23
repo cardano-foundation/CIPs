@@ -1,0 +1,34 @@
+{
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Dijkstra hard-fork CIP inclusion poll",
+        "3": "Signal support for including CIP-0136.",
+        "4": [
+          3
+        ],
+        "5": 504,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            1,
+            "Should CIP-0136 be included?",
+            [
+              "YES",
+              "NO",
+              "ABSTAIN"
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Shared mixed-role eligibility survey",
+        "3": "Shared survey for linked and standalone validation contexts.",
+        "4": [
+          0,
+          1,
+          3
+        ],
+        "5": 523,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            1,
+            "Which implementation stream should be prioritized?",
+            [
+              "Ledger simplification",
+              "Governance UX",
+              "Committee tooling"
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

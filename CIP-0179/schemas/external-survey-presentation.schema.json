@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "external-survey-presentation.schema.json",
+  "title": "CIP-0179 External Survey Presentation",
+  "type": "object",
+  "properties": {
+    "specVersion": {
+      "const": 4
+    },
+    "kind": {
+      "const": "cardano-survey-presentation"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2
+          },
+          "ratingLabels": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2
+          }
+        },
+        "required": [
+          "prompt"
+        ],
+        "additionalProperties": true
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "specVersion",
+    "kind",
+    "title",
+    "description",
+    "questions"
+  ],
+  "additionalProperties": true
+}
