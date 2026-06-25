@@ -171,7 +171,8 @@ request-key      = "v" / "dapp" / "dappKey" / "redirect"
                  / "payload" / "chain" / "ttl" / "page"
                  / "aead"
 response-key     = "response" / "walletKey" / "nonce" / "payload"
-                 / "signature" / "errorCode" / "errorMessage"
+                 / "signature" / "method" / "echo"
+                 / "errorCode" / "errorMessage"
 
 value            = 1*( unreserved / pct-encoded )
 unreserved       = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -354,10 +355,28 @@ Response (wallet appends to `redirect`):
 ```text
 <redirect>
     ?response=approved
+    &method=connect
     &walletKey=<base64url(wallet X25519 public key)>
     &nonce=<base64url(wallet-chosen nonce, 24 bytes)>
+    &echo=<base64url(the request's nonce, copied verbatim, 24 bytes)>
     &payload=<base64url(ciphertext(session-json))>
+    &signature=<base64url(Ed25519 over the canonical subject)>
 ```
+
+The `connect` response is signed like every other response (*Security model § Response
+signing*), and carries two `connect`-specific parameters. `method=connect` is a domain-separation
+tag inside the signed subject, so a signature minted for any other method cannot be re-presented as
+a `connect`. `echo` is the request's `nonce` copied back verbatim, binding the response to the
+specific request the dApp issued. Because `connect` is first contact, the verifying
+`signingPublicKey` is delivered *inside this same response's* encrypted `payload`: the dApp MUST
+(1) box-decrypt `payload`, (2) re-derive the canonical subject and verify `signature` against the
+decrypted `signingPublicKey` — rejecting `errorCode=-10 ResponseSignatureInvalid` on failure, or if
+`method=connect`, `signature`, or `echo` is absent — and (3) check that the (present) `echo` equals
+the `nonce` it sent — rejecting `errorCode=-5 NonceReplay` on mismatch. This proves the response is untampered, bound to
+this request, and pins `signingPublicKey` for the session. It does NOT by itself prove *which*
+wallet replied (first contact has no prior key to check against); that assurance comes from
+deterministic OS routing of the scheme to the paired wallet plus the in-wallet consent screen,
+exactly as for the encryption layer.
 
 `session-json` decrypts to:
 
@@ -569,6 +588,16 @@ cache MAY be implemented as a SQLite table or an append-only encrypted log; entr
 submits the exact same URL twice within 10 seconds and observes `errorCode=-5 NonceReplay` on the
 second submission; (b) submits a URL, force-kills the wallet process, relaunches it, and resubmits
 the same URL &mdash; the second submission MUST still observe `errorCode=-5`.
+
+For `connect` specifically &mdash; which has no prior session and thus no wallet-side nonce cache to
+consult &mdash; replay is bound on the **dApp** side. The wallet MUST copy the request's `nonce`
+verbatim into the response `echo` parameter (which is covered by the response `signature`), and the
+dApp MUST reject with `errorCode=-5 NonceReplay` any `connect` response whose `echo` does not equal
+the `nonce` it generated for that request. This binds the session-establishing response to the
+specific request the dApp issued, so a captured `connect` response cannot be replayed into a later
+pairing attempt. **Defence-in-depth (testable):** a conformance test feeds the dApp a `connect`
+response whose `echo` differs from the request `nonce` (signature otherwise valid) and asserts
+`errorCode=-5`.
 
 #### Callback host binding (anti-phish)
 
@@ -795,13 +824,26 @@ informational payload from the wallet, the dApp MUST:
 4. On verification failure, the dApp MUST discard the entire response, terminate the session
    (issue `disconnect`), and surface the failure to the user as a wallet authenticity error.
 
+**First contact (`connect`).** The `connect` response is signed like every other response, but the
+`session.signingPublicKey` used to verify it is delivered *inside that same response's* encrypted
+`payload`. The dApp therefore decrypts first, then verifies `signature` against the just-decrypted
+`signingPublicKey`, and additionally requires the `method=connect` domain tag and an `echo` of the
+request `nonce` (see *§ connect* and *§ Replay protection*). This is a trust-on-first-use pin: it
+proves the response is internally consistent, untampered, and bound to this request, and it fixes
+`signingPublicKey` for the session &mdash; but, lacking a prior key, it does not by itself
+authenticate *which* wallet replied. That authentication rests on deterministic OS routing of the
+scheme to the paired wallet plus the user's in-wallet consent, exactly as for the encryption layer.
+
 **Defence-in-depth (testable):** a conformance test (a) replays a valid response URL with a
 flipped signature byte and asserts dApp rejection, (b) substitutes the response from a different
 wallet's `session.signingPublicKey` and asserts dApp rejection, (c) re-orders the **canonical
 subject** parameters (forcing the dApp to re-sort) and asserts the signature still verifies
 (canonical form is order-invariant under lex-sort), (d) flips one bit of the domain-separator
 prefix and asserts dApp rejection, (e) submits the same URL with `%2f` lowercase instead of `%2F`
-and asserts dApp rejection (encoding is uppercase-only). The wallet side is tested by a
+and asserts dApp rejection (encoding is uppercase-only); (f) feeds the dApp a `connect` response
+whose (present) `echo` differs from the request `nonce` and asserts `-5 NonceReplay`, and a `connect`
+response missing `method=connect`, `signature`, or `echo` and asserts `-10 ResponseSignatureInvalid`. The wallet side
+is tested by a
 conformance harness that drives `signTx` and inspects the emitted URL: the final parameter MUST be
 `signature`, the signature MUST verify against the advertised `session.signingPublicKey`, and the
 bytes signed MUST be the canonical form defined above.
@@ -1123,7 +1165,7 @@ two error tables namespaced in their codebase.
 | -7   | DecryptFailed            | `payload` failed NaCl box authentication                      |
 | -8   | UnsupportedChain         | Wallet does not have an account on the requested chain        |
 | -9   | UnsupportedVersion       | `v` is not understood by the wallet, OR URL contains unknown query-string key |
-| -10  | ResponseSignatureInvalid | dApp-side: Ed25519 verification of `signature` failed against `session.signingPublicKey` |
+| -10  | ResponseSignatureInvalid | dApp-side: Ed25519 verification of `signature` failed against `session.signingPublicKey` (for `connect`, against the `signingPublicKey` inside the just-decrypted payload), or a `connect` response is missing `method=connect`/`signature`/`echo` |
 | -11  | AuxiliaryDataHashMismatch | `auxiliary_data_hash` in `transaction_body` did not match the supplied `auxiliary_data`, OR a hash is present without data, OR data is present without a hash |
 | -12  | SessionEntropyReuse      | Wallet detected `session_entropy` reuse across `connect` events for the same `dapp_host` |
 | -13  | SourceAppUnverified      | Source app's bundle ID could not be verified against the `redirect` host's AASA / `assetlinks.json` |
@@ -1198,13 +1240,16 @@ https://lace.io/cip30dl/v1/connect
 Response URL (wallet appends to the dApp's redirect; `walletKey`, `nonce`, `payload`, and
 `signature` are deterministic-looking but illustrative, NOT cryptographically real). Note the
 `signature` parameter MUST be the FINAL key; it covers the canonical form of the URL with the
-`signature` parameter itself removed.
+`signature` parameter itself removed. `method=connect` is the domain-separation tag and `echo` is
+the request's `nonce` copied back verbatim.
 
 ```text
 https://aegis.example/cb
   ?response=approved
+  &method=connect
   &walletKey=AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM
   &nonce=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE
+  &echo=AgICAgICAgICAgICAgICAgICAgICAgIC
   &payload=ZXhhbXBsZS1jaXBoZXJ0ZXh0LWZvci1zZXNzaW9uLWpzb24
   &signature=ZmFrZS1lZDI1NTE5LXNpZ25hdHVyZS1leGFtcGxlLWZvci1jb25uZWN0LXJlc3BvbnNl
 ```
@@ -1225,7 +1270,12 @@ After NaCl box decryption with `(dappKey-secret, walletKey, nonce=wallet-nonce)`
 
 The dApp MUST verify the `signature` parameter against `session.signingPublicKey` BEFORE trusting
 any field in the session JSON. Verification subject is the canonical-form response URL with the
-`&signature=...` suffix stripped.
+`&signature=...` suffix stripped. The dApp MUST additionally reject the response with
+`errorCode=-10 ResponseSignatureInvalid` if `method=connect`, `signature`, or `echo` is absent, and
+with `errorCode=-5 NonceReplay` if a present `echo` does not equal the `nonce` the dApp sent in the request. A
+byte-exact, cryptographically real known-answer vector for this flow (fixed keys/nonces &rArr;
+reproducible `signature` and response URL, plus the `-5` / `-10` negatives) is published in the
+reference implementation and exercised by `tests/vectors/sign_006_canonical_subject_connect_method_echo.json`.
 
 ### C.2 Valid `signTx` request and response
 
