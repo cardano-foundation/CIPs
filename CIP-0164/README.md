@@ -1484,19 +1484,25 @@ TPS, providing clear economic incentives for infrastructure upgrades.
 
 ### Clients
 
-Changes proposed for Ouroboros Leios will require changes to the node-to-client
-(N2C) mini-protocols used by client applications throughout the ecosystem.
-Concrete decisions will likely naturally surface through various
-implementations, however some care should be taken to minimize ecosystem
-disruption.
+Ouroboros Leios introduces certified blocks: a cert block's
+on-chain body is empty by convention, with its transactions delivered out of
+band via the certified EB's closure. To minimise ecosystem disruption,
+Leios-aware nodes serve an *inlined* form of each block over LocalChainSync
+(N2C): cert blocks are delivered with the certified EB's transactions spliced
+into the standard segwit segments (`transaction_bodies`,
+`transaction_witness_sets`, `auxiliary_data_set`, `invalid_transactions`). The
+resulting wire shape reuses the [`ranking_block`](#ranking-block-cddl) CDDL,
+so existing N2C clients work unchanged and do not need to learn the Leios
+protocol. The
+"cert ⇒ empty segments" rule that NTN diffusion follows is a producer-side
+convention; it does not apply to N2C deliveries and is not enforced by the
+CDDL. Re-verifying clients should note that for cert blocks the header's
+`block_body_hash` is computed over the on-chain (empty) body, not the inlined
+body served over N2C.
 
 An [Impact Analysis][impact-analysis] has been done and continued discussion is
-necessary. One recommendation is to serve a modified block with "inline" EB
-transactions over LocalChainSync. Additional queries and ledger state may be
-extended to provide Leios specific information to applications. It is assumed
-nodes providing client interfaces will provide the modified block to clients.
-
-A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
+necessary. Additional queries and ledger state may be extended to provide
+Leios specific information to applications.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -2921,45 +2927,6 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ;   [ tx_hash                  : hash32     ; Hash of complete transaction bytes
 ;   , tx_size                  : uint16     ; Transaction size in bytes
 ;   ]
-```
-
-<a id="merged-block-cddl" href="#merged-block-cddl">**Merged Block**</a>
-
-```diff
-+ merged_block =
-+   [ header                   : block_header
-+   , transaction_bodies       : [* transaction_body]
-+   , transaction_witness_sets : [* transaction_witness_set]
-+   , auxiliary_data_set       : {* transaction_index => auxiliary_data}
-+   , ? eb_certificate         : leios_certificate
-+   , ? eb_tx_references       : [* tx_reference]
-+   ]
-
-+ block_header =
-+   [ header_body              : block_header_body
-+   , body_signature           : kes_signature
-+   ]
-
-+ block_header_body =
-+   [ block_number             : uint
-+   , slot                     : slot_no
-+   , prev_hash                : hash32
-+   , issuer_vkey              : vkey
-+   , vrf_vkey                 : vrf_vkey
-+   , vrf_result               : vrf_cert
-+   , block_body_size          : uint
-+   , block_body_hash          : hash32
-+   , ? ( announced_eb         : hash32
-+       , announced_eb_size    : uint32
-+       )
-+   , ? certified_eb           : bool
-+   ]
-
-+ ; Reference structures
-+ tx_reference =
-+  [ tx_hash                  : hash32     ; Hash of complete transaction bytes
-+  , tx_size                  : uint16     ; Transaction size in bytes
-+  ]
 ```
 
 <a id="votes-certificates-cddl" href="#votes-certificates-cddl">**Votes and
