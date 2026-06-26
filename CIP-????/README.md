@@ -8,6 +8,8 @@ Authors:
     - Will Gould <will.gould@iohk.io>
 Implementors:
   - Input Output Engineering <https://iohk.io>
+Discussions: 
+  - https://github.com/input-output-hk/tiered-pricing/pull/36
 Created: 2026-06-26
 License: CC-BY-4.0
 ---
@@ -19,7 +21,7 @@ The amount of change given is the difference between the minimum fee calculated 
 transaction and the fee specified by the transaction. The change is sent to the 
 reward address specified by that transaction. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano currently collects the exact fee a transaction declares; there is no
 mechanism for the protocol to return any portion of it to the submitter. Future fee
