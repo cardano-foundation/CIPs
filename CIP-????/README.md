@@ -6,7 +6,9 @@ Status: Proposed
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - Will Gould <will.gould@iohk.io>
-Created: 2026-03-23
+Implementors:
+  - Input Output Engineering <https://iohk.io>
+Created: 2026-06-26
 License: CC-BY-4.0
 ---
 
@@ -129,7 +131,7 @@ transaction_body =
 ```
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Choice of reward address over payment address
 
