@@ -9,10 +9,11 @@ Authors:
 Implementors:
   - Input Output Engineering <https://iohk.io>
 Discussions: 
-  - https://github.com/input-output-hk/tiered-pricing/pull/36
+  - Tiered Pricing repo internal discussion: https://github.com/input-output-hk/tiered-pricing/pull/36
 Created: 2026-06-26
 License: CC-BY-4.0
 ---
+
 
 ## Abstract
 
