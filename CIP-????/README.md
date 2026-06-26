@@ -8,12 +8,12 @@ Authors:
     - Will Gould <will.gould@iohk.io>
 Implementors:
   - Input Output Engineering <https://iohk.io>
-Discussions: 
+Discussions:
   - Tiered Pricing repo internal discussion: https://github.com/input-output-hk/tiered-pricing/pull/36
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1218
 Created: 2026-06-26
 License: CC-BY-4.0
 ---
-
 
 ## Abstract
 
