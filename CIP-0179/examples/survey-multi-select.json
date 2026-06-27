@@ -1,0 +1,43 @@
+{
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Dijkstra hard-fork CIP shortlist",
+        "3": [
+          "Select candidate CIPs for potential",
+          " inclusion in the Dijkstra hard fork."
+        ],
+        "4": [
+          0
+        ],
+        "5": 504,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            2,
+            [
+              "Which CIPs should be shortlisted",
+              " for Dijkstra?"
+            ],
+            [
+              "CIP-0108",
+              "CIP-0119",
+              "CIP-0136",
+              "CIP-0149"
+            ],
+            0,
+            4
+          ]
+        ]
+      }
+    ]
+  ]
+}

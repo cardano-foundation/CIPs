@@ -1,0 +1,36 @@
+{
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Initial parameter calibration",
+        "3": "Choose an integer target for parameter X.",
+        "4": [
+          0,
+          1,
+          2
+        ],
+        "5": 504,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            4,
+            "Select initial value for parameter X",
+            [
+              10,
+              1000,
+              5
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

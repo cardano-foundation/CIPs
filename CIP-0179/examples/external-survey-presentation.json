@@ -1,0 +1,17 @@
+{
+  "specVersion": 4,
+  "kind": "cardano-survey-presentation",
+  "title": "Dijkstra budget allocation",
+  "description": "Allocate priority points across proposed Dijkstra work streams.",
+  "questions": [
+    {
+      "prompt": "Allocate 100 points across these work streams.",
+      "options": [
+        "Ledger simplification",
+        "Governance UX",
+        "Committee tooling",
+        "Developer experience"
+      ]
+    }
+  ]
+}
