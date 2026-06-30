@@ -5,8 +5,10 @@ Category: Metadata
 Status: Proposed
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
+  - Elena Bardo <elena.bardo@intersectmbo.org>
 Implementors:
-  - Ryan Williams <ryan.williams@intersectmbo.org>
+  - cardano-governance-metadata <https://github.com/amanita-labs/cardano-governance-metadata>
+  - transaction.studio <https://www.transaction.studio/>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1101
 Created: 2025-10-15
@@ -217,7 +219,10 @@ This CIP is considered **Active** when:
 
 ### Implementation Plan
 
-- todo
+- [x] Create Typescript Library for CIP-0169 metadata creation and validation
+  - [cardano-governance-metadata](https://github.com/amanita-labs/cardano-governance-metadata)
+- [x] Add CIP-0169 validation to a governance/transaction inspection tool
+  - [transaction.studio](https://www.transaction.studio/)
 
 ## Copyright
 
