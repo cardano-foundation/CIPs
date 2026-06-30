@@ -8,7 +8,7 @@ Authors:
 Implementors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1101
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1101
 Created: 2025-10-15
 License: CC-BY-4.0
 ---
@@ -20,7 +20,7 @@ The `onChain` property encapsulates the on-chain effects using [CIP-0116 | Stand
 enabling verification that metadata content matches on-chain action and preventing metadata replay attacks.
 This can be applied to all types of governance metadata, including governance actions, votes, DRep registrations/updates, and Constitutional Committee resignations.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Without a standardized mechanism to bind metadata to specific on-chain effects,
 there is a security vulnerability in **metadata replay attacks**.
@@ -175,7 +175,7 @@ ajv validate --spec=draft2020 \
 `-r` registers the referenced CIP-0116 schema so `$ref`s resolve offline.
 `--strict=false` allows the OpenAPI-style `discriminator` keyword (advisory, not enforced).
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 By including the on-chain effects within the signed metadata body using the `onChain` property.
 Metadata is bound to specific on-chain effects,
@@ -200,7 +200,7 @@ These self-referential anchors are therefore excluded from the `onChain` encodin
 
 The notable example is `Constitution.anchor` inside a `new_constitution` action: it points to the constitution document, which is a separate artifact from the governance metadata, and is itself part of the on-chain effect being voted on. That anchor is kept as-is.
 
-## Open Questions
+### Open Questions
 
 - Whether downstream metadata CIPs (CIP-108, CIP-119, CIP-136) should `require` `onChain` once tooling adopts it, or keep it optional indefinitely. Making it required is a hard backward-compatibility break and probably best deferred.
 
