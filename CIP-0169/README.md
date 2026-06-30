@@ -1,6 +1,6 @@
 ---
 CIP: 169
-Title: Governance Metadata - On-Chain Effects
+Title: Governance Metadata - On-Chain Binding
 Category: Metadata
 Status: Proposed
 Authors:
