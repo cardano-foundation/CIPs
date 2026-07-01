@@ -7,6 +7,7 @@ Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
   - Elena Bardo <elena.bardo@intersectmbo.org>
 Implementors:
+  - governance-scripts <https://github.com/IntersectMBO/governance-scripts>
   - cardano-governance-metadata <https://github.com/amanita-labs/cardano-governance-metadata>
   - transaction.studio <https://www.transaction.studio/>
 Discussions:
@@ -25,20 +26,23 @@ This can be applied to all types of governance metadata, including governance ac
 ## Motivation: Why is this CIP necessary?
 
 Without a standardized mechanism to bind metadata to specific on-chain effects,
-there is a security vulnerability in **metadata replay attacks**.
+there are potential security vulnerabilities in **metadata replay attacks** and
+**multi-author misattachment**.
 
-This vulnerability has been discussed via [CIPs Issue #970](https://github.com/cardano-foundation/CIPs/issues/970) by [Crypto2099](https://github.com/Crypto2099) and further within [CIPs Issue #978](http://github.com/cardano-foundation/CIPs/issues/978) by [gitmachtl](https://github.com/gitmachtl).
+Vulnerability have been discussed via [CIPs Issue #970](https://github.com/cardano-foundation/CIPs/issues/970) by [Crypto2099](https://github.com/Crypto2099) and further within [CIPs Issue #978](http://github.com/cardano-foundation/CIPs/issues/978) by [gitmachtl](https://github.com/gitmachtl).
 
 ### Metadata Replay
 
 A malicious actor could;
 
 1. Copy the metadata from a legitimate treasury withdrawal governance action
-2. Modify only the destination address in the on-chain action
+2. Modify only the withdrawal destination address in the on-chain action
 3. Submit this as a new governance action with the copied metadata
 
-From a voter's perspective, examining the metadata would show legitimate content (proper title, abstract, rationale, references, and author signatures).
-However, the actual on-chain effect would send funds to a different, malicious address.
+From a voter's perspective,
+examining the metadata would show legitimate content (proper title, abstract, rationale, references, and author signatures).
+However, the actual on-chain effect would send funds to a different,
+malicious address.
 
 In high-volume voting environments such attacks could succeed if voters don't manually verify that the metadata matches the on-chain effects.
 Relying on manual verification by voters is error prone and inefficient.
@@ -55,7 +59,8 @@ Concretely, consider a multi-author treasury withdrawal:
 
 Without `onChain`,
 the author signatures only attest to the prose narrative.
-Anchoring the signed body to the exact on-chain effect closes this gap: any divergence between the bound `onChain` value and the submitted action invalidates the binding, and tools can refuse to display the metadata as endorsed.
+Anchoring the signed body to the exact on-chain effect closes this gap: any divergence between the bound `onChain` value and the submitted action invalidates the binding,
+and tools can refuse to display the metadata as endorsed.
 
 ## Specification
 
@@ -101,7 +106,7 @@ A example (see [`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the comp
 #### Structure
 
 The `onChain` property **MUST** conform to one of the [CIP-0116][] Conway-era governance types listed below.
-Field names and discriminator values follow CIP-0116 verbatim — that is,
+Field names and discriminator values follow CIP-0116 verbatim,
 snake_case property names (e.g. `reward_account`, `gov_action`, `gov_action_id`) and a `tag` discriminator carrying snake_case enum values (e.g. `treasury_withdrawals_action`, `register_drep`).
 Inner certificate/governance-action variants are discriminated by their own `tag` field per CIP-0116.
 
@@ -112,7 +117,7 @@ Inner certificate/governance-action variants are discriminated by their own `tag
 > - The inner `VotingProcedure.anchor` (when present)
 > - `register_drep`, `update_drep`, and `resign_committee_cold` certificate `anchor` fields
 >
-> **Exception:** `Constitution.anchor` (inside `new_constitution` actions) is **retained**. That anchor points to the constitution document itself — a separate artifact from the governance metadata — so it is part of the on-chain effect and must be bound into the signed body.
+> **Exception:** `Constitution.anchor` (inside `new_constitution` actions) is **retained**. That anchor points to the constitution document itself a separate artifact from the governance metadata.
 
 ##### Supported Types
 
@@ -133,7 +138,8 @@ See [CIP-0116 cardano-conway.json](https://github.com/cardano-foundation/CIPs/bl
 
 **For Votes:**
 
-The `onChain` property conforms to the [CIP-0116][] `VotingProcedures` type — a map of `Voter` → `GovActionId` → `VotingProcedure` — with each inner `VotingProcedure`'s `anchor` omitted. Reusing the existing CIP-0116 container naturally binds the metadata to the (voter, action, vote) tuple(s) being attested without introducing a CIP-0169-specific wrapper type.
+The `onChain` property conforms to the [CIP-0116][] `VotingProcedures` type; a map of `Voter` → `GovActionId` → `VotingProcedure`.
+Reusing the existing CIP-0116 container naturally binds the metadata to the (voter, action, vote) tuple(s) being attested without introducing a CIP-0169-specific wrapper type.
 
 **For DRep Registration:**
 
@@ -149,13 +155,13 @@ The `onChain` property conforms to the [CIP-0116][] `resign_committee_cold` cert
 
 ### Verification Process
 
-Tools **SHOULD** implement the following verification when processing governance actions:
+Tools **SHOULD** implement the following verification when processing CIP-0169 metadata:
 
 1. **Parse On-Chain Data**: Extract the on-chain data which the metadata is attached to
 2. **Parse Metadata**: Retrieve and parse the governance metadata
 3. **Author Signature Check**: Validate the author signatures are all correct
 4. **Compare**: Verify that `body.onChain` matches the actual on-chain effect
-5. **Alert**: If there are invalid author signatures and/or the `onChain` does not match, warn the user
+5. **Alert**: If the `onChain` does not match or author signatures invalid, warn the user
 
 ### Examples
 
@@ -188,19 +194,25 @@ This allows governance tools to automatically verify this for voters.
 ### Why Extend CIP-0100?
 
 [CIP-0100][] provides the base structure for governance metadata.
-This extension adds security-critical information while maintaining backward compatibility.
+This extension optionally adds security-critical information while maintaining backward compatibility.
 
 ### Why Use CIP-0116 Encoding?
 
-[CIP-0116][] provides standardized JSON encoding for Cardano domain types.
+[CIP-0116][] provides standardized JSON encoding for Cardano domain types,
+allowing the reuse of existing tooling.
 
 ### Why Exclude the Self-Referential Anchor?
 
-`ProposalProcedure`, `VotingProcedure`, and the DRep / committee resignation certificates each carry an `anchor` whose URL and hash point at *this* metadata document. Embedding that anchor inside the metadata it describes would create a circular dependency — the document would have to be hashed before it could be assembled. It also adds nothing to verification: the verifier already has the document in hand, so a pointer to it is redundant.
+`ProposalProcedure`, `VotingProcedure`, and the DRep / committee resignation certificates each carry an `anchor` whose URL and hash point at *this* metadata document.
+Embedding that anchor inside the metadata it describes would create a circular dependency — the document would have to be hashed before it could be assembled.
+It also adds nothing to verification: the verifier already has the document in hand, so a pointer to it is redundant.
 
-These self-referential anchors are therefore excluded from the `onChain` encoding. All other CIP-0116 properties — including anchors that point to *other* artifacts — are retained.
+These self-referential anchors are therefore excluded from the `onChain` encoding.
+All other CIP-0116 properties — including anchors that point to *other* artifacts — are retained.
 
-The notable example is `Constitution.anchor` inside a `new_constitution` action: it points to the constitution document, which is a separate artifact from the governance metadata, and is itself part of the on-chain effect being voted on. That anchor is kept as-is.
+The notable example is `Constitution.anchor` inside a `new_constitution` action: it points to the constitution document, which is a separate artifact from the governance metadata,
+and is itself part of the on-chain effect being voted on.
+That anchor is kept as-is.
 
 ### Open Questions
 
@@ -212,10 +224,14 @@ The notable example is `Constitution.anchor` inside a `new_constitution` action:
 
 This CIP is considered **Active** when:
 
-1. The specification is merged into the CIPs repository
-2. At least two governance metadata authoring tools implement support
-3. At least one verification tool implements on-chain comparison
-4. Documentation and examples are available
+- [ ] The specification is merged into the CIPs repository
+- [x] At least two governance metadata authoring tools implement support 
+  - [governance-scripts](https://github.com/IntersectMBO/governance-scripts)
+  - [cardano-governance-metadata](https://github.com/amanita-labs/cardano-governance-metadata)
+- [ ] At least three governance verification tool implements on-chain comparison
+  - [transaction.studio](https://www.transaction.studio/)
+- [ ] Examples are available
+  - Examples via [/examples/](./examples/)
 
 ### Implementation Plan
 
@@ -223,6 +239,8 @@ This CIP is considered **Active** when:
   - [cardano-governance-metadata](https://github.com/amanita-labs/cardano-governance-metadata)
 - [x] Add CIP-0169 validation to a governance/transaction inspection tool
   - [transaction.studio](https://www.transaction.studio/)
+- [x] Add to a CLI governance building tool
+  - [governance-scripts](https://github.com/IntersectMBO/governance-scripts)
 
 ## Copyright
 
