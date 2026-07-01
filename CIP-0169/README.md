@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP extends [CIP-100 | Governance Metadata][CIP-100] to introduce a standardized `onChain` property.
+This CIP extends [CIP-0100 | Governance Metadata][CIP-0100] to introduce a standardized `onChain` property.
 The `onChain` property encapsulates the on-chain effects using [CIP-0116 | Standard JSON encoding for Domain Types][CIP-0116] standard encoding,
 enabling verification that metadata content matches on-chain action and preventing metadata replay attacks.
 This can be applied to all types of governance metadata, including governance actions, votes, DRep registrations/updates, and Constitutional Committee resignations.
@@ -61,7 +61,7 @@ Anchoring the signed body to the exact on-chain effect closes this gap: any dive
 
 ### The `onChain` Property
 
-The `onChain` property is a new **optional** property within the `body` object of [CIP-100][] governance metadata.
+The `onChain` property is a new **optional** property within the `body` object of [CIP-0100][] governance metadata.
 
 #### JSON-LD Context
 
@@ -185,9 +185,9 @@ with author signature cryptographically locking it in.
 This makes any metadata replay attacks, machine detectable.
 This allows governance tools to automatically verify this for voters.
 
-### Why Extend CIP-100?
+### Why Extend CIP-0100?
 
-[CIP-100][] provides the base structure for governance metadata.
+[CIP-0100][] provides the base structure for governance metadata.
 This extension adds security-critical information while maintaining backward compatibility.
 
 ### Why Use CIP-0116 Encoding?
@@ -228,6 +228,6 @@ This CIP is considered **Active** when:
 
 This CIP is licensed under [CC-BY-4.0][].
 
-[CIP-100]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md
+[CIP-0100]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md
 [CIP-0116]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
