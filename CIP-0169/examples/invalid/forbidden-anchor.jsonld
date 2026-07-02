@@ -180,47 +180,21 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
-      {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
+    "title": "INVALID: proposal with self-referential anchor",
+    "abstract": "This document MUST fail schema validation.",
+    "motivation": "Demonstrates the prohibition on embedding the metadata document's own anchor.",
+    "rationale": "The onChain ProposalProcedure below wrongly includes an `anchor` pointing back at this document; `unevaluatedProperties: false` rejects it.",
     "onChain": {
       "deposit": "100000000000",
       "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
+      "anchor": {
+        "url": "https://example.com/this-document.jsonld",
+        "data_hash": "156d4282bfac9e9f6e3044a2ab30cbf00d0d6d0f56048e50e2e90d338524595e"
+      },
       "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
-          }
-        ]
+        "tag": "info_action"
       }
     }
   },
-  "authors": [
-    {
-      "name": "Ryan Williams",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "4193a7136fbb666f96b500e964cd1f371f1553445af849c2fcf6695bb3fcb3bcf7e98e2fc9e7815149566c549a9cfca8873f5dfb6dec0623094f5ce5821ba002"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "ccafe98a9ea8d6b6451e3ae4365f83bfdae5f65782352830a71bb115d149b418771a29da5210517e07e549281c486440d44d543d37bc2ee735f82d1382b1770b"
-      }
-    }
-  ]
+  "authors": []
 }

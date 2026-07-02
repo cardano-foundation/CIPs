@@ -4,10 +4,9 @@
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
     "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
-    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
-      "@id": "CIP108:body",
+      "@id": "CIP100:body",
       "@context": {
         "references": {
           "@id": "CIP100:references",
@@ -19,10 +18,6 @@
             "uri": "CIP100:reference-uri"
           }
         },
-        "title": "CIP108:title",
-        "abstract": "CIP108:abstract",
-        "motivation": "CIP108:motivation",
-        "rationale": "CIP108:rationale",
         "comment": "CIP100:comment",
         "externalUpdates": {
           "@id": "CIP100:externalUpdates",
@@ -180,28 +175,12 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
-      {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
+    "comment": "Resigning from the Constitutional Committee effective immediately owing to time constraints; binding this statement to the specific resignation certificate.",
     "onChain": {
-      "deposit": "100000000000",
-      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-      "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
-          }
-        ]
+      "tag": "resign_committee_cold",
+      "committee_cold_credential": {
+        "tag": "pubkey_hash",
+        "value": "f1e2d3c4b5a69788796a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a"
       }
     }
   },
@@ -211,15 +190,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "4193a7136fbb666f96b500e964cd1f371f1553445af849c2fcf6695bb3fcb3bcf7e98e2fc9e7815149566c549a9cfca8873f5dfb6dec0623094f5ce5821ba002"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "ccafe98a9ea8d6b6451e3ae4365f83bfdae5f65782352830a71bb115d149b418771a29da5210517e07e549281c486440d44d543d37bc2ee735f82d1382b1770b"
+        "signature": "3265359309c6f714e43f2856c2ba240bd18f4e546ede6ede259bde44b382173b0ac5dd9ebc700a03a475ec4ad81848cbf078a0682b586f4388f53bcdc58b630c"
       }
     }
   ]

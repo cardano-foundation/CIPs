@@ -70,16 +70,16 @@ The `onChain` property is a new **optional** property within the `body` object o
 
 #### JSON-LD Context
 
-The `onChain` property is defined in the JSON-LD `@context` under the `CIP169` namespace,
-with each CIP-0116 sub-property (`deposit`, `reward_account`, `gov_action`, `tag`, `rewards`, `gov_action_id`, `transaction_id`, `gov_action_index`, `voter`, `voting_procedure`, `vote`, `protocol_param_update`, `protocol_version`, `policy_hash`, `committee`, `members_to_remove`, `signature_threshold`, `constitution`, `script_hash`, `drep_credential`, `committee_cold_credential`, `coin`, etc.) mapped under the `CIP116` namespace.
-Mapping every reachable property is **required**: any term left undefined is dropped during canonicalization, which would silently exclude the on-chain payload from the author signature and defeat the purpose of this CIP.
-
-A example (see [`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the complete context):
+The `onChain` property is defined in the JSON-LD `@context` under the `CIP169` namespace.
+Its context maps the well-known CIP-0116 governance terms (`deposit`, `reward_account`,
+`gov_action`, `rewards`, `constitution`, credentials, voter, …) explicitly, and adds a
+`@vocab` default so that **every** other reachable term — nested, or added by a future
+CIP-0116 revision — still resolves to a CIP-0116 IRI (see
+[`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the complete context):
 
 ```json
 {
   "@context": {
-    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
     "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
     "body": {
@@ -88,7 +88,7 @@ A example (see [`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the comp
         "onChain": {
           "@id": "CIP169:onChain",
           "@context": {
-            "tag": "CIP116:tag",
+            "@vocab": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
             "deposit": "CIP116:deposit",
             "reward_account": "CIP116:reward_account",
             "gov_action": { "@id": "CIP116:gov_action", "@context": { "...": "..." } }
@@ -99,6 +99,15 @@ A example (see [`cip-0169.common.jsonld`](./cip-0169.common.jsonld) for the comp
   }
 }
 ```
+
+The `@vocab` default is deliberate and important: any term left undefined would be dropped
+during canonicalization, which would silently exclude part of the on-chain payload from the
+author signature and defeat the purpose of this CIP. Explicit mappings keep the well-known
+structure self-documenting with precise IRIs, while `@vocab` guarantees no term — at any
+nesting depth — can ever be silently dropped.
+
+A real document merges this fragment with its downstream body vocabulary (CIP-108/119/136);
+see [test-vector.md](./test-vector.md) for full worked examples.
 
 > [!NOTE]
 > This CIP uses `CIP169` as the namespace identifier for the `onChain` property itself, while every property *inside* `onChain` lives in the `CIP116` namespace.
@@ -163,25 +172,37 @@ Tools **SHOULD** implement the following verification when processing CIP-0169 m
 4. **Compare**: Verify that `body.onChain` matches the actual on-chain effect
 5. **Alert**: If the `onChain` does not match or author signatures invalid, warn the user
 
+See [test-vector.md](./test-vector.md#negative-vectors) for worked negative vectors of both a
+schema failure (a forbidden self-referential anchor) and an on-chain mismatch (a metadata
+replay that only step 4 can catch).
+
 ### Examples
 
-Please see [examples/](./examples/).
+Worked examples with reproducible hashes and populated author signatures are documented in
+[test-vector.md](./test-vector.md). They cover governance actions (`info_action`,
+`parameter_change_action`, `treasury_withdrawals_action`, `new_constitution`), votes (DRep and
+Constitutional Committee), and certificates (`register_drep`, `update_drep`,
+`resign_committee_cold`), plus negative vectors. The raw files are in [examples/](./examples/).
 
 ### Validation
 
 The schema uses JSON Schema 2020-12 and references the CIP-0116 Conway domain types.
-Validate an instance with [ajv-cli](https://github.com/ajv-validator/ajv-cli):
+Validate an instance with [ajv-cli](https://github.com/ajv-validator/ajv-cli). Note that
+ajv-cli selects its input parser from the file extension, so validate a `.json` copy of the
+`.jsonld` example:
 
 ```sh
+cp examples/treasury-withdrawal.jsonld /tmp/example.json
 ajv validate --spec=draft2020 \
   -s cip-0169.common.schema.json \
   -r ../CIP-0116/cardano-conway.json \
-  -d examples/<file>.json \
+  -d /tmp/example.json \
   --all-errors --strict=false
 ```
 
 `-r` registers the referenced CIP-0116 schema so `$ref`s resolve offline.
 `--strict=false` allows the OpenAPI-style `discriminator` keyword (advisory, not enforced).
+The documents under [`examples/invalid/`](./examples/invalid/) are expected to **fail** validation.
 
 ## Rationale: How does this CIP achieve its goals?
 

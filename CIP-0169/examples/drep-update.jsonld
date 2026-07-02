@@ -4,10 +4,10 @@
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
     "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
-    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
+    "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
-      "@id": "CIP108:body",
+      "@id": "CIP119:body",
       "@context": {
         "references": {
           "@id": "CIP100:references",
@@ -19,10 +19,11 @@
             "uri": "CIP100:reference-uri"
           }
         },
-        "title": "CIP108:title",
-        "abstract": "CIP108:abstract",
-        "motivation": "CIP108:motivation",
-        "rationale": "CIP108:rationale",
+        "paymentAddress": "CIP119:paymentAddress",
+        "givenName": "CIP119:givenName",
+        "objectives": "CIP119:objectives",
+        "motivations": "CIP119:motivations",
+        "qualifications": "CIP119:qualifications",
         "comment": "CIP100:comment",
         "externalUpdates": {
           "@id": "CIP100:externalUpdates",
@@ -180,28 +181,16 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
-      {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
+    "givenName": "Ryan Williams",
+    "paymentAddress": "addr1q86dnpkva4mm859c8ur7tjxn57zgsu6vg8pdetkdve3fsacnq7twy06u2ev5759vutpjgzfryx0ud8hzedhzerava35qwh3x34",
+    "objectives": "Updated: additionally prioritise treasury stewardship and budget scrutiny.",
+    "motivations": "Refreshing my published profile after two years of active voting.",
+    "qualifications": "Author of multiple governance metadata CIPs; ongoing DRep since the Chang hard fork.",
     "onChain": {
-      "deposit": "100000000000",
-      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-      "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
-          }
-        ]
+      "tag": "update_drep",
+      "drep_credential": {
+        "tag": "pubkey_hash",
+        "value": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8"
       }
     }
   },
@@ -211,15 +200,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "4193a7136fbb666f96b500e964cd1f371f1553445af849c2fcf6695bb3fcb3bcf7e98e2fc9e7815149566c549a9cfca8873f5dfb6dec0623094f5ce5821ba002"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "ccafe98a9ea8d6b6451e3ae4365f83bfdae5f65782352830a71bb115d149b418771a29da5210517e07e549281c486440d44d543d37bc2ee735f82d1382b1770b"
+        "signature": "0a282cd93edc78e67d691af10808770566695252d91d07074b1c3983330aa6462a57b9ad993191cc1a8cc1c07bba9a0b7c4a833703c494b13c5ccfc84054950c"
       }
     }
   ]
