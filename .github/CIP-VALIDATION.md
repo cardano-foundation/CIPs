@@ -90,6 +90,8 @@ They **must** appear after `Path to Active` and before `Copyright`:
 
 Optional sections appearing before any required section (other than `Copyright`) will cause validation to fail.
 
+Note: `Open Questions` is a CPS-only section and is **not** allowed in CIPs. Unresolved design questions belong in the `Rationale: How does this CIP achieve its goals?` section, e.g. as an `### Open Questions` subsection.
+
 ## Link Checking (manual)
 
 Dead-link checking is **not** part of the GitHub workflow (external link checking from CI runners is unreliable due to bot protection and rate limiting). A standalone checker is provided for authors and editors to run out-of-band:

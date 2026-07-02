@@ -62,7 +62,9 @@ and at author/editor discretion. To use one, add it as an H2 below.
 ## References            — external documents, prior art, related CIPs/CPSs
 ## Appendices            — supplementary material
 ## Acknowledgements      — contributors and discussion participants
-## Open Questions        — unresolved design questions left for future discussion
+
+Note: 'Open Questions' is a CPS-only section. Unresolved design questions in a
+CIP belong in the Rationale section, e.g. as an '### Open Questions' subsection.
 -->
 
 ## Copyright

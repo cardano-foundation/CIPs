@@ -55,7 +55,6 @@ CIP_OPTIONAL_SECTIONS = {
     'Appendices',
     'Acknowledgments',
     'Acknowledgements',
-    'Open Questions',
 }
 
 # Required H3 subsections under "Path to Active"
@@ -844,7 +843,14 @@ def validate_sections(content: str) -> List[str]:
     allowed_sections_lower = required_sections_lower | optional_sections_lower
     for header in h2_headers:
         if header.lower() not in allowed_sections_lower:
-            errors.append(f"Unknown section: '{header}'. Only required and optional sections are allowed.")
+            if header.lower() == 'open questions':
+                errors.append(
+                    "'Open Questions' is not a valid CIP section (it is a CPS-only section). "
+                    "Move open questions into 'Rationale: How does this CIP achieve its goals?', "
+                    "e.g. as an '### Open Questions' subsection."
+                )
+            else:
+                errors.append(f"Unknown section: '{header}'. Only required and optional sections are allowed.")
 
     # Build a mapping from lowercase to expected capitalization
     expected_capitalization = {}
