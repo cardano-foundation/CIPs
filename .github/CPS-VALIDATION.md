@@ -13,6 +13,7 @@ These attempt to codify the guidance described within [CIP-9999 | Cardano Proble
 | File path | Must be in a `CPS-*` directory |
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
+| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CPS: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CPS: "?"` until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations
@@ -23,7 +24,7 @@ and no extra fields are allowed.
 
 | Field | Order | Validation Rules |
 | ----- | ----- | ---------------- |
-| **CPS** | 1 | Positive integer (`1`, `42`) or `?`/`??`/etc. for unassigned. No leading zeros. |
+| **CPS** | 1 | Positive integer (`1`, `42`) or quoted `"?"`/`"??"`/etc. for unassigned (an unquoted `?` fails — see file-level rules). No leading zeros. |
 | **Title** | 2 | 1-100 characters, no backticks (`` ` ``) |
 | **Category** | 3 | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | `Open`, `Solved`, or `Inactive` (optionally with reason, e.g., `Inactive (Superseded)`) |

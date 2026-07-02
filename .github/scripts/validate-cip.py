@@ -947,6 +947,30 @@ def validate_header_whitespace(raw_lines: List[str]) -> List[str]:
     return errors
 
 
+def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
+    """Validate that no header field has an unquoted '?' value.
+
+    A bare '?' is invalid YAML (it denotes an explicit key), which breaks
+    GitHub's frontmatter rendering: the header table is not displayed and
+    Discussions links are not clickable. Quoted values like ``CIP: "?"``
+    are fine and do not match here.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for line in raw_lines:
+        match = re.match(r'^([A-Za-z][A-Za-z -]*):\s+\?+\s*$', line)
+        if match:
+            field = match.group(1)
+            errors.append(
+                f"'{field}' has an unquoted '?' value; a bare '?' is invalid YAML and breaks "
+                f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
+                f'Use {field}: "?" until a number is assigned, or the assigned number.'
+            )
+    return errors
+
+
 def _strip_code(content: str) -> str:
     """Strip fenced and inline code spans from markdown content."""
     no_fences = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
@@ -1138,6 +1162,7 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
                 break
 
     if raw_lines:
+        errors.extend(validate_unquoted_question_marks(raw_lines))
         errors.extend(validate_header_whitespace(raw_lines))
 
     # Validate the directory name matches the assigned CIP number

@@ -84,7 +84,7 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
     processed_lines = []
     for line in frontmatter_lines:
         # Match lines like "CPS: ?" or "Category: ?" and quote the ?
-        if re.match(r'^[A-Za-z][A-Za-z ]*:\s+\?+\s*$', line):
+        if re.match(r'^[A-Za-z][A-Za-z -]*:\s+\?+\s*$', line):
             line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
         processed_lines.append(line)
 
@@ -471,6 +471,30 @@ def validate_sections(content: str) -> List[str]:
     return errors
 
 
+def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
+    """Validate that no header field has an unquoted '?' value.
+
+    A bare '?' is invalid YAML (it denotes an explicit key), which breaks
+    GitHub's frontmatter rendering: the header table is not displayed and
+    Discussions links are not clickable. Quoted values like ``CPS: "?"``
+    are fine and do not match here.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for line in raw_lines:
+        match = re.match(r'^([A-Za-z][A-Za-z -]*):\s+\?+\s*$', line)
+        if match:
+            field = match.group(1)
+            errors.append(
+                f"'{field}' has an unquoted '?' value; a bare '?' is invalid YAML and breaks "
+                f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
+                f'Use {field}: "?" until a number is assigned, or the assigned number.'
+            )
+    return errors
+
+
 def is_cps_file(file_path: Path) -> bool:
     """Check if file path indicates a CPS document."""
     path_str = str(file_path)
@@ -517,6 +541,9 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
             if re.match(r'^CPS:\s+0\d+', line):
                 errors.append("CPS number must not have leading zeros")
                 break
+
+    if raw_lines:
+        errors.extend(validate_unquoted_question_marks(raw_lines))
 
     # Validate header
     header_errors = validate_header(frontmatter)
