@@ -163,7 +163,7 @@ with transactions from previous eras.
 
 ### Acceptance criteria
 
-- [ ]  This CIP has been communicated to, reviewed by, and agreed upon by a representative group of community members
+- [ ]  This CIP has been agreed upon by a representative group of community members
 - [ ]  All major concerns have been addressed
 
 ### Implementation plan
