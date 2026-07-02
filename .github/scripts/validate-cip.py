@@ -1096,6 +1096,18 @@ def validate_directory_name(frontmatter: Dict, file_path: Path) -> List[str]:
     """
     errors = []
 
+    # Regardless of the CIP field, a numbered directory must be zero-padded to
+    # 4 digits (5+ digits without a leading zero for numbers >= 10000).
+    dir_match = re.fullmatch(r'CIP-(\d+)', file_path.parent.name)
+    if dir_match:
+        digits = dir_match.group(1)
+        if len(digits) != 4 and (len(digits) < 4 or digits.startswith('0')):
+            errors.append(
+                f"Directory name '{file_path.parent.name}' is not zero-padded to 4 digits. "
+                f"Expected: 'CIP-{int(digits):04d}'"
+            )
+            return errors
+
     cip_value = frontmatter.get('CIP')
     if cip_value is None:
         return errors  # Missing field is reported by header validation

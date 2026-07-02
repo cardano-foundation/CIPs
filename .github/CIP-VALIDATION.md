@@ -11,7 +11,7 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Validation | Description |
 | ---------- | ----------- |
 | File path | Must be in a `CIP-*` directory |
-| Directory name | If the `CIP` field has an assigned number (not `?`), the directory must be named `CIP-NNNN` where `NNNN` is the CIP number zero-padded to 4 digits (e.g., `CIP: 12` → `CIP-0012/`) |
+| Directory name | If the `CIP` field has an assigned number (not `"?"`), the directory must be named `CIP-NNNN` where `NNNN` is the CIP number zero-padded to 4 digits (e.g., `CIP: 12` → `CIP-0012/`). Even when the number is unassigned, any directory matching `CIP-<digits>` must be zero-padded to 4 digits (e.g. `CIP-032/` fails; `CIP-0032/` passes). |
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |

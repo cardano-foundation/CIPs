@@ -11,6 +11,7 @@ These attempt to codify the guidance described within [CIP-9999 | Cardano Proble
 | Validation | Description |
 | ---------- | ----------- |
 | File path | Must be in a `CPS-*` directory |
+| Directory name | If the `CPS` field has an assigned number (not `"?"`), the directory must be named `CPS-NNNN` where `NNNN` is the CPS number zero-padded to 4 digits (e.g., `CPS: 12` → `CPS-0012/`). Even when the number is unassigned, any directory matching `CPS-<digits>` must be zero-padded to 4 digits (e.g. `CPS-032/` fails; `CPS-0032/` passes). |
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CPS: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CPS: "?"` until a number is assigned. |
