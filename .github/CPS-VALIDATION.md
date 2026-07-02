@@ -73,3 +73,11 @@ They **must** appear after `Open Questions` and before `Copyright`:
 - `Acknowledgments` / `Acknowledgements`
 
 Optional sections appearing before any required section (other than `Copyright`) will cause validation to fail.
+
+## Link Checking (manual)
+
+Dead-link checking is **not** part of the GitHub workflow. See the [Link Checking section of the CIP validation rules](./CIP-VALIDATION.md#link-checking-manual) — the same standalone script covers CPS documents:
+
+```
+python3 .github/scripts/check-links.py CPS-0010
+```

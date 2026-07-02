@@ -89,3 +89,15 @@ They **must** appear after `Path to Active` and before `Copyright`:
 - `Acknowledgments` / `Acknowledgements`
 
 Optional sections appearing before any required section (other than `Copyright`) will cause validation to fail.
+
+## Link Checking (manual)
+
+Dead-link checking is **not** part of the GitHub workflow (external link checking from CI runners is unreliable due to bot protection and rate limiting). A standalone checker is provided for authors and editors to run out-of-band:
+
+```
+python3 .github/scripts/check-links.py                  # all CIP-*/README.md and CPS-*/README.md
+python3 .github/scripts/check-links.py CIP-0030         # one proposal directory
+python3 .github/scripts/check-links.py --internal-only  # skip external URLs (fast)
+```
+
+It verifies that relative links point to existing files, that `#anchor` fragments match a heading in the target markdown file, and that external `http(s)` URLs respond without an error. Bot-protected (`403`) and rate-limited (`429`) responses are reported as warnings rather than failures.
