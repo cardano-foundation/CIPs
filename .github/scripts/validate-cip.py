@@ -1007,8 +1007,9 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
             )
         elif not is_candidate and not exists:
             errors.append(
-                f"'Solution To' entry '{canonical}' references a CPS that has no folder; "
-                f"add '?' if it is still in PR"
+                f"'Solution To' entry '{canonical}' references a CPS that has no folder in this "
+                f"repository. Check the number is correct; you may mark it '{canonical}?' if it "
+                f"intentionally references a not-yet-merged CPS."
             )
 
     return errors
@@ -1055,8 +1056,9 @@ def validate_cross_references(content: str, frontmatter: Dict, file_path: Path) 
         if not _ref_folder_exists(repo_root, prefix, number):
             canonical = f"{prefix}-{number:04d}"
             errors.append(
-                f"Body references '{canonical}' but no such folder exists in the repository "
-                f"(use '{canonical}?' if it is still in PR)"
+                f"Body references '{canonical}' but no folder '{canonical}' exists in this repository. "
+                f"Check the number is correct; if this intentionally refers to a not-yet-merged "
+                f"proposal, you may optionally mark it '{canonical}?'."
             )
 
     return errors

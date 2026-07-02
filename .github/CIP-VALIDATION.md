@@ -16,7 +16,7 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
-| Body cross-references | `CIP-NNNN` / `CPS-NNNN` references in the body must point to an existing folder. Use `CIP-NNNN?` / `CPS-NNNN?` for a document that is still in PR. References inside fenced or inline code blocks are ignored. |
+| Body cross-references | `CIP-NNNN` / `CPS-NNNN` references in the body must point to an existing folder. References with a `?` suffix (`CIP-NNNN?`) are treated as intentional references to not-yet-merged proposals and are skipped; the `?` notation is optional, not mandated. References inside fenced or inline code blocks are ignored. |
 
 ## Header Field Validations
 
