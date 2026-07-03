@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: "?"
 Title: ?
 Category: ?
 Status: Open
