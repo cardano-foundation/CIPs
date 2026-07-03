@@ -88,7 +88,6 @@ For a newly registered pool:
 
 For an already registered pool:
 
-- Submitting a pool update certificate MUST NOT require pool retirement or deregistration.
 - The update certificate MAY change `poolPledgeDeposit`.
 - If the new `poolPledgeDeposit` is greater than the existing `poolPledgeDeposit`, the transaction MUST pay and lock the difference.
 - If the new `poolPledgeDeposit` is less than the existing `poolPledgeDeposit`, the transaction MUST refund the difference.
