@@ -134,7 +134,7 @@ Any proposed CIP responding to this CPS should address the following:
 
 - [DRep Voting Power Saturation Research, Project Catalyst Fund 14](https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research)
 
-- [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view?usp=drive_link)
+- [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view)
 
 ### Related CPS / CIP Discussions
 
