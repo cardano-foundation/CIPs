@@ -163,16 +163,18 @@ with transactions from previous eras.
 
 ### Acceptance criteria
 
-- [ ]  This CIP has been agreed upon by a representative group of community members
-- [ ]  All major concerns have been addressed
+- [ ] Ledger changes live on Mainnet and included in a hard fork.
+- [ ] Latest version of `cardano-cli` supports fee change specification by default.
+- [ ] At least 2 mainstream Cardano wallets support fee change specification.
 
 ### Implementation plan
 
-1. Update the formal ledger specification (`TxBody`, UTXO rule)
-2. Update node ledger implementation/CDDL once the formal spec is stable.
-3. Update wallet SDKs and tooling.
-4. Test net deployment 
-5. Main net deployment 
+- [x] Agreement upon this CIP by a representative group of community members
+- [ ] Update the formal ledger specification (`TxBody`, UTXO rule).
+- [ ] Update node ledger implementation/CDDL once the formal spec is stable.
+- [ ] Update wallet SDKs and tooling.
+- [ ] Testnet deployment: addressing all major concerns
+- [ ] Mainnet deployment: addressing all major concerns
 
 ## References
 
