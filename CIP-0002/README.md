@@ -817,7 +817,7 @@ During this phase, the algorithm:
     set](#state-random-improve).
 
   * incrementally populates the
-    [accumulated coin selection](#accumulated-coin-selection-1).
+    [accumulated coin selection](#state-random-improve).
 
 For each output of value **_v_**, the algorithm:
 
@@ -855,7 +855,7 @@ For each output of value **_v_**, the algorithm:
      of that output.
 
  4.  **Updates the [accumulated coin
-     selection](#accumulated-coin-selection-1)**:
+     selection](#state-random-improve)**:
 
       * Adds the _output_ to the _outputs_ field;
       * Adds the _improved UTxO selection_ to the _inputs_ field;
@@ -869,7 +869,7 @@ sooner.
 
 When both phases are complete, the algorithm terminates.
 
-The [accumulated coin selection](#accumulated-coin-selection-1) is returned
+The [accumulated coin selection](#state-random-improve) is returned
 to the caller as the [coin selection](#results) result.
 
 The [available UTxO set](#state-random-improve) is returned to the caller as the
