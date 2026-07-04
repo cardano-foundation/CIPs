@@ -936,12 +936,12 @@ total above the upper bound.
 
 > | **Title** | Self Organisation in Coin Selection |
 > |:--|:--|
-> | **Author** | [Edsko de Vries](http://www.edsko.net/) |
+> | **Author** | [Edsko de Vries](https://github.com/edsko) |
 > | **Year** | 2018 |
 > | **Location** | https://iohk.io/en/blog/posts/2018/07/03/self-organisation-in-coin-selection/ |
 >
 > This article introduces the [Random-Improve](#random-improve) coin selection
-> algorithm, invented by [Edsko de Vries](http://www.edsko.net/).
+> algorithm, invented by [Edsko de Vries](https://github.com/edsko).
 >
 > It describes the three principles of self-organisation that inform the
 > algorithm's design, and provides experimental evidence to demonstrate the
