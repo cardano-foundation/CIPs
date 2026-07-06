@@ -121,6 +121,18 @@ purposes of encouraging users to interact with it. Implementing nested transacti
 will allow building transaction batches that subsidize
 DApp-using sub-transactions in this way.
 
+**Efficient pay-per-use messages.** Consider an oracle: it currently posts data on-chain as a UTxO
+for smart contracts to reference, but this ties oracle updates to blockchain throughput, and since
+referencing a UTxO is free, the oracle can't get paid a microfee for its service (with CIP-159). An
+alternative is to put the message in a redeemer to share off-chain for use by smart contracts. This
+works today, but how would the oracle trustlessly enforce payment per use of the message? It would
+have to enforce ledger rules using scarce plutus execution units. The ideal solution is to use a
+sub-tx to pass the message because it can enforce payments directly *without consuming plutus
+budget*. The oracle is one use-case but this can be generalized to any off-chain pay-per-use message
+service. Critically, **this requires replayability of sub-txs**. Otherwise, it is first come first
+serve for these messages. See [Replayable sub-transactions](#replayable-sub-transactions) for
+further discussion.
+
 ## Specification
 
 For the Agda specification prototype built on top of the current ledger spec,
@@ -184,6 +196,21 @@ quantities not for individual transactions, but for the entire batch, including 
 
 8. The total size of the top-level transaction (including all its sub-transactions) must be less than the `maxTxSize`.
 This constraint is necessary to ensure efficient network operation since batches will be transmitted wholesale across the Cardano network.
+
+9. Sub-transactions *may* have an empty input set. The rule that every transaction must consume at
+   least one UTxO entry (introduced in the Shelley design specification, [Section
+3.4.2][replay-protection], to give certificates replay protection) applies only to the overall (aka
+aggregate) transaction. A sub-transaction with no inputs is therefore *replayable*: an identical
+copy of it may appear in any number of batches until its cancellation conditions are met (e.g. its
+validity interval expires, or a reference input it names has been spent). *This is intentional*; see
+[Replayable sub-transactions](#replayable-sub-transactions).
+
+10. The outputs of every transaction in a batch get their output references from the hash of the
+    *overall transaction* that carried them. Sub-txs are applied in order of the tx body list and
+before the top-level transaction, and output indices are deterministically derived from that same
+order. **This means that the overall tx must still have at least one UTxO input!** It is not safe
+for the overall tx to be replayable too, because two inclusions would carry the same hash and cause
+UTxO naming collisions.
 
 ### Using older PlutusV1 - PlutusV3 scripts
 
@@ -406,6 +433,38 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 - Sub-transaction supplies `guardScript1` for the top level execution, while `guardScript0` is supplied in the top level transaction witnesses. This serves as the example of irrelevance of where the scripts are coming from, as long as they are supplied by someone.
 
 - Both sub-transactions require execution of the same `guardScript0` script, which is executed only once with all the arguments supplied to it, instead of executing it as many times as it appears in sub-transactions.
+
+### Replayable sub-transactions
+
+Validity rule (9) relaxes, for sub-transactions only, the Shelley-era requirement that every
+transaction consumes at least one UTxO entry. That requirement exists to give certificates replay
+protection by piggy-backing on UTxO consumption ([section 3.4.2][replay-protection]). Applied to
+sub-transactions, it would also make each of them first-come-first-served: no two batches could ever
+include the same sub-transaction. 
+
+Consider a price feed oracle which is quoting a price of 1 ADA/DJED for 5 minutes. If many users
+want to use this oracle message, but a sub-tx is required to have a UTxO input, then only one user
+can use the message. The price is valid for 5 minutes so why can't many users use the same sub-tx
+for the next 5 minutes? Requiring separate sub-txs for each use kills the utility of this.
+
+With the requirement relaxed for sub-txs, the above use case becomes trivial.
+
+**There is risk here!** If a user submits a sub-tx without any kind of expiry or uniqueness
+condition, it can be replayed on-chain endlessly by a malicious entity. A sub-tx that withdraws ADA
+from an account without any replay-protection is effectively a blank check. But this is similar to
+using an always succeeding smart contract to protect funds. If we trust tx builders to not shoot
+themselves in the foot like that, why can't we trust them here too?
+
+The question is: whose responsibility is it to protect against this? The ledger or the sub-tx
+creator/signer? This CIP takes the stance that it is the signer's: anyone who wants one-shot
+semantics should include a UTxO input. The pay-per-use message passing use case is too important to
+prevent by making it a requirement.
+
+> [!IMPORTANT]
+> Only sub-txs should have this restriction lifted. The overall tx must still include at least 1
+> UTxO input. But if 2 of 3 sub-txs are missing UTxO inputs, that is allowed.
+
+[replay-protection]: https://cms.staking.rocks/uploads/2020_Cardano_delegation_design_spec_22aace74b6.pdf
 
 ### Comparison with Other Designs
 
