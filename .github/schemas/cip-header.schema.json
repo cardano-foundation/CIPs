@@ -68,7 +68,7 @@
         "oneOf": [
           {
             "type": "string",
-            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
+            "description": "Entry in format: 'Label: URL'"
           },
           {
             "type": "object",
@@ -92,7 +92,7 @@
           {
             "type": "string",
             "pattern": "^.+:\\s+https?://.+$",
-            "description": "Entry in format: 'Label: URL' (validated by the script with a friendly error message)"
+            "description": "Entry in format: 'Label: URL'"
           },
           {
             "type": "object",

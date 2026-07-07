@@ -69,20 +69,24 @@ with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
     CIP_HEADER_SCHEMA = json.load(f)
 
 
-def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Optional[List[str]]]:
+def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Optional[List[str]], Optional[str]]:
     """Parse YAML frontmatter from markdown content.
 
     Returns:
-        Tuple of (frontmatter_dict, remaining_content, raw_lines) or (None, content, None) if no frontmatter
+        Tuple of (frontmatter_dict, remaining_content, raw_lines, parse_error).
+        On success parse_error is None. When the '---' delimiters are present but
+        the enclosed YAML cannot be parsed (e.g. an impossible date like month
+        13), frontmatter is None and parse_error carries the underlying reason so
+        the caller can report it instead of a misleading "missing frontmatter".
     """
     # Check for frontmatter delimiters - must start with ---
     if not content.startswith('---'):
-        return None, content, None
+        return None, content, None, None
 
     # Find the closing delimiter (--- on its own line)
     lines = content.split('\n')
     if lines[0] != '---':
-        return None, content, None
+        return None, content, None, None
 
     # Find the closing ---
     end_idx = None
@@ -92,7 +96,7 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
             break
 
     if end_idx is None:
-        return None, content, None
+        return None, content, None, None
 
     # Extract frontmatter (lines between the two --- markers)
     frontmatter_lines = lines[1:end_idx]
@@ -114,13 +118,13 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
     try:
         frontmatter = yaml.safe_load(frontmatter_text)
         if frontmatter is None:
-            return None, content, None
-        return frontmatter, remaining_content, frontmatter_lines
-    except yaml.YAMLError:
-        return None, content, None
-    except ValueError:
+            return None, content, None, None
+        return frontmatter, remaining_content, frontmatter_lines, None
+    except yaml.YAMLError as e:
+        return None, content, None, str(e)
+    except ValueError as e:
         # Catches invalid date values that YAML tries to parse (e.g., month 13)
-        return None, content, None
+        return None, content, None, str(e)
 
 
 def _strip_fenced_code_blocks(content: str) -> str:
@@ -732,6 +736,96 @@ def _validate_discussions_has_pr(entries) -> List[str]:
     return errors
 
 
+def _schema_error_label(error) -> str:
+    """Human label for the location of a schema error (e.g. 'Category' or 'Authors entry 2')."""
+    path = list(error.absolute_path)
+    if not path:
+        return 'header'
+    parts = []
+    for p in path:
+        parts.append(f"entry {p + 1}" if isinstance(p, int) else str(p))
+    return ' '.join(parts)
+
+
+def _schema_type_name(t) -> str:
+    """Friendly name for a JSON Schema type (or list of types)."""
+    mapping = {
+        'object': 'a mapping', 'array': 'a list', 'string': 'text',
+        'integer': 'an integer', 'number': 'a number',
+        'boolean': 'true/false', 'null': 'null',
+    }
+    if isinstance(t, list):
+        return ' or '.join(_schema_type_name(x) for x in t)
+    return mapping.get(t, str(t))
+
+
+def humanize_schema_error(error) -> str:
+    """Turn a jsonschema ValidationError into a friendly, actionable message.
+
+    Inspects the failed keyword (``error.validator``) and the schema node that
+    failed (which carries the field ``description``). Falls back to the
+    library's default message for anything unrecognised, so no failure mode is
+    ever swallowed — it just may be less pretty.
+    """
+    label = _schema_error_label(error)
+    validator = error.validator
+    node = error.schema if isinstance(error.schema, dict) else {}
+    description = node.get('description')
+
+    if validator == 'enum':
+        allowed = ', '.join(repr(v) for v in error.validator_value)
+        return f"'{label}' must be one of: {allowed}. Got: {error.instance!r}"
+
+    if validator == 'type':
+        return f"'{label}' must be {_schema_type_name(error.validator_value)}. Got: {error.instance!r}"
+
+    if validator == 'minItems':
+        n = error.validator_value
+        unit = 'entry' if n == 1 else 'entries'
+        return f"'{label}' must contain at least {n} {unit}. Got: {error.instance!r}"
+
+    if validator in ('oneOf', 'anyOf'):
+        msg = f"'{label}' does not match any accepted form. Got: {error.instance!r}."
+        if description:
+            msg += f" Expected: {description}"
+        return msg
+
+    if validator == 'additionalProperties':
+        properties = node.get('properties', {})
+        unexpected = (
+            [k for k in error.instance if k not in properties]
+            if isinstance(error.instance, dict) else []
+        )
+        unexpected_str = ', '.join(repr(k) for k in unexpected) if unexpected else 'unknown field(s)'
+        return (
+            f"Unknown header field(s): {unexpected_str}. "
+            f"Allowed fields: {', '.join(properties.keys())}"
+        )
+
+    if validator == 'required':
+        missing = [
+            r for r in error.validator_value
+            if isinstance(error.instance, dict) and r not in error.instance
+        ]
+        missing_str = ', '.join(repr(m) for m in missing) if missing else 'a required field'
+        return f"Missing required header field(s): {missing_str}"
+
+    if validator in ('minLength', 'maxLength'):
+        limit = error.validator_value
+        length = len(error.instance) if isinstance(error.instance, str) else '?'
+        bound = 'at least' if validator == 'minLength' else 'at most'
+        return f"'{label}' must be {bound} {limit} characters long. Got {length}: {error.instance!r}"
+
+    if validator == 'pattern':
+        msg = f"'{label}' has an invalid format. Got: {error.instance!r}."
+        if description:
+            msg += f" Expected: {description}"
+        return msg
+
+    # Fallback: keep the library's message but anchor it to the field.
+    return f"'{label}': {error.message}"
+
+
 def validate_header(frontmatter: Dict) -> List[str]:
     """Validate the YAML frontmatter header for CIPs.
 
@@ -770,8 +864,8 @@ def validate_header(frontmatter: Dict) -> List[str]:
 
         jsonschema.validate(instance=frontmatter_for_schema, schema=CIP_HEADER_SCHEMA)
     except jsonschema.ValidationError as e:
-        error_path = '.'.join(str(p) for p in e.path) if e.path else 'root'
-        errors.append(f"Header validation error at '{error_path}': {e.message}")
+        # Translate the raw library error into a friendly, actionable message
+        errors.append(humanize_schema_error(e))
     except jsonschema.SchemaError as e:
         errors.append(f"Schema error: {e.message}")
 
@@ -1161,16 +1255,27 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
     except Exception as e:
         return False, [f"Error reading file: {e}"]
 
-    frontmatter, remaining_content, raw_lines = parse_frontmatter(content)
+    frontmatter, remaining_content, raw_lines, parse_error = parse_frontmatter(content)
     if frontmatter is None:
-        errors.append("Missing or invalid YAML frontmatter (must start with '---' and end with '---')")
+        if parse_error:
+            errors.append(
+                f"Could not parse the YAML frontmatter (between the '---' markers). "
+                f"Reason: {parse_error}"
+            )
+        else:
+            errors.append("Missing or invalid YAML frontmatter (must start with '---' and end with '---')")
         return False, errors
 
     # Check for leading zeros in CIP field (YAML loses this information)
     if raw_lines:
         for line in raw_lines:
-            if re.match(r'^CIP:\s+0\d+', line):
-                errors.append("CIP number must not have leading zeros")
+            m = re.match(r'^CIP:\s+(0\d+)', line)
+            if m:
+                stripped = m.group(1).lstrip('0') or '0'
+                errors.append(
+                    f"'CIP' number must not have leading zeros. Got: {m.group(1)!r}. "
+                    f"Use 'CIP: {stripped}', not 'CIP: {m.group(1)}'."
+                )
                 break
 
     if raw_lines:
