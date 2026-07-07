@@ -219,84 +219,6 @@ step-by-step descriptions of the computations involved.
 The [Reference Implementations](#reference-implementations) section provides
 links to reference implementations of each algorithm in various languages.
 
-### Contents
-
-* [Abstract](#abstract)
-* [Motivation](#motivation-why-is-this-cip-necessary)
-  * [Scope](#scope)
-  * [Background](#background)
-    * [What is Coin Selection?](#what-is-coin-selection)
-      * [Coin Selection in the Physical World](#coin-selection-in-the-physical-world)
-      * [Coin Selection in Cardano](#coin-selection-in-cardano)
-    * [Why is Coin Selection Non-Trivial?](#why-is-coin-selection-non-trivial)
-      * [The Transaction Size Limitation](#the-transaction-size-limitation)
-      * [The Problem of Dust](#the-problem-of-dust)
-      * [The Problem of Concurrency](#the-problem-of-concurrency)
-    * [Goals of Coin Selection Algorithms](#goals-of-coin-selection-algorithms)
-* [Specification](#specification)
-  * [Structure](#structure)
-  * [Definitions](#definitions)
-    * [Address](#address)
-    * [Coin Value](#coin-value)
-    * [Transaction](#transaction)
-    * [Transaction Input](#transaction-input)
-    * [Transaction Output](#transaction-output)
-    * [Spent Transaction Output](#spent-transaction-output)
-    * [Unspent Transaction Output](#unspent-transaction-output)
-    * [UTxO Set](#utxo-set)
-    * [Change Output](#change-output)
-    * [Dust Output](#dust-output)
-  * [Interface](#interface)
-    * [Parameters](#parameters)
-      * [Requested Output Set](#requested-output-set)
-      * [Initial UTxO Set](#initial-utxo-set)
-      * [Maximum Input Count](#maximum-input-count)
-    * [Results](#results)
-      * [Coin Selection](#coin-selection)
-      * [Remaining UTxO Set](#remaining-utxo-set)
-    * [Properties](#properties)
-      * [Coverage of Payments](#coverage-of-payments)
-      * [Correctness of Change](#correctness-of-change)
-      * [Conservation of UTxO](#conservation-of-utxo)
-      * [Conservation of Outputs](#conservation-of-outputs)
-    * [Failure Modes](#failure-modes)
-      * [UTxO Balance Insufficient](#utxo-balance-insufficient)
-      * [UTxO Not Fragmented Enough](#utxo-not-fragmented-enough)
-      * [UTxO Fully Depleted](#utxo-fully-depleted)
-      * [Maximum Input Count Exceeded](#maximum-input-count-exceeded)
-  * [Algorithms](#algorithms)
-    * [Largest-First](#largest-first)
-      * [State](#state)
-        * [Available UTxO List](#available-utxo-list)
-        * [Unpaid Output List](#unpaid-output-list)
-        * [Accumulated Coin Selection](#accumulated-coin-selection)
-      * [Computation](#computation)
-    * [Random-Improve](#random-improve)
-      * [Cardinality](#cardinality-1)
-      * [State](#state-1)
-        * [Available UTxO Set](#available-utxo-set)
-        * [Accumulated Coin Selection](#accumulated-coin-selection-1)
-      * [Computation](#computation-1)
-        * [Phase 1: Random Selection](#phase-1-random-selection)
-        * [Phase 2: Improvement](#phase-2-improvement)
-      * [Termination](#termination-1)
-* [Rationale: how does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
-  * [Motivating Principles](#motivating-principles)
-    * [LargestFirst](#largest-first-2)
-    * [Random-Improve](#random-improve-2)
-      * [Principle 1: Dust Management](#principle-1-dust-management)
-      * [Principle 2: Change Management](#principle-2-change-management)
-      * [Principle 3: Performance Management](#principle-3-performance-management)
-  * [External Resources](#external-resources)
-    * [Self Organisation in Coin Selection](#self-organisation-in-coin-selection)
-* [Path to Active](#path-to-active)
-  * [Acceptance Criteria](#acceptance-criteria)
-  * [Implementation Plan](#implementation-plan)
-    * [Reference Implementations](#reference-implementations)
-      * [Largest-First](#largest-first-1)
-      * [Random-Improve](#random-improve-1)
-* [Copyright](#copyright)
-
 ### Definitions
 
 This section defines common terms that are used throughout this document.
@@ -445,8 +367,8 @@ _common interface_.
 
 At the most fundamental level, a coin selection algorithm is a _mathematical
 function_ that when applied to a [requested output
-set](#requested-output-set) and an [initial UTxO set](#initial-utxo-set),
-will produce a [coin selection](#coin-selection): the basis for a
+set](#parameters) and an [initial UTxO set](#parameters),
+will produce a [coin selection](#results): the basis for a
 [transaction](#transaction) in a UTxO-based blockchain.
 
 This section describes:
@@ -474,7 +396,7 @@ All coin selection functions accept the following parameters:
 
     A [UTxO set](#utxo-set) from which the coin selection algorithm can select
     entries, to cover payments listed in the [requested output
-    set](#requested-output-set).
+    set](#parameters).
 
     In the context of a wallet, this parameter would normally be assigned with
     the wallet's complete [UTxO set](#utxo-set), giving the coin selection
@@ -484,7 +406,7 @@ All coin selection functions accept the following parameters:
 
     An _upper bound_ on the number of UTxO entries that the coin selection
     algorithm is permitted to select from the [initial UTxO
-    set](#initial-utxo-set).
+    set](#parameters).
 
     This parameter is necessary for blockchains that impose an upper limit on
     the size of transactions.
@@ -501,7 +423,7 @@ All coin selection functions produce the following result values:
     It is a record with three fields:
 
       * A set of **_inputs_**, equivalent to a subset of the
-        [initial UTxO set](#initial-utxo-set).
+        [initial UTxO set](#parameters).
 
         From the point of view of a _wallet_, this represents the value that
         has been selected from the wallet in order to cover the total payment
@@ -520,11 +442,11 @@ All coin selection functions produce the following result values:
  2. **Remaining UTxO Set**
 
     The _remaining UTxO set_ is a subset of the [initial UTxO
-    set](#initial-utxo-set).
+    set](#parameters).
 
     It represents the set of values that remain after the coin selection
     algorithm has removed values to pay for entries in the [requested output
-    set](#requested-output-set).
+    set](#parameters).
 
     In the context of a _wallet_, if a coin selection algorithm is applied to
     the wallet's _complete_ UTxO set, then the _remaining_ UTxO set represents
@@ -539,8 +461,8 @@ selection functions and the _results_ they are allowed to produce.
 ##### Coverage of Payments
 
 This property states that the total value of _inputs_ in the resulting [coin
-selection](#coin-selection) result is sufficient to _cover_ the total value of
-the [requested output set](#requested-output-set).
+selection](#results) result is sufficient to _cover_ the total value of
+the [requested output set](#parameters).
 
 In particular:
 
@@ -550,13 +472,13 @@ Where:
 
   * **_v_**<sub>requested</sub>
 
-    is the total value of the [requested output set](#requested-output-set)
+    is the total value of the [requested output set](#parameters)
 
 
   * **_v_**<sub>selected</sub>
 
     is the total value of the _inputs_ field of the [coin
-    selection](#coin-selection) result.
+    selection](#results) result.
 
 ##### Correctness of Change
 
@@ -572,29 +494,29 @@ Where:
   * **_v_**<sub>change</sub>
 
     is the total value of the _change_ field of the [coin
-    selection](#coin-selection) result.
+    selection](#results) result.
 
   * **_v_**<sub>requested</sub>
 
-    is the total value of the [requested output set](#requested-output-set)
+    is the total value of the [requested output set](#parameters)
 
   * **_v_**<sub>selected</sub>
 
     is the total value of the _inputs_ field of the [coin
-    selection](#coin-selection) result.
+    selection](#results) result.
 
 ##### Conservation of UTxO
 
 This property states that every entry in the [initial UTxO
-set](#initial-utxo-set) is included in _either_ the inputs set of the generated
-[coin selection](#coin-selection), _or_ in the [remaining UTxO
-set](#remaining-utxo-set), but _not both_.
+set](#parameters) is included in _either_ the inputs set of the generated
+[coin selection](#results), _or_ in the [remaining UTxO
+set](#results), but _not both_.
 
   * If a UTxO entry _is_ selected by the coin selection algorithm, it is
-    included in the [coin selection](#coin-selection) inputs set.
+    included in the [coin selection](#results) inputs set.
 
   * If a UTxO entry is _not_ selected by the coin selection algorithm, it is
-    included in the [remaining UTxO set](#remaining-utxo-set).
+    included in the [remaining UTxO set](#results).
 
 The following laws hold:
 
@@ -611,24 +533,24 @@ Where:
 
   * **_U_**<sub>initial</sub>
 
-    is the [initial UTxO set](#initial-utxo-set).
+    is the [initial UTxO set](#parameters).
 
   * **_U_**<sub>remaining</sub>
 
-    is the [remaining UTxO set](#remaining-utxo-set).
+    is the [remaining UTxO set](#results).
 
   * **_U_**<sub>selected</sub>
 
-    is the value of the _inputs_ field of the [coin selection](#coin-selection)
+    is the value of the _inputs_ field of the [coin selection](#results)
     result.
 
 ##### Conservation of Outputs
 
-This property states that the [requested output set](#requested-output-set)
-is _conserved_ in the [coin selection](#coin-selection) result.
+This property states that the [requested output set](#parameters)
+is _conserved_ in the [coin selection](#results) result.
 
-In particular, the _outputs_ field of the [coin selection](#coin-selection)
-result should be _equal to_ the [requested output set](#requested-output-set).
+In particular, the _outputs_ field of the [coin selection](#results)
+result should be _equal to_ the [requested output set](#parameters).
 
 #### Failure Modes
 
@@ -637,27 +559,27 @@ There are a number of ways in which a coin selection algorithm can fail:
   * **UTxO Balance Insufficient**
 
     This failure occurs when the total value of the entries within the [initial
-    UTxO set](#initial-utxo-set) (the amount of money _available_) is _less
+    UTxO set](#parameters) (the amount of money _available_) is _less
     than_ the the total value of all entries in the [requested output
-    set](#requested-output-set) (the amount of money _required_).
+    set](#parameters) (the amount of money _required_).
 
   * **UTxO Not Fragmented Enough**
 
     This failure occurs when the _number_ of entries in the [initial UTxO
-    set](#initial-utxo-set) is _smaller than_ the number of entries in the
-    [requested output set](#requested-output-set), for algorithms that impose
+    set](#parameters) is _smaller than_ the number of entries in the
+    [requested output set](#parameters), for algorithms that impose
     the restriction that a single UTxO entry can only be used to pay for _at
     most one_ output.
 
   * **UTxO Fully Depleted**
 
     This failure occurs if the algorithm depletes all entries from the [initial
-    UTxO set](#initial-utxo-set) _before_ it is able to pay for all outputs in
-    the [requested output set](#requested-output-set).
+    UTxO set](#parameters) _before_ it is able to pay for all outputs in
+    the [requested output set](#parameters).
 
     This can happen _even if_ the total value of entries within the [initial
-    UTxO set](#initial-utxo-set) is _greater than_ the total value of all
-    entries in the [requested output set](#requested-output-set), due to
+    UTxO set](#parameters) is _greater than_ the total value of all
+    entries in the [requested output set](#parameters), due to
     various restrictions that coin selection algorithms impose on themselves
     when selecting UTxO entries.
 
@@ -666,7 +588,7 @@ There are a number of ways in which a coin selection algorithm can fail:
     This failure occurs when another input must be selected by the algorithm in
     order to continue making progress, but doing so will increase the size of
     the resulting selection beyond an acceptable limit, specified by the
-    [maximum input count](#maximum-input-count) parameter.
+    [maximum input count](#parameters) parameter.
 
 ### Algorithms
 
@@ -683,8 +605,8 @@ There are two main algorithms used by Cardano Wallet:
 
 In general, Cardano Wallet gives _priority_ to the
 [Random-Improve](#random-improve) algorithm, as experimental evidence shows
-that it performs better at [minimising dust](#goals) and maintaining a UTxO set
-with [useful outputs](#goals). (See [Self Organisation in Coin
+that it performs better at [minimising dust](#goals-of-coin-selection-algorithms) and maintaining a UTxO set
+with [useful outputs](#goals-of-coin-selection-algorithms). (See [Self Organisation in Coin
 Selection](#self-organisation-in-coin-selection) for more details.)
 
 However, in rare cases, the [Random-Improve](#random-improve) algorithm may
@@ -696,9 +618,9 @@ fail to produce a result. In such cases, Cardano Wallet will fall back to the
 The **Largest-First** coin selection algorithm considers UTxO set entries
 in _descending order of value_, from largest to smallest.
 
-When applied to a set of [requested outputs](#requested-output-set), the
+When applied to a set of [requested outputs](#parameters), the
 algorithm repeatedly selects entries from the [initial UTxO
-set](#initial-utxo-set) until the total value of selected entries is _greater
+set](#parameters) until the total value of selected entries is _greater
 than or equal to_ the total value of requested outputs.
 
 The name of the algorithm is taken from the idea that the **largest** UTxO
@@ -709,14 +631,14 @@ entry is always selected **first**. Specifically:
 > unselected entry **_u_<sub>2</sub>** with value **_v_<sub>2</sub>** where
 > **_v_<sub>2</sub>** > **_v_<sub>1</sub>**.
 
-##### State
+##### State (Largest-First)
 
 At all stages of processing, the algorithm maintains the following pieces of
 state:
 
  1. **Available UTxO List**
 
-    This is initially equal to the [initial UTxO set](#initial-utxo-set),
+    This is initially equal to the [initial UTxO set](#parameters),
     sorted into _descending order of coin value_.
 
     The _head_ of the list is always the remaining UTxO entry with the _largest
@@ -735,27 +657,27 @@ The algorithm proceeds according to the following sequence of steps:
 
   * **Step 1**
 
-    If the [available UTxO list](#available-utxo-list) is _empty_:
+    If the [available UTxO list](#state-largest-first) is _empty_:
 
       * Terminate with a [UTxO Balance
         Insufficient](#utxo-balance-insufficient) error.
 
-    If the [available UTxO list](#available-utxo-list) is _not empty_:
+    If the [available UTxO list](#state-largest-first) is _not empty_:
 
       * Remove an UTxO entry from the head of the [available UTxO
-        list](#available-utxo-list) and add it to the [selected UTxO
+        list](#state-largest-first) and add it to the [selected UTxO
         set](#selected-utxo-set).
 
   * **Step 2**
 
     Compare the total size **_n_**<sub>selected</sub> of the [selected UTxO
     set](#selected-utxo-set) with the [maximum input
-    count](#maximum-input-count) **_n_**<sub>max</sub>.
+    count](#parameters) **_n_**<sub>max</sub>.
 
       * If **_n_**<sub>selected</sub> > **_n_**<sub>max</sub> then:
 
         * Terminate with a [Maximum Input Count
-          Exceeded](#maximum-input-count-exceeded) error.
+          Exceeded](#parameters-exceeded) error.
 
       * If **_n_**<sub>selected</sub> ≤ **_n_**<sub>max</sub> then:
 
@@ -765,7 +687,7 @@ The algorithm proceeds according to the following sequence of steps:
 
     Compare the total value **_v_**<sub>selected</sub> of the [selected UTxO
     set](#selected-utxo-set) to the total value **_v_**<sub>requested</sub> of
-    the [requested output set](#requested-output-set):
+    the [requested output set](#parameters):
 
       * If **_v_**<sub>selected</sub> < **_v_**<sub>requested</sub> then go to
         step 1.
@@ -774,13 +696,13 @@ The algorithm proceeds according to the following sequence of steps:
 
   * **Step 4**
 
-    Return a [coin selection](#coin-selection) result where:
+    Return a [coin selection](#results) result where:
 
       * The _inputs_ set is equal to the [selected UTxO
         set](#selected-utxo-set).
 
       * The _outputs_ set is equal to the [requested output
-        set](#requested-output-set).
+        set](#parameters).
 
       * If **_v_**<sub>selected</sub> > **_v_**<sub>requested</sub> then:
 
@@ -796,16 +718,16 @@ The algorithm proceeds according to the following sequence of steps:
 The **Random-Improve** coin selection algorithm works in _two phases_:
 
   * In the **first phase**, the algorithm iterates through each of the
-    [requested outputs](#requested-output-set) in _descending order of coin
+    [requested outputs](#parameters) in _descending order of coin
     value_, from _largest_ to _smallest_. For each output, the algorithm
     repeatedly selects entries _at random_ from the [initial UTxO
-    set](#initial-utxo-set), until each requested output has been associated
+    set](#parameters), until each requested output has been associated
     with a set of UTxO entries whose _total value_ is enough to pay for that
     ouput.
 
   * In the **second phase**, the algorithm attempts to _expand_ each
     existing UTxO selection with _additional_ values taken at random from the
-    [initial UTxO set](#initial-utxo-set), to the point where the total value
+    [initial UTxO set](#parameters), to the point where the total value
     of each selection is as close as possible to _twice_ the value of its
     associated output.
 
@@ -838,27 +760,27 @@ _approximately equal_ to the value of the output itself:
 
 The Random-Improve algorithm imposes the following cardinality restriction:
 
-  * Each entry from the [initial UTxO set](#initial-utxo-set) is used to pay
+  * Each entry from the [initial UTxO set](#parameters) is used to pay
     for _at most one_ output from the [requested output
-    set](#requested-output-set).
+    set](#parameters).
 
 As a result of this restriction, the algorithm will fail with a [UTxO Not
 Fragmented Enough](#utxo-not-fragmented-enough) error if the number of entries
-in the [initial UTxO set](#initial-utxo-set) is _smaller than_ the number of
-entries in the [requested output set](#requested-output-set).
+in the [initial UTxO set](#parameters) is _smaller than_ the number of
+entries in the [requested output set](#parameters).
 
-##### State
+##### State (Random-Improve)
 
 At all stages of processing, the algorithm maintains the following pieces of
 state:
 
  1. **Available UTxO Set**
 
-    This is initially equal to the [initial UTxO set](#initial-utxo-set).
+    This is initially equal to the [initial UTxO set](#parameters).
 
  2. **Accumulated Coin Selection**
 
-    The accumulated coin selection is a [coin selection](#coin-selection) where
+    The accumulated coin selection is a [coin selection](#results) where
     all fields are initially equal to the _empty set_.
 
 ##### Computation
@@ -868,14 +790,14 @@ The algorithm proceeds in two phases.
 - **Phase 1: Random Selection**
 
 In this phase, the algorithm iterates through each of the [requested
-outputs](#requested-output-set) in descending order of coin value, from
+outputs](#parameters) in descending order of coin value, from
 largest to smallest.
 
 For each output of value **_v_**, the algorithm repeatedly selects entries at
-**random** from the [available UTxO set](#available-utxo-set), until the _total
+**random** from the [available UTxO set](#state-random-improve), until the _total
 value_ of selected entries is greater than or equal to **_v_**. The selected
 entries are then _associated with_ that output, and _removed_ from the
-[available UTxO set](#available-utxo-set).
+[available UTxO set](#state-random-improve).
 
 This phase ends when _every_ output has been associated with a selection of
 UTxO entries.
@@ -892,10 +814,10 @@ During this phase, the algorithm:
   * processes outputs in _ascending order of coin value_.
 
   * continues to select values from the [available UTxO
-    set](#available-utxo-set).
+    set](#state-random-improve).
 
   * incrementally populates the
-    [accumulated coin selection](#accumulated-coin-selection-1).
+    [accumulated coin selection](#state-random-improve).
 
 For each output of value **_v_**, the algorithm:
 
@@ -907,7 +829,7 @@ For each output of value **_v_**, the algorithm:
 
  2.  **Attempts to improve upon the existing UTxO selection** for that output,
      by repeatedly selecting additional entries at random from the [available
-     UTxO set](#available-utxo-set), stopping when the selection can be
+     UTxO set](#state-random-improve), stopping when the selection can be
      improved upon no further.
 
      A selection with value **_v_<sub>1</sub>** is considered to be an
@@ -926,32 +848,32 @@ For each output of value **_v_**, the algorithm:
       * **Condition 3**: when counting cumulatively across all outputs
         considered so far, we have not selected more than the _maximum_ number
         of UTxO entries specified by [Maximum Input
-        Count](#maximum-input-count).
+        Count](#parameters).
 
  3.  **Creates a _change value_** for the output, equal to the total value
      of the _improved UTxO selection_ for that output minus the value **_v_**
      of that output.
 
  4.  **Updates the [accumulated coin
-     selection](#accumulated-coin-selection-1)**:
+     selection](#state-random-improve)**:
 
       * Adds the _output_ to the _outputs_ field;
       * Adds the _improved UTxO selection_ to the _inputs_ field;
       * Adds the _change value_ to the _change values_ field.
 
 This phase ends when every output has been processed, **or** when the
-[available UTxO set](#available-utxo-set) has been exhausted, whichever occurs
+[available UTxO set](#state-random-improve) has been exhausted, whichever occurs
 sooner.
 
 ##### Termination
 
 When both phases are complete, the algorithm terminates.
 
-The [accumulated coin selection](#accumulated-coin-selection-1) is returned
-to the caller as the [coin selection](#coin-selection) result.
+The [accumulated coin selection](#state-random-improve) is returned
+to the caller as the [coin selection](#results) result.
 
-The [available UTxO set](#available-utxo-set) is returned to the caller as the
-[remaining UTxO set](#remaining-utxo-set) result.
+The [available UTxO set](#state-random-improve) is returned to the caller as the
+[remaining UTxO set](#results) result.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -1014,12 +936,12 @@ total above the upper bound.
 
 > | **Title** | Self Organisation in Coin Selection |
 > |:--|:--|
-> | **Author** | [Edsko de Vries](http://www.edsko.net/) |
+> | **Author** | [Edsko de Vries](https://well-typed.com/people/edsko/) |
 > | **Year** | 2018 |
 > | **Location** | https://iohk.io/en/blog/posts/2018/07/03/self-organisation-in-coin-selection/ |
 >
 > This article introduces the [Random-Improve](#random-improve) coin selection
-> algorithm, invented by [Edsko de Vries](http://www.edsko.net/).
+> algorithm, invented by [Edsko de Vries](https://well-typed.com/people/edsko/).
 >
 > It describes the three principles of self-organisation that inform the
 > algorithm's design, and provides experimental evidence to demonstrate the
