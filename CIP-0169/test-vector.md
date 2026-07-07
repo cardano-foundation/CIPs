@@ -133,6 +133,9 @@ authorship. This is a plain (non-extended) Ed25519 key.
 
 ## Live Examples (Preview testnet)
 
+For each of these examples, these can be viewed in [Transaction Studio](https://www.transaction.studio/)
+and via the governance tab, CIP-169 validation can be seen.
+
 ### Governance actions
 
 | Example | Transaction | Gov action id |
