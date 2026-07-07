@@ -212,15 +212,19 @@ re-signed, and resubmitted.
 
 ## How-to Recreate Examples
 
-The examples were generated with standard tooling.
-The steps below recreate any one of them.
+Each example is two artifacts with a one-way dependency:
 
-### 1. Assemble `example.jsonld`'s `body`
+- the **metadata document** (`*.jsonld`), whose `body.onChain` describes the on-chain effect
+- the **on-chain effect** (a proposal, vote, or certificate) that carries an `anchor` pointing back at that document.
+
+### Part A — the metadata document
+
+#### 1. Assemble `example.jsonld`'s `body`
 
 Author the document with its inlined merged `@context` (downstream body vocabulary +
 `onChain`), then take a copy containing only `@context` and `body`.
 
-### 2. Canonicalize the `body`
+#### 2. Canonicalize the `body`
 
 Using a [RDF Dataset Canonicalization (URDNA2015)](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/)
 tool — e.g. the [JSON-LD Playground](https://json-ld.org/playground/) or the `jsonld` npm
@@ -228,28 +232,62 @@ package — produce the canonical N-Quads of `{ "@context": …, "body": … }`.
 ends in a newline. Because the context uses `@vocab` inside `onChain`, every on-chain field
 appears in the output; if a field is missing, the binding is incomplete.
 
-### 3. Hash the canonicalized `body`
+#### 3. Hash the canonicalized `body`
 
 Blake2b-256 the canonical N-Quads. This is the "canonicalized body hash" listed per-example
 and is the payload the authors sign.
 
-### 4. Each author witnesses the body hash
+#### 4. Each author witnesses the body hash
 
 For a `witnessAlgorithm` of `ed25519`, sign the body hash from step 3 with the author's key
 (see [Authors](#authors)). Put the result in `authors[].witness.signature`. For a multi-author
 document, every author signs the *same* body hash.
 
-### 5. Complete `example.jsonld`
+#### 5. Complete `example.jsonld`
 
 Add `hashAlgorithm: "blake2b-256"` and the populated `authors` array back to the document.
 
-### 6. Hash `example.jsonld`
+#### 6. Hash `example.jsonld`
 
 Blake2b-256 the whole file's content — this is the "file content hash" that goes on-chain as
 the metadata anchor hash alongside the document's URI.
 
-### 7. Validate
+#### 7. Validate
 
 Validate the document against the schema (see [Validation](./README.md#validation)) and, for a
 full check, re-run steps 2–4 and confirm each `signature` verifies against its `publicKey` and
 the recomputed body hash.
+
+### Part B — the on-chain effect (Preview)
+
+The Preview effects were built with [`cardano-cli`](https://github.com/IntersectMBO/cardano-cli). The resulting text envelopes are checked in beside each document in
+[`examples/preview/`](./examples/preview/): `*.action` (proposals), `*.vote` (votes), and
+`*.cert` (certificates), each with a human-readable `*.json` view.
+
+#### 1. Reuse the document's parameters
+
+Take the exact values encoded in `body.onChain` — deposit, return / reward account, governance
+action contents, DRep or committee credential, target gov action id, vote decision — so the
+submitted effect is byte-for-byte the effect the authors signed over. Everything in `onChain`
+maps to a `cardano-cli` argument.
+
+#### 2. Supply the anchor
+
+The anchor is the *only* field not mirrored in `onChain`. Point it at the finished document: the
+IPFS URL where it is pinned plus its file content hash from [Part A step 6](#6-hash-examplejsonld).
+
+#### 3. Create the effect
+
+Use the `cardano-cli` command to build the action, vote or certificate.
+
+#### 4. Build, sign, and submit the transaction
+
+Wrap the `.action` / `.vote` / `.cert` into a transaction with `cardano-cli`.
+The resulting transaction hash and gov action id are the values listed in the [Live Examples](#live-examples-preview-testnet) tables.
+
+#### 5. Confirm the binding holds
+
+Fetch the document from its on-chain anchor and run the
+[Verification Process](./README.md#verification-process): the anchor hash must equal the
+document's file content hash, and `body.onChain` (with the self-referential anchor dropped) must
+equal the effect re-derived from the submitted transaction.
