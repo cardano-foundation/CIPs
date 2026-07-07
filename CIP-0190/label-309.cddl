@@ -1,0 +1,314 @@
+; Proof-of-Existence record (Cardano transaction metadata label 309) — CDDL grammar (RFC 8610).
+;
+; This file contains two grammars:
+;
+;   1. The PoE RECORD BODY — the reassembled canonical-CBOR bytes obtained
+;      after byte-concatenating the array of <= 64-byte chunks stored on chain
+;      under Cardano transaction-metadata label 309. The chunk-array transport
+;      wrapper is reassembled before structural validation and is not modelled
+;      here. The reassembled body is plain deterministic CBOR — it is not
+;      itself a ledger transaction_metadatum, and its fields are not subject
+;      to the ledger's 64-byte string cap, which the transport wrapper alone
+;      satisfies.
+;
+;   2. The LEAVES-LIST DOCUMENT — the normative OFF-CHAIN canonical-CBOR
+;      container (format id "cardano-poe-merkle-leaves-v1") that carries the
+;      ordered leaf list behind a `merkle[i]` commitment. It travels at the
+;      content-addressed URIs listed in `merkle[i].uris`, never on chain.
+;
+; Both grammars model only the PERMISSIVE structural superset of well-formed
+; shapes: the closed map shapes and the core byte lengths. They do NOT express
+; cross-field invariants (e.g. enc key-path exclusivity, the items-or-merkle
+; presence rule, algorithm-dependent nonce length, Merkle leaf-count binding)
+; and they do NOT express registry membership of algorithm identifiers — every
+; identifier rule below is the open `tstr` type, deliberately not a closed
+; enum, because the algorithm registries are authoritative for the accepted
+; value set. Those constraints, and the precise typed error code a conformant
+; verifier emits, are the second, typed-error pass over the decoded structure
+; specified in the normative prose. A generic CDDL tool consuming this file
+; confirms only that a candidate matches the permissive superset; full
+; conformance requires the typed pass.
+;
+; Integer range and exactness. Every numeric field this CIP defines — `v`,
+; `merkle[i].leaf_count`, the Argon2id `params` values `m` / `t` / `p`, and
+; the leaves-list document's `leaf_count` — is a CBOR unsigned integer pinned
+; to the range 0 .. 2^32 - 1 (`uint32` below; `v` is further pinned to the
+; literal 1, both `leaf_count` fields to >= 1). Implementations MUST decode
+; and compare these values as EXACT integers: an implementation whose native
+; number type loses integer precision (for example above 2^53) MUST decode
+; through an exact-width path rather than a lossy float, and a value outside
+; the pinned range MUST be rejected with the field's typed code rather than
+; wrapped, truncated, or coerced.
+
+; ===========================================================================
+; Part 1 — the PoE record body (on-chain under label 309, reassembled)
+; ===========================================================================
+
+; A conformant PoE record MUST carry at least one of `items` (>= 1 entry) or
+; `merkle` (>= 1 entry); a record with both arrays absent (or both present but
+; empty) is rejected as SCHEMA_EMPTY_RECORD. The invariant is enforced in the
+; typed pass, not at the CDDL layer.
+;
+; Extension-key tolerance: keys matching the `^x-.+` or `^[a-z]+-.+` patterns
+; are accepted; unknown keys outside either pattern — and keys containing
+; control characters, which the typed pass rejects regardless of regex match —
+; are rejected as SCHEMA_UNKNOWN_FIELD. The CDDL admits any
+; extension-key text string under the open `extension-key` rule below.
+;
+; An extension value is any CBOR value admitted by this CIP's canonical
+; (deterministic) encoding profile: integers, byte strings, text strings,
+; arrays, maps, and the simple values false/true/null. Floats and semantic
+; tags are excluded by the canonical profile itself (rejected as
+; MALFORMED_CBOR at decode), so the exclusion is not repeated here. The
+; record body travels under label 309 as an opaque whole-body chunk array,
+; so the ledger constrains only that transport wrapper — extension values,
+; like every other field in the body, carry no 64-byte string cap. Total
+; record size is bounded through the transport by the ledger's maxTxSize,
+; so no field-level byte ceiling is imposed.
+extension-value =
+    { * extension-value => extension-value }
+  / [ * extension-value ]
+  / int
+  / bstr
+  / tstr
+  / bool
+  / null
+
+poe-record = {
+  poe-common,
+  ? "items": [ 1* item-entry ],
+  ? "crit":  [ 1* tstr ],
+  * extension-key => extension-value
+}
+
+poe-common = (
+  "v": 1,
+  ? "merkle": [ 1* merkle-commit ],
+  ? "supersedes": bytes32,
+  ? "sigs": [ 1* sig-entry ],
+)
+
+extension-key = tstr .regexp "^x-.+"
+              / tstr .regexp "^[a-z]+-.+"
+
+item-entry = {
+  "hashes": hash-map,
+  ? "uris": [ 1* uri ],
+  ? "enc": enc,
+}
+
+; A non-empty CBOR map keyed by a content-hash algorithm identifier (text string
+; from the content-hash registry) with the 32-byte digest as the value. Map-key
+; uniqueness (RFC 8949 §3.1) makes duplicate algorithms structurally impossible.
+hash-map = { + content-hash-alg => bytes32 }
+
+; A merkle-commit binds the record to an ordered leaf list via a registered
+; list-commitment algorithm. The list-commitment registry is disjoint
+; from the content-hash registry: a `merkle[i].alg` text string MUST be a value
+; from the list-commitment registry and MUST NOT be a content-hash identifier.
+; `leaf_count` is REQUIRED, MUST be 1 or greater (a zero or out-of-range value
+; is rejected as SCHEMA_MERKLE_LEAF_COUNT_INVALID by the typed pass), and binds
+; the on-chain commitment to the off-chain leaves-list size (a disagreement
+; with the fetched leaves-list is SCHEMA_MERKLE_LEAF_COUNT_MISMATCH).
+merkle-commit = {
+  "alg":        merkle-commit-alg,
+  "root":       bytes32,
+  "leaf_count": uint32,
+  ? "uris":     [ 1* uri ],
+}
+
+; `enc` is a choice between the scheme-1 envelope shape and an opaque envelope.
+; The choice exists so the grammar never forecloses the degrade-to-opaque rule
+; (the unknown-envelope rule of the validation section): an envelope whose
+; `scheme` / `kem` / `aead` names an identifier the implementation does not
+; support is NOT validated against the scheme-1 shape rules — it is parsed as
+; opaque bounded metadata (generic decode limits only) and dispositioned per
+; that rule (ENC_UNSUPPORTED in the public reading; the specific UNSUPPORTED_*
+; code in the recipient role and strict sealed-crypto mode). The opaque
+; alternative is a verifier escape hatch, never a producer surface, and it
+; MUST NOT weaken validation of supported envelopes: when `scheme`, `kem`, and
+; `aead` are all supported identifiers, the typed pass MUST hold the envelope
+; to the scheme-1 shape and key-path rules — an envelope that fails them is
+; rejected with its typed code, never reclassified as opaque.
+enc = enc-scheme-1 / enc-opaque
+
+; The scheme-1 shape is itself a permissive superset: a single map rule admits
+; both the recipient-slot key path and the passphrase key path. Cross-field
+; invariants are NOT expressed in the CDDL; the typed pass enforces them.
+; Specifically:
+;   - if `slots` is present, then `kem` and `slots_mac` are REQUIRED, and
+;     `passphrase` is FORBIDDEN;
+;   - if `passphrase` is present, then `kem` / `slots` / `slots_mac` are
+;     FORBIDDEN;
+;   - exactly one of `slots` or `passphrase` MUST be present
+;     (ENC_NO_KEY_PATH and ENC_EXCLUSIVITY_VIOLATION cover the absence /
+;     conflict cases).
+enc-scheme-1 = {
+  "scheme": 1,
+  "aead":   aead-alg,
+  "nonce":  bstr,
+  ? "kem":        kem-alg,
+  ? "slots":      [ 1* slot ],
+  ? "slots_mac":  bytes32,
+  ? "passphrase": passphrase-block,
+}
+
+; The opaque reading of an envelope under an unsupported identifier: `scheme`
+; is the only structurally required key, and every other entry is any key/value
+; pair the canonical encoding profile admits (the `extension-value` set above),
+; subject to the generic decode bounds. Scheme-1 slot shapes, byte lengths, and
+; key-path rules apply only in the typed pass over a supported envelope; an
+; unknown-identifier envelope receives no shape validation beyond this rule.
+enc-opaque = {
+  "scheme": uint,
+  * tstr => extension-value
+}
+
+; A slot is one of two KEM-discriminated shapes; `enc.kem` selects which.
+; The CDDL admits either shape structurally — the typed pass binds the
+; chosen shape to `enc.kem` and emits ENC_SLOT_INVALID_SHAPE for a slot whose
+; encapsulation fields do not match `enc.kem`, and the "no mixing" rule
+; (every slot in one envelope shares one `enc.kem`) is enforced there. `wrap`
+; is the KEM-independent 48-byte ChaCha20-Poly1305-wrapped CEK in both shapes.
+slot = classical-slot / hybrid-slot
+
+; enc.kem = "x25519": the per-slot X25519 ephemeral public key + wrapped CEK.
+classical-slot = {
+  "epk":  bytes32,
+  "wrap": bytes48,
+}
+
+; enc.kem = "mlkem768x25519": the 1120-byte X-Wing ciphertext plus the wrapped
+; CEK. There is NO `epk` — the X25519 ephemeral is the trailing 32 bytes of the
+; X-Wing ciphertext inside `kem_ct`. The typed pass enforces the exact length
+; (KEM_CT_LENGTH_MISMATCH).
+hybrid-slot = {
+  "kem_ct": bstr .size 1120,
+  "wrap":   bytes48,
+}
+
+; The `passphrase-block` rule pins `alg` as the open `kdf-alg` type (consistent
+; with `merkle-commit-alg`, `aead-alg`, `kem-alg`): the CDDL accepts any text
+; string and the typed pass enforces registry membership, emitting
+; `ENC_PASSPHRASE_ALG_UNSUPPORTED` for an unknown identifier
+; rather than a generic CDDL schema-mismatch. The `params` map is pinned as a
+; CLOSED map for the registered alg:
+;   - "argon2id" — params is exactly { m: uint, t: uint, p: uint }
+; Extra keys in `params` MUST be rejected as `SCHEMA_UNKNOWN_FIELD`.
+passphrase-block = {
+  "alg":    kdf-alg,
+  "salt":   bstr .size (16..64),
+  "params": { "m": uint32, "t": uint32, "p": uint32 },
+}
+
+; A sig-entry is a closed CBOR map. "cose_sign1" is REQUIRED and carries the
+; CBOR-encoded COSE_Sign1 produced by the signer as a single byte string.
+; "cose_key" is OPTIONAL and, when present, carries the CBOR-encoded COSE_Key
+; for the CIP-30 wallet path as a single byte string; it is omitted for the
+; in-signature `kid` (identity-key) path. The field names describe what the
+; bytes are on the wire: `cose_sign1` = COSE_Sign1, `cose_key` = COSE_Key.
+; No other keys are permitted. The normative path-selection rules make
+; path 1 (32-byte protected-header `kid`) and path 2 (`cose_key`
+; side-channel) mutually exclusive at the wire level;
+; SIG_ENTRY_KID_COSE_KEY_CONFLICT rejects records carrying both.
+sig-entry = {
+  "cose_sign1":  bstr,
+  ? "cose_key":  bstr,
+}
+
+; A uri is one absolute URI in a single text string. UTF-8 well-formedness is
+; guaranteed by the canonical CBOR decode; the URI shape rules (absolute per
+; RFC 3986 §4.3, no fragment, closed scheme set {ar://, ipfs://}, per-scheme
+; body shape) are enforced in the typed pass, which emits INVALID_URI. The
+; rule carries no length cap: the whole-body transport satisfies the ledger's
+; string cap, so a long ipfs:// CID-plus-path URI is a single tstr.
+uri = tstr
+
+bytes32 = bstr .size 32
+
+; uint32 is the pinned range of every numeric field in this CIP: an unsigned
+; integer representable in 4 bytes (0 .. 2^32-1), handled as an exact integer
+; by every implementation. See "Integer range and exactness" above.
+uint32 = uint .size 4
+
+; bytes48 is the wrap length under enc.scheme: 1: 32-byte CEK + 16-byte
+; ChaCha20-Poly1305 tag. The per-slot wrap is KEM-independent — identical for
+; `x25519` and `mlkem768x25519` slots. A future enc.scheme profile with
+; a different wrap AEAD MAY redefine this constant.
+bytes48 = bstr .size 48
+
+; Algorithm identifier strings are CBOR text strings (major type 3). The CDDL
+; type is deliberately the open `tstr` rather than a closed enum: the algorithm
+; registries are authoritative for the set of accepted values, and a verifier MUST
+; emit the typed code from those registries (`UNSUPPORTED_HASH_ALG`,
+; `UNSUPPORTED_MERKLE_COMMIT_ALG`, `UNSUPPORTED_AEAD_ALG`, `UNSUPPORTED_KEM_ALG`,
+; `ENC_PASSPHRASE_ALG_UNSUPPORTED`) for any unrecognised value — not a generic
+; CDDL schema-mismatch error. Conformant validators perform the registry-membership
+; check in the domain pass, after the CDDL pass has confirmed the field is a
+; CBOR text string of any value.
+content-hash-alg   = tstr  ; see content-hash registry  (e.g. "sha2-256", "blake2b-256")
+merkle-commit-alg  = tstr  ; see list-commitment registry (e.g. "rfc9162-sha256")
+aead-alg           = tstr  ; see AEAD registry
+kem-alg            = tstr  ; see KEM registry
+kdf-alg            = tstr  ; see KDF registry
+
+; ---------------------------------------------------------------------------
+; Cross-field invariants (prose-only, NOT in CDDL).
+;
+; The `enc-scheme-1` rule admits any combination of `kem` / `slots` /
+; `slots_mac` / `passphrase` keys at the CDDL layer; the following cross-field
+; invariants are enforced by the typed-error pass, not the grammar:
+;
+;   - If `slots` is present, then `kem` and `slots_mac` are REQUIRED
+;     (ENC_KEM_REQUIRED, ENC_SLOTS_MAC_REQUIRED) and `passphrase` is FORBIDDEN
+;     (ENC_EXCLUSIVITY_VIOLATION).
+;   - If `passphrase` is present, then `kem`, `slots`, and `slots_mac` are all
+;     FORBIDDEN (ENC_EXCLUSIVITY_VIOLATION).
+;   - Exactly one of `slots` or `passphrase` MUST be present; both absent →
+;     ENC_NO_KEY_PATH.
+;   - `slots_mac` present without `slots` → ENC_SLOTS_REQUIRED.
+;
+; Implementer guidance (non-normative). Implementations MAY consume this CDDL
+; directly with a generic CDDL library; conformant typed-error reporting
+; requires a second pass over the decoded structure to emit the precise codes
+; (ENC_EXCLUSIVITY_VIOLATION, ENC_NO_KEY_PATH, ENC_KEM_REQUIRED,
+; EXTENSION_UNSUPPORTED_CRITICAL, SCHEMA_UNKNOWN_FIELD,
+; SCHEMA_MERKLE_LEAF_COUNT_INVALID, SIG_ENTRY_INVALID_SHAPE,
+; SIG_ENTRY_KID_COSE_KEY_CONFLICT, SIG_PRIVATE_KEY_LEAKED, and so on). A
+; single-pass implementation that emits a generic CDDL-mismatch error is
+; conformant to the wire format but is NOT conformant to the typed-error
+; contract; conformant verifiers MUST emit the precise codes.
+; ---------------------------------------------------------------------------
+
+; ===========================================================================
+; Part 2 — the off-chain leaves-list document
+; ===========================================================================
+;
+; A single canonical-CBOR map encoded under the same RFC 8949 §4.2.1
+; deterministic-encoding profile as the record body. This CBOR container is
+; the ONLY normative leaves-list form: there is no JSON projection or
+; alternative serialisation, so two implementations exchanging a leaves-list
+; always exchange byte-comparable documents.
+;
+; `format` is the exact document-format identifier; a well-typed `format`
+; carrying an unrecognised value is SCHEMA_MERKLE_LEAVES_FORMAT_UNSUPPORTED,
+; while bytes that are not this container at all are
+; SCHEMA_MERKLE_LEAVES_MALFORMED. `tree_alg` MUST equal the `alg` of the
+; on-chain `merkle[i]` entry the document is verified against. `root` makes
+; the document self-checking offline: a verifier recomputes the root from
+; `leaves` and rejects any mismatch, and rejects the record with
+; MERKLE_ROOT_MISMATCH when the recomputed root does not byte-equal the
+; on-chain `merkle[i].root`. `leaf_count` MUST equal the length of `leaves`
+; and the on-chain `merkle[i].leaf_count` (either disagreement is
+; SCHEMA_MERKLE_LEAF_COUNT_MISMATCH). `leaf_alg` is an informative annotation
+; naming how the leaves were produced; it carries NO verification semantics
+; and a verifier MUST NOT reject a document for any `leaf_alg` value.
+
+leaves-list = {
+  "format":     "cardano-poe-merkle-leaves-v1",
+  "tree_alg":   tstr,                ; registered list-commitment algorithm id
+  "root":       bytes .size 32,
+  "leaves":     [ + bytes .size 32 ],
+  "leaf_count": 1..4294967295,       ; 1 .. 2^32-1; MUST equal the length of `leaves`
+  ? "leaf_alg": tstr,
+}
