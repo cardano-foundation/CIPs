@@ -180,28 +180,22 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
-      {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
+    "title": "CIP-0169 Example: Parameter Change (Preview)",
+    "abstract": "Update maxBlockBodySize parameter from 90112 to 98304 bytes on the Preview testnet.",
+    "motivation": "Demonstrates CIP-0169 binding of a protocol parameter update, including the previous governance action id.",
+    "rationale": "The bound protocol_param_update and gov_action_id make replay against a different parameter change machine-detectable.",
     "onChain": {
-      "deposit": "100000000000",
-      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
+      "deposit": "1000000000",
+      "reward_account": "stake_test1uz6ljatyc7w52z44hskd5pu5cvw7qemwz6re3ux4pmdqumcn2qyrx",
       "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
-          }
-        ],
+        "tag": "parameter_change_action",
+        "protocol_param_update": {
+          "max_block_body_size": 98304
+        },
+        "gov_action_id": {
+          "transaction_id": "2a2dc37b22939d3ae7395c8a409d4d0625201c88926d641d6f4441c3287e39ba",
+          "gov_action_index": "0"
+        },
         "policy_hash": "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
       }
     }
@@ -212,15 +206,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "1ffb8f4b566e87fbeba24436a13e3b723d963979e244fe9fc16a72a5a2d622bbc86a28d65c29f8f39800b230f8ea8053d68bea09d508abac07ea80c5feaeae0f"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "9fa01f936f0eb75ed5dc70e018f98e3f92393c421a4cfd99af8ffae2330e8da46432a4f2107452c2d89e95bd7a3db728a0fd55ad6ad5b2da7f002066616f4d02"
+        "signature": "d47a582e4bcf9acf7c300599afb7401f951217bb0f180a74c1096cdfc4a7a2c332b93f9e05c9c6644e7c1cfbc99e70a531954d02d433171d4d5bcfa92db51106"
       }
     }
   ]

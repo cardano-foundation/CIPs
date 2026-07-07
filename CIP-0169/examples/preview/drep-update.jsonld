@@ -4,10 +4,10 @@
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
     "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
-    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
+    "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
-      "@id": "CIP108:body",
+      "@id": "CIP119:body",
       "@context": {
         "references": {
           "@id": "CIP100:references",
@@ -19,10 +19,11 @@
             "uri": "CIP100:reference-uri"
           }
         },
-        "title": "CIP108:title",
-        "abstract": "CIP108:abstract",
-        "motivation": "CIP108:motivation",
-        "rationale": "CIP108:rationale",
+        "paymentAddress": "CIP119:paymentAddress",
+        "givenName": "CIP119:givenName",
+        "objectives": "CIP119:objectives",
+        "motivations": "CIP119:motivations",
+        "qualifications": "CIP119:qualifications",
         "comment": "CIP100:comment",
         "externalUpdates": {
           "@id": "CIP100:externalUpdates",
@@ -180,29 +181,16 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
-      {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
+    "givenName": "Ryan Williams (CIP-0169 Preview Example)",
+    "paymentAddress": "addr_test1qr0ghja2nh9qp5zpss3p5wdkav07afsyl9k5vnuw8ssysna4l96kf3uag59tt0pvmgrefscaupnku958nrcd2rk6pehsd045pm",
+    "objectives": "Updated profile: demonstrate CIP-0169 on-chain binding for DRep update certificates on the Preview testnet.",
+    "motivations": "Setting a metadata anchor on a previously anchor-less DRep registration.",
+    "qualifications": "Author of CIP-0169; registered DRep on the Preview testnet.",
     "onChain": {
-      "deposit": "100000000000",
-      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-      "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
-          }
-        ],
-        "policy_hash": "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
+      "tag": "update_drep",
+      "drep_credential": {
+        "tag": "pubkey_hash",
+        "value": "03ccae794affbe27a5f5f74da6266002db11daa6ae446aea783b972d"
       }
     }
   },
@@ -212,15 +200,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "1ffb8f4b566e87fbeba24436a13e3b723d963979e244fe9fc16a72a5a2d622bbc86a28d65c29f8f39800b230f8ea8053d68bea09d508abac07ea80c5feaeae0f"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "9fa01f936f0eb75ed5dc70e018f98e3f92393c421a4cfd99af8ffae2330e8da46432a4f2107452c2d89e95bd7a3db728a0fd55ad6ad5b2da7f002066616f4d02"
+        "signature": "684d27e49e3f0f9a7344ae9eac58e64adb27fbffbed30fb6a7b31fad1c0445c002bb746652ea10783822cedb84a76bdf8e46ed9cf1dcc4d253f9ce345db0bb0e"
       }
     }
   ]

@@ -1,0 +1,26 @@
+{
+    "anchor": {
+        "dataHash": "831056012804ea41a1ecd1e3ca0dbd9c58a46550942f2dc5dce93e033e31d4e2",
+        "url": "ipfs://bafkreigd2wq5hfu5rz5p572ncybogjmtjpiljwahquscuuzilugmcrsvii"
+    },
+    "deposit": 1000000000,
+    "governance action": {
+        "contents": [
+            {
+                "govActionIx": 0,
+                "txId": "2a2dc37b22939d3ae7395c8a409d4d0625201c88926d641d6f4441c3287e39ba"
+            },
+            {
+                "maxBlockBodySize": 98304
+            },
+            "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
+        ],
+        "tag": "ParameterChange"
+    },
+    "return address": {
+        "credential": {
+            "keyHash": "b5f97564c79d450ab5bc2cda0794c31de0676e168798f0d50eda0e6f"
+        },
+        "network": "Testnet"
+    }
+}

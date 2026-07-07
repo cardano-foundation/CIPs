@@ -251,8 +251,9 @@ This CIP is considered **Active** when:
   - [cardano-governance-metadata](https://github.com/amanita-labs/cardano-governance-metadata)
 - [ ] At least three governance verification tool implements on-chain comparison
   - [transaction.studio](https://www.transaction.studio/)
-- [ ] Examples are available
-  - Examples via [/examples/](./examples/)
+- [x] Examples are available
+  - Illustrative examples and test vectors via [/examples/](./examples/) and [test-vector.md](./test-vector.md)
+  - Live [Preview testnet examples](./test-vector.md#live-examples-preview-testnet) with verbatim signed documents in [/examples/preview/](./examples/preview/)
 
 ### Implementation Plan
 

@@ -1,13 +1,8 @@
 # Test Vector for CIP-0169
 
 Here we provide worked examples binding governance metadata to its on-chain effect via
-the [`onChain`](./README.md#the-onchain-property) property, together with the reproducible
+the [`onChain`](./README.md#the-onchain-property) property, with the reproducible
 hashes and author signatures for each.
-
-Unlike the other examples in sibling CIPs, **every example here carries a populated
-`authors` witness**. This is deliberate: the security guarantee of CIP-0169 is that an
-author signature covers a `body` which *includes* `onChain`, so an example with an empty
-`authors` array would not demonstrate the standard at all.
 
 ## Common Context
 
@@ -18,10 +13,9 @@ See [cip-0169.common.jsonld](./cip-0169.common.jsonld).
 
 This file is a **fragment**: it defines only the `onChain` extension plus the optional
 CIP-100 fields (`references`, `comment`, `externalUpdates`). A real document merges it with
-its downstream body vocabulary (CIP-108/119/136). The example files below therefore inline a
-*merged* `@context` (e.g. CIP-108 `title`/`abstract`/… **and** `onChain`) — this is what an
-actual on-chain document looks like, and it is required so the downstream prose is covered by
-the author signature.
+its downstream body vocabulary (CIP-108/119/136).
+
+The example files below therefore inline a *merged* `@context` (e.g. CIP-108 `title`/`abstract`/… **and** `onChain`) this is what an actual on-chain document looks like, and it is required so the downstream prose is covered by the author signature.
 
 Inside `onChain`, the context maps the well-known CIP-0116 governance terms explicitly and
 adds a `@vocab` default for everything else:
@@ -39,8 +33,8 @@ adds a `@vocab` default for everything else:
 ```
 
 The explicit mappings keep the well-known structure self-documenting with precise IRIs. The
-`@vocab` default guarantees that **every** other property reachable inside `onChain` — at any
-nesting depth, including future CIP-0116 fields — still resolves to an IRI and is therefore
+`@vocab` default guarantees that **every** other property reachable inside `onChain`, at any
+nesting depth, including future CIP-0116 fields, still resolves to an IRI and is therefore
 preserved during canonicalization and covered by the signature. Together they satisfy the
 requirement that no term be silently dropped, without having to enumerate every CIP-0116
 property by hand.
@@ -54,16 +48,16 @@ See [cip-0169.common.schema.json](./cip-0169.common.schema.json).
 
 Keys used for the `authors` property, provided here so the signatures below can be recreated.
 
-### Author 1 — shared canonical keyset
+### Author 1
 
 This is the same keyset published by [CIP-100](../CIP-0100/), [CIP-108](../CIP-0108/test-vector.md#author)
-and [CIP-136](../CIP-0136/), reused here so hashes are cross-checkable.
+and [CIP-136](../CIP-0136/).
 
 - Private extended signing key (hex): `105d2ef2192150655a926bca9cccf5e2f6e496efa9580508192e1f4a790e6f53de06529129511d1cacb0664bcf04853fdc0055a47cc6d2c6d205127020760652`
 - Public verification key (hex): `7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a`
 - Public key hash (hex): `0fdc780023d8be7c9ff3a6bdc0d8d3b263bd0cc12448c40948efbf42`
 
-### Author 2 — second signer (for the multi-author example)
+### Author 2
 
 A second key, used only by [Treasury Withdrawal](#treasury-withdrawal) to demonstrate joint
 authorship. This is a plain (non-extended) Ed25519 key.
@@ -71,49 +65,31 @@ authorship. This is a plain (non-extended) Ed25519 key.
 - Private key seed (hex): `00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff`
 - Public verification key (hex): `3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b`
 
-Each author's `witness.signature` is an Ed25519 signature over the Blake2b-256 hash of the
-canonicalized `body` (the "canonicalized body" hash listed per-example below), exactly as
-described in [CIP-100 Hashing and Signatures](../CIP-0100/README.md#hashing-and-signatures).
-
-## Examples
-
-For each example: the **file content hash** (Blake2b-256 of the whole `.jsonld`, this is what
-goes on-chain as the metadata anchor hash) and the **canonicalized body hash** (Blake2b-256 of
-the RDF-canonicalized `body`, this is what the authors sign).
-
 ### Governance Actions
 
 `onChain` is a [CIP-0116 `ProposalProcedure`](./README.md#for-governance-actions) (with `anchor` omitted).
 
 #### Parameter Change
 
-[parameter-change.jsonld](./examples/parameter-change.jsonld) — `parameter_change_action` binding a `max_block_body_size` update.
-- File content hash: `b94f944d080a8b412fdd001a24e8c2a214314e46872988d9a11ca9921b7172de`
-- Canonicalized body hash: `95328398f4e5ce1312040583aa8ec6654aa22244869389769e599dc87877e0b0`
+[parameter-change.jsonld](./examples/parameter-change.jsonld) — `parameter_change_action`.
+- File content hash: `519e82090dfe6a0156bd700fd8cba8aa821fd5ea2103be9b36896efea58a5ffe`
+- Canonicalized body hash: `1b5315408e7b9d28920eb3acc1e0a3c54028ca7e2914ab8947be10c7ebbc5592`
 
 #### Treasury Withdrawal
 
 [treasury-withdrawal.jsonld](./examples/treasury-withdrawal.jsonld) — `treasury_withdrawals_action`.
-**Two authors** sign the same body, and a `references` entry is included: this is the
-multi-author scenario from the [Motivation](./README.md#multi-author-misattachment) — both
-signatures are bound to the exact `rewards` destination.
-- File content hash: `cc09ff83285133765146a2a25a83d08670078e08dbf36441add5d7007561ddf5`
-- Canonicalized body hash: `5d95174f81b3ced148e4439df90272d19b5ab66a09282489fd36ed298e1804ba`
+- File content hash: `b43eeecfcc96e15aff04031bd89cacbaa8a8320d2e686d57442b4a11bfa44468`
+- Canonicalized body hash: `271919c67490332f838362794907860f84a1121d809677d307ec120c23a248fb`
 
 #### Info Action
 
-[info-action.jsonld](./examples/info-action.jsonld) — `info_action` (no protocol effect).
-Shows that `deposit` and `reward_account` are the only required `ProposalProcedure` fields.
+[info-action.jsonld](./examples/info-action.jsonld) — `info_action`.
 - File content hash: `aa81de55faabe0b83c8259dead46c0d620cc1196553db09fe8762b69a7486257`
 - Canonicalized body hash: `3c7d3967df872ecf1a15925f9b8c0481922663560d7b4166a928a59995406ecb`
 
 #### New Constitution
 
-[new-constitution.jsonld](./examples/new-constitution.jsonld) — `new_constitution`. This is
-the one action where a nested `anchor` is **retained**: `Constitution.anchor` points to the
-constitution document (a separate artifact that is itself part of the on-chain effect), so it
-is *not* the self-referential anchor prohibited elsewhere. See the
-[Rationale](./README.md#why-exclude-the-self-referential-anchor).
+[new-constitution.jsonld](./examples/new-constitution.jsonld) — `new_constitution`.
 - File content hash: `ae733cc4879586038c72cc8320b66e749095af0cfdfa9ec864aec4e57d207173`
 - Canonicalized body hash: `aa5ee2ba2efafc92bb34cb4a790b5ca4532947e0f8335e16272a6756750b9e41`
 
@@ -139,7 +115,7 @@ is *not* the self-referential anchor prohibited elsewhere. See the
 
 #### DRep Registration
 
-[drep-registration.jsonld](./examples/drep-registration.jsonld) — `register_drep` (`drep_credential` + `coin` deposit), with a CIP-119 profile body.
+[drep-registration.jsonld](./examples/drep-registration.jsonld) — `register_drep`.
 - File content hash: `f421a41ec0081c16a9b23e75e71f808de4c3e933254a529dfb26d205e031c783`
 - Canonicalized body hash: `ffa5db2a497b8b51cc1302def50366aacb3a30aee77a8806d9c762fd0d50ef43`
 
@@ -155,27 +131,56 @@ is *not* the self-referential anchor prohibited elsewhere. See the
 - File content hash: `3e16fb0d2f6885cb9ad0f2be6417d2162bcd6f57ea0cf1d4da6932ed2dd1ecd6`
 - Canonicalized body hash: `b9521ad29fc7bb79f6f790053a7f97a412047323c01c183f0790327ebfbbf309`
 
+## Live Examples (Preview testnet)
+
+### Governance actions
+
+| Example | Transaction | Gov action id |
+|---|---|---|
+| [`info_action`](./examples/preview/info-action.jsonld) | `3ff13ad85117e9cde53d67dada19eb80a9c7971efdee95d73020f3b3c467d8b5` | `gov_action18lcn4kz3zl5umefavldd5x0tsz5u09c7lhhft4esyrem83r8mz6sq6faha5` |
+| [`treasury_withdrawals_action`](./examples/preview/treasury-withdrawal.jsonld) (2 authors) | `c0efa6a3419b67769001f5446ee34bdf779f707b0abe53593da933ab674b4b07` | `gov_action1crh6dg6pndnhdyqp74zxac6tmame7urmp2l9xkfa4ye6ke6tfvrsqfjanrz` |
+| [`parameter_change_action`](./examples/preview/parameter-change.jsonld) | `8bd727c7aab758be609958b9bdaf84096b8f30bc7cfa0956d6a3ddc91b816550` | `gov_action130tj03a2kavtucyetzummtuyp94c7v9u0naqj4kk50wujxupv4gqqurtz7k` |
+| [`new_constitution`](./examples/preview/new-constitution.jsonld) | `1173b9b3bf1c606a6217be2f94260b85c9f03ef301ae0a6cf4956cc82ef7900f` | `gov_action1z9emnvalr3sx5cshhchegfstshylq0hnqxhq5m85j4kvsthhjq8sqd5unce` |
+
+### Vote and certificates
+
+| Example | Transaction | Subject |
+|---|---|---|
+| [DRep vote](./examples/preview/vote.jsonld) (`VotingProcedures`, `yes`) | `dd878dc48fc7c194d657114605c4a56d5473d8f4c44f278803692c24ac7e2e7a` | DRep `03ccae79…` voting on the `info_action` above |
+| [`register_drep`](./examples/preview/drep-registration.jsonld) | `947a2d1646dc32535067c70b3dffecba4740f8f4e3578de5d72565fc926d3ead` | fresh DRep `fa128333…` |
+| [`update_drep`](./examples/preview/drep-update.jsonld) | `16d782f99c418d644df691e6801942681adc871256a49175bd18b7a6fed676f3` | existing DRep `03ccae79…` (anchor was null, now set) |
+
+### Anchors
+
+Each anchor hash is the Blake2b-256 of the verbatim document in
+[`examples/preview/`](./examples/preview/) and matches the anchor hash recorded on-chain.
+
+| Document | Anchor URL | Anchor hash (= file content hash) |
+|---|---|---|
+| info-action | `ipfs://bafkreifs6tuhffydrble3v6dk4lnkeagz4fygmk5st763utxlttbtskme4` | `13a7e4b127b18ad62f39ca6d72cb73d7bcd0eab00a0a5a1dc65a25fab84f223f` |
+| treasury-withdrawal | `ipfs://bafkreibjzs4nmng3hi7hfgr3pvskiqw3dtvyeoqhheeh7lnh64putd3mua` | `b85c007f9838ffe73e3fa6878db3e2ec2b2e9d901037782b1e384453174fc85a` |
+| parameter-change | `ipfs://bafkreigd2wq5hfu5rz5p572ncybogjmtjpiljwahquscuuzilugmcrsvii` | `831056012804ea41a1ecd1e3ca0dbd9c58a46550942f2dc5dce93e033e31d4e2` |
+| new-constitution | `ipfs://bafkreigmyzlwehwlxmpq6tncxjnbuw4nydu5y2prmh3b26optsmxv4frey` | `25c51a11d0e946c1959e851e3a6413bb89734be624da4673fd83a08524ec6648` |
+| vote | `ipfs://bafkreihniyugf4bq5h22bymtpnl23n75g5p2cq562cfznuvx74z4wirrpm` | `7f95c810df8e66cc9bccc2dd08303342b99a3600326c75939da4009dc498d1e2` |
+| drep-registration | `ipfs://bafkreihnd5vsgmuvjbgv74cytzbpfspfx62i2h6zcjydm4bt2fbhte5n74` | `c92199160c7915a92c3e3e7469a61912a8f5c706d31162b2a5f5a1f73db6a405` |
+| drep-update | `ipfs://bafkreifgycv6octwh7x3pyjmsh6sqkj6f2vznjyoydsjjqphaiemdk2yca` | `1bd1c918a0f7684320299c1b3999006ec8ba56f785dbebd3b0455681501e8b7d` |
+
 ## Negative Vectors
 
-These are documents that a correct CIP-0169 implementation **must reject**. They demonstrate
-the two distinct failure modes the CIP guards against.
+These are documents that a correct CIP-0169 implementation **must reject**.
+They demonstrate the two distinct failure modes the CIP guards against.
 
 ### 1. Forbidden self-referential anchor (schema failure)
 
 [invalid/forbidden-anchor.jsonld](./examples/invalid/forbidden-anchor.jsonld) — a
 `ProposalProcedure` that wrongly embeds an `anchor` pointing back at this metadata document.
-This is caught **statically** by the schema: `ProposalProcedure` sets
-`unevaluatedProperties: false`, so validation reports
-
-```
-instancePath: '/body/onChain', keyword: 'unevaluatedProperties', unevaluatedProperty: 'anchor'
-```
 
 ### 2. On-chain mismatch / metadata replay (comparison failure)
 
 This failure mode **cannot** be caught by schema validation — the document is well-formed and
-its author signatures are valid. It is exactly what CIP-0169 exists to detect, and is caught at
-step 4 (Compare) of the [Verification Process](./README.md#verification-process):
+its author signatures are valid.
+
+It is exactly what CIP-0169 exists to detect, and is caught at step 4 (Compare) of the [Verification Process](./README.md#verification-process):
 
 1. Take [treasury-withdrawal.jsonld](./examples/treasury-withdrawal.jsonld) unchanged — same
    prose, same two valid author signatures, `onChain.gov_action.rewards` pays
@@ -187,9 +192,28 @@ step 4 (Compare) of the [Verification Process](./README.md#verification-process)
 4. A CIP-0169 verifier compares `body.onChain` against the actual on-chain action, finds the
    `rewards` destination differs, and refuses to display the metadata as endorsed.
 
+### 3. Real-world incomplete binding (superseded Preview actions)
+
+The same failure mode was observed live on Preview, by accident. The first submissions of the
+[treasury withdrawal](#live-examples-preview-testnet) and parameter change (2026-07-03) omitted
+`policy_hash` from `onChain.gov_action`. On-chain, the ledger attaches the constitution's
+guardrails script hash to both `treasury_withdrawals_action` and `parameter_change_action`, so a
+CIP-0169 verifier comparing `body.onChain` against the action correctly flagged
+`gov_action.policy_hash does not match this transaction` — even though both documents were
+well-formed, schema-valid, and carried valid author signatures.
+
+| Superseded action | Transaction | Gov action id |
+|---|---|---|
+| `treasury_withdrawals_action` (2 authors) | `8c5ec528313a2997aed822e44bc5251721bbdc9bbc30e6bbf6914bf65c1ac4a4` | `gov_action1330v22p38g5e0tkcytjyh3f9zusmhhymhscwdwlkj99lvhq6cjjqqezhfxq` |
+| `parameter_change_action` | `8009f3a24731320244568273a4d7eed1b436067c91aeb98bdb2872e45ef5b1d6` | `gov_action1sqyl8gj8xyeqy3zksfe6f4lw6x6rvpnujxhtnz7m9pewghh4k8tqq4gpgsj` |
+
+Both were corrected by adding `policy_hash: fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64`,
+re-signed, and resubmitted.
+
 ## How-to Recreate Examples
 
-The examples were generated with standard tooling. The steps below recreate any one of them.
+The examples were generated with standard tooling.
+The steps below recreate any one of them.
 
 ### 1. Assemble `example.jsonld`'s `body`
 

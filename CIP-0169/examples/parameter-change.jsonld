@@ -191,7 +191,8 @@
         "tag": "parameter_change_action",
         "protocol_param_update": {
           "max_block_body_size": 98304
-        }
+        },
+        "policy_hash": "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
       }
     }
   },
@@ -201,7 +202,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "60116d86dd793a6ec5c84f865b3a0602d8b04669d023b9ec7275cdb8dea3781817be338f872ad6ff1725bd6482048d022260b821ca8b1e205a2846f4f8b5fc09"
+        "signature": "88843d234e9fa9fec7cbfec4bfcc5f241b90f697a2cfa9e3cd3f28a32cd3958fca97db8810fb87c085b6d8051c8f835d1814916a5a4e406c62343e49ba7d7c01"
       }
     }
   ]

@@ -4,10 +4,9 @@
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
     "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
-    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
-      "@id": "CIP108:body",
+      "@id": "CIP100:body",
       "@context": {
         "references": {
           "@id": "CIP100:references",
@@ -19,10 +18,6 @@
             "uri": "CIP100:reference-uri"
           }
         },
-        "title": "CIP108:title",
-        "abstract": "CIP108:abstract",
-        "motivation": "CIP108:motivation",
-        "rationale": "CIP108:rationale",
         "comment": "CIP100:comment",
         "externalUpdates": {
           "@id": "CIP100:externalUpdates",
@@ -180,31 +175,29 @@
   },
   "hashAlgorithm": "blake2b-256",
   "body": {
-    "title": "Fund Development Team",
-    "abstract": "Withdraw ₳100,000 to fund smart contract development team.",
-    "motivation": "The team has delivered milestones and requires funding for continued work.",
-    "rationale": "Funding will enable completion of the remaining project deliverables.",
-    "references": [
+    "comment": "CIP-0169 example: DRep yes-vote on the CIP-0169 example info action on the Preview testnet, with the (voter, action, vote) tuple bound into the signed body.",
+    "onChain": [
       {
-        "@type": "Other",
-        "label": "Project milestone report",
-        "uri": "https://example.com/milestones.pdf"
-      }
-    ],
-    "onChain": {
-      "deposit": "100000000000",
-      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-      "gov_action": {
-        "tag": "treasury_withdrawals_action",
-        "rewards": [
-          {
-            "key": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
-            "value": "100000000000"
+        "key": {
+          "tag": "drep_credential",
+          "credential": {
+            "tag": "pubkey_hash",
+            "value": "03ccae794affbe27a5f5f74da6266002db11daa6ae446aea783b972d"
           }
-        ],
-        "policy_hash": "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
+        },
+        "value": [
+          {
+            "key": {
+              "transaction_id": "3ff13ad85117e9cde53d67dada19eb80a9c7971efdee95d73020f3b3c467d8b5",
+              "gov_action_index": "0"
+            },
+            "value": {
+              "vote": "yes"
+            }
+          }
+        ]
       }
-    }
+    ]
   },
   "authors": [
     {
@@ -212,15 +205,7 @@
       "witness": {
         "witnessAlgorithm": "ed25519",
         "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
-        "signature": "1ffb8f4b566e87fbeba24436a13e3b723d963979e244fe9fc16a72a5a2d622bbc86a28d65c29f8f39800b230f8ea8053d68bea09d508abac07ea80c5feaeae0f"
-      }
-    },
-    {
-      "name": "Elena Bardo",
-      "witness": {
-        "witnessAlgorithm": "ed25519",
-        "publicKey": "3ccd241cffc9b3618044b97d036d8614593d8b017c340f1dee8773385517654b",
-        "signature": "9fa01f936f0eb75ed5dc70e018f98e3f92393c421a4cfd99af8ffae2330e8da46432a4f2107452c2d89e95bd7a3db728a0fd55ad6ad5b2da7f002066616f4d02"
+        "signature": "1ad350b62ecbc736acc1bb3d332ebace55136262d3aa7810e33572bf2ec1a2e346ab8c27e63dd61e6acbcf74b86345d09c808fd1e8f93c3ad3da1675393d2607"
       }
     }
   ]
