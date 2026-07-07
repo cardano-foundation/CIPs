@@ -23,7 +23,7 @@ Cardano height battles and slot battles are relatively infrequent, but when they
 
 Historically, the ledger used the leader VRF (range-extended value, sometimes described as the "L hash") as a tiebreaker. This introduced a small bias in favor of smaller pools because winning a leader election already implies a smaller VRF value. Later, the implementation shifted to using the non-range-extended block VRF (the "B hash") as the tiebreaker, removing that small-pool advantage in favor of a more uniformly random outcome. This change was not preceded by a CPS and led to pushback in the SPO community.
 
-The 2025 Input Output Engineering Core Development Proposal included a line item titled "Revised Stake Pool Incentive Scheme" with the description: "Investigate and evaluate potential adjustments to the SPO incentive scheme, focusing on improving viability/fairness for smaller pools by considering existing proposals and analyzing costs/benefits. Aims to enhance decentralization and ecosystem health." The community voted in favor of this proposal, and this CPS complements that initiative by clarifying a concrete fairness issue that affects small pools.
+The [2025 Input Output Engineering Core Development Proposal](#references) included a line item titled "Revised Stake Pool Incentive Scheme" with the description: "Investigate and evaluate potential adjustments to the SPO incentive scheme, focusing on improving viability/fairness for smaller pools by considering existing proposals and analyzing costs/benefits. Aims to enhance decentralization and ecosystem health." The community voted in favor of this proposal, and this CPS complements that initiative by clarifying a concrete fairness issue that affects small pools.
 
 Available empirical data suggests that slot battles occur on the order of hundreds per epoch (e.g., a rough upper bound of ~550 per epoch based on mainnet parameters, with PoolTool observing lower counts), while height battles appear much rarer (on the order of tens per epoch under current network conditions). This makes the aggregate, network-wide effect of tiebreaker bias relatively small, yet the variance impact on individual small pools can remain meaningful. An analysis of using the L hash as the tiebreaker suggests that mean reward changes are bounded (e.g., an upper theoretical bound around +5.263% for maximum bias). Empirical analysis (epoch 562 stake distribution) reports that the smallest 2560 pools (43% combined stake) benefit, the largest 205 pools (57% combined stake) lose, the smallest pool that loses has 0.185% stake, and the largest relative benefit/loss are approximately +2.6% and -1.4%, respectively. These figures are summarized in the HackMD note referenced below, but they can mask large ROI swings for pools with low expected block production.
 
@@ -61,7 +61,7 @@ There is an open question about whether intentionally biasing some or all tiebre
 
 - https://github.com/IntersectMBO/ouroboros-consensus/pull/1548
 - https://hackmd.io/hX7q5s8JSKSP-j3525J0bA (Alexander Esgen)
-- https://ipfs.blockfrost.dev/ipfs/bafybeicabpq4cu6eev53m3ywiczbidyn2ivos4tglq7vy3gkbklp3dk5zi (2025 IOR Core Development Proposal: "Revised Stake Pool Incentive Scheme")
+- [2025 IOR Core Development Proposal](https://bafybeicabpq4cu6eev53m3ywiczbidyn2ivos4tglq7vy3gkbklp3dk5zi.ipfs.inbrowser.link) > "Revised Stake Pool Incentive Scheme"
 
 ## Copyright
 
