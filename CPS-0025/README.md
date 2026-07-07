@@ -7,7 +7,7 @@ Authors:
     - Ryan Wiley <rian222@gmail.com>
 Proposed Solutions: []
 Discussions:
-    - https://github.com/IntersectMBO/ouroboros-consensus/pull/1548
+    - Ouroboros Consensus haskell codebase PR: https://github.com/IntersectMBO/ouroboros-consensus/pull/1548
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1130
 Created: 2026-01-09
 License: CC-BY-4.0
