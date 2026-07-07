@@ -1186,6 +1186,10 @@ improvements.
   Peras vote requests, Mithril's Decentralized Message Queue, and likely
   additional protocols in the future. There is opportunity for significant code
   reuse even if the mini-protocols themselves are separate.
+- **Client Side Control**.  The client side of each mini-protocol needs to be
+  in control to terminate a mini-protocol within a timeframe of `300s` to ensure
+  the node can cleanly demote a peer from hot to warm (see [clean
+  termination](#clean-termination)).
 
 **Discussion**
 
@@ -1249,6 +1253,8 @@ the node as the client in one and the server in the other. Recall that Cardano's
 topology results in each relay having many more downstream peers than upstream
 peers. Syncing peers will be discussed below.
 
+##### LeiosAnnounce Mini-Protocol
+
 <div align="center">
 <a name="figure-6a" id="figure-6a"></a>
 
@@ -1266,6 +1272,7 @@ graph LR
    StIdle -->|"MsgLeiosAnnounceRequestNext(N)"| StBusy
    StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens > 1; tokens −= 1}"| StBusy
    StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens = 1 }"| StIdle
+   StBusy -->|"MsgLeiosNoBlockAnnouncement"| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1284,6 +1291,34 @@ after each 100 received). Sending the next request before the previous one has
 been fully responded to is not modeled explicitly but supported implicitly via
 protocol pipelining as usual, see below for a definition.
 
+###### Clean termination
+
+We need `MsgLeiosNoBlockAnnouncement` message in order to retain the ability for
+the client to terminate a mini-protocol within a reasonable time limit.
+Without such a message, the server after receiving `MsgLeiosVotesRequestNext`
+will block until data is available, which might or might not happen quickly
+enough.  To avoid unclean mini-protocol shutdown, `MsgLeiosNoBlockAnnouncement`
+can be used, which gives back the agency to the client, which can decide
+whether to continue the mini-protocol (e.g. further await for data
+availability) or terminate the mini-protocol with `MsgDone`.  The
+`cardano-node` implementation deactivation timeout is set to `300s`.  Note that
+this timeout must still be preserved if the mini-protocol is pipelined, e.g. if
+we pipeline five `MsgLeiosAnnounceRequestNext` messages, and we send
+`MsgLeiosNoBlockAnnouncement` after `10s`, it will take the client exactly `50s`
+to await for all the pipelined `MsgLeiosAnnounceRequestNext` replies to
+arrive before it will be able to send `MsgDone` and terminate the
+mini-protocol.  Thus the time after which `MsgLeiosNoBlockAnnouncement` must be
+sent limits how many `MsgLeiosAnnounceRequestNext` messages can be pipelined.
+This note applies to all the other mini-protocols: `LeiosVotes`
+(`MsgLeiosNoVotes`) and `LeiosBlockNotify` (`MsgLeiosBlockNoOffers`).
+If a mini-protocol is not shutdown cleanly (e.g. it didn't send `MsgDone`)
+within the deactivation timeout, then the whole connection is terminated, and
+thus non-clean shutdowns should be avoided.  There's a clear tradeoff between
+latency of termination and how much overhead is added by sending
+`MsgLeiosNoBlockAnnouncement` too frequently.
+
+##### LeiosVotes Mini-Protocol
+
 <div align="center">
 <a name="figure-6b" id="figure-6b"></a>
 
@@ -1301,6 +1336,7 @@ graph LR
    StIdle -->|"MsgLeiosVotesRequestNext(N)"| StBusy
    StBusy -->|"MsgLeiosVote<br>{ if tokens > 1; tokens −= 1}"| StBusy
    StBusy -->|"MsgLeiosVote<br>{ if tokens = 1 }"| StIdle
+   StBusy -->|"MsgLeiosNoVotes"| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1314,6 +1350,11 @@ quickly as possible throughout the network. Since votes are small, no
 separate round-trip for requesting them is needed, downstream just keeps
 supplying the upstream with tokens so that under normal conditions the upstream
 can typically send immediately.
+
+See the [clean termination](#clean-termination) section why `MsgLeiosNoVotes`
+is needed, and how to design a timeout on `MsgLeiosVotesRequestNext` replies.
+
+##### LeiosBlockNotify Mini-Protocol
 
 <div align="center">
 <a name="figure-6c" id="figure-6c"></a>
@@ -1332,6 +1373,7 @@ graph LR
    StIdle -->|"MsgLeiosBlockNotifyRequestNext(N)"| StBusy
    StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens > 1; tokens −= 1}<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens > 1; tokens −= 1}"| StBusy
    StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens = 1 }<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens = 1 }"| StIdle
+   StBusy -->|"MsgLeiosBlockNoOffers"| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1345,6 +1387,9 @@ signals downstream that a previously announced block is now ready for download
 or that its set of referenced transactions is now fully available. Both of
 these may trigger the downstraem to fetch information from the upstream using
 the next protocol below.
+
+See the [clean termination](#clean-termination) section why `MsgLeiosBlockNoOffers`
+is needed, and how to design a timeout on `MsgLeiosBlockNotifyRequestNext` replies.
 
 It is important to note that the protocols above should be combined with
 pipelining, meaning that the request for the next batch of responses should be
@@ -1389,6 +1434,8 @@ pipelining depth of 2 with a request count of 500 each or a depth of 10 with a
 request count of 100 each; the latter would keep the worst-case demand level
 higher than the former at the price of sending slightly more data towards the
 responder.
+
+##### LeiosFetch Mini-Protocol
 
 <div align="center">
 <a name="figure-7" id="figure-7"></a>
@@ -1445,6 +1492,15 @@ received all messages related to an EB. For example, the client can send
 MsgLeiosBlockRequest as soon as it receives MsgLeiosBlockOffer, even if it has
 not yet received MsgLeiosBlockTxsOffer.
 
+See the [clean termination](#clean-termination) section how to design the
+timeouts on the `StMultiBlock` and `StBlockTxs` states.  Note that this
+protocol doesn't require responses indicating that there's no more data
+available, simply because the client is requesting data assumed to be available
+on the server rather than asking for a next update available in the future.
+Still, timeouts need to be designed to allow the mini-protocol to terminate
+cleanly within `300s` also in the presence of protocol-pipelining.
+
+
 <div align="center">
 <a name="table-4" id="table-4"></a>
 
@@ -1452,11 +1508,14 @@ not yet received MsgLeiosBlockTxsOffer.
 | ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
 | Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
 | ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
+| ←Server | MsgLeiosNoBlockAnnouncement     |                                | The server hasn't seen an EB announcement                                                                |
 | Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
 | ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
+| ←Server | MsgLeiosNoVotes                 |                                | No Leios vote is available                                                                               |
 | Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
 | ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
 | ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
+| ←Server | MsgLeiosBlockNoOffers           |                                | The server has no block or txs to offer                                                                  |
 | Client→ | MsgLeiosMultiBlockRequest       | list of EB hashes              | Requests the EBs and all referenced transactions for the given EB hashes                                 |
 | ←Server | MsgLeiosBlock                   | EB block, list of transactions | A block requested in the previous MsgLeiosMultiBlockRequest                                              |
 | ←Server | MsgLeiosNoMoreBlocks            | $\emptyset$                    | All blocks from the previous MsgLeiosMultiBlockRequest have been delivered                               |
