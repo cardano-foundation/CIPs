@@ -61,7 +61,7 @@ There is an open question about whether intentionally biasing some or all tiebre
 
 - https://github.com/IntersectMBO/ouroboros-consensus/pull/1548
 - https://hackmd.io/hX7q5s8JSKSP-j3525J0bA (Alexander Esgen)
-- 2025 Input Output Engineering Core Development Proposal ("Revised Stake Pool Incentive Scheme")
+- https://ipfs.blockfrost.dev/ipfs/bafybeicabpq4cu6eev53m3ywiczbidyn2ivos4tglq7vy3gkbklp3dk5zi (2025 IOR Core Development Proposal: "Revised Stake Pool Incentive Scheme")
 
 ## Copyright
 
