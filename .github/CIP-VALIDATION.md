@@ -17,7 +17,6 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
 | No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
-| Body cross-references | `CIP-NNNN` / `CPS-NNNN` references in the body must point to an existing folder. References with a `?` suffix (`CIP-NNNN?`) are treated as intentional references to not-yet-merged proposals and are skipped; the `?` notation is optional, not mandated. References inside fenced or inline code blocks are ignored. |
 
 ## Header Field Validations
 

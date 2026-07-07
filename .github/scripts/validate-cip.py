@@ -9,7 +9,7 @@ import re
 import json
 import yaml
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
 try:
     import jsonschema
@@ -1065,12 +1065,6 @@ def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
     return errors
 
 
-def _strip_code(content: str) -> str:
-    """Strip fenced and inline code spans from markdown content."""
-    no_fences = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
-    return re.sub(r'`[^`\n]*`', '', no_fences)
-
-
 def _ref_folder_exists(repo_root: Path, prefix: str, number: int) -> bool:
     """Check whether a CIP/CPS folder exists at the repo root."""
     return (repo_root / f"{prefix}-{number:04d}").is_dir()
@@ -1128,55 +1122,6 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
                 f"'Solution To' entry '{canonical}' references a CPS that has no folder in this "
                 f"repository. Check the number is correct; you may mark it '{canonical}?' if it "
                 f"intentionally references a not-yet-merged CPS."
-            )
-
-    return errors
-
-
-def validate_cross_references(content: str, frontmatter: Dict, file_path: Path) -> List[str]:
-    """Validate that CIP-NNNN and CPS-NNNN references in the body point to existing folders.
-
-    References inside fenced or inline code blocks are ignored (treated as examples).
-    References suffixed with '?' are treated as candidates (still in PR) and skipped.
-    Self-references to the CIP's own number are skipped.
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-    repo_root = file_path.parent.parent
-
-    own_number = None
-    own_value = frontmatter.get('CIP')
-    if isinstance(own_value, int):
-        own_number = own_value
-    elif isinstance(own_value, str):
-        try:
-            own_number = int(own_value)
-        except ValueError:
-            own_number = None
-
-    stripped = _strip_code(content)
-    pattern = re.compile(r'\b(CIP|CPS)-(\d{1,5})(?!\d)(\??)')
-
-    seen: Set[Tuple[str, int]] = set()
-    for match in pattern.finditer(stripped):
-        prefix, digits, candidate = match.group(1), match.group(2), match.group(3)
-        number = int(digits)
-        if candidate == '?':
-            continue
-        if prefix == 'CIP' and own_number is not None and number == own_number:
-            continue
-        key = (prefix, number)
-        if key in seen:
-            continue
-        seen.add(key)
-        if not _ref_folder_exists(repo_root, prefix, number):
-            canonical = f"{prefix}-{number:04d}"
-            errors.append(
-                f"Body references '{canonical}' but no folder '{canonical}' exists in this repository. "
-                f"Check the number is correct; if this intentionally refers to a not-yet-merged "
-                f"proposal, you may optionally mark it '{canonical}?'."
             )
 
     return errors
@@ -1296,8 +1241,6 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
 
     section_errors = validate_sections(remaining_content)
     errors.extend(section_errors)
-
-    errors.extend(validate_cross_references(remaining_content, frontmatter, file_path))
 
     copyright_errors = validate_copyright_references_license(frontmatter, remaining_content)
     errors.extend(copyright_errors)
