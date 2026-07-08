@@ -245,7 +245,7 @@ That anchor is kept as-is.
 
 This CIP is considered **Active** when:
 
-- [ ] The specification is merged into the CIPs repository
+- [x] The specification is merged into the CIPs repository
 - [x] At least two governance metadata authoring tools implement support 
   - [governance-scripts](https://github.com/IntersectMBO/governance-scripts)
   - [cardano-governance-metadata](https://github.com/amanita-labs/cardano-governance-metadata)
