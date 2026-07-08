@@ -244,7 +244,7 @@
               "$ref": "cardano-conway.json#/definitions/Ed25519KeyHash"
             }
           },
-          "required": ["tag", "credential"],
+          "required": ["tag", "pubkey_hash"],
           "unevaluatedProperties": false
         }
       ]
