@@ -161,6 +161,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
+| 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -169,7 +170,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-06-23</i></p>
+<p align="right"><i>Last updated on 2026-07-08</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -200,11 +201,13 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0020 | [Governance Stakeholder Incentivization](./CPS-0020) | Open |
 | 0021 | [Ouroboros Randomness Manipulation](./CPS-0021) | Open |
 | 0022 | [Lost Stake](./CPS-0022) | Open |
+| 0025 | [Small pool disadvantage in VRF tiebreakers](./CPS-0025) | Open |
 | 0026 | [Approaches to Fully Homomorphic Encryption](./CPS-0026) | Open |
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
+| 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
 
-<p align="right"><i>Last updated on 2026-05-12</i></p>
+<p align="right"><i>Last updated on 2026-07-08</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
