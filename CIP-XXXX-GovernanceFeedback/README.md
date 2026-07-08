@@ -7,7 +7,7 @@ Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pulls/????
+    - Original PR: https://github.com/cardano-foundation/CIPs/pulls/1182
 Created: 2026-04-24
 License: CC-BY-4.0
 ---
