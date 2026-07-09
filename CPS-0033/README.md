@@ -6,7 +6,8 @@ Status: Open
 Authors:
     - Maureen Wepngong <maureen@giiyotech.com>
     - Danielle Stanko <danielle.stanko@iohk.io>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-0181 | Remove DRep Requirement for Reward Withdrawals: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0181
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1211
 Created: 2026-06-11
@@ -21,7 +22,7 @@ This CPS surfaces DRep voting power concentration as a priority governance chall
 
 ## Problem
 
-Cardano's on-chain governance model gives Delegate Representatives (DReps) voting power proportional to delegated stake. The current ledger rules place no upper bound on the amount of stake that can be delegated to a single DRep credential, and the current CIP-0119 DRep registration metadata standard contains no fields that allow wallets or explorers to surface saturation, distribution, or activity signals to delegators at the point of choice. This design has known centralizing tendencies that are now being observed in practice, although not to the extent seen in other DAOs, providing a window of opportunity to avoid severe voting power centralization among DReps in Cardano:
+Cardano's on-chain governance model gives Delegate Representatives (DReps) voting power proportional to delegated stake. The current ledger rules place no upper bound on the amount of stake that can be delegated to a single DRep credential. This design has known centralizing tendencies that are now being observed in practice, although not to the extent seen in other DAOs, providing a window of opportunity to avoid severe voting power centralization among DReps in Cardano:
 
 - Forum threads and polls from January through March 2025 (and continuing into 2026), governance roundtables in 2026, and off-chain sources like workshops, interviews and surveys from the Beyond Minimum Viable Governance project consistently surface community concern over top DReps holding disproportionate stake.
 - The Nakamoto coefficient for DRep voting power has been declining, indicating that effective voting control is concentrating among fewer participants.
@@ -44,7 +45,7 @@ Community discussions to date have explored several broad directions, including 
 
 ## Use Cases
 
-**A long-term ADA holder wants to delegate to a DRep aligned with their values.**
+**A long-term ada holder wants to delegate to a DRep aligned with their values.**
 
 Today, they open a DRep explorer that defaults to sorting by voting power. The DReps with the most voting power are the most visible. The holder, with limited time and no easy way to evaluate quality, picks from the top of the list. Their delegation reinforces the existing concentration. They would prefer a system that surfaces aligned DReps without defaulting to the largest, but no protocol-supported mechanism exists.
 
@@ -59,7 +60,7 @@ A large DRep is concerned that continued growth in delegated voting power may co
 **A delegator wants to distribute stake across multiple DReps.**
 
 A delegator wants to spread their stake across multiple DReps to avoid contributing to any single DRep's accumulation. The ledger supports this today via multiple stake credentials per account, each delegating to a different DRep. However, no wallet standard defines a multi-DRep delegation flow, a single stake credential's voting power cannot be split fractionally, and most wallets surface a single-DRep model only.
-**A wallet wants to surface saturation information to delegators.**
+**A wallet DRep wants to surface saturation information to delegators.**
 
 A wallet wants to surface information to delegators about a DRep's current level of delegated voting power relative to a preferred or recommended threshold. There is currently no protocol-defined signal indicating whether a DRep has reached a preferred or recommended level of delegated voting power. The wallet therefore has no protocol-supported data on which to base such a UI.
 
