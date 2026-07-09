@@ -1,12 +1,12 @@
 ---
-CIP: ????
+CIP: "?"
 Title: DRep Pledge
 Category: Ledger
 Status: Proposed
 Authors:
     - Ryan Wiley <cerkoryn@gmail.com>
 Implementors: []
-Discussions: []
+Discussions: [https://github.com/cardano-foundation/CIPs/pull/1225]
 Created: 2026-07-09
 License: CC-BY-4.0
 ---
