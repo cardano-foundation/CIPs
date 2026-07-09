@@ -58,8 +58,7 @@ A large DRep is concerned that continued growth in delegated voting power may co
 
 **A delegator wants to distribute stake across multiple DReps.**
 
-A delegator wants to spread their stake across multiple DReps to avoid contributing to any single DRep's accumulation. Multi-DRep delegation flows are not defined at the ledger or wallet standard level. Each wallet implements delegation independently, and most surface a single-DRep model only.
-
+A delegator wants to spread their stake across multiple DReps to avoid contributing to any single DRep's accumulation. The ledger supports this today via multiple stake credentials per account, each delegating to a different DRep. However, no wallet standard defines a multi-DRep delegation flow, a single stake credential's voting power cannot be split fractionally, and most wallets surface a single-DRep model only.
 **A wallet wants to surface saturation information to delegators.**
 
 A wallet wants to surface information to delegators about a DRep's current level of delegated voting power relative to a preferred or recommended threshold. There is currently no protocol-defined signal indicating whether a DRep has reached a preferred or recommended level of delegated voting power. The wallet therefore has no protocol-supported data on which to base such a UI.
