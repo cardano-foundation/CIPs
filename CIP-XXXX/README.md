@@ -7,6 +7,8 @@ Authors:
     - Ryan Wiley <cerkoryn@gmail.com>
 Implementors: []
 Discussions: [Original PR: https://github.com/cardano-foundation/CIPs/pull/1225]
+Solution To:
+    - CPS-0033: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0033
 Created: 2026-07-09
 License: CC-BY-4.0
 ---
