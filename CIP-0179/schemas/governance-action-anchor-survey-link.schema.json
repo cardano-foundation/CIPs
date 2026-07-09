@@ -5,10 +5,10 @@
   "type": "object",
   "properties": {
     "specVersion": {
-      "const": 4
+      "const": 5
     },
     "kind": {
-      "const": "cardano-governance-survey-link"
+      "const": "survey-link"
     },
     "surveyTxId": {
       "$ref": "common.schema.json#/$defs/hex_tx_id"

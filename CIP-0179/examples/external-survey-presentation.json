@@ -1,5 +1,5 @@
 {
-  "specVersion": 4,
+  "specVersion": 5,
   "kind": "cardano-survey-presentation",
   "title": "Dijkstra budget allocation",
   "description": "Allocate priority points across proposed Dijkstra work streams.",

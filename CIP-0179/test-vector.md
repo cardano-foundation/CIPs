@@ -1,6 +1,6 @@
 # Test Vectors for CIP-0179
 
-These vectors use the version `4` JSON representation of label `17` CBOR metadata:
+These vectors use the version `5` JSON representation of label `17` CBOR metadata:
 
 - Integer CBOR map keys are JSON object keys (`"0"`, `"1"`, ...).
 - Byte strings are lowercase hex.
@@ -61,7 +61,7 @@ Expected tally behavior: ignore the older response and keep the latest answer `[
 
 Source: [governance-action-anchor-survey-link.json](./examples/governance-action-anchor-survey-link.json)
 
-Expected: the anchor links an Info Action to `survey_ref = [bbbb..., 0]` only if the survey exists and its `end_epoch` equals the action voting end epoch. Failed linkage does not invalidate the standalone survey.
+Expected: the anchor's `body.cip179` object (with `kind = "survey-link"`) links a governance action of any type to `survey_ref = [bbbb..., 0]` only if the survey exists and its `end_epoch` equals the action's expiry epoch. Failed linkage does not invalidate the standalone survey.
 
 ### Optional Governance-Vote Binding
 

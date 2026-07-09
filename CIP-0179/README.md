@@ -26,7 +26,7 @@ The format supports:
 - Survey cancellation by the original creator.
 - Public or sealed responses, the latter using timelock encryption (Drand `tlock`) for delayed reveal.
 - Optional off-chain content anchors (URI + hash) for bulky presentation text, custom-method schemas, and voter rationales.
-- Optional linkage to governance Info Actions via anchor metadata.
+- Optional linkage to governance actions of any type via anchor metadata.
 - Eligibility expressed as a set of roles; result weighting and aggregation are deliberately out of scope.
 
 The standard is general-purpose: it serves governance and non-governance sentiment gathering alike.
@@ -58,7 +58,7 @@ A survey is identified by a `survey_ref`: the pair `(tx_id, survey_index)`, wher
 ### CDDL Schema
 
 ```cddl
-; CIP-179 On-chain Surveys and Polls (version 4)
+; CIP-179 On-chain Surveys and Polls (version 5)
 
 ; ---------- Primitives ----------
 
@@ -106,7 +106,7 @@ cip_179_payload = [0, [+ survey_definition]]
 ; Integer-keyed deterministic map; unknown keys reserved for future versions
 ; (see Encoding Conventions).
 survey_definition = {
-  0 => uint,                   ; spec_version (this document = 4)
+  0 => uint,                   ; spec_version (this document = 5)
   1 => credential,             ; owner (for cancellation authorization)
   2 => chunked_text,           ; title (MAY be empty in external-content mode)
   3 => chunked_text,           ; description (MAY be empty in external-content mode)
@@ -191,7 +191,10 @@ points_allocation_question = [5, chunked_text, options_or_count, pos_uint, ? boo
                           ;   tag  prompt        opts/count       budget
 
 ; Tag 6: Rating. Rate options on the scale given by rating_scale.
-rating_question = [6, chunked_text, options_or_count, rating_scale, ? bool]
+;   require_all (mandatory bool): true = a present answer MUST rate every option;
+;   false = a subset is allowed. Fixed so the optional `required` stays decodable.
+rating_question = [6, chunked_text, options_or_count, rating_scale, bool, ? bool]
+                ;   tag  prompt        opts/count      rating_scale  require_all  required
 
 ; ---------- Rating scale ----------
 
@@ -223,7 +226,7 @@ options_or_count = options / option_count
 ; spec_version lets a response be decoded (answer encoding, public-vs-sealed
 ; shape) without first resolving the survey.
 survey_response = {
-  0 => uint,                   ; spec_version (this document = 4)
+  0 => uint,                   ; spec_version (this document = 5)
   1 => survey_ref,             ; reference to the survey definition
   2 => role,                   ; claimed responder role
   3 => credential,             ; responder's credential
@@ -233,9 +236,11 @@ survey_response = {
 
 ; Response answers depend on the referenced survey's submission_mode:
 ;   - Public: an array of plaintext answer items.
-;   - Sealed: a timelock-encrypted (Drand tlock) ciphertext (chunked bytes),
-;     opaque until the survey's round publishes. Distinguished from the public
-;     form by shape: byte string(s) rather than an array of answer-item arrays.
+;   - Sealed: a raw, de-armored tlock ciphertext (chunked bytes; NOT AGE/PEM
+;     "armored" text), opaque until the survey's round publishes. Its plaintext is
+;     the canonical CBOR of [+ answer_item], right-padded to padding_size.
+;     Distinguished from the public form by shape (bytes vs. array). See "Sealed
+;     responses".
 response_answers = [+ answer_item] / chunked_bytes
 
 ; Chunked byte blob: payloads exceeding the 64-byte metadata limit are split
@@ -310,7 +315,7 @@ A survey definition is an integer-keyed CBOR map (deterministically encoded; see
 
 | Key | Type | Description |
 |:----|:-----|:------------|
-| 0 | uint | Schema version. This document defines version `4`. |
+| 0 | uint | Schema version. This document defines version `5`. |
 | 1 | credential | Survey owner; authorizes cancellation. |
 | 2 | chunked_text | Survey title. MAY be empty in external-content mode. |
 | 3 | chunked_text | Survey context or rationale. MAY be empty in external-content mode. |
@@ -385,12 +390,13 @@ Option-bearing questions (all but custom and numeric-range) carry an `options_or
 #### Rating (tag 6)
 
 ```
-[6, question_prompt, options_or_count, rating_scale, ?required]
+[6, question_prompt, options_or_count, rating_scale, require_all, ?required]
 ```
 
 - `rating_scale` is either a `numeric_constraints` grid `[min_rating, max_rating, ?step]` presented as numbers (e.g. a 1–5 Likert scale), or an ordered list of at least 2 level labels from worst to best (e.g. `["bad", "average", "good"]`) presented as text. In external-content mode the labels MAY be a level count (`uint >= 2`).
 - The rating in a response is always an integer, a value on the grid, or the 0-based label index (`0 = "bad"`), keeping tallies numeric regardless of presentation.
-- Response: `(option_index, rating)` pairs, each rating valid for the scale, option indices unique and valid. A respondent MAY rate a subset of options.
+- `require_all` (mandatory `bool`, before the optional `required`): with `false` a present answer MAY rate any non-empty subset; with `true` a present answer MUST rate every option (one pair per option, indices unique and in range) or the whole response is invalid.
+- Response: `(option_index, rating)` pairs, each rating valid for the scale, option indices unique and valid. Omitting the question is an abstain either way (subject to `required`).
 
 ### Abstain semantics
 
@@ -419,6 +425,14 @@ Question indices in the answers array MUST be unique, and each answer's type tag
 
 Multiple responses MAY be batched in one transaction; each is validated independently.
 
+### Sealed responses
+
+When the referenced survey's `submission_mode` is sealed, a response's `response_answers` (key 4) is a `chunked_bytes` tlock ciphertext, not a plaintext answer array. Its serialization is normative so any conformant tool can decode it after reveal:
+
+- **Plaintext**: the canonical CBOR encoding of the same `[+ answer_item]` array a public response carries (never JSON), right-zero-padded to the survey's `padding_size`.
+- **Ciphertext**: the **raw, de-armored** tlock bytes — never the AGE/PEM "armored" (`-----BEGIN AGE ENCRYPTED FILE-----`) base64 wrapper.
+- **Decoding**: after the `round` publishes, decrypt and read the **first** CBOR item, ignoring the trailing padding. Do **not** strip trailing `0x00` bytes — a trailing CBOR integer `0` is the same byte.
+
 ### Survey Cancellation
 
 A cancellation payload contains one or more `survey_ref` values. Each MUST resolve to a previously published survey definition, and the cancellation transaction MUST prove ownership of that definition's `owner` credential (same rules as for definition transactions). A cancellation submitted after the survey's `end_epoch` is invalid.
@@ -439,7 +453,7 @@ For generic web rendering, publishers SHOULD use the JSON profile below (schema:
 
 ```json
 {
-  "specVersion": 4,
+  "specVersion": 5,
   "kind": "cardano-survey-presentation",
   "title": "Dijkstra budget allocation",
   "description": "Allocate priority points across proposed work streams.",
@@ -505,27 +519,66 @@ The identity tuple is `(survey_ref, role, credential)`. When multiple responses 
 
 ### Governance Action Linkage
 
-Linkage is canonicalized as **Action → Survey** and restricted to **Info Actions**, which is the only governance action type guaranteed to run its full validity period without on-chain side effects.
+Linkage is **Action → Survey**: any governance action references a survey through its anchor metadata. The survey is always valid standalone.
 
-Linkage is a **discovery/advertisement** relationship plus an **epoch-alignment** invariant. It does **not** restrict who may respond: every role in `eligible_roles` participates exactly as it would standalone, and casting a governance vote on the linked action is an *optional* enrichment, not a precondition ([Linked survey response rules](#linked-survey-response-rules)).
+Linkage is a discovery relationship. It does not restrict who may respond: every role in `eligible_roles` participates as it would standalone, and voting on the linked action is optional ([Linked survey response rules](#linked-survey-response-rules)).
 
-An Info Action linking to a survey MUST include in its anchor metadata (an off-chain JSON document; `surveyTxId` hex-encoded per JSON convention):
+A governance action's anchor is a [CIP-108](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0108) governance-metadata document. To link a survey it MUST carry a `cip179` object **inside the CIP-108 `body`**, so the link is covered by the author witness:
 
-```json
-{
-  "specVersion": 4,
-  "kind": "cardano-governance-survey-link",
-  "surveyTxId": "<hex-encoded 32-byte transaction id>",
-  "surveyIndex": 0
+```jsonc
+"body": {
+  "title": "Fund the Ekklesia incentives implementation",
+  "abstract": "…",
+  "motivation": "…",
+  "rationale": "Parameter values to initialize are gathered in the linked CIP-179 survey.",
+  "cip179": {
+    "specVersion": 5,
+    "kind": "survey-link",
+    "surveyTxId": "<hex-encoded 32-byte transaction id>",
+    "surveyIndex": 0
+  }
 }
 ```
 
+Its `@context` MUST define the CIP-179 terms ([below](#cip-179-context-terms)) so `body.cip179` survives canonicalization and stays under the author witness, rather than being silently dropped.
+
+Field notes:
+- `specVersion` — CIP-179 revision the link conforms to (integer).
+- `kind` — MUST be `"survey-link"`.
+- `surveyTxId` — survey definition transaction id, hex-encoded (compared case-insensitively).
+- `surveyIndex` — non-negative integer index into that transaction's payload array; a missing or malformed index is a broken link (reject it), never a fallback to `0`.
+
 Validation rules:
-- The action MUST be an Info Action; linkage to any other action type is invalid.
 - `(surveyTxId, surveyIndex)` MUST resolve to an existing survey definition under label `17`.
-- Tooling MUST derive `linked_action_id` from the Info Action carrying the anchor.
-- Survey `end_epoch` MUST exactly equal the Info Action's voting end epoch.
-- If linkage validation fails, tooling MUST NOT attach the survey to the Info Action; the survey remains valid standalone.
+- Tooling MUST derive `linked_action_id` from the action carrying the anchor. A survey MAY be linked by more than one action.
+- The survey `end_epoch` MUST equal the action's expiry epoch.
+- If linkage validation fails, tooling MUST NOT attach the survey; it remains valid standalone.
+
+An action MAY resolve (ratify, enact, expire) before its expiry epoch; the survey is unaffected and keeps accepting responses through `end_epoch`. The vote binding (mechanism B) is available only while the action is votable; afterwards responses use mechanism A ([Credential proof](#credential-proof)).
+
+#### CIP-179 @context terms
+
+A linking anchor MUST extend the CIP-108 `@context` with the CIP-179 namespace and `cip179` term (as CIP-108 nests `references`). Namespace at the context root:
+
+```json
+"CIP179": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0179/README.md#"
+```
+
+and the `cip179` term **inside the `body` context**:
+
+```json
+"cip179": {
+  "@id": "CIP179:link",
+  "@context": {
+    "specVersion": "CIP179:specVersion",
+    "kind":        "CIP179:kind",
+    "surveyTxId":  "CIP179:surveyTxId",
+    "surveyIndex": "CIP179:surveyIndex"
+  }
+}
+```
+
+Every `cip179` sub-field MUST be mapped; the CIP-108 context sets no `@vocab`, so an unmapped field is dropped from the witnessed body (though still present in raw JSON) — an inconsistency to avoid.
 
 #### Conway voter tag to CIP-179 role mapping
 
@@ -572,7 +625,7 @@ This CIP records *who responded, in what role, with what selection*. Every valid
 ```cbor-diag
 {17: [0, [                                      / tag 0 = definitions /
   {                                             / survey_definition (map) /
-    0: 4,                                       / spec_version /
+    0: 5,                                       / spec_version /
     1: [0, h'cdcdcdcd...cd'],                   / owner: key-based /
     2: "Dijkstra hard-fork CIP shortlist",      / title (fits in 64 bytes) /
     3: ["Select candidate CIPs for potential",  / description (chunked) /
@@ -606,7 +659,7 @@ This CIP records *who responded, in what role, with what selection*. Every valid
 ```cbor-diag
 {17: [0, [                                      / tag 0 = definitions /
   {                                             / survey_definition (map) /
-    0: 4,                                       / spec_version /
+    0: 5,                                       / spec_version /
     1: [0, h'cdcdcdcd...cd'],                   / owner /
     2: "",                                      / title empty (external) /
     3: "",                                      / description empty (external) /
@@ -630,7 +683,7 @@ This CIP records *who responded, in what role, with what selection*. Every valid
 ```cbor-diag
 {17: [1, [                                         / tag 1 = responses /
   {                                                / survey_response (map) /
-    0: 4,                                          / spec_version /
+    0: 5,                                          / spec_version /
     1: [h'efefefef...ef', 0],                      / survey_ref: (TxId, index 0) /
     2: 0,                                          / role: DRep /
     3: [0, h'abababab...ab'],                      / credential: key-based /
@@ -657,8 +710,8 @@ This CIP records *who responded, in what role, with what selection*. Every valid
 
 1. Discover survey definitions by scanning label `17` for payloads with tag `0`.
 2. Discover cancellations (tag `2`) and mark cancelled surveys as inactive.
-3. Optionally discover Info Actions whose anchor metadata carries `kind = "cardano-governance-survey-link"`.
-4. If present, validate that the action is an Info Action, resolve `(surveyTxId, surveyIndex)`, check exact `end_epoch` equality, and derive `linked_action_id`. (Linkage does not restrict which roles may respond.)
+3. Optionally discover governance actions whose anchor `body.cip179.kind` equals `"survey-link"`.
+4. If present, resolve `(surveyTxId, surveyIndex)`, derive `linked_action_id`, and check that `end_epoch` equals the action's expiry epoch. (Linkage does not restrict which roles may respond.)
 5. Discover responses (tag `1`) and resolve each to its survey via `survey_ref`.
 6. Reject responses to cancelled surveys.
 7. Validate each answer against its question's type and constraints; treat questions without an answer item as abstains (reject the whole response if a `required` question is omitted).
@@ -709,11 +762,9 @@ Grouping related questions in one survey shares the definition-level constraints
 
 *Who may respond* (eligibility, which affects validation) and *how results are interpreted* (weighting, which affects nothing the respondent signs) are separable concerns. Pairing each role with a weighting mode would conflate them, and any enumeration of modes (`CredentialBased` / `StakeBased` / `PledgeBased`, …) is inherently incomplete: it cannot express schemes such as quadratic voting. A plain role set keeps the definition honest about what the chain enforces, still gives UIs a key-selection hint, and lets any weighting scheme be applied downstream to the same recorded set.
 
-### Info Action linkage
+### Governance action linkage
 
-Only Info Actions are guaranteed to complete their validity period without on-chain side effects. The action references the survey (not vice versa), avoiding circular dependencies: survey first, then the Info Action points at it.
-
-Linkage is discovery plus epoch alignment, not an eligibility gate: an Info Action linking a survey advertises it, which should widen reach, not narrow it. Requiring linked responses to carry a governance vote would make the vote the proof mechanism and silently exclude the two roles without a Conway voter type (Stakeholder, Owner); since standalone credential proof and role validation already cover every role, the vote binding is optional. It exists at all because it is the only mechanism yielding ledger-evaluated verification of Plutus-script credentials, which `required_signers` cannot provide.
+The action references the survey, not vice versa, avoiding circular dependencies. Linkage is discovery, never an eligibility gate: it advertises the survey, widening reach. The survey validates independently and runs to its own `end_epoch` regardless of when the action resolves. The vote binding stays optional, kept only as the one ledger-evaluated path for Plutus-script credentials; it lapses when the action stops being votable.
 
 ### Limitations and Future Extensions
 
@@ -735,7 +786,7 @@ Key-based and native-script credentials are provable via `required_signers` in a
 
 - [ ] At least two independent tools can create survey definition payloads.
 - [ ] At least two independent tools can ingest survey responses and produce matching tallies for shared test vectors.
-- [ ] At least one governance-facing tool implements the Info Action profile.
+- [ ] At least one governance-facing tool implements governance action linkage.
 - [x] Label `17` is registered in `CIP-0010/registry.json`.
 - [ ] At least one cooperative test demonstrates cross-tool interoperability (survey created by one tool, tallied by another).
 
@@ -770,6 +821,12 @@ Version 4 (breaking, over v3):
 - **Method Identifier Registry** added (URNs off-chain only); `single-choice`/`multi-select`/`numeric-range` URNs bumped to `:v2`, the rest start at `:v1`.
 - **Top-level records become integer-keyed maps** (Conway `transaction_body` pattern) for renumbering-free future fields; nested tagged unions stay positional.
 - **Governance linkage decoupled from eligibility**: all `eligible_roles` may respond to a linked survey (previously only `{DRep, SPO, CC}`, each required to cast a governance vote); the `voting_procedures` vote becomes an optional binding, retained as the only ledger-evaluated path for Plutus-script credentials.
+
+Version 5 (breaking, over v4):
+- **Governance linkage generalized to any action type** (previously Info Actions only); the mechanism-B vote binding is available only while the action is votable.
+- **Linkage carried inside the CIP-108 `body`** as a namespaced `cip179` object (was a bare top-level object) with required `@context` terms; `kind` shortened to `"survey-link"`.
+- **Rating questions gain a mandatory `require_all` flag** (before the optional `required`): when set, a present answer MUST rate every option. Answer encoding unchanged.
+- **Sealed response serialization tightened** (clarification): tlock plaintext is canonical CBOR of `[+ answer_item]` padded to `padding_size`; ciphertext is raw de-armored bytes, not armored text.
 
 ## Copyright
 

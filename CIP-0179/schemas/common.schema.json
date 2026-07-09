@@ -402,12 +402,17 @@
           "$ref": "#/$defs/rating_scale"
         },
         {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "require_all (mandatory). See README.md."
+        },
+        {
+          "type": "boolean",
+          "description": "required (optional)."
         }
       ],
       "items": false,
-      "minItems": 4,
-      "maxItems": 5
+      "minItems": 5,
+      "maxItems": 6
     },
     "survey_question": {
       "oneOf": [
@@ -441,7 +446,7 @@
       },
       "properties": {
         "0": {
-          "const": 4
+          "const": 5
         },
         "1": {
           "$ref": "#/$defs/credential"
@@ -705,7 +710,7 @@
       },
       "properties": {
         "0": {
-          "const": 4
+          "const": 5
         },
         "1": {
           "$ref": "#/$defs/survey_ref"
