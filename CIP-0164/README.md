@@ -138,13 +138,16 @@ technical resources, visit the Leios Innovation R&D site at
 - [Table 1: Network Characteristics](#table-1)
 - [Table 2: Ledger Characteristics](#table-2)
 - [Table 3: Protocol Parameters](#table-3)
-- [Table 4: Leios Information Exchange Requirements (IER) table](#table-4)
-- [Table 5: Performance Metrics](#table-5)
-- [Table 6: Leios efficiency at different throughputs](#table-6)
-- [Table 7: Feasible Protocol Parameters](#table-7)
-- [Table 8: Operating Costs by Transaction Throughput](#table-8)
-- [Table 9: Required TPS for Infrastructure Cost Coverage](#table-9)
-- [Table 10: Required TPS for Current Reward Maintenance](#table-10)
+- [Table 4: LeiosAnnounce Information Exchange Requirements (IER) table](#table-4)
+- [Table 5: LeiosVotes Information Exchange Requirements (IER) table](#table-5)
+- [Table 6: LeiosBlockNotify Information Exchange Requirements (IER) table](#table-6)
+- [Table 7: LeiosFetch Information Exchange Requirements (IER) table](#table-7)
+- [Table 8: Performance Metrics](#table-8)
+- [Table 9: Leios efficiency at different throughputs](#table-9)
+- [Table 10: Feasible Protocol Parameters](#table-10)
+- [Table 11: Operating Costs by Transaction Throughput](#table-11)
+- [Table 12: Required TPS for Infrastructure Cost Coverage](#table-12)
+- [Table 13: Required TPS for Current Reward Maintenance](#table-13)
 
 </details>
 
@@ -1291,6 +1294,26 @@ after each 100 received). Sending the next request before the previous one has
 been fully responded to is not modeled explicitly but supported implicitly via
 protocol pipelining as usual, see below for a definition.
 
+The required exchange between two neighboring nodes is captured by the
+following [Information Exchange Requirements table](#table-4). For the sake of
+minimizing this proposal, each row is a mini-protocol message, but that
+correspondence does not need to remain one-to-one as the mini-protocols evolve
+over time. Note that the table does not list the messages in the anticipated
+chronological order.
+
+<div align="center">
+<a name="table-4" id="table-4"></a>
+
+| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
+| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
+| ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
+| ←Server | MsgLeiosNoBlockAnnouncement     |                                | The server hasn't seen an EB announcement                                                                |
+
+<em>Table 4: LeiosAnnounce Information Exchange Requirements table</em>
+
+</div>
+
 ###### Clean termination
 
 We need `MsgLeiosNoBlockAnnouncement` message in order to retain the ability for
@@ -1354,6 +1377,22 @@ can typically send immediately.
 See the [clean termination](#clean-termination) section why `MsgLeiosNoVotes`
 is needed, and how to design a timeout on `MsgLeiosVotesRequestNext` replies.
 
+The required exchange between two neighboring nodes is captured by the
+following [Information Exchange Requirements table](#table-5).
+
+<div align="center">
+<a name="table-5" id="table-5"></a>
+
+| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
+| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
+| ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
+| ←Server | MsgLeiosNoVotes                 |                                | No Leios vote is available                                                                               |
+
+<em>Table 5: LeiosVotes Information Exchange Requirements table</em>
+
+</div>
+
 ##### LeiosBlockNotify Mini-Protocol
 
 <div align="center">
@@ -1387,6 +1426,23 @@ signals downstream that a previously announced block is now ready for download
 or that its set of referenced transactions is now fully available. Both of
 these may trigger the downstraem to fetch information from the upstream using
 the next protocol below.
+
+The required exchange between two neighboring nodes is captured by the
+following [Information Exchange Requirements table](#table-6).
+
+<div align="center">
+<a name="table-6" id="table-6"></a>
+
+| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
+| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
+| ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
+| ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
+| ←Server | MsgLeiosBlockNoOffers           |                                | The server has no block or txs to offer                                                                  |
+
+<em>Table 6: LeiosBlockNotify Information Exchange Requirements table</em>
+
+</div>
 
 See the [clean termination](#clean-termination) section why `MsgLeiosBlockNoOffers`
 is needed, and how to design a timeout on `MsgLeiosBlockNotifyRequestNext` replies.
@@ -1481,17 +1537,6 @@ proposal for the bitmap representation is inspired by roaring bitmaps:
   chunk (for values `C*64..(C+1)*64`) and the following eight octets contain
   a bitmap of which values of this chunk are in the requested set
 
-The required exchange between two neighboring nodes is captured by the
-following Information Exchange Requirements table (IER table). For the sake of
-minimizing this proposal, each row is a mini-protocol message, but that
-correspondence does not need to remain one-to-one as the mini-protocols evolve
-over time. Note that the table does not list the messages in the anticipated
-chronological order; they're grouped by request/response semantics. The
-mini-protocols permit the client to react to some messages before it has
-received all messages related to an EB. For example, the client can send
-MsgLeiosBlockRequest as soon as it receives MsgLeiosBlockOffer, even if it has
-not yet received MsgLeiosBlockTxsOffer.
-
 See the [clean termination](#clean-termination) section how to design the
 timeouts on the `StMultiBlock` and `StBlockTxs` states.  Note that this
 protocol doesn't require responses indicating that there's no more data
@@ -1500,29 +1545,25 @@ on the server rather than asking for a next update available in the future.
 Still, timeouts need to be designed to allow the mini-protocol to terminate
 cleanly within `300s` also in the presence of protocol-pipelining.
 
+The required exchange between two neighboring nodes is captured by the
+following [Information Exchange Requirements table](#table-7).
+The mini-protocols permit the client to react to some messages before it has
+received all messages related to an EB. For example, the client can send
+MsgLeiosMultiBlockRequest as soon as it receives MsgLeiosBlockOffer, even if it
+has not yet received MsgLeiosBlockTxsOffer.
 
 <div align="center">
-<a name="table-4" id="table-4"></a>
+<a name="table-7" id="table-7"></a>
 
 | Sender  | Name                            | Arguments                      | Semantics                                                                                                |
 | ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
-| ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
-| ←Server | MsgLeiosNoBlockAnnouncement     |                                | The server hasn't seen an EB announcement                                                                |
-| Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
-| ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
-| ←Server | MsgLeiosNoVotes                 |                                | No Leios vote is available                                                                               |
-| Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
-| ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
-| ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
-| ←Server | MsgLeiosBlockNoOffers           |                                | The server has no block or txs to offer                                                                  |
 | Client→ | MsgLeiosMultiBlockRequest       | list of EB hashes              | Requests the EBs and all referenced transactions for the given EB hashes                                 |
 | ←Server | MsgLeiosBlock                   | EB block, list of transactions | A block requested in the previous MsgLeiosMultiBlockRequest                                              |
 | ←Server | MsgLeiosNoMoreBlocks            | $\emptyset$                    | All blocks from the previous MsgLeiosMultiBlockRequest have been delivered                               |
 | Client→ | MsgLeiosBlockTxsRequest         | EB hash, list of integers      | For the referenced EB, request a list of transactions identified by their sequence number within that EB |
 | ←Server | MsgLeiosBlockTxs                | list of transactions           | The transactions from an earlier MsgLeiosBlockTxsRequest                                                 |
 
-<em>Table 4: Leios Information Exchange Requirements table (IER table)</em>
+<em>Table 7: LeiosFetch Information Exchange Requirements table</em>
 
 </div>
 
@@ -1845,7 +1886,7 @@ these appear in the following section on Simulation Results. Additionally,
 future implementations of Leios can be assessed in these terms.
 
 <div align="center">
-<a name="table-5" id="table-5"></a>
+<a name="table-8" id="table-8"></a>
 
 |  Category  | Metric                                             | Measurement                                                                                           |
 | :--------: | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -1861,7 +1902,7 @@ future implementations of Leios can be assessed in these terms.
 |            | Peak CPU usage, $\hat{q}_\text{vcpu}$              | Maximum virtual CPU cores used by a node over a one-slot window                                       |
 | Resilience | Adversarial stake, $\eta_\text{adversary}(s)$      | Fractional loss in throughput due to adversarial stake of $s$                                         |
 
-<em>Table 5: Performance Metrics</em>
+<em>Table 8: Performance Metrics</em>
 
 </div>
 
@@ -2014,7 +2055,7 @@ the stake distribution in the `mini-mainnet` topology this results in a
 committee size of 208, less than the ideal size. We therefore also ran it with a
 1500 `midi-mainnet`, derived similarly, which produces a committee size of 448 —
 both lower than the ~916 voters implied by the $\sigma_c = 0.99$ default in
-[Table 7](#table-7) on mainnet stake. The results of all these tests are
+[Table 10](#table-10) on mainnet stake. The results of all these tests are
 documented in the [2026w18 analysis][2026w18].
 
 The table below summarizes the
@@ -2026,7 +2067,7 @@ conditions. In all cases there is little overhead, relative to the total bytes
 of transactions, in data that must be stored permanently as the ledger history.
 
 <div align="center">
-<a name="table-6" id="table-6"></a>
+<a name="table-9" id="table-9"></a>
 
 | Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions    | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
 | ------------------: | ---------------: | ------------- | ----------------: | --------------------: | -------------------: |
@@ -2036,7 +2077,7 @@ of transactions, in data that must be stored permanently as the ledger history.
 |               0.300 |            200.0 | congestion    |              38.2 |                  76.4 |                 95.8 |
 |               0.350 |            233.3 | over capacity |              95.4 |                 134.2 |                 95.7 |
 
-<em>Table 6: Leios efficiency at different throughputs</em>
+<em>Table 9: Leios efficiency at different throughputs</em>
 
 </div>
 
@@ -2435,7 +2476,7 @@ choice of parameters for Cardano mainnet must be subject to discussion and
 consideration of tradeoffs.
 
 <div align="center">
-<a name="table-7" id="table-7"></a>
+<a name="table-10" id="table-10"></a>
 
 | Parameter                                     |      Symbol      |   Feasible value   | Justification                                                                                                                                                                                                                                                  |
 |-----------------------------------------------|:----------------:|:------------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -2450,7 +2491,7 @@ consideration of tradeoffs.
 | Committee stake coverage                      |    $\sigma_c$    |        0.99        | At 99% cumulative stake the committee comprises ~916 pools (mainnet epoch 612), yielding certificates of ~203 B and vote traffic bounded by the stake-distribution tail. See [Alternatives & Extensions](#alternatives--extensions) for the coverage analysis. |
 | Quorum stake threshold                        |      $\tau$      |        0.75        | Votes representing ≥75% of total active stake must sign; ensures certified EBs are attested by >25% of honest stake even with 50% adversarial stake. Must satisfy $\tau < \sigma_c$.                                                                           |
 
-<em>Table 7: Feasible Protocol Parameters</em>
+<em>Table 10: Feasible Protocol Parameters</em>
 
 </div>
 
@@ -2527,7 +2568,7 @@ pricing of ten common hyperscale and discount cloud providers. The cost of a
 increase each month as the ledger becomes larger.
 
 <div align="center">
-<a name="table-8" id="table-8"></a>
+<a name="table-11" id="table-11"></a>
 
 | Throughput | Average-size transactions | Small transactions | Per-node operation | Per-node storage<br/>($) | Per-node storage<br/>(GB) | 10k-node network<br/>(first year) | 10k-node network<br/>(first year) |
 | ---------: | ------------------------: | -----------------: | -----------------: | -----------------------: | ------------------------: | --------------------------------: | --------------------------------: |
@@ -2537,7 +2578,7 @@ increase each month as the ledger becomes larger.
 | 300 TxkB/s |                  200 Tx/s |          1000 Tx/s |      $138.88/month |            $54.64/month² |              788 GB/month |                            $19.8M |                       $271k/epoch |
 | 350 TxkB/s |                  233 Tx/s |          1167 Tx/s |      $148.47/month |            $65.59/month² |              920 GB/month |                            $21.8M |                       $298k/epoch |
 
-<em>Table 8: Operating Costs by Transaction Throughput</em>
+<em>Table 11: Operating Costs by Transaction Throughput</em>
 
 </div>
 
@@ -2549,7 +2590,7 @@ split, fives times as much fee would have to be collected compared to what is
 listed in the table.
 
 <div align="center">
-<a name="table-9" id="table-9"></a>
+<a name="table-12" id="table-12"></a>
 
 | Infrastructure cost | Required ADA<br/>@ $0.45/ADA | Required transactions<br/>(average size)<br/>@ $0.45/ADA | Required transactions<br/>(small size)<br/>@ $0.45/ADA |
 | ------------------: | ---------------------------: | -------------------------------------------------------: | -----------------------------------------------------: |
@@ -2559,7 +2600,7 @@ listed in the table.
 |         $19.8M/year |               603k ADA/epoch |                                                6.43 Tx/s |                                              8.39 Tx/s |
 |         $21.8M/year |               622k ADA/epoch |                                                7.06 Tx/s |                                              9.21 Tx/s |
 
-<em>Table 9: Required TPS for Infrastructure Cost Coverage</em>
+<em>Table 12: Required TPS for Infrastructure Cost Coverage</em>
 
 </div>
 
@@ -2567,7 +2608,7 @@ _Required TPS for Current Reward Maintenance:_ To maintain current reward levels
 (~48 million ADA monthly) through transaction fees as the Reserve depletes.
 
 <div align="center">
-<a name="table-10" id="table-10"></a>
+<a name="table-13" id="table-13"></a>
 
 | Year | Reserve Depletion | Rewards from Fees (ADA) | Required TPS (Average size) | Required Throughput |
 | ---: | ----------------: | ----------------------: | --------------------------: | ------------------: |
@@ -2578,7 +2619,7 @@ _Required TPS for Current Reward Maintenance:_ To maintain current reward levels
 | 2029 |              ~43% |              20,640,000 |                        36.1 |           51 TxkB/s |
 | 2030 |              ~50% |              24,000,000 |                        41.9 |           59 TxkB/s |
 
-<em>Table 10: Required TPS for Current Reward Maintenance</em>
+<em>Table 13: Required TPS for Current Reward Maintenance</em>
 
 </div>
 
