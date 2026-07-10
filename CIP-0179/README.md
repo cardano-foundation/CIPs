@@ -4,13 +4,13 @@ Title: On-Chain Surveys and Polls
 Category: Metadata
 Status: Proposed
 Authors:
-    - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
-    - Ryan Wiley <rian222@gmail.com>
-    - Matthieu Pizenberg <matthieu.pizenberg@gmail.com>
+  - Thomas Lindseth <thomas.lindseth@intersectmbo.org>
+  - Ryan Wiley <rian222@gmail.com>
+  - Matthieu Pizenberg <matthieu.pizenberg@gmail.com>
 Implementors:
-    - Civitas Explorer <https://www.civitasexplorer.com/surveys>
+  - Civitas Explorer <https://www.civitasexplorer.com/surveys>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1107
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1107
 Created: 2025-10-28
 License: CC-BY-4.0
 ---
@@ -20,6 +20,7 @@ License: CC-BY-4.0
 This proposal defines a standardized transaction metadata format for creating, responding to, and cancelling on-chain surveys and polls under metadata label `17`.
 
 The format supports:
+
 - Batched survey definitions, responses, and cancellations (one or more per transaction).
 - Seven question types. Six built-in (single-choice, multi-select, ranking, numeric-range, points-allocation, rating) plus a custom extension type, via a tagged sum type.
 - Deterministic response binding using a survey reference `(TxId, index)` pair.
@@ -69,6 +70,12 @@ drand_chain_hash = bytes .size 32     ; Drand chain hash for tlock
 bounded_text = text .size (0..64)     ; Cardano metadata text limit
 chunked_text = bounded_text / [+ bounded_text]  ; single string or chunked array
 survey_ref = [tx_id, uint .size 2]    ; (TxId, index in definitions array)
+
+; Boolean flag encoded as a uint: 1 = true, 0 = false. Cardano's
+; transaction_metadatum subset has no boolean type (see below), so flags use a
+; uint. As an OPTIONAL trailing field, the value is omitted entirely when false;
+; an explicit 0 MUST also be accepted and treated as false.
+flag = uint .le 1
 
 ; A reference to off-chain content, tamper-evident via its hash. Used for:
 ; external survey presentation text, custom-method schemas, and voter rationales.
@@ -126,7 +133,7 @@ survey_definition = {
 ;   1 = SPO
 ;   2 = CC
 ;   3 = Stakeholder
-;   4 = Owner          (control of a payment/spending credential)
+;   4 = Keyholder      (control of a payment/spending credential)
 role = 0 / 1 / 2 / 3 / 4
 
 ; Roles permitted to respond. Non-empty; entries SHOULD be unique.
@@ -161,39 +168,39 @@ survey_question = custom_question
 ; Tag 0 is reserved for the custom (extension) type, so new built-in types are
 ; appended at higher tags without ever disturbing it.
 ;
-; Every question ends with an OPTIONAL `required` flag (bool, default false):
-; when true, a response MUST NOT omit the question. Omission of a non-required
-; question means abstain (see "Abstain semantics").
+; Every question ends with an OPTIONAL `required` flag (a uint `flag`, default
+; false): when 1, a response MUST NOT omit the question. Omission of a
+; non-required question means abstain (see "Abstain semantics").
 
 ; Tag 0: Custom method. Answer format defined by the schema at the anchor.
-custom_question = [0, chunked_text, content_anchor, ? bool]
+custom_question = [0, chunked_text, content_anchor, ? flag]
 
 ; Tag 1: Single-choice. Exactly one option selected.
-single_choice_question = [1, chunked_text, options_or_count, ? bool]
+single_choice_question = [1, chunked_text, options_or_count, ? flag]
 
 ; Tag 2: Multi-select. Between min_selections and max_selections options.
 ;   0 <= min_selections <= max_selections <= number_of_options.
 ;   min_selections may be 0: a present, empty selection is a valid answer
 ;   ("none selected"), distinct from omitting the question (abstain).
-multi_select_question = [2, chunked_text, options_or_count, uint, pos_uint, ? bool]
+multi_select_question = [2, chunked_text, options_or_count, uint, pos_uint, ? flag]
                      ;   tag  prompt        opts/count       min_sel  max_sel
 
 ; Tag 3: Ranking. Between min_ranked and max_ranked options, preference order.
 ;   1 <= min_ranked <= max_ranked <= number_of_options.
-ranking_question = [3, chunked_text, options_or_count, pos_uint, pos_uint, ? bool]
+ranking_question = [3, chunked_text, options_or_count, pos_uint, pos_uint, ? flag]
                 ;   tag  prompt        opts/count      min_ranked max_ranked
 
 ; Tag 4: Numeric-range. Answer is an integer satisfying the constraints.
-numeric_range_question = [4, chunked_text, numeric_constraints, ? bool]
+numeric_range_question = [4, chunked_text, numeric_constraints, ? flag]
 
 ; Tag 5: Points-allocation. Distribute exactly `budget` points across options.
-points_allocation_question = [5, chunked_text, options_or_count, pos_uint, ? bool]
+points_allocation_question = [5, chunked_text, options_or_count, pos_uint, ? flag]
                           ;   tag  prompt        opts/count       budget
 
 ; Tag 6: Rating. Rate options on the scale given by rating_scale.
-;   require_all (mandatory bool): true = a present answer MUST rate every option;
-;   false = a subset is allowed. Fixed so the optional `required` stays decodable.
-rating_question = [6, chunked_text, options_or_count, rating_scale, bool, ? bool]
+;   require_all (mandatory flag): 1 = a present answer MUST rate every option;
+;   0 = a subset is allowed. Fixed so the optional `required` stays decodable.
+rating_question = [6, chunked_text, options_or_count, rating_scale, flag, ? flag]
                 ;   tag  prompt        opts/count      rating_scale  require_all  required
 
 ; ---------- Rating scale ----------
@@ -307,7 +314,7 @@ Built-in question types are identified on-chain solely by their integer tag. For
 | 5 | Points-allocation | `urn:cardano:poll-method:points-allocation:v1` |
 | 6 | Rating | `urn:cardano:poll-method:rating:v1` |
 
-**URN versioning.** The suffix versions a method's *semantic contract*, not this CIP's document version, and bumps only on incompatible answer-semantics changes. `single-choice`, `multi-select`, and `numeric-range` are at `:v2` because their `:v1` (CIP-179 v1's string-based encoding) is materially redefined here (CBOR-first encoding, abstain-by-omission, meaningful empty multi-select). The other three begin at `:v1` as first definitions under this namespace. The correspondence with CIP-0191? (Ekklesia) method names, which reference the `:v1` URNs, is tabulated in [CIP-179 vs CIP-0191?](./cip-179-vs-cip-191.md).
+**URN versioning.** The suffix versions a method's _semantic contract_, not this CIP's document version, and bumps only on incompatible answer-semantics changes. `single-choice`, `multi-select`, and `numeric-range` are at `:v2` because their `:v1` (CIP-179 v1's string-based encoding) is materially redefined here (CBOR-first encoding, abstain-by-omission, meaningful empty multi-select). The other three begin at `:v1` as first definitions under this namespace. The correspondence with CIP-0191? (Ekklesia) method names, which reference the `:v1` URNs, is tabulated in [CIP-179 vs CIP-0191?](./cip-179-vs-cip-191.md).
 
 ### Survey Definition
 
@@ -329,7 +336,7 @@ The definition transaction MUST prove ownership of the `owner` credential: key-b
 
 ### Question Types
 
-Every question is a tagged array: type tag, then a `chunked_text` prompt, then type-specific fields, then an OPTIONAL trailing `required` flag (default `false`; when `true`, a response MUST NOT omit the question; see [Abstain semantics](#abstain-semantics)).
+Every question is a tagged array: type tag, then a `chunked_text` prompt, then type-specific fields, then an OPTIONAL trailing `required` flag (a uint `flag`; default `false`; when `1`, a response MUST NOT omit the question; see [Abstain semantics](#abstain-semantics)). Cardano's `transaction_metadatum` subset has no boolean type, so the flag is a uint (`1` = true); it is omitted entirely when false, and an explicit `0` MUST be accepted as false.
 
 Option-bearing questions (all but custom and numeric-range) carry an `options_or_count`: an inline array of at least 2 `bounded_text` labels, or, in external-content mode, a `uint >= 2` option count with labels supplied by the external document.
 
@@ -395,7 +402,7 @@ Option-bearing questions (all but custom and numeric-range) carry an `options_or
 
 - `rating_scale` is either a `numeric_constraints` grid `[min_rating, max_rating, ?step]` presented as numbers (e.g. a 1–5 Likert scale), or an ordered list of at least 2 level labels from worst to best (e.g. `["bad", "average", "good"]`) presented as text. In external-content mode the labels MAY be a level count (`uint >= 2`).
 - The rating in a response is always an integer, a value on the grid, or the 0-based label index (`0 = "bad"`), keeping tallies numeric regardless of presentation.
-- `require_all` (mandatory `bool`, before the optional `required`): with `false` a present answer MAY rate any non-empty subset; with `true` a present answer MUST rate every option (one pair per option, indices unique and in range) or the whole response is invalid.
+- `require_all` (mandatory `flag`, before the optional `required`): with `0` a present answer MAY rate any non-empty subset; with `1` a present answer MUST rate every option (one pair per option, indices unique and in range) or the whole response is invalid.
 - Response: `(option_index, rating)` pairs, each rating valid for the scale, option indices unique and valid. Omitting the question is an abstain either way (subject to `required`).
 
 ### Abstain semantics
@@ -405,7 +412,7 @@ A response MAY answer a subset of questions; **a question with no answer item co
 - Each question is tallied independently; tools SHOULD report abstain counts alongside per-option tallies.
 - A respondent who never submits any response is a non-participant, not an abstainer.
 - A response omitting a `required = true` question is invalid as a whole and MUST NOT be tallied.
-- Authors who want abstain as a *selectable, counted* option MAY add an explicit "Abstain" label to an option-based question.
+- Authors who want abstain as a _selectable, counted_ option MAY add an explicit "Abstain" label to an option-based question.
 - Omission (abstain) differs from a present, empty multi-select answer ("none selected", valid when `min_selections = 0`), which is a deliberate, tallied answer.
 
 ### Survey Response
@@ -473,7 +480,7 @@ For generic web rendering, publishers SHOULD use the JSON profile below (schema:
 
 The `questions` array is in survey-definition order. `options`, when present, is in option-index order. Rating questions whose on-chain `rating_scale` is a level count SHOULD use `ratingLabels` in rating-index order.
 
-Because answers reference option *indices* and every constraint is on-chain, responses are validated and tallied entirely from on-chain data; if the off-chain document is unavailable, only labels cannot be rendered. The on-chain structure is never replaced by a bare reference, so a survey is never uninterpretable for protocol purposes.
+Because answers reference option _indices_ and every constraint is on-chain, responses are validated and tallied entirely from on-chain data; if the off-chain document is unavailable, only labels cannot be rendered. The on-chain structure is never replaced by a bare reference, so a survey is never uninterpretable for protocol purposes.
 
 ### Responder Identity and Deduplication
 
@@ -484,11 +491,12 @@ Identity verification uses Cardano's existing transaction-level mechanisms: the 
 Control of the response `credential` MUST be proven by **at least one** of two alternative mechanisms:
 
 **Mechanism A: `required_signers` (standalone or linked):**
+
 - **Key-based** `[0, addr_keyhash]`: the `addr_keyhash` MUST be in the transaction body's `required_signers` (field 14); the ledger enforces the corresponding signature witness.
 - **Native-script** `[1, script_hash]`: tooling MUST resolve the script (via chain indexing) and verify the transaction's `required_signers` satisfy it.
 - **Plutus-script** `[1, script_hash]`: not provable this way, a Plutus script needs a redeemer, and metadata has no redeemer tag.
 
-**Mechanism B: governance-vote binding (governance-linked surveys only):** the transaction carries a `voting_procedures` entry whose voter credential equals the response `credential` and votes on `linked_action_id`. The ledger already enforced that voter's witness (key witness, native-script satisfaction, or Plutus redeemer evaluation) when accepting the vote, so the binding **is** the credential proof on its own. The credential need not also appear in `required_signers`. B is the *only* mechanism for Plutus-script credentials ([Plutus script credentials](#plutus-script-credentials)); for the rest it is optional, additionally tying the response to an on-chain governance vote. B's cross-checks are in [Linked survey response rules](#linked-survey-response-rules).
+**Mechanism B: governance-vote binding (governance-linked surveys only):** the transaction carries a `voting_procedures` entry whose voter credential equals the response `credential` and votes on one of the survey's linked actions. The ledger already enforced that voter's witness (key witness, native-script satisfaction, or Plutus redeemer evaluation) when accepting the vote, so the binding **is** the credential proof on its own. The credential need not also appear in `required_signers`. B is the _only_ mechanism for Plutus-script credentials ([Plutus script credentials](#plutus-script-credentials)); for the rest it is optional, additionally tying the response to an on-chain governance vote. B's cross-checks are in [Linked survey response rules](#linked-survey-response-rules).
 
 #### Role validation
 
@@ -500,7 +508,7 @@ The claimed role MUST be validated against ledger state; tools MUST NOT trust un
 | SPO (1) | Cold credential of a registered pool operator. |
 | CC (2) | Hot credential of an active Constitutional Committee member. |
 | Stakeholder (3) | Stake credential with delegated stake. |
-| Owner (4) | Payment/spending credential. Further eligibility (e.g. NFT ownership) is enforced off-chain. |
+| Keyholder (4) | Payment/spending credential. Further eligibility (e.g. NFT ownership) is enforced off-chain. |
 
 A signer MAY submit separate responses for different roles, provided each role claim independently passes validation.
 
@@ -543,18 +551,20 @@ A governance action's anchor is a [CIP-108](https://github.com/cardano-foundatio
 Its `@context` MUST define the CIP-179 terms ([below](#cip-179-context-terms)) so `body.cip179` survives canonicalization and stays under the author witness, rather than being silently dropped.
 
 Field notes:
+
 - `specVersion` — CIP-179 revision the link conforms to (integer).
 - `kind` — MUST be `"survey-link"`.
 - `surveyTxId` — survey definition transaction id, hex-encoded (compared case-insensitively).
 - `surveyIndex` — non-negative integer index into that transaction's payload array; a missing or malformed index is a broken link (reject it), never a fallback to `0`.
 
 Validation rules:
+
 - `(surveyTxId, surveyIndex)` MUST resolve to an existing survey definition under label `17`.
-- Tooling MUST derive `linked_action_id` from the action carrying the anchor. A survey MAY be linked by more than one action.
+- Tooling MUST derive `linked_action_id` from the action carrying the anchor — one id per linking action. A survey MAY be linked by more than one action; its linked actions are the set of these ids, which a mechanism-B binding matches against.
 - The survey `end_epoch` MUST equal the action's expiry epoch.
 - If linkage validation fails, tooling MUST NOT attach the survey; it remains valid standalone.
 
-An action MAY resolve (ratify, enact, expire) before its expiry epoch; the survey is unaffected and keeps accepting responses through `end_epoch`. The vote binding (mechanism B) is available only while the action is votable; afterwards responses use mechanism A ([Credential proof](#credential-proof)).
+An action MAY resolve (ratify, enact, expire) before its expiry epoch; the survey is unaffected and keeps accepting responses through `end_epoch`. The vote binding (mechanism B) is available only while the action is votable; afterwards responses use mechanism A ([Credential proof](#credential-proof)). This needs no window bookkeeping by readers: the ledger only accepts votes on actions still in the proposal set, so any on-chain binding was necessarily cast while the action was votable.
 
 #### CIP-179 @context terms
 
@@ -594,12 +604,13 @@ Every `cip179` sub-field MUST be mapped; the CIP-108 context sets no `@vocab`, s
 
 A linked response is validated exactly like a standalone one, credential proof plus role validation, and MUST be accepted on that basis alone; it is **not** required to carry a `voting_procedures` entry.
 
-A response MAY additionally **bind** itself to the linked governance vote with a `voting_procedures` entry, which is the only mechanism supporting Plutus-script credentials. When present:
-- It MUST contain a voter entry whose credential matches the response `credential`.
-- That entry MUST vote on `linked_action_id`.
-- The role derived from the voter tag (mapping above) MUST match the claimed role, necessarily one of `{DRep, SPO, CC}`, the roles with a Conway voter type; Stakeholder and Owner cannot use the binding.
+A response MAY additionally **bind** itself to a linked governance vote with a `voting_procedures` entry, which is the only mechanism supporting Plutus-script credentials. A `voting_procedures` entry counts as a **binding** iff all of:
 
-A binding passing these checks satisfies credential proof on its own (mechanism B). A present-but-failing binding invalidates the response; an absent binding is not a failure.
+- Its voter credential matches the response `credential`.
+- It votes on one of the actions linked to the survey.
+- The role derived from the voter tag (mapping above) matches the claimed role, necessarily one of `{DRep, SPO, CC}`, the roles with a Conway voter type; Stakeholder and Keyholder can never bind.
+
+A binding satisfies credential proof on its own (mechanism B). A `voting_procedures` entry that fails any of these checks — a vote on an unrelated action, a mismatched role — is simply not a binding: it neither proves nor invalidates, and the response is evaluated by mechanism A alone, exactly like one carrying no vote at all.
 
 ### Epoch Semantics
 
@@ -609,7 +620,7 @@ A binding passing these checks satisfies credential proof on its own (mechanism 
 
 ### Weighting and Aggregation (out of scope)
 
-This CIP records *who responded, in what role, with what selection*. Every valid response is one recorded response. How recorded selections are weighted or aggregated into an outcome (one-per-credential, by stake, by pledge, quadratic, Borda, …) is decided by the consumer of the recorded vote set, outside this CIP. Weighting changes nothing the respondent signs, only result interpretation; keeping it out of scope lets the same recorded set be re-tallied under any rule and avoids baking an inevitably incomplete enumeration of modes into the format. `role` is an eligibility/UI hint, never a weighting mode.
+This CIP records _who responded, in what role, with what selection_. Every valid response is one recorded response. How recorded selections are weighted or aggregated into an outcome (one-per-credential, by stake, by pledge, quadratic, Borda, …) is decided by the consumer of the recorded vote set, outside this CIP. Weighting changes nothing the respondent signs, only result interpretation; keeping it out of scope lets the same recorded set be re-tallied under any rule and avoids baking an inevitably incomplete enumeration of modes into the format. `role` is an eligibility/UI hint, never a weighting mode.
 
 ### Tool Output Requirements
 
@@ -711,11 +722,11 @@ This CIP records *who responded, in what role, with what selection*. Every valid
 1. Discover survey definitions by scanning label `17` for payloads with tag `0`.
 2. Discover cancellations (tag `2`) and mark cancelled surveys as inactive.
 3. Optionally discover governance actions whose anchor `body.cip179.kind` equals `"survey-link"`.
-4. If present, resolve `(surveyTxId, surveyIndex)`, derive `linked_action_id`, and check that `end_epoch` equals the action's expiry epoch. (Linkage does not restrict which roles may respond.)
+4. For each such action, resolve its `(surveyTxId, surveyIndex)` to the survey, derive the action's `linked_action_id`, and check that the survey's `end_epoch` equals the action's expiry epoch. A survey MAY thus be linked by several actions. (Linkage does not restrict which roles may respond.)
 5. Discover responses (tag `1`) and resolve each to its survey via `survey_ref`.
 6. Reject responses to cancelled surveys.
 7. Validate each answer against its question's type and constraints; treat questions without an answer item as abstains (reject the whole response if a `required` question is omitted).
-8. Verify each response's `credential` by either mechanism of [Credential proof](#credential-proof): (A) `required_signers` or (B) a ledger-validated `voting_procedures` binding (sufficient alone; the only path for Plutus-script credentials). When a binding is present, cross-check the Conway voter tag against the claimed role. Then validate role membership against ledger state.
+8. Verify each response's `credential` by either mechanism of [Credential proof](#credential-proof): (A) `required_signers` or (B) a ledger-validated `voting_procedures` binding — voter credential, linked action, and voter-tag role all matching (sufficient alone; the only path for Plutus-script credentials). An entry failing those checks is not a binding; fall back to (A). Then validate role membership against ledger state.
 9. Filter responses by `response_epoch <= end_epoch`.
 10. At or after `end_epoch`, re-verify each response against snapshot state; exclude failures.
 11. Apply latest-valid-response-wins per `(survey_ref, role, credential)`.
@@ -760,7 +771,7 @@ Grouping related questions in one survey shares the definition-level constraints
 
 ### Eligibility as a role set, weighting out of scope
 
-*Who may respond* (eligibility, which affects validation) and *how results are interpreted* (weighting, which affects nothing the respondent signs) are separable concerns. Pairing each role with a weighting mode would conflate them, and any enumeration of modes (`CredentialBased` / `StakeBased` / `PledgeBased`, …) is inherently incomplete: it cannot express schemes such as quadratic voting. A plain role set keeps the definition honest about what the chain enforces, still gives UIs a key-selection hint, and lets any weighting scheme be applied downstream to the same recorded set.
+_Who may respond_ (eligibility, which affects validation) and _how results are interpreted_ (weighting, which affects nothing the respondent signs) are separable concerns. Pairing each role with a weighting mode would conflate them, and any enumeration of modes (`CredentialBased` / `StakeBased` / `PledgeBased`, …) is inherently incomplete: it cannot express schemes such as quadratic voting. A plain role set keeps the definition honest about what the chain enforces, still gives UIs a key-selection hint, and lets any weighting scheme be applied downstream to the same recorded set.
 
 ### Governance action linkage
 
@@ -770,11 +781,11 @@ The action references the survey, not vice versa, avoiding circular dependencies
 
 ### CIP-8 message-signing proof (and calidus support)
 
-`required_signers` is ledger-enforced and simple, but only covers credentials that sign *transactions*. It cannot serve message-signing credential types, notably CIP-151 calidus hot keys, which would let SPOs respond without their cold credential. An optional CIP-8 (`COSE_Sign1`) proof mode would cover them and also allow third parties to batch-submit message-signed responses. Specifying it requires a design pass on: the signed payload (binding at least `survey_ref` against cross-survey replay, plus a per-response nonce), where the signature and recovered key live in the response, within-survey replay handling (the `(survey_ref, role, credential)` dedup helps), and how batched submission appears in the label `17` payload.
+`required_signers` is ledger-enforced and simple, but only covers credentials that sign _transactions_. It cannot serve message-signing credential types, notably CIP-151 calidus hot keys, which would let SPOs respond without their cold credential. An optional CIP-8 (`COSE_Sign1`) proof mode would cover them and also allow third parties to batch-submit message-signed responses. Specifying it requires a design pass on: the signed payload (binding at least `survey_ref` against cross-survey replay, plus a per-response nonce), where the signature and recovered key live in the response, within-survey replay handling (the `(survey_ref, role, credential)` dedup helps), and how batched submission appears in the label `17` payload.
 
 ### Canonical tally interchange format
 
-Tallies are derived independently from on-chain data and no tally artifact is committed, so no rigid normative schema is needed. Still, a *recommended, non-normative* interchange shape for per-method tallies (option counts, numeric distributions, ranking first-preferences and pairwise matrices, points and rating aggregates, per-role and abstain breakdowns) would help independent tools confirm matching results on shared test vectors. Deferred to its own pass.
+Tallies are derived independently from on-chain data and no tally artifact is committed, so no rigid normative schema is needed. Still, a _recommended, non-normative_ interchange shape for per-method tallies (option counts, numeric distributions, ranking first-preferences and pairwise matrices, points and rating aggregates, per-role and abstain breakdowns) would help independent tools confirm matching results on shared test vectors. Deferred to its own pass.
 
 ### Plutus script credentials
 
@@ -811,10 +822,11 @@ Version 2 (breaking, over v1): integer keys and enum values replace string-based
 Version 3 (breaking, over v2): `submission_mode` added to `survey_definition` (`[0]` public, `[1, chain_hash, round, padding_size]` sealed), enabling sealed responses via timelock encryption (Drand `tlock`), delayed reveal, not permanent secrecy; definition fields reordered so the variable-length `questions` array comes last; `spec_version` restored as the first element of `survey_response`.
 
 Version 4 (breaking, over v3):
+
 - **Question tags renumbered; custom moves to tag 0** (stable extension point; built-ins follow at 1–6).
 - **Two new question types:** `points_allocation` (tag 5) and `rating` (tag 6, numeric grid or ordered text labels, always integer-encoded).
 - **`min` constraints added** to multi-select (`min_selections`, may be `0`: a present empty selection is a counted "none selected") and ranking (`min_ranked >= 1`).
-- **Per-question `required` flag** (optional trailing bool, default false) forcing an explicit answer.
+- **Per-question `required` flag** (optional trailing uint `flag`, `1` = true, default false) forcing an explicit answer.
 - **Abstain by omission**: an answerless question is an abstain; present empty multi-select answers are valid only when `min_selections = 0` and mean "none selected".
 - **`role_weighting` → `eligible_roles`; weighting modes removed** (purely interpretive, inexpressive enumeration, same set re-talliable under any rule); new `Owner` role added.
 - **`content_anchor` primitive** introduced for external presentation text, custom-method schemas, and voter rationales.
@@ -823,10 +835,12 @@ Version 4 (breaking, over v3):
 - **Governance linkage decoupled from eligibility**: all `eligible_roles` may respond to a linked survey (previously only `{DRep, SPO, CC}`, each required to cast a governance vote); the `voting_procedures` vote becomes an optional binding, retained as the only ledger-evaluated path for Plutus-script credentials.
 
 Version 5 (breaking, over v4):
-- **Governance linkage generalized to any action type** (previously Info Actions only); the mechanism-B vote binding is available only while the action is votable.
+
+- **Governance linkage generalized to any action type** (previously Info Actions only); the mechanism-B vote binding is available only while the action is votable (ledger-enforced) and becomes purely additive — a non-qualifying `voting_procedures` entry is not a binding and never invalidates (previously a present-but-failing binding invalidated the response).
 - **Linkage carried inside the CIP-108 `body`** as a namespaced `cip179` object (was a bare top-level object) with required `@context` terms; `kind` shortened to `"survey-link"`.
 - **Rating questions gain a mandatory `require_all` flag** (before the optional `required`): when set, a present answer MUST rate every option. Answer encoding unchanged.
 - **Sealed response serialization tightened** (clarification): tlock plaintext is canonical CBOR of `[+ answer_item]` padded to `padding_size`; ciphertext is raw de-armored bytes, not armored text.
+- **Role 4 renamed `Owner` → `Keyholder`** (prose only; the role tag stays `4` and all encodings are unchanged): removes the collision with the definition's `owner` (the cancellation authority) and the misleading implication of survey ownership — the role denotes control of any plain payment/spending credential, requiring no registration or on-chain activity.
 
 ## Copyright
 

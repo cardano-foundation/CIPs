@@ -67,7 +67,7 @@ Expected: the anchor's `body.cip179` object (with `kind = "survey-link"`) links 
 
 Source: [txctx-linked-valid-single-voter-single-action.json](./examples/txctx-linked-valid-single-voter-single-action.json)
 
-Expected: linked responses do not need `voting_procedures`; if present, the binding must match the response credential, linked action id, and claimed role. A passing binding is sufficient credential proof and is the only defined proof path for Plutus-script credentials.
+Expected: linked responses do not need `voting_procedures`; a present entry counts as a binding only if it matches the response credential, one of the survey's linked actions, and the claimed role. A passing binding is sufficient credential proof and is the only defined proof path for Plutus-script credentials; a non-matching entry is simply not a binding and does not invalidate the response.
 
 ### Cancellation
 

@@ -51,6 +51,11 @@
         }
       ]
     },
+    "flag": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "Boolean flag encoded as a uint (1 = true, 0/omitted = false); Cardano metadata has no boolean type. See README.md."
+    },
     "content_anchor": {
       "type": "array",
       "prefixItems": [
@@ -257,7 +262,7 @@
           "$ref": "#/$defs/content_anchor"
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -277,7 +282,7 @@
           "$ref": "#/$defs/options_or_count"
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -305,7 +310,7 @@
           "minimum": 1
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -334,7 +339,7 @@
           "minimum": 1
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -355,7 +360,7 @@
           "$ref": "#/$defs/numeric_constraints"
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -379,7 +384,7 @@
           "minimum": 1
         },
         {
-          "type": "boolean"
+          "$ref": "#/$defs/flag"
         }
       ],
       "items": false,
@@ -402,11 +407,11 @@
           "$ref": "#/$defs/rating_scale"
         },
         {
-          "type": "boolean",
+          "$ref": "#/$defs/flag",
           "description": "require_all (mandatory). See README.md."
         },
         {
-          "type": "boolean",
+          "$ref": "#/$defs/flag",
           "description": "required (optional)."
         }
       ],
