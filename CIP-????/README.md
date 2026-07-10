@@ -129,7 +129,7 @@ The value will be encoded as `bytes` representing the reward address.
 ```
 transaction_body =
   { ..existing fields..
-  , ? x : reward_account   ; feeChange
+  , ? x : account_address   ; feeChangeAccount
   }
 ```
 
