@@ -72,7 +72,7 @@ address optional allows for backwards compatibility.
 No additional signing requirements are imposed, as it is not mandatory for a 
 user to output fee change into an address they own. 
 
-**`feeChangeAddr` provided.** When a transaction provides 
+**`feeChangeAccount` provided.** When a transaction provides 
 this address, the following changes to ledger rules are required :
 
 (1) To the *produced* calculation :
