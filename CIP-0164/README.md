@@ -116,6 +116,7 @@ technical resources, visit the Leios Innovation R&D site at
 - [Figure 6: LeiosVotes mini-protocol state machine](#figure-6b)
 - [Figure 6: LeiosBlockNotify mini-protocol state machine](#figure-6c)
 - [Figure 7: LeiosFetch mini-protocol state machine](#figure-7)
+- [Figure:   Protocol Pipelining](#figure-protocol-pipelining)
 - [Figure 8: SPO profitability forecast under Leios](#figure-8)
 - [Figure 9: Time for transaction to reach the ledger](#figure-9)
 - [Figure 10: Transactions reaching the ledger](#figure-10)
@@ -1353,20 +1354,34 @@ latency between peers.
 
 > **Definition of pipelining:**
 >
-> Protocol pipelining with a factor N conceptually runs N instances of a mini-protocol on a
-> single multiplexer subchannel for the given protocol ID. Each instance tracks
-> its own state and agency as per the specification. One protocol state is
-> marked as the switch state; the switch state must be one in which the
-> initiator has agency. The subchannel is governed by a pair of multiplexers,
-> one for sending and one for receiving, that behave in round-robin fashion
-> across the N instances, starting at the first instance. Requests from the
-> node are forwarded by the sending multiplexer to the currently selected
-> instance and sending the resulting protocol message to the network; whenever
-> having sent a message from the switch state, the send multiplexer selects the
-> next instance. The receive multiplexer forwards received messages from the
-> network to the currently selected protocol instance; whenever receiving a
-> message that transitions that instance into the switch state, the receive
-> multiplexer selects the next instance.
+> Protocol pipelining is a latency hiding technique commonly used in CPUs and
+> networking to improve protocol performance.   It is done by sending requests
+> without awaiting for results, and collecting them (in order of the requests)
+> as they arrive. Protocol pipelining doesn't require to change state machine
+> of the protocol, it just modifies timing of events on the pipelining side.
+> Importantly, the server side doesn't need to be implemented in any special
+> way other than to follow the protocol state machine.  The pipelining of
+> messages needs to be done from the same state in which a client has the
+> agency, which we call switch state.  The client can pipeline requests that
+> leave the switch state and later collect responses which shift the agency
+> back to the switch state.  A single protocol might have more than one switch
+> state, but it's not possible to pipeline messages from different switch
+> states.  It is also not necessary that the server immediately yields back
+> control to the client (`LeiosFetch` is an example of such a protocol).
+> Protocol pipelining on the client side can be implemented without
+> concurrency, although parallel implementations tend to perform better, simply
+> because the main mini-protocol thread can pipeline requests without being
+> blocked on computations done when receiving responses.  Below is an example
+> of protocol pipelining evolution for a simple ping-pong protocol.
+
+<div align="center">
+<a name="figure-protocol-pipelining" id="figure-protocol-pipelining"></a>
+
+![Protocol Pipelining](images/protocol-pipelining.svg)
+
+<em>Figure: Protocol Pipelining, image by [Mwhitlock](https://commons.wikimedia.org/w/index.php?title=User:Mwhitlock&action=edit&redlink=1), licensed under Public Domain</em>
+
+</div>
 
 In the three mini-protocols above, StIdle is the switch state. In case maximum
 buffering commitment shall be made for 1000 responses, one could e.g. choose a
