@@ -59,7 +59,7 @@ A new optional field `feeChangeAccount` is added to the transaction body `TxBody
 feeChangeAddr : Maybe AccountAddress
 ```
 
-Where the reward (staking) address `feeChangeAddr` is the address to which the
+Where the `AccountAddress` in `feeChangeAccount` is the address of an account to which the
 compensation is credited. Using an account address rather than a payment address
 ensures the credit is handled through the account based mechanism introduced in CIP-159
 and does not need to be reflected in a transaction output. Making the change 
