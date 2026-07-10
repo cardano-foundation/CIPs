@@ -53,7 +53,7 @@ some extent, the inspiration for the mechanism discussed in this CIP.
 
 ### New transaction body field
 
-A new optional field `feeChangeAddr` is added to the transaction body `TxBody` :
+A new optional field `feeChangeAccount` is added to the transaction body `TxBody` 
 
 ```
 feeChangeAddr : Maybe RwdAddr
