@@ -89,7 +89,7 @@ this address, the following changes to ledger rules are required :
 
 - `0 ≤ feeChange pp utxo txb`
 
-(3) We update the reward on the ledger state with this calculation, 
+(3) We update the account balance on the ledger state with this calculation, 
 which is performed after all other ledger state changes resulting from 
 transaction processing :
 
