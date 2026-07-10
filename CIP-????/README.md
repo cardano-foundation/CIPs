@@ -60,7 +60,7 @@ feeChangeAddr : Maybe AccountAddress
 ```
 
 Where the reward (staking) address `feeChangeAddr` is the address to which the
-compensation is credited. Using a reward address rather than a payment address
+compensation is credited. Using an account address rather than a payment address
 ensures the credit is handled through the existing rewards-withdrawal mechanism
 and does not need to be reflected in a transaction output. Making the change 
 address optional allows for backwards compatibility. 
