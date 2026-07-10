@@ -56,7 +56,7 @@ some extent, the inspiration for the mechanism discussed in this CIP.
 A new optional field `feeChangeAccount` is added to the transaction body `TxBody` 
 
 ```
-feeChangeAddr : Maybe RwdAddr
+feeChangeAddr : Maybe AccountAddress
 ```
 
 Where the reward (staking) address `feeChangeAddr` is the address to which the
