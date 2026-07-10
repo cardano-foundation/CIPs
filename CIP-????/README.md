@@ -122,7 +122,7 @@ the mempool).
 
 #### CBOR encoding
 
-The `feeChange` field is encoded in the transaction body map under a new key `x`.
+The `feeChangeAccount` field is encoded in the transaction body map under a new key `x`.
 The key `x` is the next available field number in the era into which it is added.
 The value will be encoded as `bytes` representing the reward address.
 
