@@ -138,8 +138,8 @@ transaction_body =
 
 ### Choice of reward address over payment address
 
-Reward addresses are already used for staking rewards and pool
-deposits, making them a natural fit.
+Account addresses are already used for staking rewards and pool
+deposits, and crucially for CIP-159 making them a natural fit.
 Crediting a reward address ensures the UTxO set changes remain predictable 
 locally. 
 
