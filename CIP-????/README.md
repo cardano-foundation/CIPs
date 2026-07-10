@@ -140,8 +140,8 @@ transaction_body =
 
 Account addresses are already used for staking rewards and pool
 deposits, and crucially for CIP-159 making them a natural fit.
-Crediting a reward address ensures the UTxO set changes remain predictable 
-locally. 
+Crediting a account ensures the UTxO set changes remain predictable 
+locally. Most importantly accounts do not have any minimal deposit requirement, like minUTxO, thus change returned can be as low as 1 lovelace.
 
 ### Opt-in via optional field
 
