@@ -145,7 +145,7 @@ locally. Most importantly accounts do not have any minimal deposit requirement, 
 
 ### Opt-in via optional field
 
-By making `feeChange` optional, this CIP imposes zero overhead on transactions that
+By making `feeChangeAccount` optional, this CIP imposes zero overhead on transactions that
 do not wish to participate in the compensation mechanism. It also means the change
 can be deployed before the change calculation formula is finalized, without any
 observable effect on current transactions. Finally, it allows backwards compatibility 
