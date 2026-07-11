@@ -22,14 +22,17 @@ This CPS surfaces DRep voting power concentration as a priority governance chall
 
 ## Problem
 
-Cardano's on-chain governance model gives Delegate Representatives (DReps) voting power proportional to delegated stake. The current ledger rules place no upper bound on the amount of stake that can be delegated to a single DRep credential. This design has known centralizing tendencies that are now being observed in practice, although not to the extent seen in other DAOs, providing a window of opportunity to avoid severe voting power centralization among DReps in Cardano:
+Cardano's on-chain governance model gives Delegate Representatives (DReps) voting power proportional to delegated stake. The current ledger rules place no upper bound on the amount of stake that can be delegated to a single DRep credential. Stake-weighted delegation models have known centralizing tendencies over time, and Beyond MVG's on-chain analysis of governance activity across epochs 537–609 found evidence of increasing concentration in DRep voting power, including a declining Nakamoto coefficient and an increasing Gini coefficient. [^5][^6] While concentration remains significantly lower than that observed in many other DAOs, these measurements suggest a window of opportunity to investigate potential mitigation mechanisms before severe concentration develops:
 
 - Forum threads and polls from January through March 2025 (and continuing into 2026), governance roundtables in 2026, and off-chain sources like workshops, interviews and surveys from the Beyond Minimum Viable Governance project consistently surface community concern over top DReps holding disproportionate stake.
-- The Nakamoto coefficient for DRep voting power has been declining, indicating that effective voting control is concentrating among fewer participants.
+- Beyond MVG's on-chain analysis observed a declining Nakamoto coefficient and increasing Gini coefficient for DRep voting power across epochs 537–609, indicating that effective voting control has been concentrating among fewer participants.[^5][^6]
 - Community discussions have explored approaches such as saturation points, voting power caps, and delegation distribution mechanisms, suggesting the community recognizes the problem but has not converged on a technical solution.
 
-The deeper problem is structural. Stake-weighted voting tends to centralize over time, and common mitigation strategies such as quadratic voting must introduce identity to be effective against multi-credential circumvention [^1], tying voting weight to verified entities rather than to stake alone.
+The deeper problem is structural. Concentrated DRep voting power is not inherently undesirable. Delegation may legitimately accumulate around DReps who consistently demonstrate expertise, transparency, and alignment with the preferences of ada holders. In this sense, some degree of concentration can simply reflect informed stakeholder choice.
 
+However, increasing concentration may also introduce governance risks. Governance outcomes may become increasingly dependent on a small number of representatives, reducing governance resilience if those representatives become inactive, retire, or act contrary to delegator expectations. High concentrations of delegated stake may also make it more difficult for newer or smaller DReps to gain visibility, reinforcing delegation patterns driven by existing voting power rather than informed comparison of available representatives.
+
+The challenge is therefore not to eliminate concentration entirely, but to understand when it becomes a governance concern and whether technical mechanisms can preserve stakeholder choice while discouraging undesirable concentration. Stake-weighted voting tends to centralize over time, and common mitigation strategies such as quadratic voting must introduce identity to be effective against multi-credential circumvention [^1], tying voting weight to verified entities rather than to stake alone.
 Cardano governance does not use identity. The community may, in the future, reject identity-based mechanisms entirely.
 
 This leaves an open question that has not been answered elsewhere: how, if at all, can a stake-weighted governance system manage power concentration without relying on identity and without compromising the skin-in-the-game benefit of stake-weighted voting? Waiting for identity to be implemented (and adopted) is not an adequate response, because:
@@ -51,7 +54,7 @@ Today, they open a DRep explorer that defaults to sorting by voting power. The D
 
 **A small DRep with strong governance expertise wants to grow their delegation base.**
 
-They publish rationales, vote consistently, and engage in community discussions. Despite this, their voting power remains low because new delegators are funneled through wallet UX and explorer defaults to the largest DReps. They observe that the system rewards size, not quality, and consider stopping their participation.
+They publish rationales, vote consistently, and engage in community discussions. Despite this, their voting power remains low, while larger DReps continue to attract a disproportionate share of new delegation. Whether this results primarily from wallet and explorer UX, delegator preferences, existing visibility, reputation effects, or some combination of these factors remains an open question. They observe that growing their delegation is difficult and consider stopping their participation.
 
 **A large DRep is concerned about contributing to concentration.**
 
@@ -60,6 +63,7 @@ A large DRep is concerned that continued growth in delegated voting power may co
 **A delegator wants to distribute stake across multiple DReps.**
 
 A delegator wants to spread their stake across multiple DReps to avoid contributing to any single DRep's accumulation. The ledger supports this today via multiple stake credentials per account, each delegating to a different DRep. However, no wallet standard defines a multi-DRep delegation flow, a single stake credential's voting power cannot be split fractionally, and most wallets surface a single-DRep model only.
+
 **A wallet DRep wants to surface saturation information to delegators.**
 
 A wallet wants to surface information to delegators about a DRep's current level of delegated voting power relative to a preferred or recommended threshold. There is currently no protocol-defined signal indicating whether a DRep has reached a preferred or recommended level of delegated voting power. The wallet therefore has no protocol-supported data on which to base such a UI.
@@ -135,6 +139,9 @@ Any proposed CIP responding to this CPS should address the following:
 - [DRep Voting Power Saturation Research, Project Catalyst Fund 14](https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research)
 
 - [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view)
+- [^5]: Beyond MVG on-chain measurements, epochs 537–609, DRep Gini and Nakamoto coefficient datasets (M3-2-1, M3-2-2); analyzed in the *Cardano State of Governance Report 2026*.
+
+[^6]: *Intersect Weekly Update #114* (June 5, 2026), highlighting the observed decline in the DRep Nakamoto coefficient trend. https://intersectmbo.org/news/intersect-weekly-update-114-june-5-2026
 
 ### Related CPS / CIP Discussions
 
