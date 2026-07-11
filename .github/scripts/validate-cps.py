@@ -84,7 +84,7 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
     processed_lines = []
     for line in frontmatter_lines:
         # Match lines like "CPS: ?" or "Category: ?" and quote the ?
-        if re.match(r'^[A-Za-z][A-Za-z ]*:\s+\?+\s*$', line):
+        if re.match(r'^[A-Za-z][A-Za-z -]*:\s+\?+\s*$', line):
             line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
         processed_lines.append(line)
 
@@ -471,6 +471,77 @@ def validate_sections(content: str) -> List[str]:
     return errors
 
 
+def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
+    """Validate that no header field has an unquoted '?' value.
+
+    A bare '?' is invalid YAML (it denotes an explicit key), which breaks
+    GitHub's frontmatter rendering: the header table is not displayed and
+    Discussions links are not clickable. Quoted values like ``CPS: "?"``
+    are fine and do not match here.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for line in raw_lines:
+        match = re.match(r'^([A-Za-z][A-Za-z -]*):\s+\?+\s*$', line)
+        if match:
+            field = match.group(1)
+            errors.append(
+                f"'{field}' has an unquoted '?' value; a bare '?' is invalid YAML and breaks "
+                f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
+                f'Use {field}: "?" until a number is assigned, or the assigned number.'
+            )
+    return errors
+
+
+def validate_directory_name(frontmatter: Dict, file_path: Path) -> List[str]:
+    """Validate that a CPS with an assigned number lives in a correctly-named directory.
+
+    For CPS number N, the parent directory must be 'CPS-NNNN' (zero-padded to 4 digits;
+    no truncation for numbers >= 10000). Unassigned CPSs ('?', '??', etc.) skip the
+    number-match check, but a numbered directory must still be correctly zero-padded.
+    """
+    errors = []
+
+    # Regardless of the CPS field, a numbered directory must be zero-padded to
+    # 4 digits (5+ digits without a leading zero for numbers >= 10000).
+    dir_match = re.fullmatch(r'CPS-(\d+)', file_path.parent.name)
+    if dir_match:
+        digits = dir_match.group(1)
+        if len(digits) != 4 and (len(digits) < 4 or digits.startswith('0')):
+            errors.append(
+                f"Directory name '{file_path.parent.name}' is not zero-padded to 4 digits. "
+                f"Expected: 'CPS-{int(digits):04d}'"
+            )
+            return errors
+
+    cps_value = frontmatter.get('CPS')
+    if cps_value is None:
+        return errors  # Missing field is reported by header validation
+
+    # Skip unassigned CPSs ('?', '??', etc.)
+    if isinstance(cps_value, str) and cps_value.startswith('?'):
+        return errors
+
+    # Parse to integer; non-numeric strings are caught by header validation
+    try:
+        cps_num = int(cps_value)
+    except (ValueError, TypeError):
+        return errors
+
+    expected_dir = f"CPS-{cps_num:04d}"
+    actual_dir = file_path.parent.name
+
+    if actual_dir != expected_dir:
+        errors.append(
+            f"Directory name '{actual_dir}' does not match the CPS number {cps_num}. "
+            f"Expected: '{expected_dir}'"
+        )
+
+    return errors
+
+
 def is_cps_file(file_path: Path) -> bool:
     """Check if file path indicates a CPS document."""
     path_str = str(file_path)
@@ -517,6 +588,13 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
             if re.match(r'^CPS:\s+0\d+', line):
                 errors.append("CPS number must not have leading zeros")
                 break
+
+    if raw_lines:
+        errors.extend(validate_unquoted_question_marks(raw_lines))
+
+    # Validate the directory name matches the assigned CPS number
+    dir_errors = validate_directory_name(frontmatter, file_path)
+    errors.extend(dir_errors)
 
     # Validate header
     header_errors = validate_header(frontmatter)

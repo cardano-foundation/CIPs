@@ -55,7 +55,6 @@ CIP_OPTIONAL_SECTIONS = {
     'Appendices',
     'Acknowledgments',
     'Acknowledgements',
-    'Open Questions',
 }
 
 # Required H3 subsections under "Path to Active"
@@ -844,7 +843,14 @@ def validate_sections(content: str) -> List[str]:
     allowed_sections_lower = required_sections_lower | optional_sections_lower
     for header in h2_headers:
         if header.lower() not in allowed_sections_lower:
-            errors.append(f"Unknown section: '{header}'. Only required and optional sections are allowed.")
+            if header.lower() == 'open questions':
+                errors.append(
+                    "'Open Questions' is not a valid CIP section (it is a CPS-only section). "
+                    "Move open questions into 'Rationale: How does this CIP achieve its goals?', "
+                    "e.g. as an '### Open Questions' subsection."
+                )
+            else:
+                errors.append(f"Unknown section: '{header}'. Only required and optional sections are allowed.")
 
     # Build a mapping from lowercase to expected capitalization
     expected_capitalization = {}
@@ -941,6 +947,30 @@ def validate_header_whitespace(raw_lines: List[str]) -> List[str]:
     return errors
 
 
+def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
+    """Validate that no header field has an unquoted '?' value.
+
+    A bare '?' is invalid YAML (it denotes an explicit key), which breaks
+    GitHub's frontmatter rendering: the header table is not displayed and
+    Discussions links are not clickable. Quoted values like ``CIP: "?"``
+    are fine and do not match here.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for line in raw_lines:
+        match = re.match(r'^([A-Za-z][A-Za-z -]*):\s+\?+\s*$', line)
+        if match:
+            field = match.group(1)
+            errors.append(
+                f"'{field}' has an unquoted '?' value; a bare '?' is invalid YAML and breaks "
+                f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
+                f'Use {field}: "?" until a number is assigned, or the assigned number.'
+            )
+    return errors
+
+
 def _strip_code(content: str) -> str:
     """Strip fenced and inline code spans from markdown content."""
     no_fences = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
@@ -1001,8 +1031,9 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
             )
         elif not is_candidate and not exists:
             errors.append(
-                f"'Solution To' entry '{canonical}' references a CPS that has no folder; "
-                f"add '?' if it is still in PR"
+                f"'Solution To' entry '{canonical}' references a CPS that has no folder in this "
+                f"repository. Check the number is correct; you may mark it '{canonical}?' if it "
+                f"intentionally references a not-yet-merged CPS."
             )
 
     return errors
@@ -1049,8 +1080,9 @@ def validate_cross_references(content: str, frontmatter: Dict, file_path: Path) 
         if not _ref_folder_exists(repo_root, prefix, number):
             canonical = f"{prefix}-{number:04d}"
             errors.append(
-                f"Body references '{canonical}' but no such folder exists in the repository "
-                f"(use '{canonical}?' if it is still in PR)"
+                f"Body references '{canonical}' but no folder '{canonical}' exists in this repository. "
+                f"Check the number is correct; if this intentionally refers to a not-yet-merged "
+                f"proposal, you may optionally mark it '{canonical}?'."
             )
 
     return errors
@@ -1063,6 +1095,18 @@ def validate_directory_name(frontmatter: Dict, file_path: Path) -> List[str]:
     no truncation for numbers >= 10000). Unassigned CIPs ('?', '??', etc.) skip this check.
     """
     errors = []
+
+    # Regardless of the CIP field, a numbered directory must be zero-padded to
+    # 4 digits (5+ digits without a leading zero for numbers >= 10000).
+    dir_match = re.fullmatch(r'CIP-(\d+)', file_path.parent.name)
+    if dir_match:
+        digits = dir_match.group(1)
+        if len(digits) != 4 and (len(digits) < 4 or digits.startswith('0')):
+            errors.append(
+                f"Directory name '{file_path.parent.name}' is not zero-padded to 4 digits. "
+                f"Expected: 'CIP-{int(digits):04d}'"
+            )
+            return errors
 
     cip_value = frontmatter.get('CIP')
     if cip_value is None:
@@ -1130,6 +1174,7 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
                 break
 
     if raw_lines:
+        errors.extend(validate_unquoted_question_marks(raw_lines))
         errors.extend(validate_header_whitespace(raw_lines))
 
     # Validate the directory name matches the assigned CIP number

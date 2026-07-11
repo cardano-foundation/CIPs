@@ -11,12 +11,13 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Validation | Description |
 | ---------- | ----------- |
 | File path | Must be in a `CIP-*` directory |
-| Directory name | If the `CIP` field has an assigned number (not `?`), the directory must be named `CIP-NNNN` where `NNNN` is the CIP number zero-padded to 4 digits (e.g., `CIP: 12` → `CIP-0012/`) |
+| Directory name | If the `CIP` field has an assigned number (not `"?"`), the directory must be named `CIP-NNNN` where `NNNN` is the CIP number zero-padded to 4 digits (e.g., `CIP: 12` → `CIP-0012/`). Even when the number is unassigned, any directory matching `CIP-<digits>` must be zero-padded to 4 digits (e.g. `CIP-032/` fails; `CIP-0032/` passes). |
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
+| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
-| Body cross-references | `CIP-NNNN` / `CPS-NNNN` references in the body must point to an existing folder. Use `CIP-NNNN?` / `CPS-NNNN?` for a document that is still in PR. References inside fenced or inline code blocks are ignored. |
+| Body cross-references | `CIP-NNNN` / `CPS-NNNN` references in the body must point to an existing folder. References with a `?` suffix (`CIP-NNNN?`) are treated as intentional references to not-yet-merged proposals and are skipped; the `?` notation is optional, not mandated. References inside fenced or inline code blocks are ignored. |
 
 ## Header Field Validations
 
@@ -24,7 +25,7 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 
 | Field | Order | Required? | Validation Rules |
 | ----- | ----- | --------- | ---------------- |
-| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or `?`/`??`/etc. for unassigned. No leading zeros. |
+| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or quoted `"?"`/`"??"`/etc. for unassigned (an unquoted `?` fails — see file-level rules). No leading zeros. |
 | **Title** | 2 | Yes | 1-100 characters |
 | **Category** | 3 | Yes | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | Yes | `Proposed`, `Active`, or `Inactive` with a required parenthetical reason (e.g., `Inactive (Superseded by CIP-NNNN)`) |
@@ -89,3 +90,17 @@ They **must** appear after `Path to Active` and before `Copyright`:
 - `Acknowledgments` / `Acknowledgements`
 
 Optional sections appearing before any required section (other than `Copyright`) will cause validation to fail.
+
+Note: `Open Questions` is a CPS-only section and is **not** allowed in CIPs. Unresolved design questions belong in the `Rationale: How does this CIP achieve its goals?` section, e.g. as an `### Open Questions` subsection.
+
+## Link Checking (manual)
+
+Dead-link checking is **not** part of the GitHub workflow (external link checking from CI runners is unreliable due to bot protection and rate limiting). A standalone checker is provided for authors and editors to run out-of-band:
+
+```
+python3 .github/scripts/check-links.py                  # all CIP-*/README.md and CPS-*/README.md
+python3 .github/scripts/check-links.py CIP-0030         # one proposal directory
+python3 .github/scripts/check-links.py --internal-only  # skip external URLs (fast)
+```
+
+It verifies that relative links point to existing files, that `#anchor` fragments match a heading in the target markdown file, and that external `http(s)` URLs respond without an error. Bot-protected (`403`) and rate-limited (`429`) responses are reported as warnings rather than failures.

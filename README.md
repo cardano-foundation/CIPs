@@ -155,9 +155,12 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
 | 0170 | [KERI-backed metadata attestations](./CIP-0170) | Proposed |
 | 0171 | [On-chain Smart Contract Bytecode Verification](./CIP-0171) | Proposed |
+| 0173 | [Net Change Limit Parameter](./CIP-0173) | Proposed |
 | 0176 | [Non-segregated Block Body Serialization](./CIP-0176) | Proposed |
 | 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
+| 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
+| 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -166,7 +169,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-05-12</i></p>
+<p align="right"><i>Last updated on 2026-06-23</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).

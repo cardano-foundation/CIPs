@@ -2,7 +2,7 @@
 CPS: 8
 Title: Domain Name Resolution
 Category: Tools
-Status: Open
+Status: Inactive (superseded by CPS-0032)
 Authors:
   - Hinson Wong <hinson@cns.space>
 Proposed Solutions: []
