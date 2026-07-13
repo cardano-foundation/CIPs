@@ -1269,7 +1269,7 @@ The keys, nonces, addresses, and CBOR below are obviously fake (the dapp X25519 
 32 times) but the shape and encoding is exactly what a conforming implementation MUST accept or
 reject. Linebreaks in URLs are for readability only; on the wire each URL is a single line.
 
-### C.1 Valid `connect` request and response
+#### C.1 Valid `connect` request and response
 
 dApp constants:
 
@@ -1333,7 +1333,7 @@ byte-exact, cryptographically real known-answer vector for this flow (fixed keys
 reproducible `signature` and response URL, plus the `-5` / `-10` negatives) is published in the
 reference implementation and exercised by `tests/vectors/sign_006_canonical_subject_connect_method_echo.json`.
 
-### C.2 Valid `signTx` request and response
+#### C.2 Valid `signTx` request and response
 
 Assume `tx_body` CBOR is the 32-byte zero word repeated; its BLAKE2b-256 is the deterministic
 fake-but-shape-correct value below (in a real test vector the wallet recomputes and matches).
@@ -1384,7 +1384,7 @@ The dApp verifies the `signature` against the `session.signingPublicKey` it rece
 `connect`. If verification fails, the dApp MUST treat the response as if it never arrived,
 discard the witness set, and surface `errorCode=-10 ResponseSignatureInvalid` to the user.
 
-### C.3 `signTx` that MUST be rejected with `errorCode=-2 CommitMismatch`
+#### C.3 `signTx` that MUST be rejected with `errorCode=-2 CommitMismatch`
 
 This request is byte-identical to C.2 *except* that `commit` is the all-ones word instead of the
 all-zeros word. The encrypted `payload` still carries the all-zeros `tx_body`, so when the wallet
