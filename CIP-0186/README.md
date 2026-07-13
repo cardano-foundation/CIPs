@@ -1198,7 +1198,7 @@ The spec authors will surface real preprod transaction hashes (Aegis &harr; Yuti
 test pass status to the Discussions thread on this PR as those milestones land, so editors can track
 progress empirically rather than on promises.
 
-## Appendix A &mdash; Error codes
+### Appendix A &mdash; Error codes
 
 These codes appear ONLY in the deep-link callback URL's `errorCode` parameter. They form a separate
 code space from CIP-30's `APIErrorCode` enum (CIP-30:113-118), which uses integer values -1..-4
@@ -1227,7 +1227,7 @@ two error tables namespaced in their codebase.
 | -32  | PayloadTooLarge          | Request URL exceeded the wallet's accepted size               |
 | -100 | InternalError            | Wallet bug or unrecoverable state                             |
 
-## Appendix B &mdash; Wallet registry (v1 draft, advisory)
+### Appendix B &mdash; Wallet registry (v1 draft, advisory)
 
 Maintained as `wallet-registry.json` and `wallet-registry.schema.json` in the CIP folder, matching
 the [CIP-10](https://cips.cardano.org/cip/CIP-10) registry-file pattern. **This central registry is
@@ -1263,7 +1263,7 @@ class of attack where any installed app can register the bare `cip30dl:` scheme 
 fallback URIs intended for a specific wallet. The HTTPS form uses each wallet's own domain so
 Universal Link claims do not collide.
 
-## Appendix C &mdash; Test vectors
+### Appendix C &mdash; Test vectors
 
 The keys, nonces, addresses, and CBOR below are obviously fake (the dapp X25519 key is `01` repeated
 32 times) but the shape and encoding is exactly what a conforming implementation MUST accept or
