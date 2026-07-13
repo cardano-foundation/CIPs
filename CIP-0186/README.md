@@ -161,6 +161,9 @@ wallet-id        = 1*( ALPHA / DIGIT / "-" )
 method           = "connect" / "disconnect" / "signTx" / "signData"
                  / "getUsedAddresses" / "getUnusedAddresses"
                  / "getRewardAddresses" / "getNetworkId"
+                 / "getPubDRepKey"                        ; CIP-95, governance wallets
+                 / "getRegisteredPubStakeKeys"            ; CIP-95, governance wallets
+                 / "getUnregisteredPubStakeKeys"          ; CIP-95, governance wallets
                  / "submitTx"        ; OPTIONAL
 
 param-list       = param *( "&" param )
@@ -532,19 +535,47 @@ through its own backend (the Aegis case). When implemented, request payload is
 `{ "session": "...", "tx": "<base64url(signed CBOR)>" }`; response payload is
 `{ "txHash": "<base64url>" }`.
 
-#### CIP-95 governance profile (RESERVED)
+#### CIP-95 governance profile
 
 [CIP-95](https://cips.cardano.org/cip/CIP-95) (Web-Wallet Bridge &mdash; Conway ledger era, Active)
 extends CIP-30 with governance support. Its surface (CIP-95:243-499) adds three methods
 (`api.cip95.getPubDRepKey`, `api.cip95.signData` accepting a `DRepID`,
 `api.cip95.getUnregisteredPubStakeKeys`) plus extends `api.signTx` and `api.getRegisteredPubStakeKeys`
-to recognise Conway certificate types (CIP-95:328-376). CIP-30-DeepLink can carry the CIP-95
-governance surface without introducing a new wire method: a wallet that implements CIP-95 MAY accept
-a `DRepID` in the `signData` request's `addr` field (CIP-95:421) and MAY recognise Conway
-certificates (CIP-95:328) inside the `signTx` request's encrypted CBOR. New read-only methods
-(`getPubDRepKey`, `getRegisteredPubStakeKeys`, `getUnregisteredPubStakeKeys`) MAY be added in a
-follow-up minor revision of this CIP under the `v=1` envelope as backwards-compatible new methods,
-gated by a capabilities advertisement in the `connect` session JSON.
+to recognise Conway certificate types (CIP-95:328-376). CIP-30-DeepLink carries the entire CIP-95
+governance surface in `v=1` over the transport already specified above, with NO envelope, encryption,
+or callback change. Conway governance certificates already sit inside the `signTx` request's CBOR
+`tx`, and the CIP-95 read methods reuse the same request-response envelope as the base read methods;
+the governance surface therefore rides the existing transport unchanged. A wallet that implements
+CIP-95 MUST advertise it by setting `"supports_governance": true` in its vendor-attestation manifest
+(*Security model &sect; Vendor attestation manifest*) and MUST implement the following:
+
+- **Governance certificates in `signTx`.** The wallet MUST recognise the Conway governance and
+  stake-key certificate types (CIP-95:328) &mdash; DRep registration/update/retirement, vote
+  delegation, and constitutional-committee hot-key authorisation &mdash; when they appear inside
+  the `signTx` request's decrypted `tx` CBOR, and MUST surface them on the signing screen exactly
+  as CIP-95 requires for the injected `api.signTx`. This is the same `signTx` method and the same
+  `commit` binding already defined; no new wire method is introduced.
+
+- **`getPubDRepKey`.** Read-only, using the same envelope as `getRewardAddresses`. The decrypted
+  response payload is `{ "dRepKey": "<hex Ed25519 DRep public key per CIP-95:281>" }`.
+
+- **`getRegisteredPubStakeKeys` / `getUnregisteredPubStakeKeys`.** Read-only, using the same
+  paginated envelope as `getUsedAddresses`. Each decrypted response payload is
+  `{ "stakeKeys": ["<hex Ed25519 stake public key per CIP-95:302,318>"], "nextPage": <int | null> }`.
+  As with `getUsedAddresses`, the wallet MUST NOT return more than 50 keys per page and MUST NOT
+  expose the derivation path.
+
+- **DRep `signData`.** The existing `signData` method (*&sect; signData*) is the transport for
+  `api.cip95.signData`: a governance wallet MUST accept a
+  [CIP-129](https://cips.cardano.org/cip/CIP-129) `DRepID` (CIP-95:421) in the
+  `signData` request's `addr` field in addition to a bech32 payment or stake address, and MUST
+  return the CIP-30 `DataSignature` (`COSE_Sign1` / `COSE_Key`) unchanged. The DRep signing envelope
+  is thus identical to the base `signData` envelope; only the accepted `addr` value set is widened.
+
+A wallet that does not implement CIP-95 MUST reject `getPubDRepKey`,
+`getRegisteredPubStakeKeys`, and `getUnregisteredPubStakeKeys` with `errorCode=-9 UnsupportedVersion`
+per the strict unknown-method rule (*&sect; Unknown-key policy*), and MUST reject a `signData`
+request whose `addr` is a `DRepID` with the same code.
 
 ### Callback contract
 
