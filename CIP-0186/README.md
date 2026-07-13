@@ -4,7 +4,7 @@ Title: Cardano Wallet Deep-Link Signing
 Category: Wallets
 Status: Proposed
 Authors:
-    - "Nathaniel \"decimalist\" Minton (Flux Point Studios) <nathanielminton@fluxpointstudios.com>"
+    - Nathaniel "decimalist" Minton (Flux Point Studios) <nathanielminton@fluxpointstudios.com>
 Implementors: []
 Discussions:
     - Forum thread: https://forum.cardano.org/t/cip-proposal-mobile-deep-link-signing-for-native-dapps-cip-30-extension/154561
