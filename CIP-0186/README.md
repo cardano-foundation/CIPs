@@ -129,10 +129,17 @@ HTTPS form (preferred):        https://<wallet-domain>/cip30dl/v1/<method>?<para
 Custom-scheme form (fallback): cip30dl-<wallet-id>:/v1/<method>?<params>
 ```
 
-`<wallet-domain>` is a hostname owned by the wallet vendor and serving an `apple-app-site-association`
-file (iOS) and `/.well-known/assetlinks.json` file (Android) that claims the path prefix `/cip30dl/`.
-`<wallet-id>` is a registry name (`lace`, `eternl`, `vespr`, ...) maintained in the (advisory)
-`wallet-registry.json` in Appendix B.
+`<wallet-domain>` is a hostname owned by the wallet vendor. The wallet-domain is the runtime-
+authoritative anchor for a wallet's CIP-30-DeepLink identity: the vendor MUST serve, under
+well-known paths on that domain, both its platform association documents &mdash;
+`apple-app-site-association` (iOS) and `/.well-known/assetlinks.json` (Android), claiming the path
+prefix `/cip30dl/` &mdash; and its vendor-attestation document
+`/.well-known/cip30dl-attestation.json` (*Security model &sect; Vendor attestation manifest*). dApps
+MUST resolve a wallet's protocol commitments from these origin-anchored documents at runtime rather
+than from any central list. `<wallet-id>` is a lowercase ASCII name (`lace`, `eternl`, `vespr`, ...)
+that MUST equal the `wallet_id` field of the attestation document served on `<wallet-domain>`; it
+also appears in the advisory `wallet-registry.json` catalogued in Appendix B, which is a
+non-normative convenience list only.
 
 **Per-wallet custom schemes (security-critical).** Every wallet that implements CIP-30-DeepLink MUST
 declare its custom scheme as `cip30dl-<wallet-id>:` rather than a shared `cip30dl:` namespace. On iOS,
@@ -696,9 +703,11 @@ controlling DNS for the victim's `redirect` host.
 
 Wallets MUST publish a vendor-attestation manifest at
 `https://<wallet-domain>/.well-known/cip30dl-attestation.json` (HTTPS-only, served with
-`Content-Type: application/json` and `Cache-Control: max-age=86400`). The manifest is the
-authoritative source for the wallet's CIP-30-DeepLink commitments and supersedes the human-readable
-registry entry in Appendix B for runtime validation. Schema:
+`Content-Type: application/json` and `Cache-Control: max-age=86400`). This origin-anchored manifest,
+resolved at runtime from the wallet's own domain, is the NORMATIVE and sole authoritative source for
+the wallet's CIP-30-DeepLink commitments. The advisory `wallet-registry.json` in Appendix B is a
+convenience catalogue only and is NEVER consulted for runtime validation; where the two disagree, the
+origin-anchored manifest governs. Schema:
 
 ```json
 {
@@ -719,9 +728,9 @@ registry entry in Appendix B for runtime validation. Schema:
 ```
 
 dApps SHOULD probe this manifest before sending the first `connect` and SHOULD refuse to proceed
-if the advertised `https_prefix` does not match the registry, or if `protocol_versions` does not
-include `"1"`. The conformance suite asserts that every wallet under test serves a manifest that
-validates against `cip30dl-attestation.schema.json`.
+if the advertised `https_prefix` is not hosted on the wallet's own `<wallet-domain>`, or if
+`protocol_versions` does not include `"1"`. The conformance suite asserts that every wallet under
+test serves a manifest that validates against `cip30dl-attestation.schema.json`.
 
 #### In-process WebView dApps (special case)
 
@@ -1207,14 +1216,16 @@ two error tables namespaced in their codebase.
 ## Appendix B &mdash; Wallet registry (v1 draft, advisory)
 
 Maintained as `wallet-registry.json` and `wallet-registry.schema.json` in the CIP folder, matching
-the [CIP-10](https://cips.cardano.org/cip/CIP-10) registry-file pattern. **The registry is
-ADVISORY, not normative.** Wallets MUST NOT be required to appear in the registry to be conformant;
-the registry exists purely so dApps that want to compile a static "wallet picker" have a single
-human-curated starting list. The authoritative source of a wallet's protocol commitments at
-runtime is the vendor-attestation manifest at
-`https://<wallet-domain>/.well-known/cip30dl-attestation.json` (see *Vendor attestation manifest*).
-This decouples the registry's editorial maintenance from the protocol's correctness, and means
-wallets that join after v1.0 do not require a CIP-editor merge to be usable.
+the [CIP-10](https://cips.cardano.org/cip/CIP-10) registry-file pattern. **This central registry is
+ADVISORY-ONLY, never normative.** Wallets MUST NOT be required to appear in the registry to be
+conformant, and no implementation may treat it as a source of truth for a wallet's protocol
+commitments; the registry exists purely so dApps that want to compile a static "wallet picker" have
+a single human-curated starting list. The NORMATIVE, runtime-authoritative source is the
+origin-anchored vendor-attestation manifest each wallet publishes under a well-known path on its own
+domain, `https://<wallet-domain>/.well-known/cip30dl-attestation.json` (see *Vendor attestation
+manifest*), resolved at runtime. This decouples the registry's editorial maintenance from the
+protocol's correctness, and means wallets that join after v1.0 do not require a CIP-editor merge to
+be usable.
 
 `wallet-registry.json`:
 
