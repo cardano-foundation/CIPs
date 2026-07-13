@@ -890,6 +890,13 @@ bytes signed MUST be the canonical form defined above.
 
 ### iOS platform considerations
 
+- **Universal Links are the PREFERRED transport; the custom scheme is FALLBACK ONLY.** dApps MUST
+  attempt the HTTPS Universal-Link form (`https://<wallet-domain>/cip30dl/v1/...`) first and MUST use
+  the `cip30dl-<wallet-id>:` custom scheme only when the Universal Link fails to launch (the
+  wallet is installed but its AASA claim has not yet been fetched, or was cleared by a
+  delete/re-install). The custom scheme is retained purely as defence-in-depth for that
+  install-but-no-AASA-yet window; it is never the primary path and MUST NOT be used when the
+  Universal Link resolves.
 - **AASA in v=1 (OPTIONAL).** The wallet SHOULD publish an `apple-app-site-association` file at
   `https://<wallet-domain>/.well-known/apple-app-site-association` whose `applinks.details[*].paths`
   includes `/cip30dl/*`. When published, this makes `https://<wallet-domain>/cip30dl/v1/...` a
@@ -927,6 +934,11 @@ bytes signed MUST be the canonical form defined above.
 
 ### Android platform considerations
 
+- **App Links are the PREFERRED transport; the custom scheme is FALLBACK ONLY.** As on iOS, dApps
+  MUST attempt the HTTPS App-Link form first and MUST fall back to the `cip30dl-<wallet-id>:` custom
+  scheme only when the App Link fails to launch (the wallet is installed but its `assetlinks.json`
+  auto-verification has not completed). The custom scheme is retained purely as defence-in-depth for
+  that window and is never the primary path.
 - **App Links in v=1 (OPTIONAL).** The wallet SHOULD publish `/.well-known/assetlinks.json` with a
   `delegate_permission/common.handle_all_urls` claim for `https://<wallet-domain>/cip30dl/*`,
   making the HTTPS form an *Auto-Verified* App Link (Android 12+). **App Links in v=2 (MUST).**
