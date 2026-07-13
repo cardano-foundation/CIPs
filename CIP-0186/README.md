@@ -1151,7 +1151,9 @@ today.
   via a `CIP-30-DeepLink for dApp builders` guide.
 - Stage 5 (T+24 weeks): Active.
 
-## Reference Implementation
+## Appendices
+
+### Reference Implementation
 
 **Status at draft submission**: two reference implementations are in active development at Flux Point
 Studios. Neither has shipped yet at the time this CIP is opened as Draft; both are targeted to land
