@@ -1,0 +1,57 @@
+{
+  "registrations": [
+    {
+      "serial": 1,
+      "provider": "Example Provider A",
+      "namespace": ".did",
+      "policy_ids": {
+        "mainnet": "aabbccddee112233445566778899001122334455667788990011223344",
+        "preprod": "112233445566778899001122334455667788990011223344556677889900"
+      },
+      "resolver": {
+        "api": "https://example-a.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-a.com",
+      "security_contact": "security@example-a.com",
+      "status": "active",
+      "registered": "2026-06-01"
+    },
+    {
+      "serial": 2,
+      "provider": "Example Provider B",
+      "namespace": "$name",
+      "policy_ids": {
+        "mainnet": "bbccddee1122334455667788990011223344556677889900112233445566"
+      },
+      "resolver": {
+        "api": "https://example-b.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-68",
+      "website": "https://example-b.com",
+      "security_contact": "security@example-b.com",
+      "status": "active",
+      "registered": "2026-06-01"
+    },
+    {
+      "serial": 3,
+      "provider": "Example Provider C",
+      "namespace": "name.ada",
+      "policy_ids": {
+        "mainnet": "ccddee112233445566778899001122334455667788990011223344556677",
+        "preprod": "ddee11223344556677889900112233445566778899001122334455667788"
+      },
+      "resolver": {
+        "api": "https://example-c.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-c.com",
+      "security_contact": "security@example-c.com",
+      "status": "deprecated",
+      "registered": "2026-06-01"
+    }
+  ]
+}
