@@ -1,5 +1,5 @@
 ---
-CIP: ????
+CIP: "????"
 Title: Handle Provider Registry & Resolver
 Category: Tools
 Status: Proposed
@@ -8,7 +8,7 @@ Authors:
   - Jesse Anderson <papa.goose@koralabs.io>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1199
+  - "CPS-0032 PR: https://github.com/cardano-foundation/CIPs/pull/1199"
 Created: 2026-06-01
 License: CC-BY-4.0
 ---
@@ -27,7 +27,7 @@ to any single provider.
 
 This CIP addresses the problems documented in CPS-0032.
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 CPS-0032 documented the following problems in the Cardano
 naming ecosystem:
@@ -42,9 +42,9 @@ This CIP provides the technical solution to those problems.
 
 ## Specification
 
-### 1. Provider Registry
+### Provider Registry
 
-#### 1.1 Registry Format
+#### Registry Format
 
 The provider registry is a JSON file (`registry.json`) maintained
 in this CIP's directory in the Cardano CIPs repository. Each
@@ -57,7 +57,7 @@ CIP editors in order of pull request merge date. Serial numbers
 are sequential integers starting from 1 and incrementing by 1
 for each new entry.
 
-#### 1.2 Registry Entry Format
+#### Registry Entry Format
 
 ```json
 {
@@ -80,7 +80,7 @@ for each new entry.
 }
 ```
 
-#### 1.3 Registry Fields
+#### Registry Fields
 
 | Field | Required | Description |
 |-------|----------|-------------|
@@ -96,7 +96,7 @@ for each new entry.
 | status | Yes | One of: active, deprecated, inactive |
 | registered | Yes | ISO 8601 date of registry entry merge |
 
-#### 1.4 Serial Number and Resolution Order
+#### Serial Number and Resolution Order
 
 Serial numbers are assigned in order of pull request merge date
 and represent registration order only. Wallets SHOULD present
@@ -113,9 +113,9 @@ namespace format, wallets SHOULD default to the provider with
 the lowest serial number for that format while always providing
 a clearly accessible user override option.
 
-### 2. Resolver Interface
+### Resolver Interface
 
-#### 2.1 API Resolution
+#### API Resolution
 
 All registered providers MUST implement the following HTTP
 endpoint:
@@ -166,7 +166,7 @@ to mainnet resolution.
 All responses MUST use `Content-Type: application/json` and
 MUST use HTTPS.
 
-#### 2.2 Input Handling Requirements
+#### Input Handling Requirements
 
 Wallets and dApps implementing this standard MUST:
 
@@ -178,7 +178,7 @@ Wallets and dApps implementing this standard MUST:
 - Disable browser autofill on address input fields to prevent
   inadvertent selection of autofill values.
 
-#### 2.3 On-Chain Resolution
+#### On-Chain Resolution
 
 In addition to API resolution, providers MUST support on-chain
 resolution so wallets can verify handle ownership trustlessly
@@ -195,14 +195,14 @@ address for the handle.
 Providers MUST document their on-chain resolution method in
 their registry entry.
 
-#### 2.4 Test Vectors
+#### Test Vectors
 
 Providers SHOULD include at least one publicly documented test
 vector — a known handle and its expected resolved address on
 preprod testnet — so wallet implementors can verify their
 integration without spending real ADA.
 
-### 3. Wallet Display Requirements
+### Wallet Display Requirements
 
 Wallets implementing this standard MUST:
 
@@ -225,7 +225,7 @@ Wallets implementing this standard SHOULD:
 - Allow users to set a preferred default provider in wallet
   settings.
 
-### 4. Collision Handling
+### Collision Handling
 
 When a user enters a handle string that matches the namespace
 format of multiple registered providers, wallets MUST:
@@ -245,7 +245,7 @@ Wallets MUST NOT silently resolve to one provider when multiple
 providers can resolve the same visible handle string without
 surfacing this ambiguity to the user.
 
-### 5. Provider Evaluation Criteria
+### Provider Evaluation Criteria
 
 To be eligible for inclusion in the registry a provider MUST
 demonstrate:
@@ -267,7 +267,7 @@ A provider SHOULD demonstrate:
 CIP editors review registry addition pull requests for
 compliance with these criteria before merging.
 
-### 6. Provider Deprecation
+### Provider Deprecation
 
 When a provider ceases operation or migrates to a new policy
 ID they MUST update their registry entry status field to
@@ -282,7 +282,7 @@ Wallets reading a deprecated or inactive registry entry MUST:
 - Not remove previously resolved addresses from transaction
   history
 
-### 7. Payment URI Integration
+### Payment URI Integration
 
 Payment URIs that include handle resolution SHOULD use the
 following parameter format to specify provider context
@@ -302,22 +302,22 @@ When a wallet receives a payment URI containing a
 provider for resolution rather than prompting the user to
 select a provider.
 
-### 8. Security Considerations
+### Security Considerations
 
-#### 8.1 Homograph Attacks
+#### Homograph Attacks
 
 Wallets MUST display the full resolved address alongside any
 handle and MUST NOT replace the address display with only the
 handle name at any point in the transaction flow.
 
-#### 8.2 Script Address Warnings
+#### Script Address Warnings
 
 Wallets MUST display a prominent warning when a handle resolves
 to a script address. Unless the script address has an attached
 datum, this is most likely an error and users should be
 discouraged from proceeding without verification.
 
-#### 8.3 Provider Impersonation
+#### Provider Impersonation
 
 The registry is the authoritative source of provider policy
 IDs. Wallets MUST verify that the policy ID returned in a
@@ -325,14 +325,14 @@ resolver response matches the policy ID declared in the
 registry entry for that provider. Responses with mismatched
 policy IDs MUST be rejected and the user MUST be warned.
 
-#### 8.4 API Availability
+#### API Availability
 
 Wallets SHOULD implement on-chain resolution as a fallback
 when a provider's API endpoint is unavailable. Wallets MUST
 NOT silently fail when a provider API is unavailable — they
 MUST notify the user that resolution was unsuccessful.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 ### Registry model
 
