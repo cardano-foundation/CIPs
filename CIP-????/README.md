@@ -20,7 +20,7 @@ License: CC-BY-4.0
 This proposal discusses a mechanism for users to receive change for fee overpayment. 
 The amount of change given is the difference between the minimum fee calculated for that 
 transaction and the fee specified by the transaction. The change is sent to the 
-reward address specified by that transaction. 
+account address specified by that transaction. 
 
 ## Motivation: Why is this CIP necessary?
 
@@ -56,7 +56,7 @@ some extent, the inspiration for the mechanism discussed in this CIP.
 A new optional field `feeChangeAccount` is added to the transaction body `TxBody` 
 
 ```
-feeChangeAddr : Maybe AccountAddress
+feeChangeAccount : Maybe AccountAddress
 ```
 
 Where the `AccountAddress` in `feeChangeAccount` is the address of an account to which the
@@ -77,27 +77,39 @@ this address, the following changes to ledger rules are required :
 
 (1) To the *produced* calculation :
 
-- the `txb .txFee` summand is replaced with `collectedFee pp utxo tx`
+- the `txfee` summand is replaced with `collectedFee pp utxo tx`
 
 `collectedFee pp utxo tx = minfee pp utxo tx`
 
 - a summand is added `feeChange pp utxo txb`, where we define 
 
-`feeChange pp utxo txb = txb .txFee - minfee pp utxo tx`
+`feeChange pp utxo txb = txfee - collectedFee pp utxo tx`
 
-(2) In the `UTXO` rule, we add a check 
+(2) `minfee pp utxo tx` goes into the fee pot (instead of `txfee`, as before)
 
-- `0 ≤ feeChange pp utxo txb`
+(3) `collectedFee pp utxo tx - minfee pp utxo tx` goes into the treasury (`0` in this CIP)
 
-(3) We update the account balance on the ledger state with this calculation, 
-which is performed after all other ledger state changes resulting from 
-transaction processing :
+(4) `feeChangeAccount` is checked to be registered
 
-```agda
-rwds' = rwds ∪⁺ ❴ feeChangeAddr , feeChange ❵ᵐ
-```
-**`feeChangeAddr` not provided.** When this value is `feeChangeAddr = Nothing`, no changes 
-to ledger rules are required.
+(5) After processing all other account-based operations by the transaction,
+we update the account balance with account address `feeChangeAccount` by 
+increasing it by `feeChange pp utxo txb`
+
+Note that `feeChange ≥ 0` follows from the existing minimum-fee rule.
+
+
+
+**`feeChangeAccount` not provided.** When this value is `feeChangeAccount = Nothing`
+
+(1) The `minfee pp utxo tx` goes into the fee pot
+
+(2) The entire rest of the specified fee, i.e. `txfee tx - minfee pp utxo tx` goes into the treasury.
+
+
+**Collateral collection** In the case that Phase-2 validation fails, and only collateral 
+is collected, no changes are necessary. Any overpayment goes to the fee pot as in the 
+previous eras. The incentives for users to write only validating scripts remain 
+aligned.
 
 
 #### Fee accounting
@@ -108,23 +120,28 @@ fee calculation changes.
 
 #### `TxInfo`
 
-It is important to note that no changes to `TxInfo` are required. 
+No changes to `TxInfo` are required. 
 
-The reason for this is that all Plutus scripts
-should be blind to the fee change provided. This value is not fixed at the time of 
-transaction construction and therefore cannot be used to predict the outcome of 
-script validation at the time of construction. Note here that this change may 
-in the future make it 
-impossible for a script to itself check the produced/consumed balance, as 
-the `feeChange` calculation in future eras may require data not included 
-in `TxInfo` (e.g. if it depends on how long the transaction was waiting in 
-the mempool).
+#### Plutus scripts
+
+This change will require a new version of Plutus to be released. It will also require 
+that old-version Plutus scripts are not allowed to be run on transactions that provide 
+a non-`Nothing` account address `feeChangeAccount`.
+
+As in prior eras, all Plutus scripts
+should be blind to any data not fixed at the time of transaction construction, including 
+the fee change provided (i.e. `txInfoFee` is still `txfee`). The change provided will be finalized at the time of block construction. So, the `feeChange` amount cannot be used to predict the outcome of 
+script validation at the time of construction. 
+This change to the ledger also makes it
+impossible for a script to itself check the produced/consumed balance, which we 
+discuss briefly in [Tooling](#tooling).
+
 
 #### CBOR encoding
 
 The `feeChangeAccount` field is encoded in the transaction body map under a new key `x`.
 The key `x` is the next available field number in the era into which it is added.
-The value will be encoded as `bytes` representing the reward address.
+The value will be encoded as `bytes` representing the account address.
 
 ```
 transaction_body =
@@ -133,14 +150,13 @@ transaction_body =
   }
 ```
 
-
 ## Rationale: How does this CIP achieve its goals?
 
-### Choice of reward address over payment address
+### Choice of account address over payment address
 
 Account addresses are already used for staking rewards and pool
 deposits, and crucially for CIP-159 making them a natural fit.
-Crediting a account ensures the UTxO set changes remain predictable 
+Crediting an account ensures the UTxO set changes remain predictable 
 locally. Most importantly accounts do not have any minimal deposit requirement, like minUTxO, thus change returned can be as low as 1 lovelace.
 
 ### Opt-in via optional field
@@ -148,11 +164,27 @@ locally. Most importantly accounts do not have any minimal deposit requirement, 
 By making `feeChangeAccount` optional, this CIP imposes zero overhead on transactions that
 do not wish to participate in the compensation mechanism. It also means the change
 can be deployed before the change calculation formula is finalized, without any
-observable effect on current transactions. Finally, it allows backwards compatibility 
+observable effect on the assessment of validity of current transactions. Finally, it allows backwards compatibility 
 with transactions from previous eras.
+
+
+#### Tooling
+
+Most tooling support for Plutus smart contracts will require updates. Support for a new version of 
+Plutus will be required. Moreover, scripts will have to be upgraded to account for the possibility 
+that they may have access only to incomplete data about asset relocation, and be unable to 
+reconstruct a local preservation of value check 
+for the transaction. This is because they will not have access to the amount of change given to 
+the account address (a value not necessarily predictable at the time of transaction construction).
 
 ### Alternatives considered
 
+- **Refund amount specified by the block producer**: We could add a new field `changeAmount : Coin` 
+  to the transaction, instead of a transaction body, similar to the `isValid` flag. This field 
+  can be modified by the block producer at the time of block construction to reflect the 
+  correctly calculated change amount. This may be a valuable addition for for use by tools 
+  in the ecosystem, however, it will not necessarily 
+  make a difference to node safety or functionality. 
 - **Implicit refund into the change output**: rejected because it requires the ledger
   to locate and modify a specific UTxO output, which would compromise the deterministic
    validation of Plutus scripts
