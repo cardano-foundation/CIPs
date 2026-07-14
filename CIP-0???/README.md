@@ -263,7 +263,6 @@ A provider SHOULD demonstrate:
 
 - A preprod testnet deployment with a separate preprod policy ID
 - At least one documented test vector for integration testing
-- Evidence of genuine user community interest
 
 CIP editors review registry addition pull requests for
 compliance with these criteria before merging.
