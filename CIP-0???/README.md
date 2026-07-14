@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Handle Provider Interoperability
+Title: Handle Provider Registry & Resolver
 Category: Tools
 Status: Proposed
 Authors:
