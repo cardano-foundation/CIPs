@@ -233,13 +233,16 @@ Current `Cold` votes remain valid.
   example multisig and timelock designs) to reduce single-key compromise risk.
 - **Intentional delegation via shared or third-party hot credentials**:
   A pool cold key can authorize any `Credential`, including one controlled by a
-  different operator or reused across multiple pools. Votes cast as
-  `StakePoolVoter poolId (Just hotCred)` then count for each pool that has
-  authorized that `hotCred`. This representative behavior is an intentional
-  capability, not a validation flaw, but it can concentrate SPO voting
-  influence. If that outcome is undesirable, pool operators can revoke or
-  replace the hot credential and, for the current governance action, reassert
-  intent with a cold-authorized vote.
+  different operator or reused across multiple pools. Many votes with different
+  `poolId`s, but the same `hotPoolCred` can be submitted like this: 
+  `StakePoolVoter poolId (Just hotPoolCred)`. In fact as many as there are pools 
+  that authorized that `hotPoolCred`. Note that there is no requirement for all 
+  those votes to be the same, eg. for some pools it could be Yes, for others No.
+  This representative behavior is an intentional capability, not a validation
+  flaw, but it can concentrate SPO voting influence. If that outcome is
+  undesirable, pool operators can revoke/replace the hot credential or replace
+  the vote by hot credential for the current governance action with a 
+  coldkey-authorized vote.
 
 ## Path to Active
 
