@@ -88,8 +88,6 @@ boundary for the outer block structure.
 
 ### Producer Agent Field
 
-Add a new optional text field inside `informational_data_set` for node
-identification:
 
 ```cddl
 producer_agent = tstr .size (1..32) / nil
