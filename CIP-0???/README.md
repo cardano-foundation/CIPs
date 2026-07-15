@@ -375,12 +375,16 @@ protects users if a provider's API goes offline.
 ### Acceptance Criteria
 
 - At least two independent Cardano wallet implementations
-  support the resolver interface defined in section 2 and
-  the wallet display requirements defined in section 3
+  support the resolver interface defined in the
+  [Resolver Interface](#resolver-interface) and
+  [Wallet Display Requirements](#wallet-display-requirements)
+  sections
 - At least two naming providers have submitted registry
-  entries meeting the criteria in section 5
-- The registry JSON file is maintained and validated by
-  CIP editors
+  entries meeting the criteria in the
+  [Provider Evaluation Criteria](#provider-evaluation-criteria)
+  section
+- The registry JSON file is maintained by CIP editors with
+  pull request review for each new entry
 
 ### Implementation Plan
 
@@ -402,6 +406,104 @@ protects users if a provider's API goes offline.
 - [ADA Handle Verified Integration Guidelines](https://handle.me/#verified_integration)
 - [GetMyID Platform](https://getmyid.today)
 - [ADA Handle Platform](https://handle.me)
+
+## Appendix: Example Registry Entries
+
+The following examples illustrate how the registry.json file
+should be populated. These are not real providers.
+
+The example also demonstrates a namespace collision scenario:
+Example Provider A and Example Provider D both use the `.did`
+namespace under different Policy IDs. In this case wallets
+MUST surface a provider selection interface to the user rather
+than silently resolving to one provider. The provider with the
+lower serial number (Example Provider A, serial 1) SHOULD be
+presented as the default option.
+
+```json
+{
+  "registrations": [
+    {
+      "serial": 1,
+      "provider": "Example Provider A",
+      "namespace": ".did",
+      "policy_ids": {
+        "mainnet": "aabbccddee112233445566778899001122334455667788990011223344",
+        "preprod": "112233445566778899001122334455667788990011223344556677889900"
+      },
+      "resolver": {
+        "api": "https://example-a.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-a.com",
+      "security_contact": "security@example-a.com",
+      "status": "active",
+      "registered": "2026-06-01"
+    },
+    {
+      "serial": 2,
+      "provider": "Example Provider B",
+      "namespace": "$name",
+      "policy_ids": {
+        "mainnet": "bbccddee1122334455667788990011223344556677889900112233445566"
+      },
+      "resolver": {
+        "api": "https://example-b.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-68",
+      "website": "https://example-b.com",
+      "security_contact": "security@example-b.com",
+      "status": "active",
+      "registered": "2026-06-01"
+    },
+    {
+      "serial": 3,
+      "provider": "Example Provider C",
+      "namespace": "name.ada",
+      "policy_ids": {
+        "mainnet": "ccddee112233445566778899001122334455667788990011223344556677",
+        "preprod": "ddee11223344556677889900112233445566778899001122334455667788"
+      },
+      "resolver": {
+        "api": "https://example-c.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-c.com",
+      "security_contact": "security@example-c.com",
+      "status": "deprecated",
+      "registered": "2026-06-02"
+    },
+    {
+      "serial": 4,
+      "provider": "Example Provider D",
+      "namespace": ".did",
+      "policy_ids": {
+        "mainnet": "eeff001122334455667788990011223344556677889900112233445566778899"
+      },
+      "resolver": {
+        "api": "https://example-d.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-d.com",
+      "security_contact": "security@example-d.com",
+      "status": "active",
+      "registered": "2026-06-03"
+    }
+  ]
+}
+```
+
+In the collision scenario above, when a user enters
+`john.smith.did` in a wallet, the wallet MUST query both
+Example Provider A (serial 1) and Example Provider D
+(serial 4) since both support the `.did` namespace. If both
+resolve the handle, the wallet MUST present a provider
+selection interface. Example Provider A SHOULD be presented
+as the default option due to its lower serial number.
 
 ## Copyright
 
