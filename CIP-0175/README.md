@@ -118,6 +118,12 @@ State transitions:
   `hotCredOpt = null` removes `poolId` from the map if present (otherwise
   no-op).
 
+Assignment and revocation MUST take effect immediately when the transaction is
+applied to the ledger state; they MUST NOT be deferred to an epoch boundary.
+This differs from updates to regular stake pool parameters through a `RegPool`
+certificate, which are staged for the next epoch, and is why hot-credential
+authorization uses a distinct certificate rather than extending `RegPool`.
+
 No uniqueness constraint is imposed on `hotCred`. The same hot credential MAY be
 authorized for multiple pools.
 
@@ -125,8 +131,8 @@ Pool retirement lifecycle:
 
 - If a pool has a retirement certificate scheduled but not yet enacted, its hot
   credential remains valid.
-- When retirement is enacted, the ledger clears that pool's
-  `poolGovHotCreds` entry.
+- When retirement is enacted, the ledger clears the pool's entire stake pool
+  state, including its `poolGovHotCreds` entry.
 
 ### SPO Voter Representation and Authorization
 
@@ -178,7 +184,7 @@ Effectively, once any cold-authorized vote exists for a given
 ### Authorization-Change Vote Invalidation
 
 If `AssignStakePoolHotCredential(poolId, hotCredOpt)` results in an actual
-authorization-state change for `poolId`, the ledger MUST not use this current SPO
+authorization-state change for `poolId`, the ledger MUST exclude the current SPO
 votes for that `poolId` across still-active governance actions whose recorded
 `VoteSource` is `Hot`.
 
@@ -186,6 +192,12 @@ If `AssignStakePoolHotCredential(poolId, hotCredOpt)` does not change the
 resulting authorization state for `poolId`, no vote invalidation occurs.
 
 Current `Cold` votes remain valid.
+
+These invalidation rules apply only while votes can affect ratification. Once a
+governance action is ratified, neither a hot-credential authorization change nor
+a vote change during the one-epoch delay before enactment can affect that
+enactment. The same restriction applies to vote changes by DReps and
+Constitutional Committee members.
 
 
 ## Rationale: How does this CIP achieve its goals?
