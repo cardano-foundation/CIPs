@@ -371,7 +371,7 @@ Hex: f6                              -- nil (1 byte)
 ### Implementation Plan
 
 This CIP requires coordination across all node implementations as part of the
-Dijkstra era hard fork. Each implementation (cardano-node, Amaru, Dingo,
+new era hard fork. Each implementation (cardano-node, Amaru, Dingo,
 Torsten, Gerolamo) must add the `informational_data_set` as the 6th block
 element, update the block body hash computation accordingly, and add
 configuration for the `producer_agent` string. All implementations must follow
