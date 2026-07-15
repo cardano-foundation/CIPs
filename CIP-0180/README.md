@@ -78,14 +78,6 @@ block_body =
   , producer_agent : tstr .size (1..32) / nil  ; NEW - optional
   ]
 
-informational_data_set =
-  [ producer_agent : tstr .size (1..32) / nil ]
-```
-
-The `informational_data_set` is a CBOR array designed for future extensibility:
-additional fields can be appended in future eras without requiring a new era
-boundary for the outer block structure.
-
 ### Producer Agent Field
 
 
