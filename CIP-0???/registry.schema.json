@@ -1,0 +1,105 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Handle Provider Registry",
+  "description": "Registry of Cardano handle providers as defined in CIP-????",
+  "type": "object",
+  "required": ["registrations"],
+  "properties": {
+    "registrations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "serial",
+          "provider",
+          "namespace",
+          "policy_ids",
+          "resolver",
+          "metadata_standard",
+          "website",
+          "security_contact",
+          "status",
+          "registered"
+        ],
+        "properties": {
+          "serial": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Sequential integer assigned by CIP editors in order of PR merge date. Must be unique across all entries — enforced by CIP editor review."
+          },
+          "provider": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable provider name"
+          },
+          "namespace": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Namespace format e.g. .did, $name, name.ada"
+          },
+          "policy_ids": {
+            "type": "object",
+            "required": ["mainnet"],
+            "properties": {
+              "mainnet": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{56}$",
+                "description": "Cardano mainnet Policy ID — 56 lowercase hex characters"
+              },
+              "preprod": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{56}$",
+                "description": "Cardano preprod testnet Policy ID — 56 lowercase hex characters"
+              }
+            }
+          },
+          "resolver": {
+            "type": "object",
+            "required": ["api", "onchain_method"],
+            "properties": {
+              "api": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https://",
+                "description": "HTTPS resolver API endpoint — must use HTTPS"
+              },
+              "onchain_method": {
+                "type": "string",
+                "minLength": 1,
+                "description": "On-chain resolution method identifier"
+              }
+            }
+          },
+          "metadata_standard": {
+            "type": "string",
+            "enum": ["CIP-25", "CIP-68"],
+            "description": "NFT metadata standard used by the provider"
+          },
+          "website": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "description": "Provider public website — must use HTTPS"
+          },
+          "security_contact": {
+            "type": "string",
+            "format": "email",
+            "description": "Security disclosure email address"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "deprecated", "inactive"],
+            "description": "Current operational status of the provider"
+          },
+          "registered": {
+            "type": "string",
+            "format": "date",
+            "description": "ISO 8601 date of registry entry merge — format YYYY-MM-DD"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
