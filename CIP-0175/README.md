@@ -178,7 +178,7 @@ Effectively, once any cold-authorized vote exists for a given
 ### Authorization-Change Vote Invalidation
 
 If `AssignStakePoolHotCredential(poolId, hotCredOpt)` results in an actual
-authorization-state change for `poolId`, the ledger MUST clear the current SPO
+authorization-state change for `poolId`, the ledger MUST not use this current SPO
 votes for that `poolId` across still-active governance actions whose recorded
 `VoteSource` is `Hot`.
 
