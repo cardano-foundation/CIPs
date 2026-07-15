@@ -371,7 +371,7 @@ Hex: f6                              -- nil (1 byte)
   Dijkstra hard fork
 - [ ] Implementation present in Amaru (Rust)
 - [ ] Implementation present in Dingo (Go)
-- [ ] Implementation present in Torsten (Rust)
+- [ ] Implementation present in Dugite (Rust)
 - [ ] Implementation present in Gerolamo (TypeScript)
 - [ ] The feature is activated on mainnet through the Dijkstra new era
 - [ ] Chain analytics tools have been updated to parse and display producer
