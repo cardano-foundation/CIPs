@@ -187,24 +187,6 @@ resulting authorization state for `poolId`, no vote invalidation occurs.
 
 Current `Cold` votes remain valid.
 
-### Ledger Rule Integration
-
-This CIP integrates at existing governance ledger rule boundaries:
-
-- **`UTXO`** applies certificate-driven updates to `poolGovHotCreds` and
-  enforces transaction-level constraints for this certificate type.
-- **`UTXOW`** validates the explicit SPO voter form, requiring either the pool
-  cold witness for `StakePoolVoter poolId Nothing` or witnesses satisfying
-  `hotCred` plus `poolGovHotCreds[poolId] = hotCred` for
-  `StakePoolVoter poolId (Just hotCred)`.
-- **`GOV`** (vote state handling) records `VoteSource` for stake-pool votes and
-  stores only the latest current vote per `(govActionId, poolId)`, applying
-  cold/hot overwrite rules plus hot-vote invalidation on actual
-  authorization-state changes.
-
-The proposal does not introduce a new governance role. It extends
-`StakePoolVoter` so the SPO vote explicitly carries whether it is using cold
-authorization or a specific hot credential.
 
 ## Rationale: How does this CIP achieve its goals?
 
