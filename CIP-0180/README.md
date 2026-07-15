@@ -71,13 +71,11 @@ identification, wrapped in an extensible `informational_data_set`:
 
 ```cddl
 ; Block structure - 6th element added for producer identification
-block =
-  [ header
-  , transaction_bodies       : [* transaction_body]
-  , transaction_witness_sets : [* transaction_witness_set]
-  , auxiliary_data_set       : {* transaction_index => auxiliary_data}
-  , invalid_transactions     : [* transaction_index]
-  , informational_data_set / nil  ; NEW - optional
+block = [header, block_body]
+
+block_body =
+  [ ... current block body fields
+  , producer_agent : tstr .size (1..32) / nil  ; NEW - optional
   ]
 
 informational_data_set =
