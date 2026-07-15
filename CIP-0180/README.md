@@ -218,7 +218,6 @@ placement because:
 
 - Headers are on the critical path for block propagation - avoiding header
   changes preserves performance
-- Block body allows cleaner optional semantics (`nil` = 1 byte)
 - New era already changes block structure, so block body hash update is
   acceptable
 - Preserves existing header semantics and validation logic
