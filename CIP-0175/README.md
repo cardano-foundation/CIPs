@@ -170,7 +170,7 @@ Overwrite rules:
 2. A `Hot` vote MAY replace the current `Hot` vote for the same
    `(govActionId, poolId)`.
 3. A `Hot` vote MUST NOT replace the current `Cold` vote for the same
-   `(govActionId, poolId)`.
+   `(govActionId, poolId)`. An attempt to do so SHOULD result in a predicate failure, instead of being silently ignored.
 
 Effectively, once any cold-authorized vote exists for a given
 `(govActionId, poolId)`, that pair is locked against hot-authorized overwrites.
