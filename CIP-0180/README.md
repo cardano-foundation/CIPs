@@ -160,8 +160,6 @@ than the header because:
   byte.
 - **Clear Separation**: Producer identification is metadata about the block, not
   part of chain validation
-- **Future Extensibility**: The `informational_data_set` wrapper allows adding
-  producer metadata fields in future without modifying the outer block structure
 - **Era Transition**: Block body hash changes are acceptable in a new era as
   all nodes must upgrade anyway
 
