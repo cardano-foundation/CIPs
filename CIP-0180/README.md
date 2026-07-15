@@ -163,15 +163,6 @@ than the header because:
 - **Era Transition**: Block body hash changes are acceptable in a new era as
   all nodes must upgrade anyway
 
-**`informational_data_set` Wrapper**:
-The `producer_agent` field is wrapped in an `informational_data_set` array
-rather than placed directly in the block body because:
-
-- **Future Extensibility**: Additional informational fields can be appended to
-  the array in future eras without changing the outer block structure
-- **Semantic Grouping**: Groups related informational metadata together cleanly
-- **Minimal Overhead**: A `nil` top-level value still costs only 1 byte when not
-  used; the array itself is only a few bytes when present
 
 **Free-Form Text vs. Structured Data**:
 We chose free-form text for the `producer_agent` field because:
