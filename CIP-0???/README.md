@@ -407,7 +407,9 @@ protects users if a provider's API goes offline.
 - [GetMyID Platform](https://getmyid.today)
 - [ADA Handle Platform](https://handle.me)
 
-## Appendix: Example Registry Entries
+## Appendix
+
+### Example Registry Entries
 
 The following examples illustrate how the registry.json file
 should be populated. These are not real providers.
