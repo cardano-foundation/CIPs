@@ -151,6 +151,7 @@ Hot credential satisfaction rules:
   is required under existing governance voting-script rules for
   `StakePoolVoter poolId (Just hotCred)`.
 - Both native scripts and Plutus scripts are supported.
+- Existing `Voting` script purpose will be used for Plutus script execution, since it was unused for stake pools before
 
 All other vote semantics (vote options, anchors, role structure, timing windows,
 and tallying model) remain as defined by CIP-1694 unless explicitly modified by
