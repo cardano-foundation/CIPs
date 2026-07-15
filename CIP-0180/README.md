@@ -156,8 +156,8 @@ than the header because:
 
 - **Header Performance**: Headers are on the critical path for block propagation
   - keeping them minimal is important for network performance
-- **Optional Without Overhead**: A `nil` value in the block body adds only 1
-  byte, whereas header fields have higher overhead
+- **Optional With Minimal Overhead**: A `nil` value in the block body adds only 1
+  byte.
 - **Clear Separation**: Producer identification is metadata about the block, not
   part of chain validation
 - **Future Extensibility**: The `informational_data_set` wrapper allows adding
