@@ -1,6 +1,2 @@
 * linguist-vendored
 *.md linguist-vendored=false
-
-# Ensure consistent line endings
-* text=auto
-*.md text eol=lf
