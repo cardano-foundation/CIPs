@@ -50,7 +50,7 @@ Community discussions to date have explored several broad directions, including 
 
 **A long-term ada holder wants to delegate to a DRep aligned with their values.**
 
-Today, they open a DRep explorer that defaults to sorting by voting power. The DReps with the most voting power are the most visible. The holder, with limited time and no easy way to evaluate quality, picks from the top of the list. Their delegation reinforces the existing concentration. They would prefer a system that surfaces aligned DReps without defaulting to the largest, but no protocol-supported mechanism exists.
+Today, they open a DRep explorer that defaults to sorting by voting power. The DReps with the most voting power are the most visible. Aggregation and filtering based on voting history, rationales or voting philosophy are largely absent. The holder, with limited time and no easy way to evaluate quality, picks from the top of the list. Their delegation reinforces the existing concentration. They would prefer a system that surfaces aligned DReps without defaulting to the largest, but no protocol-supported mechanism exists.
 
 **A small DRep with strong governance expertise wants to grow their delegation base.**
 
@@ -139,9 +139,9 @@ Any proposed CIP responding to this CPS should address the following:
 - [DRep Voting Power Saturation Research, Project Catalyst Fund 14](https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research)
 
 - [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view)
-- [^5]: Beyond MVG on-chain measurements, epochs 537–609, DRep Gini and Nakamoto coefficient datasets (M3-2-1, M3-2-2); analyzed in the *Cardano State of Governance Report 2026*.
+- [^5]: [Beyond MVG on-chain measurements, epochs 537–609, DRep Gini and Nakamoto coefficient datasets (M3-2-1, M3-2-2)](https://github.com/input-output-hk/Beyond_MVG/tree/main/data/On-chain-visuals-epoch-537-609/DRep-metrics); [analyzed in the *Cardano State of Governance Report 2026*](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view).
 
-[^6]: *Intersect Weekly Update #114* (June 5, 2026), highlighting the observed decline in the DRep Nakamoto coefficient trend. https://intersectmbo.org/news/intersect-weekly-update-114-june-5-2026
+[^6]: [*Intersect Weekly Update #114* (June 5, 2026), highlighting the observed decline in the DRep Nakamoto coefficient trend.](https://intersectmbo.org/news/intersect-weekly-update-114-june-5-2026)
 
 ### Related CPS / CIP Discussions
 
