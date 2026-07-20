@@ -39,17 +39,71 @@ functions which means they will not benefit from the new `BuiltinValue` type. Pl
 builtins to cover the main operations on `BuiltinValue`, either through generalizable builtins or
 dedicated ones.
 
-As an example use case, [CIP-89-based distributed dApps][9] rely on special native assets (aka
-Beacon Tokens) to tag UTxOs. These Beacon Token tags can then be used by off-chain indexers to
-filter the UTxO set to see only the UTxOs relevant to that dApp. This functionality is critical for
-supporting self-sovereign DeFi since it enables all users to get their own DeFi addresses - a
-requirement for maintaining delegation control of DeFi assets. But as a consequence, these
-distributed dApp protocols need to be very careful about how and when these Beacon Tokens are
-minted/spent. [Cardano-Swaps][10] checks every transaction output to see if they contain beacon
-tokens by calling `tokens` ([here][11]). Since `tokens` is just traversing the `Value` as a `List`,
-this is significantly less efficient than the `O(1)` lookup possible by treating `Value` as a `Map`.
-This inefficiency compounds when the Cardano-Swaps protocol is executed as part of a larger
-transaction cart that involve other outputs and dApps.
+### Use Cases for the Proposed Builtins
+
+#### Validating Protocol Tokens Independently of DeFi Tokens
+
+Many real-world contracts revolve around *protocol tokens*: native assets that a dApp mints and
+manages to authenticate UTxOs, track on-chain state, or tag UTxOs for off-chain indexing. Examples
+include the authentication/state tokens used by state machine style contracts, and the Beacon Tokens
+of [CIP-89-based distributed dApps][9], which off-chain indexers use to filter the UTxO set to see
+only the UTxOs relevant to that dApp. Misusing a protocol token breaks the protocol's security, so
+these contracts must carefully validate the `Value` of every relevant input and output - making them
+heavy users of `Value` operations. Crucially, the protocol tokens require different checks than the
+DeFi tokens (e.g. the assets being traded) sitting next to them in the same `Value`.
+
+Consider a CIP-89 limit order UTxO offering ADA for DJED. In addition to the offered ADA, it must
+contain *exactly* three protocol tokens: one encoding the trading pair, one encoding the offered
+asset, and one encoding the asked asset. Any extra or missing protocol token is a security issue.
+Today, validating this requires traversing the `Value` as a list and pattern-matching on expected
+assets as you go, which is error prone: a missed pattern match in one such protocol previously
+allowed withdrawing protocol tokens to invalid UTxOs. A safer pattern is to split the value into
+protocol tokens (`keepPolicies [protocolPolicy]`) and everything else (`dropPolicies
+[protocolPolicy]`), then validate each part independently:
+
+```haskell
+-- 1. Ensure exactly 3 protocol tokens exist.
+assetCount protocolValue == 3
+
+-- 2. Ensure the specific required tokens are the ones present.
+lookupCoin protocolValue protocolPolicy pairTokenName == 1
+lookupCoin protocolValue protocolPolicy offerTokenName == 1
+lookupCoin protocolValue protocolPolicy askTokenName == 1
+```
+
+This is both more legible for auditors and less error prone than manual traversal. This
+split-and-validate pattern can be exposed directly as a higher-level `splitValue` function (see the
+Rationale section below).
+
+The new builtins also compose with the CIP-0153 ones for exact burn validation: a protocol that
+must burn all protocol tokens across many input UTxOs can: (1) extract them from each input with
+`keepPolicies`, (2) accumulate them with `unionValue`, (3) negate with `scaleValue (-1)`, and (4)
+check the result exactly matches `keepPolicies [protocolPolicy] txInfoMint`. Each step operates on
+the efficient `BuiltinValue` representation, versus today's repeated list traversals.
+
+#### Bounding Output Value Size
+
+`assetCount` prevents multi-step locking/bricking vulnerabilities. When a contract requires an
+output with `value >= someValue`, a maliciously compliant transaction can include hundreds of
+garbage tokens, making subsequent spends of that output prohibitively expensive. `assetCount output
+<= n` gives a cheap upper bound while still allowing honest users to include extra tokens.
+
+#### Preserving Cheap Lovelace-Only Operations
+
+Because of the min-ADA requirement, every UTxO a contract manages carries lovelace even when the
+contract only cares about the non-ADA tokens. State machine style contracts therefore check
+
+```haskell
+withoutLovelace (txOutValue ownInput) == withoutLovelace (txOutValue ownOutput)
+```
+
+on every state transition to ensure the state token is preserved while users remain free to
+adjust the ADA (e.g. to satisfy min-ADA after a datum change). Today this is an O(1) operation
+on the `Data` encoding: scripts simply drop the first entry of the outer map, relying on the
+ledger's guarantee that ADA, when present, is always the first entry. A naive port to
+`BuiltinValue` would silently make this very common pattern more expensive. This motivates the
+lovelace-specific representation and costing recommended in the Specification's "A Note on
+Lovelace", rather than any new builtin.
 
 ## Specification
 
@@ -58,24 +112,45 @@ This CIP proposes adding the following new builtins functions:
 ```haskell
 type BuiltinCurrencySymbol = BuiltinByteString
 
--- | Returns all policy ids found in the value.
+-- | Returns all policy ids found in the value, in ascending order.
 policies :: BuiltinValue -> [BuiltinCurrencySymbol]
 
--- | Return all tokens and their quantities for the specified policy ids. It returns a
+-- | Returns a new value containing only the entries for the specified policy ids. It returns a
 -- `BuiltinValue` so that the result can make use of the `lookupCoin` builtin added in CIP-0153.
 -- It can always be converted to a `List` for pattern-matching using the `valueData` builtin added
--- in CIP-0153. 
-restrictValueTo :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
+-- in CIP-0153.
+keepPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 
--- | Filters out the policies from the `BuiltinValue`.
-filterOutPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
+-- | Returns a new value without the entries for the specified policy ids.
+dropPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 
--- | The number of asset names present across all of the policy ids. This could be useful after 
--- first restricting the `BuiltinValue` with `restrictValueTo`. If `BuiltinValue` is tracking 
--- its size, this should be a very simple and efficient builtin. Is this more efficient than
--- pattern-matching on the result of `restrictValueTo`???
+-- | The number of distinct (policy id, token name) pairs in the value. This could be useful after
+-- first restricting the `BuiltinValue` with `keepPolicies`. The addition of this builtin is
+-- conditional upon the Plutus team verifying that the efficiency gain (over pattern-matching on
+-- the result of `keepPolicies`) justifies it. 
 assetCount :: BuiltinValue -> BuiltinInteger
 ```
+
+Precise semantics for `keepPolicies` and `dropPolicies`:
+
+- The result is always a well-formed `BuiltinValue`.
+- Policy ids in the argument list that are absent from the value are ignored, and duplicate policy
+  ids in the list have no additional effect.
+- Lovelace is identified by the empty policy id (`""`).
+- The two functions are duals: for any list of policy ids `ps`,
+  `unionValue (keepPolicies ps v) (dropPolicies ps v) == v`.
+
+### A Note on Lovelace
+
+Lovelace is unique among the entries of a value: the ledger's min-ADA requirement means
+essentially every UTxO contains a lovelace entry, and the ledger guarantees that, when present,
+lovelace is always the first entry of a value. Operations that touch only the lovelace entry,
+such as `withoutLovelace`, are therefore extremely common and deserve special treatment in the
+implementation rather than a dedicated builtin. This CIP recommends that the Plutus
+implementation store the lovelace entry outside the map in a separate field (mirroring the
+ledger's `MultiAssetValue` representation, which separates ADA for exactly this reason) and
+assign cheaper costs to lovelace-only operations, i.e. those where both the policy id and the
+token name are empty. See the Rationale section for why this matters.
 
 ## Rationale: how does this CIP achieve its goals?
 
@@ -93,20 +168,20 @@ scaleValue :: BuiltinInteger -> BuiltinValue -> BuiltinValue
 
 -- New functions
 policies :: BuiltinValue -> [BuiltinCurrencySymbol]
-restrictValueTo :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
-filterOutPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
+keepPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
+dropPolicies :: [BuiltinCurrencySymbol] -> BuiltinValue -> BuiltinValue
 assetCount :: BuiltinValue -> BuiltinInteger
 ```
 
 From these builtin functions, most of Aiken's stdlib `Value` functions can now make use of the
-improved efficiency of CIP-0153's `BuiltinValue`. 
+improved efficiency of CIP-0153's `BuiltinValue`.
 
 ### Supported Higher-Level Functions
 
 These are all taken from the [aiken `Value` functions][2].
 
 ```haskell
--- | The emtpy value can be constructed using constants:
+-- | The empty value can be constructed using constants:
 --  (Constant () (Some (ValueOf DefaultUniValue Value.empty)))
 emptyValue :: BuiltinValue
 
@@ -127,17 +202,17 @@ fromLovelace :: BuiltinInteger -> BuiltinValue
 fromLovelace quantity = insertCoin "" "" quantity emptyValue
 
 hasAnyNft :: BuiltinValue -> BuiltinCurrencySymbol -> BuiltinBool
-hasAnyNft val pol = not $ null $ valueToList $ restrictValueTo [pol] val
+hasAnyNft val pol = not $ null $ valueToList $ keepPolicies [pol] val
     
 hasAnyNftStrict :: BuiltinValue -> BuiltinCurrencySymbol -> BuiltinBool
-hasAnyNftStrict val pol = restrictValueTo ["", pol] val == val
+hasAnyNftStrict val pol = keepPolicies ["", pol] val == val
     
 hasNft :: BuiltinValue -> BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinBool
 hasNft val pol name = lookupCoin val pol name > 0
     
 hasNftStrict :: BuiltinValue -> BuiltinCurrencySymbol -> BuiltinTokenName -> BuiltinBool
 hasNftStrict val pol name = lookupCoin val pol name > 0 && restrictedResult == val
-  where restrictedResult = restrictValueTo ["", pol] val
+  where restrictedResult = keepPolicies ["", pol] val
 
 isZero :: BuiltinValue -> BuiltinBool
 isZero = null . valueToList
@@ -169,7 +244,7 @@ quantityOf :: BuiltinValue -> BuiltinCurrencySymbol -> BuiltinTokenName -> Built
 quantityOf = lookupCoin
 
 tokens :: BuiltinValue -> BuiltinCurrencySymbol -> [(TokenName, Integer)]
-tokens val pol = case valueToList $ restrictValueTo [pol] val of
+tokens val pol = case valueToList $ keepPolicies [pol] val of
   [] -> []
   (_, ts):_ -> ts
 
@@ -184,10 +259,14 @@ negate :: BuiltinValue -> BuiltinValue
 negate = scaleValue (-1)
 
 restrictedTo :: BuiltinValue -> [BuiltinCurrencySymbol] -> BuiltinValue
-restrictedTo val ps = restrictValueTo ps val
+restrictedTo val ps = keepPolicies ps val
 
+-- | Lovelace is unique; see "A Note on Lovelace" in the Specification. This is deliberately
+-- listed without a definition in terms of the builtins: deriving it from `dropPolicies [""]`
+-- (or CIP-0153's `insertCoin "" "" 0`) at their general worst-case costs would lose the O(1)
+-- behavior scripts rely on today. With the lovelace entry stored in a separate field, this
+-- becomes a cheap constant-time operation.
 withoutLovelace :: BuiltinValue -> BuiltinValue
-withoutLovelace = filterOutPolicies [""]
 
 subtractValue :: BuiltinValue -> BuiltinValue -> BuiltinValue
 subtractValue val1 val2 = unionValue val1 $ negate val2
@@ -209,10 +288,43 @@ reduce
 reduce val initial f = foldr (\(pol, (name, q)) acc -> f acc pol name q) initial $ valueToList val
 ```
 
+### New Higher-Level Functions Enabled by this CIP
+
+The proposed builtins do not just accelerate the existing Aiken stdlib surface; they also enable
+new higher-level functions that cannot be offered today. For example, the split-and-validate
+pattern from the Motivation can be packaged as a single function:
+
+```haskell
+-- | Split a value into (the entries for the specified policy ids, everything else). Useful for
+-- validating protocol tokens independently of the assets sitting next to them in the same value.
+splitValue :: [BuiltinCurrencySymbol] -> BuiltinValue -> (BuiltinValue, BuiltinValue)
+splitValue ps v = (keepPolicies ps v, dropPolicies ps v)
+
+-- | The complement of `restrictedTo`.
+withoutPolicies :: BuiltinValue -> [BuiltinCurrencySymbol] -> BuiltinValue
+withoutPolicies val ps = dropPolicies ps val
+```
+
+### Why `withoutLovelace` is Treated as Unique
+
+As described in the Motivation, `withoutLovelace` is a very common operation (state machine style
+contracts use it on every state transition) that is O(1) on today's `Data` encoding thanks to the
+ledger's ADA-first guarantee. Naively porting it to `BuiltinValue` loses this property: it could
+be expressed as `dropPolicies [""]` or as CIP-0153's `insertCoin "" "" 0`, but both would be
+costed for their worst case, making the ported version more expensive than the status quo. A
+`BuiltinValue` is backed by a balanced binary tree, where removing the smallest key is no
+cheaper than removing any other key.
+
+Rather than adding a dedicated `withoutLovelace` builtin, the discussion converged on treating
+lovelace as unique in the implementation: store the lovelace entry outside the map in a separate
+field and cost lovelace-only operations cheaply. This mirrors the ledger's own `MultiAssetValue`
+representation, which separates ADA for exactly this reason. See "A Note on Lovelace" in the
+Specification.
+
 ### Does this create a "Slippery Slope"?
 
 All of the proposed builtins are simple operations commonly found on `Map` data structures. So the
-author does not believe this CIP sets a precedence for "builtin bloat".
+author does not believe this CIP sets a precedent for "builtin bloat".
 
 ## Path to Active
 
@@ -238,12 +350,12 @@ effectiveness of the new primitives, as per the following plan:
 If the preliminary performance investigation was not successful, this CIP should be revised
 according to the findings of the experiment. Otherwise, the implementation can proceed:
 
-6. Determine the most appropriate costing functions for modelling the builtin's performance
+5. Determine the most appropriate costing functions for modelling the builtin's performance
 and assign costs accordingly.
-7. Add the new builtin functions to the appropriate sections in the [Plutus Core
+6. Add the new builtin functions to the appropriate sections in the [Plutus Core
 Specification][7].
-8. Formalize the new builtin functions in the [plutus-metatheory][8].
-9. The final version of the feature is ready to be merged into [plutus][3] and accepted by
+7. Formalize the new builtin functions in the [plutus-metatheory][8].
+8. The final version of the feature is ready to be merged into [plutus][3] and accepted by
 the Plutus Core team.
 
 ## Copyright
@@ -258,5 +370,3 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [7]: https://plutus.cardano.intersectmbo.org/resources/plutus-core-spec.pdf "Formal Specification of the Plutus Core Language"
 [8]: https://github.com/IntersectMBO/plutus/tree/master/plutus-metatheory "plutus-metatheory"
 [9]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0089/README.md "Beacon Tokens CIP"
-[10]: https://github.com/fallen-icarus/cardano-swaps "Cardano-Swaps"
-[11]: https://github.com/fallen-icarus/cardano-swaps/blob/9ec41e7619f5ba9d3dd46dd194e2146098093721/aiken/lib/cardano_swaps/one_way_swap/utils.ak#L328 "`tokens` usage"
