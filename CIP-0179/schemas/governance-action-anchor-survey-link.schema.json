@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "governance-action-anchor-survey-link.schema.json",
+  "title": "CIP-0179 Governance Action Anchor Survey Link",
+  "type": "object",
+  "properties": {
+    "specVersion": {
+      "const": 4
+    },
+    "kind": {
+      "const": "cardano-governance-survey-link"
+    },
+    "surveyTxId": {
+      "$ref": "common.schema.json#/$defs/hex_tx_id"
+    },
+    "surveyIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 65535
+    }
+  },
+  "required": [
+    "specVersion",
+    "kind",
+    "surveyTxId",
+    "surveyIndex"
+  ],
+  "additionalProperties": false
+}

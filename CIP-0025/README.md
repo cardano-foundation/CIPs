@@ -1,20 +1,20 @@
 ---
 CIP: 25
 Title: Media Token Metadata Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Smaug <smaug@pool.pm>
 Implementors: N/A
 Discussions:
-  - https://forum.cardano.org/t/cip-nft-metadata-standard/45687
-  - https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
-  - https://github.com/cardano-foundation/CIPs/pull/85
-  - https://github.com/cardano-foundation/CIPs/pull/267
-  - https://github.com/cardano-foundation/CIPs/pull/341
-  - https://github.com/cardano-foundation/CIPs/pull/527
-  - https://github.com/cardano-foundation/CIPs/pull/593
+  - Cardano Forum: https://forum.cardano.org/t/cip-nft-metadata-standard/45687
+  - Reddit: https://www.reddit.com/r/CardanoDevelopers/comments/mkhlv8/nft_metadata_standard/
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/85
+  - CIP-0025 | Added version 2 and cddl: https://github.com/cardano-foundation/CIPs/pull/267
+  - CIP-0025 | Update "image" Spec Based on Feedback: https://github.com/cardano-foundation/CIPs/pull/341
+  - CIP-0025 | Restrict to minting (positive amounts): https://github.com/cardano-foundation/CIPs/pull/527
+  - CIP-0025 | Change "NFT" to "token": https://github.com/cardano-foundation/CIPs/pull/593
 Created: 2021-04-08
 License: CC-BY-4.0
 ---
@@ -23,7 +23,7 @@ License: CC-BY-4.0
 
 This proposal defines an Media Token Metadata Standard for Native Tokens.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Tokens on Cardano are a part of the ledger. Unlike on Ethereum, where metadata can be attached to a token through a smart contract, this isn't possible on Cardano because tokens are native and Cardano uses a UTxO ledger, which makes it hard to directly attach metadata to a token.
 So the link to the metadata needs to be established differently.
@@ -150,7 +150,7 @@ Optional fields allow to save space in the blockchain. Consequently the minimal 
 - [EIP-721](https://eips.ethereum.org/EIPS/eip-721)
 - URI/URL standards: [RFC3986](https://tools.ietf.org/html/rfc3986), [RFC2397](https://tools.ietf.org/html/rfc2397)
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Retrieve valid metadata for a specific token
 

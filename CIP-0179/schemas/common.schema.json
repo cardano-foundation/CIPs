@@ -1,0 +1,736 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "common.schema.json",
+  "title": "CIP-0179 Shared Schema Definitions",
+  "$defs": {
+    "hex_hash28": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{56}$"
+    },
+    "hex_bytes64_or_less": {
+      "type": "string",
+      "pattern": "^([0-9a-fA-F]{2}){0,64}$"
+    },
+    "hex_tx_id": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "hex_blake2b_256": {
+      "type": "string",
+      "pattern": "^[0-9a-fA-F]{64}$"
+    },
+    "bounded_text": {
+      "type": "string",
+      "maxLength": 64
+    },
+    "chunked_text": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bounded_text"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/bounded_text"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "chunked_bytes": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/hex_bytes64_or_less"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/hex_bytes64_or_less"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "content_anchor": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/hex_blake2b_256"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "credential": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "enum": [
+            0,
+            1
+          ]
+        },
+        {
+          "$ref": "#/$defs/hex_hash28"
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "role": {
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "eligible_roles": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/role"
+      },
+      "minItems": 1
+    },
+    "survey_ref": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/hex_tx_id"
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "survey_cancellation": {
+      "$ref": "#/$defs/survey_ref"
+    },
+    "public_submission_mode": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        }
+      ],
+      "items": false,
+      "minItems": 1,
+      "maxItems": 1
+    },
+    "sealed_submission_mode": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "$ref": "#/$defs/hex_blake2b_256"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "submission_mode": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/public_submission_mode"
+        },
+        {
+          "$ref": "#/$defs/sealed_submission_mode"
+        }
+      ]
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/bounded_text"
+      },
+      "minItems": 2
+    },
+    "option_count": {
+      "type": "integer",
+      "minimum": 2
+    },
+    "options_or_count": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/options"
+        },
+        {
+          "$ref": "#/$defs/option_count"
+        }
+      ]
+    },
+    "numeric_constraints": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 3,
+      "description": "Semantic bounds are defined in README.md."
+    },
+    "rating_scale": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/numeric_constraints"
+        },
+        {
+          "$ref": "#/$defs/options"
+        },
+        {
+          "$ref": "#/$defs/option_count"
+        }
+      ]
+    },
+    "transaction_metadatum": {
+      "oneOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/bounded_text"
+            },
+            {
+              "$ref": "#/$defs/hex_bytes64_or_less"
+            }
+          ]
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/transaction_metadatum"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/transaction_metadatum"
+          }
+        }
+      ]
+    },
+    "custom_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/content_anchor"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "single_choice_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "multi_select_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 2
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 6,
+      "description": "Semantic bounds are defined in README.md."
+    },
+    "ranking_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 3
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 5,
+      "maxItems": 6,
+      "description": "Semantic bounds are defined in README.md."
+    },
+    "numeric_range_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 4
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/numeric_constraints"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 4
+    },
+    "points_allocation_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 5
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 5
+    },
+    "rating_question": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 6
+        },
+        {
+          "$ref": "#/$defs/chunked_text"
+        },
+        {
+          "$ref": "#/$defs/options_or_count"
+        },
+        {
+          "$ref": "#/$defs/rating_scale"
+        },
+        {
+          "type": "boolean"
+        }
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 5
+    },
+    "survey_question": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/custom_question"
+        },
+        {
+          "$ref": "#/$defs/single_choice_question"
+        },
+        {
+          "$ref": "#/$defs/multi_select_question"
+        },
+        {
+          "$ref": "#/$defs/ranking_question"
+        },
+        {
+          "$ref": "#/$defs/numeric_range_question"
+        },
+        {
+          "$ref": "#/$defs/points_allocation_question"
+        },
+        {
+          "$ref": "#/$defs/rating_question"
+        }
+      ]
+    },
+    "survey_definition": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(0|[1-9][0-9]*)$"
+      },
+      "properties": {
+        "0": {
+          "const": 4
+        },
+        "1": {
+          "$ref": "#/$defs/credential"
+        },
+        "2": {
+          "$ref": "#/$defs/chunked_text"
+        },
+        "3": {
+          "$ref": "#/$defs/chunked_text"
+        },
+        "4": {
+          "$ref": "#/$defs/eligible_roles"
+        },
+        "5": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "6": {
+          "$ref": "#/$defs/submission_mode"
+        },
+        "7": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/survey_question"
+          },
+          "minItems": 1
+        },
+        "8": {
+          "$ref": "#/$defs/content_anchor"
+        }
+      },
+      "required": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "additionalProperties": true
+    },
+    "custom_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "$ref": "#/$defs/transaction_metadatum"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "single_choice_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "multi_select_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 2
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "uniqueItems": true
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "ranking_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 3
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "numeric_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 4
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "integer"
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "points_allocation_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 5
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "integer",
+                "minimum": 0
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "rating_answer": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 6
+        },
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "integer",
+                "minimum": 0
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "minItems": 1
+        }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "answer_item": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/custom_answer"
+        },
+        {
+          "$ref": "#/$defs/single_choice_answer"
+        },
+        {
+          "$ref": "#/$defs/multi_select_answer"
+        },
+        {
+          "$ref": "#/$defs/ranking_answer"
+        },
+        {
+          "$ref": "#/$defs/numeric_answer"
+        },
+        {
+          "$ref": "#/$defs/points_allocation_answer"
+        },
+        {
+          "$ref": "#/$defs/rating_answer"
+        }
+      ]
+    },
+    "public_response_answers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/answer_item"
+      },
+      "minItems": 1
+    },
+    "response_answers": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/public_response_answers"
+        },
+        {
+          "$ref": "#/$defs/chunked_bytes"
+        }
+      ]
+    },
+    "survey_response": {
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^(0|[1-9][0-9]*)$"
+      },
+      "properties": {
+        "0": {
+          "const": 4
+        },
+        "1": {
+          "$ref": "#/$defs/survey_ref"
+        },
+        "2": {
+          "$ref": "#/$defs/role"
+        },
+        "3": {
+          "$ref": "#/$defs/credential"
+        },
+        "4": {
+          "$ref": "#/$defs/response_answers"
+        },
+        "5": {
+          "$ref": "#/$defs/content_anchor"
+        }
+      },
+      "required": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "additionalProperties": true
+    }
+  }
+}

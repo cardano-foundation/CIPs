@@ -1,0 +1,27 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/Blocks.hs
+
+;  Values for the blocks.
+;
+;  Key definition:
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: blocks
+;
+;  types:
+;    block:
+;      seq:
+;        - id: keyhash_stakepool
+;          doc: keyhash of the stake pool
+;          size: 28
+;        - id: epoch
+;          doc: epoch
+;          type: u8
+;  ```
+record_entry = int
+

@@ -1,0 +1,40 @@
+{
+  "17": [
+    0,
+    [
+      {
+        "0": 4,
+        "1": [
+          0,
+          "cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+        ],
+        "2": "Ranked infrastructure roadmap",
+        "3": "Custom ranked-choice method using an external schema.",
+        "4": [
+          0
+        ],
+        "5": 504,
+        "6": [
+          0
+        ],
+        "7": [
+          [
+            0,
+            "Rank roadmap options by preference.",
+            [
+              [
+                "ipfs://bafybeigdyrzt6z6u3mri4u7mxh2r3e5f2trz7rxx2jx",
+                "6d5yj4v5nx4qjxm"
+              ],
+              "6f1d9e1bc771ac5f8194f3152df64d9fda9ae28f42f23f8f4d0c9dcb2f4d8f7a"
+            ]
+          ]
+        ],
+        "8": [
+          "ipfs://bafyroadmapsurvey",
+          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        ]
+      }
+    ]
+  ]
+}

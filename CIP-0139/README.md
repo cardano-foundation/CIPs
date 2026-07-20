@@ -8,9 +8,10 @@ Authors:
     - Giovanni Garufi <giovanni@mlabs.city>
 Implementors: []
 Discussions:
-    - https://discord.gg/MU8vHAgmGy
-    - https://github.com/cardano-foundation/CIPs/pull/869
-Solution-To: CPS-0012
+    - Discord: https://discord.gg/MU8vHAgmGy
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/869
+Solution To:
+    - CPS-0012: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0012
 Created: 2024-05-14
 License: CC-BY-4.0
 ---
@@ -19,7 +20,7 @@ License: CC-BY-4.0
 
 A transport-agnostic query layer specification for use in dApps and wallets.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 See [CPS-12 | Query Layer Standardization](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0012/README.md) for motivation.
 
@@ -58,7 +59,7 @@ The payload formats used below are either references to [CIP-0116 - Standard JSO
 
 The API can be implemented across several transports. The goal is to allow several different clients, possibly written in different languages, to interact with wallets.
 For this reason we provide an [Openapi schema](./open-api.json), a [JSON-RPC](./json-rpc.json) schema, and an interface for an [injected Javascript](./ts-api.md) object in Typescript.
-We also generate a [specification](./cip-0144.md) of this API that is compatible with [CIP-0144 | Wallet Connector API]. This defines the API as a wallet extension that can be enabled by the user, enabling a full-data wallet
+We also generate a [specification](./cip-0144.md) of this API that is compatible with [CIP-0144? | Wallet Connector API]. This defines the API as a wallet extension that can be enabled by the user, enabling a full-data wallet
 We generate these interfaces from a high level specification of the endpoints [source](https://github.com/mlabs-haskell/query-layer-impl), ensuring that the information is consistent and easily updatable for different choices of transport layer.
 
 ### Pagination
@@ -115,7 +116,7 @@ Note that the error codes and their meaning are copied from [CIP-30](https://git
 
 The API has an endpoint that must return the current version of the API implemented. While the CIP is in preparation, the version shall be set to 0.0.0. The moment this CIP is merged the version should be set to 1.0.0, and all implementations should return that as the current version. Any changes to the API should come in form of PRs to this CIP. Every change must update the version in accordance to SemVer.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP originates from the work layed out in the wallet working group, and specifically to address [CPS-012](https://github.com/cardano-foundation/CIPs/blob/master/CPS-0012/README.md)
 

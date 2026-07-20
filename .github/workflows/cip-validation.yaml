@@ -1,0 +1,70 @@
+name: CIP Validation
+
+on:
+  pull_request:
+    paths:
+      - 'CIP-*/README.md'
+      - 'cip-*/README.md'
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch PR branch
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+        run: |
+          git fetch origin "pull/${PR_NUMBER}/head:pr-branch"
+          git checkout pr-branch
+          # Overlay the script and schema from master
+          git checkout origin/master -- .github/scripts/ .github/schemas/
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml jsonschema
+
+      - name: Get CIP files to validate
+        id: get-files
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            # Manual run: diff PR branch against master
+            FILES=$(git diff --name-only --diff-filter=ACMR origin/master...HEAD | grep -iE '^CIP-[^/]+/README\.md$' || true)
+          else
+            echo "Diffing origin/${GITHUB_BASE_REF}...HEAD"
+            FILES=$(git diff --name-only --diff-filter=ACMR "origin/${GITHUB_BASE_REF}...HEAD" | grep -iE '^CIP-[^/]+/README\.md$' || true)
+          fi
+
+          if [ -z "$FILES" ]; then
+            echo "No CIP README.md files to validate"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Convert newlines to spaces for passing as arguments
+          FILES_SPACE=$(echo "$FILES" | tr '\n' ' ')
+          echo "has_files=true" >> $GITHUB_OUTPUT
+          echo "files=$FILES_SPACE" >> $GITHUB_OUTPUT
+
+      - name: Validate CIP files
+        if: steps.get-files.outputs.has_files == 'true'
+        run: |
+          FILES="${{ steps.get-files.outputs.files }}"
+          echo "Validating CIP files: $FILES"
+          python3 .github/scripts/validate-cip.py $FILES

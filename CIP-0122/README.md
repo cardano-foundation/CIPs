@@ -1,14 +1,14 @@
 ---
 CIP: 122
-Title: Logical operations over BuiltinByteString
+Title: Logical operations over `BuiltinByteString`
 Category: Plutus
 Status: Active
-Authors: 
+Authors:
     - Koz Ross <koz@mlabs.city>
-Implementors: 
+Implementors:
     - Koz Ross <koz@mlabs.city>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/806
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/806
 Created: 2024-05-03
 License: Apache-2.0
 ---
@@ -26,7 +26,7 @@ We describe the semantics of a set of logical operations for Plutus
 As part of this, we also describe the bit ordering within a `BuiltinByteString`,
 and provide some laws these operations should obey.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Bitwise operations, both over fixed-width and variable-width blocks of bits,
 have a range of uses, including data structures (especially
@@ -950,7 +950,7 @@ Lastly, we have
 lengthByteString (replicateByteString n w) = n
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The operations, and semantics, described in this CIP provide a set of
 well-defined bitwise logical operations, as well as bitwise access and

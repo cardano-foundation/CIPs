@@ -1,14 +1,14 @@
 ---
 CIP: 84
 Title: Cardano Ledger Evolution
-Status: Active
 Category: Meta
-Authors: 
+Status: Active
+Authors:
   - Jared Corduan <jared.corduan@iohk.io>
 Implementors: N/A
+Discussions:
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/456
 Created: 2023-01-30
-Discussions: 
-  - https://github.com/cardano-foundation/CIPs/pull/456
 License: CC-BY-4.0
 ---
 
@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This CIP provides guidance for future CIPs concerning the Cardano ledger.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The ledger is responsible for processing transactions and updating the shared state of the network.
 It also processes block headers and handles the state transformation from one epoch to the next
@@ -30,7 +30,7 @@ the proof-of-stake consensus mechanism used in Cardano.
 
 This CIP aims to give guidance for future CIPs related to the ledger,
 making it a registered category of the CIP process[^1].
-[^1]: See [CIP-1](https://github.com/cardano-foundation/CIPs/blob/cip-cps-rework/CIP-0001/README.md#categories).
+[^1]: See [CIP-1](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0001/README.md#categories).
 While nothing new is added to the usual CIP process,
 expectations for ledger CIPs are made explicit and some background information is provided.
 
@@ -180,7 +180,7 @@ The following table gives the current set of reviewers for Ledger CIPs.
 | Andre Knispel      | andre.knispel@iohk.io      | @WhatisRT       |
 | Alexey Kuleshevich | alexey.kuleshevich@iohk.io | @lehins         |
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### There is only one implementation, why limit the scope of ledger CIPs in this way?
 
