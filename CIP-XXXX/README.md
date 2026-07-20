@@ -14,11 +14,11 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The Shelley Delegation and Incentives Design Specification identified "stale stake" as stake delegated to a pool that has ceased operating. Because an unavailable pool can still be elected to produce blocks, the specification recognized stale stake as a threat to chain growth and proposed pruning persistently non-performing pools. That design option was not included in the initial Shelley release, and pool registrations can consequently remain in force after their operators have abandoned them.
+Appendix C, "Design Option: Stale Stake", of the [Shelley Delegation and Incentives Design Specification](https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf) identified "stale stake" as a potential issue. It is classified as stake that is delegated to a pool that is no longer operating, but never submitted a deregistration transaction.  Because an unavailable pool can still be elected to produce blocks, the specification recognized stale stake as a threat to chain growth and proposed pruning persistently non-performing pools. That design option was not included in the initial Shelley release and consequently, stake pools today can be assigned blocks via the slot lottery even though their operators have abandoned them, hurting chain density.
 
-This CIP introduces a governance-updatable protocol parameter, `spoActivity`, measured in epochs. A registered pool is automatically pruned when it has neither produced a block on the adopted chain nor submitted an accepted pool registration certificate for `spoActivity` epochs. Producing a block or updating the registration renews the pool's expiration. The initial value is 73 epochs, approximately one year.
+This CIP introduces a governance-updatable protocol parameter, `spoActivity`, measured in epochs. A registered pool is automatically pruned when it has neither produced a block on the adopted chain nor submitted an accepted pool registration certificate for `spoActivity` epochs. Producing a block or updating the registration renews the pool's expiration. The initial value recommendation is 73 epochs, approximately one year.
 
-This CIP implements the deferred stale-stake objective through a deterministic activity period. Automatic pruning uses the existing pool-retirement behavior: the pool deposit is refunded according to the current rules, delegations to the pool are removed, and the pool must register again to return. The mechanism does not attempt to infer private leader assignments or punish temporary underperformance.
+This CIP implements the deferred stale-stake objective through a deterministic activity period. Automatic pruning uses the existing pool-retirement behavior: the pool deposit is refunded according to the current rules, delegations to the pool are removed, and the pool must register again to return. Pruning changes delegation state only.  It does not move, lock, or confiscate delegated ADA, which remains spendable and can be redelegated by its owner. A pool that produces no blocks generates no new pool rewards. The mechanism does not attempt to infer private leader assignments or punish temporary underperformance.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -40,8 +40,8 @@ A small pool that does not produce a block within the activity period can remain
 
 The expected benefits are:
 
-- improved chain density when stake currently assigned to abandoned pools is no longer assigned blocks that they will inevitably miss
-- removal of abandoned pools and their stake from ossifying governance actions
+- improved chain density when stake delegated to abandoned pools is removed from the slot lottery
+- removal of abandoned pools and their stake from the voting distributions for governance actions that require SPO approval, subject to the predefined voting-option exceptions
 - pruning of obsolete pool and delegation state
 
 The size of these effects is an empirical question. Canonical block counts alone cannot identify missed leader opportunities because private leader schedules are not public and competing leaders, forks, and ordinary downtime also affect observed block production. This CIP therefore does not attribute any measured block-density shortfall solely to inactive pools. It supplies a deterministic protocol rule for registrations whose operators have ceased both observable forms of pool activity.
@@ -182,8 +182,6 @@ Ledger-state and supported query interfaces SHOULD expose, for each registered p
 - `poolExpiration`
 - any earlier explicitly scheduled retirement epoch.
 
-Command-line tools, explorers, and wallets are encouraged to use this information to warn operators and delegators before pruning.
-
 No new CLI certificate command is required. An operator may renew activity using the existing pool registration workflow and the pool's current parameters.
 
 ### Versioning and backward compatibility
@@ -202,7 +200,13 @@ This proposal retains a long observation period and gives every operator a deter
 
 When stake is delegated to a registered but unavailable pool, the pool may win a private leader election and fail to produce the corresponding block. After the pool is pruned, its former delegations are no longer active stake. Future leader-election snapshots normalize over the remaining active stake under the existing consensus rules.
 
-This mechanism is expected to improve chain density only to the extent that currently registered inactive pools hold active stake. It does not address ordinary missed blocks, temporary outages, competing leaders, or forked blocks. Those limitations must accompany any quantitative estimate.
+Using the epoch-642 snapshot and current mainnet settings, the affected stake at `spoActivity = 73` represents about 0.20% of active stake. A conditional estimate of its expected leader nominations per epoch is:
+
+```text
+432,000 slots * 0.05 active-slot coefficient * 0.002 stake share = 43.2
+```
+
+If all 41.88 million ADA in the candidate set belongs to unavailable pools, it would therefore account for roughly 43 forfeited leader opportunities per epoch on average.
 
 ### Governance participation
 
@@ -227,6 +231,10 @@ A Koios analysis at epoch 642 evaluated every integer value from 12 through 73 e
 
 At 73 epochs, the candidate population is approximately half of all registered pools but represents only about 0.20% of active stake in the snapshot. This indicates a large long tail of registrations with little stake. Compared with a 12-epoch value, the one-year period reduces affected active stake by approximately 37.78 million ADA while still addressing most of the potentially stale pool registrations. It is therefore a conservative initial value that minimizes disruption to active stake while establishing a finite lifetime for pools that show no activity for a full year.
 
+At activation, every registered pool receives the same one-year expiration period. Pools that produce a block or submit a registration update during that year renew their expiration, but many of the 1,485 snapshot candidates could be pruned at the same boundary if they remain inactive. A uniform deadline gives every operator equal notice and avoids historical reconstruction or an arbitrary staggering rule. The resulting registered-pool count may fall sharply, but that change is not by itself a loss of operational decentralization.  It makes the count better reflect pools showing observable activity, while the affected stake in this snapshot is only about 0.20% of active stake.
+
+Pruning does not automatically redelegate this stake. It removes the stale delegation from future block-production and SPO-voting distributions, while the ADA remains controlled by its owner and undelegated until that owner acts.
+
 The value is intentionally updateable, but it must remain positive. Governance may select another period after operational experience. The new interval applies prospectively as pools renew, leaving already-stored expirations unchanged.
 
 ### Storing the expiration epoch
@@ -239,7 +247,7 @@ Prospective parameter changes are necessary to preserve this simple representati
 
 - A registration update proves cold-key control, not that the pool's block-producing node is online. An operator can remain registered while deliberately not producing blocks by periodically re-registering.
 - Automatic pruning is not slashing. No pool deposit, rewards, or delegated principal are confiscated.
-- Delegators to a pruned pool stop participating in staking and stop earning pool rewards until they redelegate.
+- Pruning does not move delegated ADA or select a new pool for it. The stake remains spendable but does not participate in staking or earn new pool rewards until its owner redelegates.
 - Initializing every registered pool with the same activation-derived expiration can cause many abandoned pools to be pruned at the same boundary.
 
 ## Path to Active
