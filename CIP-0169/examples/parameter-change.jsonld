@@ -1,0 +1,209 @@
+{
+  "@context": {
+    "@language": "en-us",
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
+    "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
+    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
+    "body": {
+      "@id": "CIP108:body",
+      "@context": {
+        "references": {
+          "@id": "CIP100:references",
+          "@container": "@set",
+          "@context": {
+            "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+            "Other": "CIP100:OtherReference",
+            "label": "CIP100:reference-label",
+            "uri": "CIP100:reference-uri"
+          }
+        },
+        "title": "CIP108:title",
+        "abstract": "CIP108:abstract",
+        "motivation": "CIP108:motivation",
+        "rationale": "CIP108:rationale",
+        "comment": "CIP100:comment",
+        "externalUpdates": {
+          "@id": "CIP100:externalUpdates",
+          "@context": {
+            "title": "CIP100:update-title",
+            "uri": "CIP100:update-uri"
+          }
+        },
+        "onChain": {
+          "@id": "CIP169:onChain",
+          "@context": {
+            "@vocab": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
+            "deposit": "CIP116:deposit",
+            "reward_account": "CIP116:reward_account",
+            "coin": "CIP116:coin",
+            "tag": "CIP116:tag",
+            "policy_hash": "CIP116:policy_hash",
+            "drep_credential": {
+              "@id": "CIP116:drep_credential",
+              "@context": {
+                "tag": "CIP116:tag",
+                "value": "CIP116:credential_value"
+              }
+            },
+            "committee_cold_credential": {
+              "@id": "CIP116:committee_cold_credential",
+              "@context": {
+                "tag": "CIP116:tag",
+                "value": "CIP116:credential_value"
+              }
+            },
+            "gov_action": {
+              "@id": "CIP116:gov_action",
+              "@context": {
+                "tag": "CIP116:tag",
+                "gov_action_id": {
+                  "@id": "CIP116:gov_action_id",
+                  "@context": {
+                    "transaction_id": "CIP116:transaction_id",
+                    "gov_action_index": "CIP116:gov_action_index"
+                  }
+                },
+                "protocol_version": {
+                  "@id": "CIP116:protocol_version",
+                  "@context": {
+                    "major": "CIP116:major",
+                    "minor": "CIP116:minor"
+                  }
+                },
+                "rewards": {
+                  "@id": "CIP116:rewards",
+                  "@container": "@set",
+                  "@context": {
+                    "key": "CIP116:reward_account",
+                    "value": "CIP116:coin"
+                  }
+                },
+                "members_to_remove": {
+                  "@id": "CIP116:members_to_remove",
+                  "@container": "@set",
+                  "@context": {
+                    "tag": "CIP116:tag",
+                    "value": "CIP116:credential_value"
+                  }
+                },
+                "committee": {
+                  "@id": "CIP116:committee",
+                  "@container": "@set",
+                  "@context": {
+                    "key": {
+                      "@id": "CIP116:committee_cold_credential",
+                      "@context": {
+                        "tag": "CIP116:tag",
+                        "value": "CIP116:credential_value"
+                      }
+                    },
+                    "value": "CIP116:epoch"
+                  }
+                },
+                "signature_threshold": {
+                  "@id": "CIP116:signature_threshold",
+                  "@context": {
+                    "numerator": "CIP116:numerator",
+                    "denominator": "CIP116:denominator"
+                  }
+                },
+                "constitution": {
+                  "@id": "CIP116:constitution",
+                  "@context": {
+                    "anchor": {
+                      "@id": "CIP116:anchor",
+                      "@context": {
+                        "url": "CIP116:url",
+                        "data_hash": "CIP116:data_hash"
+                      }
+                    },
+                    "script_hash": "CIP116:script_hash"
+                  }
+                }
+              }
+            },
+            "key": {
+              "@id": "CIP116:voter",
+              "@context": {
+                "tag": "CIP116:tag",
+                "credential": {
+                  "@id": "CIP116:credential",
+                  "@context": {
+                    "tag": "CIP116:tag",
+                    "value": "CIP116:credential_value"
+                  }
+                },
+                "pubkey_hash": "CIP116:pubkey_hash"
+              }
+            },
+            "value": {
+              "@id": "CIP116:voting_procedures_value",
+              "@container": "@set",
+              "@context": {
+                "key": {
+                  "@id": "CIP116:gov_action_id",
+                  "@context": {
+                    "transaction_id": "CIP116:transaction_id",
+                    "gov_action_index": "CIP116:gov_action_index"
+                  }
+                },
+                "value": {
+                  "@id": "CIP116:voting_procedure",
+                  "@context": {
+                    "vote": "CIP116:vote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "authors": {
+      "@id": "CIP100:authors",
+      "@container": "@set",
+      "@context": {
+        "did": "@id",
+        "name": "http://xmlns.com/foaf/0.1/name",
+        "witness": {
+          "@id": "CIP100:witness",
+          "@context": {
+            "witnessAlgorithm": "CIP100:witnessAlgorithm",
+            "publicKey": "CIP100:publicKey",
+            "signature": "CIP100:signature"
+          }
+        }
+      }
+    }
+  },
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "title": "Increase Block Size to 96KB",
+    "abstract": "Update maxBlockBodySize parameter from 90112 to 98304 bytes.",
+    "motivation": "Current block size limits are constraining transaction throughput.",
+    "rationale": "Analysis shows network can safely handle larger blocks, improving user experience.",
+    "onChain": {
+      "deposit": "100000000000",
+      "reward_account": "stake1uxsm9s75uhm20wxf6rsl9ga5chtw079fkrqa9cl55kmv0kqfk32j7",
+      "gov_action": {
+        "tag": "parameter_change_action",
+        "protocol_param_update": {
+          "max_block_body_size": 98304
+        },
+        "policy_hash": "fa24fb305126805cf2164c161d852a0e7330cf988f1fe558cf7d4a64"
+      }
+    }
+  },
+  "authors": [
+    {
+      "name": "Ryan Williams",
+      "witness": {
+        "witnessAlgorithm": "ed25519",
+        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
+        "signature": "88843d234e9fa9fec7cbfec4bfcc5f241b90f697a2cfa9e3cd3f28a32cd3958fca97db8810fb87c085b6d8051c8f835d1814916a5a4e406c62343e49ba7d7c01"
+      }
+    }
+  ]
+}
