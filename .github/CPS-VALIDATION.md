@@ -14,7 +14,7 @@ These attempt to codify the guidance described within [CIP-9999 | Cardano Proble
 | Directory name | If the `CPS` field has an assigned number (not `"?"`), the directory must be named `CPS-NNNN` where `NNNN` is the CPS number zero-padded to 4 digits (e.g., `CPS: 12` → `CPS-0012/`). Even when the number is unassigned, any directory matching `CPS-<digits>` must be zero-padded to 4 digits (e.g. `CPS-032/` fails; `CPS-0032/` passes). |
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
-| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CPS: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CPS: "?"` until a number is assigned. |
+| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CPS: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CPS: "?"` (or a word placeholder like `unassigned` / `pending` / `TBD`, which needs no quotes) until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations
@@ -25,7 +25,7 @@ and no extra fields are allowed.
 
 | Field | Order | Validation Rules |
 | ----- | ----- | ---------------- |
-| **CPS** | 1 | Positive integer (`1`, `42`) or quoted `"?"`/`"??"`/etc. for unassigned (an unquoted `?` fails — see file-level rules). No leading zeros. |
+| **CPS** | 1 | Positive integer (`1`, `42`) or a placeholder for unassigned: a single quoted `"?"`, `unassigned`, `pending`, or `TBD` (case-insensitive; `"??"`, `"???"`, or an unquoted `?` all fail — see file-level rules). No leading zeros. |
 | **Title** | 2 | 1-100 characters, no backticks (`` ` ``) |
 | **Category** | 3 | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | `Open`, `Solved`, or `Inactive` (optionally with reason, e.g., `Inactive (Superseded)`) |
@@ -45,7 +45,7 @@ extra validation applies:
 | ---- | ----------- |
 | GitHub URL required | Must be `https://github.com/cardano-foundation/CIPs/...` |
 | Valid URL types | `/pull/NNN` (PR) or `/tree/{branch}/CIP-NNNN` or `/blob/{branch}/CIP-NNNN` (merged) |
-| `?` suffix for PRs | `CIP-0030?` required when linking to a pull request (candidate) |
+| `?` suffix for PRs | `CIP-0030?` optionally marks a candidate when linking to a pull request; the plain reference is also accepted |
 | No `?` for merged | `CIP-0030` (without `?`) required when linking to a merged CIP |
 
 Non-CIP labels (e.g., `Forum Post`, `Pull Request`) are allowed with any valid URL.

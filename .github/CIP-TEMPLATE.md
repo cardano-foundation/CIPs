@@ -1,7 +1,7 @@
 ---
 CIP: "?"
-Title: ?
-Category: ?
+Title: "?"
+Category: "?"
 Status: Proposed
 Authors:
     - John Doe <john.doe@email.domain>

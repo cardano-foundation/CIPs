@@ -2,20 +2,40 @@
 """
 Validation script for CIP README.md files.
 Validates YAML headers and required sections.
+
+Rules shared with the CPS validator live in validation_common.py.
 """
 
 import sys
 import re
 import json
-import yaml
 from pathlib import Path
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
 try:
     import jsonschema
 except ImportError:
     print("Error: jsonschema library is required. Install it with: pip install jsonschema", file=sys.stderr)
     sys.exit(1)
+
+from validation_common import (
+    parse_frontmatter,
+    _strip_fenced_code_blocks,
+    extract_h2_headers,
+    extract_h1_headers,
+    validate_line_endings,
+    validate_no_h1_headings,
+    humanize_schema_error,
+    validate_number_field,
+    validate_leading_zero_lines,
+    validate_unquoted_question_marks,
+    validate_authors_field,
+    validate_created_field,
+    validate_license_field,
+    validate_label_url_format,
+    validate_label_entries,
+    validate_directory_name,
+)
 
 
 # Required fields for CIP headers (in required order)
@@ -67,131 +87,6 @@ PATH_TO_ACTIVE_SUBSECTIONS = {
 SCHEMA_PATH = Path(__file__).parent.parent / 'schemas' / 'cip-header.schema.json'
 with open(SCHEMA_PATH, 'r', encoding='utf-8') as f:
     CIP_HEADER_SCHEMA = json.load(f)
-
-
-def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Optional[List[str]]]:
-    """Parse YAML frontmatter from markdown content.
-
-    Returns:
-        Tuple of (frontmatter_dict, remaining_content, raw_lines) or (None, content, None) if no frontmatter
-    """
-    # Check for frontmatter delimiters - must start with ---
-    if not content.startswith('---'):
-        return None, content, None
-
-    # Find the closing delimiter (--- on its own line)
-    lines = content.split('\n')
-    if lines[0] != '---':
-        return None, content, None
-
-    # Find the closing ---
-    end_idx = None
-    for i in range(1, len(lines)):
-        if lines[i] == '---':
-            end_idx = i
-            break
-
-    if end_idx is None:
-        return None, content, None
-
-    # Extract frontmatter (lines between the two --- markers)
-    frontmatter_lines = lines[1:end_idx]
-
-    # Preprocess: quote standalone '?' values (YAML interprets '?' as explicit key indicator)
-    processed_lines = []
-    for line in frontmatter_lines:
-        # Match lines like "CIP: ?" or "Category: ?" and quote the ?
-        if re.match(r'^[A-Za-z][A-Za-z -]*:\s+\?+\s*$', line):
-            line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
-        processed_lines.append(line)
-
-    frontmatter_text = '\n'.join(processed_lines)
-
-    # Extract remaining content (everything after the closing ---)
-    remaining_lines = lines[end_idx + 1:]
-    remaining_content = '\n'.join(remaining_lines)
-
-    try:
-        frontmatter = yaml.safe_load(frontmatter_text)
-        if frontmatter is None:
-            return None, content, None
-        return frontmatter, remaining_content, frontmatter_lines
-    except yaml.YAMLError:
-        return None, content, None
-    except ValueError:
-        # Catches invalid date values that YAML tries to parse (e.g., month 13)
-        return None, content, None
-
-
-def _strip_fenced_code_blocks(content: str) -> str:
-    """Blank out lines inside fenced code blocks, preserving line count.
-
-    Recognises CommonMark fenced code blocks: an opening fence is a line
-    indented up to 3 spaces whose first non-whitespace run is 3+ backticks or
-    3+ tildes. For backtick fences the info string (rest of the line) must
-    not contain backticks — this excludes inline code like '```X``` is a ...'
-    which is not a valid fence. The closing fence must use the same character
-    and be at least as long as the opening, followed only by whitespace.
-
-    Lines inside a fence — including the fence lines themselves — are
-    replaced with '' so that line-based regex extraction skips them. An
-    unclosed fence treats all trailing lines as fenced, which is the safe
-    default for the validator (no false positives).
-    """
-    backtick_open_re = re.compile(r'^ {0,3}(`{3,})([^`]*)$')
-    tilde_open_re = re.compile(r'^ {0,3}(~{3,})')
-    result = []
-    in_fence = False
-    fence_char = None
-    fence_len = 0
-    for line in content.split('\n'):
-        if in_fence:
-            close_re = re.compile(
-                r'^ {0,3}(' + re.escape(fence_char) + r'{' + str(fence_len) + r',})\s*$'
-            )
-            if close_re.match(line):
-                in_fence = False
-                fence_char = None
-                fence_len = 0
-            result.append('')
-        else:
-            m_b = backtick_open_re.match(line)
-            m_t = tilde_open_re.match(line) if not m_b else None
-            if m_b:
-                in_fence = True
-                fence_char = '`'
-                fence_len = len(m_b.group(1))
-                result.append('')
-            elif m_t:
-                in_fence = True
-                fence_char = '~'
-                fence_len = len(m_t.group(1))
-                result.append('')
-            else:
-                result.append(line)
-    return '\n'.join(result)
-
-
-def extract_h2_headers(content: str) -> List[str]:
-    """Extract all H2 headers (##) from markdown content, ignoring fenced code blocks."""
-    h2_pattern = r'^##\s+(.+)$'
-    headers = []
-    for line in _strip_fenced_code_blocks(content).split('\n'):
-        match = re.match(h2_pattern, line)
-        if match:
-            headers.append(match.group(1).strip())
-    return headers
-
-
-def extract_h1_headers(content: str) -> List[str]:
-    """Extract all H1 headers (#) from markdown content, ignoring fenced code blocks."""
-    h1_pattern = r'^#\s+(.+)$'
-    headers = []
-    for line in _strip_fenced_code_blocks(content).split('\n'):
-        match = re.match(h1_pattern, line)
-        if match:
-            headers.append(match.group(1).strip())
-    return headers
 
 
 def extract_section_body(content: str, section_name: str) -> str:
@@ -246,46 +141,6 @@ def extract_h3_headers_under_section(content: str, section_name: str) -> List[st
     return h3_headers
 
 
-def validate_line_endings(file_path: Path) -> List[str]:
-    """Validate that file uses UNIX line endings (LF, not CRLF).
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-
-    try:
-        with open(file_path, 'rb') as f:
-            content_bytes = f.read()
-
-        if b'\r\n' in content_bytes:
-            errors.append("File uses Windows line endings (CRLF). Use UNIX line endings (LF) instead.")
-
-        # Check for standalone \r without \n (old Mac line endings)
-        content_without_crlf = content_bytes.replace(b'\r\n', b'')
-        if b'\r' in content_without_crlf:
-            errors.append("File uses old Mac line endings (CR). Use UNIX line endings (LF) instead.")
-    except Exception as e:
-        errors.append(f"Error checking line endings: {e}")
-
-    return errors
-
-
-def validate_no_h1_headings(content: str) -> List[str]:
-    """Validate that no H1 headings are present in the document.
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-
-    h1_headers = extract_h1_headers(content)
-    if h1_headers:
-        errors.append(f"H1 headings are not allowed. Found: {', '.join(h1_headers)}")
-
-    return errors
-
-
 def _validate_field_order(frontmatter: Dict) -> List[str]:
     """Validate that header fields appear in the correct order.
 
@@ -312,43 +167,6 @@ def _validate_field_order(frontmatter: Dict) -> List[str]:
             f"Got: {', '.join(actual_known)}"
         )
 
-    return errors
-
-
-def _validate_cip_field(frontmatter: Dict) -> List[str]:
-    """Friendly validation of the CIP number field.
-
-    Leading-zero detection is performed separately against raw lines.
-    """
-    errors = []
-    if 'CIP' not in frontmatter:
-        return errors
-    value = frontmatter['CIP']
-    if isinstance(value, bool):
-        errors.append(
-            f"'CIP' must be a positive integer (e.g., 30) or '?' if unassigned. Got: {value!r}"
-        )
-        return errors
-    if isinstance(value, int):
-        if value < 1:
-            errors.append(
-                f"'CIP' must be a positive integer (1 or greater) or '?' if unassigned. Got: {value}"
-            )
-        return errors
-    if isinstance(value, str):
-        if re.fullmatch(r'\?+', value):
-            return errors
-        if re.fullmatch(r'[1-9]\d*', value):
-            return errors
-        if re.fullmatch(r'0\d*', value):
-            return errors  # Leading-zero check handles this
-        errors.append(
-            f"'CIP' must be a positive integer (e.g., 30) or '?' if unassigned. Got: {value!r}"
-        )
-        return errors
-    errors.append(
-        f"'CIP' must be a positive integer or '?' if unassigned. Got: {value!r}"
-    )
     return errors
 
 
@@ -384,22 +202,6 @@ def _validate_status_field(frontmatter: Dict) -> List[str]:
         f"(with a reason in parentheses, e.g. 'Inactive (superseded by CIP-NNNN)'). "
         f"Got: {value!r}"
     )
-    return errors
-
-
-def _validate_authors_field(frontmatter: Dict) -> List[str]:
-    """Friendly validation of Authors entries."""
-    errors = []
-    entries = frontmatter.get('Authors')
-    if not isinstance(entries, list):
-        return errors
-    pattern = re.compile(r'^.+\s+<.+>$')
-    for i, entry in enumerate(entries):
-        if not isinstance(entry, str) or not pattern.match(entry):
-            errors.append(
-                f"'Authors' entry {i+1}: must be in the form 'Name <email>'. "
-                f"Got: {entry!r}. Example: 'John Doe <john.doe@email.domain>'"
-            )
     return errors
 
 
@@ -440,48 +242,6 @@ def _validate_implementors_field(frontmatter: Dict) -> List[str]:
     return errors
 
 
-def _validate_created_field(frontmatter: Dict) -> List[str]:
-    """Friendly validation of the Created field."""
-    errors = []
-    if 'Created' not in frontmatter:
-        return errors
-    value = frontmatter['Created']
-    if hasattr(value, 'isoformat'):
-        value = value.isoformat()
-    if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
-        errors.append(
-            f"'Created' must be an ISO 8601 date in YYYY-MM-DD form. "
-            f"Got: {frontmatter['Created']!r}. Example: '2024-05-21'"
-        )
-    return errors
-
-
-def _validate_license_field(frontmatter: Dict) -> List[str]:
-    """Friendly validation of the License field, with a did-you-mean hint on near-misses."""
-    errors = []
-    if 'License' not in frontmatter:
-        return errors
-    value = frontmatter['License']
-    if not isinstance(value, str):
-        return errors
-    valid = ['CC-BY-4.0', 'Apache-2.0']
-    if value in valid:
-        return errors
-    normalized = re.sub(r'\s+', '-', value).lower()
-    valid_normalized = {v.lower(): v for v in valid}
-    suggestion = valid_normalized.get(normalized)
-    if suggestion:
-        errors.append(
-            f"'License' must be one of: {', '.join(valid)}. "
-            f"Got: {value!r} (did you mean {suggestion!r}?)"
-        )
-    else:
-        errors.append(
-            f"'License' must be one of: {', '.join(valid)}. Got: {value!r}"
-        )
-    return errors
-
-
 def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
     """Validate 'Solution To' entries.
 
@@ -490,9 +250,11 @@ def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
 
     - The number must be zero-padded to at least 4 digits and refer to a
       positive number.
-    - Bare ``CPS-NNNN`` requires a ``/tree/<branch>/CPS-NNNN`` or
-      ``/blob/<branch>/CPS-NNNN`` URL whose referent matches the label.
-    - ``CPS-NNNN?`` requires a ``/pull/<N>`` URL.
+    - The URL must be a GitHub CIPs repository link: a ``/pull/<N>`` URL, or
+      a ``/tree/<branch>/CPS-NNNN`` / ``/blob/<branch>/CPS-NNNN`` URL whose
+      referent matches the label.
+    - The ``?`` suffix optionally marks a candidate still in PR; when present,
+      the URL must be a ``/pull/<N>`` URL.
     """
     errors = []
     entries = frontmatter.get('Solution To')
@@ -579,123 +341,13 @@ def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
                     f"candidate (in PR), so URL must be a pull-request URL. "
                     f"Got: {url}"
                 )
-        else:
-            if not merged_match:
+        elif merged_match:
+            url_number = int(merged_match.group(1))
+            if url_number != ref_number:
                 errors.append(
-                    f"'Solution To' entry {i+1}: bare 'CPS-{ref_number:04d}' requires a "
-                    f"/tree/<branch>/CPS-NNNN or /blob/<branch>/CPS-NNNN URL "
-                    f"(use 'CPS-{ref_number:04d}?' with a /pull/<N> URL for an in-PR CPS). "
-                    f"Got: {url}"
+                    f"'Solution To' entry {i+1}: label 'CPS-{ref_number:04d}' "
+                    f"does not match URL referent 'CPS-{url_number:04d}'."
                 )
-            else:
-                url_number = int(merged_match.group(1))
-                if url_number != ref_number:
-                    errors.append(
-                        f"'Solution To' entry {i+1}: label 'CPS-{ref_number:04d}' "
-                        f"does not match URL referent 'CPS-{url_number:04d}'."
-                    )
-
-    return errors
-
-
-def _validate_discussions_format(entries: list) -> List[str]:
-    """Validate that string Discussions entries follow the 'Label: URL' form.
-
-    String entries must be of the form 'Label: URL' (with whitespace after the
-    colon). Dict entries ({Label: URL}) are validated by the JSON schema.
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-    if not isinstance(entries, list):
-        return errors
-
-    pattern = re.compile(r'^[^:\s][^:]*:\s+https?://\S+')
-    for i, entry in enumerate(entries):
-        if isinstance(entry, str) and not pattern.match(entry):
-            errors.append(
-                f"'Discussions' entry {i+1}: must be in the form 'Label: URL'. "
-                f"Got: {entry!r}. "
-                f"Example: 'Original PR: https://github.com/cardano-foundation/CIPs/pull/123'"
-            )
-    return errors
-
-
-def _validate_label_entries(entries: list, field_name: str, label_prefixes: List[str]) -> List[str]:
-    """Validate semantic rules for labeled 'Label: URL' entries.
-
-    When a label matches one of the given prefixes followed by -NNNN (e.g., CIP-0030):
-    - URL must be a GitHub CIPs repository link (PR or merged document)
-    - Pull request URLs require '?' suffix on the number (candidate)
-    - Merged URLs must NOT have '?' suffix
-
-    Other labels are allowed with any valid URL.
-
-    Args:
-        entries: List of label-URL entries (strings 'Label: URL' or dicts {Label: URL})
-        field_name: Name of the field for error messages
-        label_prefixes: List of label prefixes to validate (e.g., ['CIP'], ['CIP', 'CPS'])
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-
-    if not isinstance(entries, list):
-        return errors
-
-    prefix_group = '|'.join(label_prefixes)
-    label_pattern = re.compile(rf'^({prefix_group})-\d+(\?)?$')
-    pr_pattern = re.compile(r'https://github\.com/cardano-foundation/CIPs/pull/\d+')
-    merged_pattern = re.compile(
-        rf'https://github\.com/cardano-foundation/CIPs/(tree|blob)/[^/]+/({prefix_group})-\d+'
-    )
-    github_cips_pattern = re.compile(
-        rf'^https://github\.com/cardano-foundation/CIPs/(pull/\d+|tree/[^/]+/({prefix_group})-\d+|blob/[^/]+/({prefix_group})-\d+)'
-    )
-
-    for i, entry in enumerate(entries):
-        if isinstance(entry, dict) and len(entry) == 1:
-            label, url = next(iter(entry.items()))
-        elif isinstance(entry, str):
-            match = re.match(r'^([^:]+):\s+(.+)$', entry)
-            if not match:
-                continue
-            label, url = match.groups()
-        else:
-            continue
-
-        label = label.strip()
-        url = url.strip()
-
-        label_match = label_pattern.match(label)
-        if not label_match:
-            continue  # Non-matching labels are allowed with any URL
-
-        ref_id = label_match.group(0).rstrip('?')
-        has_question_mark = label_match.group(2) == '?'
-
-        if not github_cips_pattern.match(url):
-            errors.append(
-                f"'{field_name}' entry {i+1}: label '{label}' requires a GitHub CIPs repository URL "
-                f"(pull request or merged document). Got: {url}"
-            )
-            continue
-
-        is_pr = pr_pattern.search(url) is not None
-        is_merged = merged_pattern.search(url) is not None
-
-        if is_pr and not has_question_mark:
-            errors.append(
-                f"'{field_name}' entry {i+1}: Pull request URL requires '?' suffix on the reference "
-                f"(use '{ref_id}?' instead of '{ref_id}' to indicate candidate status)"
-            )
-        elif is_merged and has_question_mark:
-            errors.append(
-                f"'{field_name}' entry {i+1}: Merged document should not have '?' suffix "
-                f"(use '{ref_id}' instead of '{ref_id}?' since this document is merged)"
-            )
 
     return errors
 
@@ -770,25 +422,28 @@ def validate_header(frontmatter: Dict) -> List[str]:
 
         jsonschema.validate(instance=frontmatter_for_schema, schema=CIP_HEADER_SCHEMA)
     except jsonschema.ValidationError as e:
-        error_path = '.'.join(str(p) for p in e.path) if e.path else 'root'
-        errors.append(f"Header validation error at '{error_path}': {e.message}")
+        # Translate the raw library error into a friendly, actionable message
+        errors.append(humanize_schema_error(e))
     except jsonschema.SchemaError as e:
         errors.append(f"Schema error: {e.message}")
 
     # Friendly per-field value checks (schema enforces only type/structure for these)
-    errors.extend(_validate_cip_field(frontmatter))
+    errors.extend(validate_number_field(frontmatter, 'CIP'))
     errors.extend(_validate_title_field(frontmatter))
     errors.extend(_validate_status_field(frontmatter))
-    errors.extend(_validate_authors_field(frontmatter))
+    errors.extend(validate_authors_field(frontmatter))
     errors.extend(_validate_implementors_field(frontmatter))
-    errors.extend(_validate_created_field(frontmatter))
-    errors.extend(_validate_license_field(frontmatter))
+    errors.extend(validate_created_field(frontmatter))
+    errors.extend(validate_license_field(frontmatter))
     errors.extend(_validate_solution_to_format(frontmatter))
 
     # Validate CIP/CPS label semantic rules on Discussions
     if 'Discussions' in frontmatter:
-        errors.extend(_validate_discussions_format(frontmatter['Discussions']))
-        errors.extend(_validate_label_entries(frontmatter['Discussions'], 'Discussions', ['CIP', 'CPS']))
+        errors.extend(validate_label_url_format(
+            frontmatter['Discussions'], 'Discussions',
+            'Original PR: https://github.com/cardano-foundation/CIPs/pull/123'
+        ))
+        errors.extend(validate_label_entries(frontmatter['Discussions'], 'Discussions', ['CIP', 'CPS']))
         errors.extend(_validate_discussions_has_pr(frontmatter['Discussions']))
 
     return errors
@@ -947,36 +602,6 @@ def validate_header_whitespace(raw_lines: List[str]) -> List[str]:
     return errors
 
 
-def validate_unquoted_question_marks(raw_lines: List[str]) -> List[str]:
-    """Validate that no header field has an unquoted '?' value.
-
-    A bare '?' is invalid YAML (it denotes an explicit key), which breaks
-    GitHub's frontmatter rendering: the header table is not displayed and
-    Discussions links are not clickable. Quoted values like ``CIP: "?"``
-    are fine and do not match here.
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-    for line in raw_lines:
-        match = re.match(r'^([A-Za-z][A-Za-z -]*):\s+\?+\s*$', line)
-        if match:
-            field = match.group(1)
-            errors.append(
-                f"'{field}' has an unquoted '?' value; a bare '?' is invalid YAML and breaks "
-                f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
-                f'Use {field}: "?" until a number is assigned, or the assigned number.'
-            )
-    return errors
-
-
-def _strip_code(content: str) -> str:
-    """Strip fenced and inline code spans from markdown content."""
-    no_fences = re.sub(r'```.*?```', '', content, flags=re.DOTALL)
-    return re.sub(r'`[^`\n]*`', '', no_fences)
-
-
 def _ref_folder_exists(repo_root: Path, prefix: str, number: int) -> bool:
     """Check whether a CIP/CPS folder exists at the repo root."""
     return (repo_root / f"{prefix}-{number:04d}").is_dir()
@@ -985,10 +610,12 @@ def _ref_folder_exists(repo_root: Path, prefix: str, number: int) -> bool:
 def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
     """Validate Solution To entries against on-disk CPS folders.
 
-    A bare ``CPS-NNNN`` must point to an existing CPS folder; a ``CPS-NNNN?``
-    must point to one that does not exist yet (still in PR). Entry parsing
-    accepts both ``"Label: URL"`` strings (with optional ``| title``) and
-    single-key ``{Label: URL}`` dicts; format errors are reported by
+    A ``CPS-NNNN?`` (candidate) must point to a CPS folder that does not
+    exist yet (still in PR) — once merged, the ``?`` is stale and must be
+    dropped. The ``?`` suffix is optional: a bare ``CPS-NNNN`` is accepted
+    whether or not the folder exists yet. Entry parsing accepts both
+    ``"Label: URL"`` strings (with optional ``| title``) and single-key
+    ``{Label: URL}`` dicts; format errors are reported by
     ``_validate_solution_to_format`` and silently skipped here.
 
     Returns:
@@ -1029,107 +656,6 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
                 f"'Solution To' entry '{canonical}?' indicates a candidate but "
                 f"{canonical} folder exists; drop the '?'"
             )
-        elif not is_candidate and not exists:
-            errors.append(
-                f"'Solution To' entry '{canonical}' references a CPS that has no folder in this "
-                f"repository. Check the number is correct; you may mark it '{canonical}?' if it "
-                f"intentionally references a not-yet-merged CPS."
-            )
-
-    return errors
-
-
-def validate_cross_references(content: str, frontmatter: Dict, file_path: Path) -> List[str]:
-    """Validate that CIP-NNNN and CPS-NNNN references in the body point to existing folders.
-
-    References inside fenced or inline code blocks are ignored (treated as examples).
-    References suffixed with '?' are treated as candidates (still in PR) and skipped.
-    Self-references to the CIP's own number are skipped.
-
-    Returns:
-        List of error messages (empty if valid)
-    """
-    errors = []
-    repo_root = file_path.parent.parent
-
-    own_number = None
-    own_value = frontmatter.get('CIP')
-    if isinstance(own_value, int):
-        own_number = own_value
-    elif isinstance(own_value, str):
-        try:
-            own_number = int(own_value)
-        except ValueError:
-            own_number = None
-
-    stripped = _strip_code(content)
-    pattern = re.compile(r'\b(CIP|CPS)-(\d{1,5})(?!\d)(\??)')
-
-    seen: Set[Tuple[str, int]] = set()
-    for match in pattern.finditer(stripped):
-        prefix, digits, candidate = match.group(1), match.group(2), match.group(3)
-        number = int(digits)
-        if candidate == '?':
-            continue
-        if prefix == 'CIP' and own_number is not None and number == own_number:
-            continue
-        key = (prefix, number)
-        if key in seen:
-            continue
-        seen.add(key)
-        if not _ref_folder_exists(repo_root, prefix, number):
-            canonical = f"{prefix}-{number:04d}"
-            errors.append(
-                f"Body references '{canonical}' but no folder '{canonical}' exists in this repository. "
-                f"Check the number is correct; if this intentionally refers to a not-yet-merged "
-                f"proposal, you may optionally mark it '{canonical}?'."
-            )
-
-    return errors
-
-
-def validate_directory_name(frontmatter: Dict, file_path: Path) -> List[str]:
-    """Validate that a CIP with an assigned number lives in a correctly-named directory.
-
-    For CIP number N, the parent directory must be 'CIP-NNNN' (zero-padded to 4 digits;
-    no truncation for numbers >= 10000). Unassigned CIPs ('?', '??', etc.) skip this check.
-    """
-    errors = []
-
-    # Regardless of the CIP field, a numbered directory must be zero-padded to
-    # 4 digits (5+ digits without a leading zero for numbers >= 10000).
-    dir_match = re.fullmatch(r'CIP-(\d+)', file_path.parent.name)
-    if dir_match:
-        digits = dir_match.group(1)
-        if len(digits) != 4 and (len(digits) < 4 or digits.startswith('0')):
-            errors.append(
-                f"Directory name '{file_path.parent.name}' is not zero-padded to 4 digits. "
-                f"Expected: 'CIP-{int(digits):04d}'"
-            )
-            return errors
-
-    cip_value = frontmatter.get('CIP')
-    if cip_value is None:
-        return errors  # Missing field is reported by header validation
-
-    # Skip unassigned CIPs ('?', '??', etc.)
-    if isinstance(cip_value, str) and cip_value.startswith('?'):
-        return errors
-
-    # Parse to integer; non-numeric strings are caught by header validation
-    try:
-        cip_num = int(cip_value)
-    except (ValueError, TypeError):
-        return errors
-
-    expected_dir = f"CIP-{cip_num:04d}"
-    actual_dir = file_path.parent.name
-
-    if actual_dir != expected_dir:
-        errors.append(
-            f"Directory name '{actual_dir}' does not match the CIP number {cip_num}. "
-            f"Expected: '{expected_dir}'"
-        )
 
     return errors
 
@@ -1161,24 +687,27 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
     except Exception as e:
         return False, [f"Error reading file: {e}"]
 
-    frontmatter, remaining_content, raw_lines = parse_frontmatter(content)
+    frontmatter, remaining_content, raw_lines, parse_error = parse_frontmatter(content)
     if frontmatter is None:
-        errors.append("Missing or invalid YAML frontmatter (must start with '---' and end with '---')")
+        if parse_error:
+            errors.append(
+                f"Could not parse the YAML frontmatter (between the '---' markers). "
+                f"Reason: {parse_error}"
+            )
+        else:
+            errors.append("Missing or invalid YAML frontmatter (must start with '---' and end with '---')")
         return False, errors
 
-    # Check for leading zeros in CIP field (YAML loses this information)
-    if raw_lines:
-        for line in raw_lines:
-            if re.match(r'^CIP:\s+0\d+', line):
-                errors.append("CIP number must not have leading zeros")
-                break
+    # Check for unquoted leading zeros in the CIP field (YAML loses this
+    # information when it parses the value as a number)
+    errors.extend(validate_leading_zero_lines(raw_lines, frontmatter, 'CIP'))
 
     if raw_lines:
-        errors.extend(validate_unquoted_question_marks(raw_lines))
+        errors.extend(validate_unquoted_question_marks(raw_lines, 'CIP'))
         errors.extend(validate_header_whitespace(raw_lines))
 
     # Validate the directory name matches the assigned CIP number
-    dir_errors = validate_directory_name(frontmatter, file_path)
+    dir_errors = validate_directory_name(frontmatter, file_path, 'CIP')
     errors.extend(dir_errors)
 
     header_errors = validate_header(frontmatter)
@@ -1191,8 +720,6 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
 
     section_errors = validate_sections(remaining_content)
     errors.extend(section_errors)
-
-    errors.extend(validate_cross_references(remaining_content, frontmatter, file_path))
 
     copyright_errors = validate_copyright_references_license(frontmatter, remaining_content)
     errors.extend(copyright_errors)
