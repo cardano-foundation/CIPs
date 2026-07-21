@@ -457,12 +457,16 @@ def validate_license_field(frontmatter: Dict) -> List[str]:
 
 
 def validate_label_url_format(entries: list, field_name: str, example: str) -> List[str]:
-    """Validate that string entries follow the 'Label: URL' form.
+    """Validate that entries follow the 'Label: URL' form.
 
-    String entries must be of the form 'Label: URL' (with whitespace after the
-    colon). Dict entries ({Label: URL}) are validated by the JSON schema.
-    Label/URL semantic rules (CIP/CPS references, PR vs merged) are validated
-    separately by the per-document label-entry checks.
+    Accepts a string 'Label: URL' (with whitespace after the colon) or a
+    single-key ``{Label: URL}`` dict with string label and URL. Every other
+    shape — a bare scalar (int/bool/None), a list, or a multi-key dict — is
+    rejected here rather than slipping through: ``validate_header`` normalizes
+    dicts to strings before JSON-schema validation, so the schema never sees
+    the original type and cannot catch these. Label/URL semantic rules
+    (CIP/CPS references, PR vs merged) are validated separately by the
+    per-document label-entry checks.
 
     Returns:
         List of error messages (empty if valid)
@@ -473,7 +477,16 @@ def validate_label_url_format(entries: list, field_name: str, example: str) -> L
 
     pattern = re.compile(r'^[^:\s][^:]*:\s+https?://\S+')
     for i, entry in enumerate(entries):
-        if isinstance(entry, str) and not pattern.match(entry):
+        if isinstance(entry, str):
+            normalized = entry
+        elif isinstance(entry, dict) and len(entry) == 1:
+            label, url = next(iter(entry.items()))
+            # A dict with a non-string label or URL cannot form 'Label: URL'.
+            normalized = f"{label}: {url}" if isinstance(label, str) and isinstance(url, str) else None
+        else:
+            normalized = None
+
+        if normalized is None or not pattern.match(normalized):
             errors.append(
                 f"'{field_name}' entry {i+1}: must be in the form 'Label: URL'. "
                 f"Got: {entry!r}. "
