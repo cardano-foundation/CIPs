@@ -5,7 +5,7 @@
   "type": "object",
   "properties": {
     "specVersion": {
-      "const": 4
+      "const": 5
     },
     "kind": {
       "const": "cardano-survey-presentation"
