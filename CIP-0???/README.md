@@ -126,7 +126,7 @@ GET /resolve/{handle}
 
 Optional query parameter:
 ```
-?network=mainnet|preprod
+?network=mainnet|preprod|preview
 ```
 
 If no network parameter is provided the provider MUST default
