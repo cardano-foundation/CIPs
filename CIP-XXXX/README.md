@@ -68,6 +68,8 @@ where:
 
 When a DRep is registered, the ledger MUST store `drepPledge` in the DRep's ledger state.
 
+The `coin` specified for pledge must be covered by the inputs of the transaction.
+
 ### DRep update certificates
 
 DRep update certificates MUST include `drepPledge`.
