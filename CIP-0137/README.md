@@ -152,12 +152,12 @@ msgDone              = [5, ]
 isBlocking = false / true
 messageCount = word16
 messageId = bstr .size 32
-messageBody = bstr
+messageBody = bstr .size (90..2000)
 messageIdAndSize = [ messageId, messageSizeInBytes ]
 messageIdList = [ * messageId ]
 messageList = [ * message ]
 messageSizeInBytes = word32
-kesSignature = bstr
+kesSignature = bstr .size 448
 kesPeriod = word32
 operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
@@ -175,6 +175,10 @@ message = [
   , operationalCertificate
   , coldVerificationKey
 ]
+
+word16 = uint .size 2; 2 bytes
+word32 = uint .size 4; 4 bytes
+word64 = uint .size 8; 8 bytes
 ```
 
 > [!NOTE]
@@ -261,7 +265,7 @@ messageIdAndSize = [ messageId, messageSizeInBytes ]
 messageIdList = [ * messageId ]
 messageList = [ * message ]
 messageSizeInBytes = word32
-kesSignature = bstr
+kesSignature = bstr .szie 448
 kesPeriod = word32
 operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
@@ -279,6 +283,10 @@ message = [
   , operationalCertificate
   , coldVerificationKey
 ]
+
+word16 = uint .size 2; 2 bytes
+word32 = uint .size 4; 4 bytes
+word64 = uint .size 8; 8 bytes
 ```
 
 #### Inbound side and outbound side implementation
@@ -442,7 +450,7 @@ The following tables gather figures about expected network load in the case of *
 | Message part           | Lower bound | Upper bound |
 | ---------------------- | ----------- | ----------- |
 | messageId              | 32 B        | 32 B        |
-| messageBody            | 360 B       | 2,000 B     |
+| messageBody            | 90 B        | 2,000 B     |
 | kesSignature           | 448 B       | 448 B       |
 | kesPeriod              | 8 B         | 8 B         |
 | operationalCertificate | 304 B       | 304 B       |
@@ -451,7 +459,7 @@ The following tables gather figures about expected network load in the case of *
 
 | Message | Lower bound | Upper bound |
 | ------- | ----------- | ----------- |
-| total   | 1,160 B     | 2,800 B     |
+| total   | 890 B       | 2,800 B     |
 
 For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of them will be eligible to send signatures (i.e. will win at least one lottery in the Mithril protocol). This means that if the full Cardano stake distribution is involved in the Mithril protocol, only **1,550** signers will send signatures at each round:
 
@@ -459,19 +467,19 @@ For a total of **3,100** Cardano SPOs on the `mainnet`, on an average **50%** of
 
 | Send period | Lower bound | Upper bound |
 | ----------- | ----------- | ----------- |
-| 1 min       | 57 kB/s     | 138 kB/s    |
-| 2 min       | 29 kB/s     | 69 kB/s     |
-| 5 min       | 12 kB/s     | 28 kB/s     |
-| 10 min      | 6 kB/s      | 14 kB/s     |
+| 1 min       | 44 kB/s     | 138 kB/s    |
+| 2 min       | 22 kB/s     | 69 kB/s     |
+| 5 min       | 9 kB/s      | 28 kB/s     |
+| 10 min      | 5 kB/s      | 14 kB/s     |
 
 - the network outbound volume of a peer is:
 
 | Send period | Lower bound  | Upper bound  |
 | ----------- | ------------ | ------------ |
-| 1 min       | 147 GB/month | 356 GB/month |
-| 2 min       | 74 GB/month  | 178 GB/month |
-| 5 min       | 30 GB/month  | 72 GB/month  |
-| 10 min      | 15 GB/month  | 36 GB/month  |
+| 1 min       | 114 GB/month | 356 GB/month |
+| 2 min       | 57 GB/month  | 178 GB/month |
+| 5 min       | 23 GB/month  | 72 GB/month  |
+| 10 min      | 12 GB/month  | 36 GB/month  |
 
 #### Infrastructure extra operating costs
 
@@ -495,8 +503,8 @@ For a total of `3,000` SPOs sending messages, the extra networking cost incurred
 
 | Send period | Lower bound | Upper bound |
 | ----------- | ----------- | ----------- |
-| 1 min       | 15 $/month  | 36 $/month  |
-| 2 min       | 8 $/month   | 18 $/month  |
+| 1 min       | 12 $/month  | 36 $/month  |
+| 2 min       | 6 $/month   | 18 $/month  |
 | 5 min       | 3 $/month   | 8 $/month   |
 | 10 min      | 2 $/month   | 4 $/month   |
 
@@ -617,7 +625,7 @@ other           = [3, tstr]
 
 messageId    = bstr .size 32
 messageBody  = bstr
-kesSignature = bstr
+kesSignature = bstr .size 448
 kesPeriod    = word64
 operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
@@ -635,6 +643,10 @@ message = [
   , operationalCertificate
   , coldVerificationKey
 ]
+
+word16 = uint .size 2; 2 bytes
+word32 = uint .size 4; 4 bytes
+word64 = uint .size 8; 8 bytes
 ```
 
 ### Local Message Notification mini-protocol
@@ -710,7 +722,7 @@ msgClientDone               = [3]
 
 messageId    = bstr .size 32
 messageBody  = bstr
-kesSignature = bstr
+kesSignature = bstr .size 448
 kesPeriod    = word64
 operationalCertificate = [ bstr .size 32, word64, word64, bstr .size 64 ]
 coldVerificationKey = bstr .size 32
@@ -731,6 +743,10 @@ message = [
 
 hasMore = false / true
 isBlocking = false / true
+
+word16 = uint .size 2; 2 bytes
+word32 = uint .size 4; 4 bytes
+word64 = uint .size 8; 8 bytes
 ```
 
 ### Network magic
