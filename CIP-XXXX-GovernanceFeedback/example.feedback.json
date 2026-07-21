@@ -1,0 +1,52 @@
+{
+    "@context": [
+        "https://cips.cardano.org/cip/CIP-0100/cip-0100.common.jsonld",
+        "https://314pool.com/cips/governance-feedback.jsonld",
+        { "@language": "en-us" }
+    ],
+    "@type": "ProposalFeedback",
+    "hashAlgorithm": "blake2b-256",
+    "authors": [
+        {
+            "name": "Example DRep",
+            "witness": {
+                "witnessAlgorithm": "ed25519",
+                "publicKey": "00000000000000000000000000000000000000000000000000000000000000aa",
+                "signature": "<ed25519 signature of canonicalized body>"
+            }
+        }
+    ],
+    "body": {
+        "subject": {
+            "@type": "GovernanceAction",
+            "actionId": "<32-byte tx hash hex>#0",
+            "hash": "<blake2b-256 of canonicalized proposal metadata>",
+            "label": "Treasury withdrawal: Example Tooling Grant, Q2 2026"
+        },
+        "feedbackType": "ConditionalSupport",
+        "content": "I am broadly supportive of this proposal's goals and team, and intend to vote YES provided the two ambiguities noted below are resolved by a binding addendum before the voting window closes. If they are not, I will vote NO.",
+        "conditions": [
+            {
+                "description": "Milestone 2 text says 'substantial progress on the indexer.' This is not a measurable acceptance criterion. Please publish a binding addendum enumerating what constitutes substantial progress — e.g. specific endpoints implemented, test coverage percentage, or a demo artifact.",
+                "criticality": "Blocking"
+            },
+            {
+                "description": "The proposal's timeline section says 'approximately 6 months' but the withdrawal schedule implies a hard 9-month deadline. Clarify which is binding on milestone enforcement.",
+                "criticality": "Strong"
+            }
+        ],
+        "votingIntent": {
+            "role": "DRep",
+            "identifier": "<bech32 DRep id, e.g. drep1...>",
+            "stance": "Undecided"
+        },
+        "comment": "Happy to endorse publicly once a binding addendum lands.",
+        "references": [
+            {
+                "@type": "Other",
+                "label": "CIP-XXXX (this extension)",
+                "uri": "https://cips.cardano.org/cip/CIP-XXXX"
+            }
+        ]
+    }
+}
