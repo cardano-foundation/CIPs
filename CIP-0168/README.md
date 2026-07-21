@@ -7,7 +7,7 @@ Authors:
     - fallen-icarus <modern.daidalos@gmail.com>
 Implementors: []
 Discussions: 
-    - https://github.com/cardano-foundation/CIPs/pull/1090
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1090
 Created: 2025-10-01
 License: CC-BY-4.0
 ---
@@ -22,7 +22,7 @@ this purpose. With this in mind, this CIP proposes a few extra builtin functions
 usability of this new `BuiltinValue` type while still trying to minimize the overall maintenance
 burden.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 > UPLC is not a general-purpose programming language. It is a language specifically designed to
 > write validation logic to set constraints for the creation and transfer of Value and Data across
@@ -152,7 +152,7 @@ ledger's `MultiAssetValue` representation, which separates ADA for exactly this 
 assign cheaper costs to lovelace-only operations, i.e. those where both the policy id and the
 token name are empty. See the Rationale section for why this matters.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 After this CIP, the total set of `BuiltinValue` functions will be:
 
