@@ -250,9 +250,11 @@ def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
 
     - The number must be zero-padded to at least 4 digits and refer to a
       positive number.
-    - Bare ``CPS-NNNN`` requires a ``/tree/<branch>/CPS-NNNN`` or
-      ``/blob/<branch>/CPS-NNNN`` URL whose referent matches the label.
-    - ``CPS-NNNN?`` requires a ``/pull/<N>`` URL.
+    - The URL must be a GitHub CIPs repository link: a ``/pull/<N>`` URL, or
+      a ``/tree/<branch>/CPS-NNNN`` / ``/blob/<branch>/CPS-NNNN`` URL whose
+      referent matches the label.
+    - The ``?`` suffix optionally marks a candidate still in PR; when present,
+      the URL must be a ``/pull/<N>`` URL.
     """
     errors = []
     entries = frontmatter.get('Solution To')
@@ -339,21 +341,13 @@ def _validate_solution_to_format(frontmatter: Dict) -> List[str]:
                     f"candidate (in PR), so URL must be a pull-request URL. "
                     f"Got: {url}"
                 )
-        else:
-            if not merged_match:
+        elif merged_match:
+            url_number = int(merged_match.group(1))
+            if url_number != ref_number:
                 errors.append(
-                    f"'Solution To' entry {i+1}: bare 'CPS-{ref_number:04d}' requires a "
-                    f"/tree/<branch>/CPS-NNNN or /blob/<branch>/CPS-NNNN URL "
-                    f"(use 'CPS-{ref_number:04d}?' with a /pull/<N> URL for an in-PR CPS). "
-                    f"Got: {url}"
+                    f"'Solution To' entry {i+1}: label 'CPS-{ref_number:04d}' "
+                    f"does not match URL referent 'CPS-{url_number:04d}'."
                 )
-            else:
-                url_number = int(merged_match.group(1))
-                if url_number != ref_number:
-                    errors.append(
-                        f"'Solution To' entry {i+1}: label 'CPS-{ref_number:04d}' "
-                        f"does not match URL referent 'CPS-{url_number:04d}'."
-                    )
 
     return errors
 
@@ -616,10 +610,12 @@ def _ref_folder_exists(repo_root: Path, prefix: str, number: int) -> bool:
 def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
     """Validate Solution To entries against on-disk CPS folders.
 
-    A bare ``CPS-NNNN`` must point to an existing CPS folder; a ``CPS-NNNN?``
-    must point to one that does not exist yet (still in PR). Entry parsing
-    accepts both ``"Label: URL"`` strings (with optional ``| title``) and
-    single-key ``{Label: URL}`` dicts; format errors are reported by
+    A ``CPS-NNNN?`` (candidate) must point to a CPS folder that does not
+    exist yet (still in PR) — once merged, the ``?`` is stale and must be
+    dropped. The ``?`` suffix is optional: a bare ``CPS-NNNN`` is accepted
+    whether or not the folder exists yet. Entry parsing accepts both
+    ``"Label: URL"`` strings (with optional ``| title``) and single-key
+    ``{Label: URL}`` dicts; format errors are reported by
     ``_validate_solution_to_format`` and silently skipped here.
 
     Returns:
@@ -659,12 +655,6 @@ def validate_solution_to(frontmatter: Dict, file_path: Path) -> List[str]:
             errors.append(
                 f"'Solution To' entry '{canonical}?' indicates a candidate but "
                 f"{canonical} folder exists; drop the '?'"
-            )
-        elif not is_candidate and not exists:
-            errors.append(
-                f"'Solution To' entry '{canonical}' references a CPS that has no folder in this "
-                f"repository. Check the number is correct; you may mark it '{canonical}?' if it "
-                f"intentionally references a not-yet-merged CPS."
             )
 
     return errors

@@ -17,7 +17,7 @@
   ],
   "properties": {
     "CIP": {
-      "description": "The CIP number (positive integer, without leading 0), or a placeholder before being assigned: a single quoted \"?\", 'unassigned', or 'pending'. Value-level checks (positive, no leading zero) are enforced by the script.",
+      "description": "The CIP number (positive integer, without leading 0), or a placeholder before being assigned: a single quoted \"?\", 'unassigned', 'pending', or 'TBD'. Value-level checks (positive, no leading zero) are enforced by the script.",
       "oneOf": [
         { "type": "string" },
         { "type": "integer" }

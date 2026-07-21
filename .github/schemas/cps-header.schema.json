@@ -17,7 +17,7 @@
   ],
   "properties": {
     "CPS": {
-      "description": "The CPS number (positive integer, without leading 0), or a placeholder before being assigned: a single quoted \"?\", 'unassigned', or 'pending'. Value-level checks (positive, no leading zero) are enforced by the script.",
+      "description": "The CPS number (positive integer, without leading 0), or a placeholder before being assigned: a single quoted \"?\", 'unassigned', 'pending', or 'TBD'. Value-level checks (positive, no leading zero) are enforced by the script.",
       "oneOf": [
         { "type": "string" },
         { "type": "integer" }
@@ -53,7 +53,7 @@
       "minItems": 1
     },
     "Proposed Solutions": {
-      "description": "A list of CIPs addressing the problem, if any. Can be an empty array []. Each entry is 'Label: URL'. When label is CIP-NNNN, URL must be a GitHub CIPs repo link; use '?' suffix for PRs (candidates).",
+      "description": "A list of CIPs addressing the problem, if any. Can be an empty array []. Each entry is 'Label: URL'. When label is CIP-NNNN, URL must be a GitHub CIPs repo link; a '?' suffix optionally marks a candidate in PR (not allowed on merged CIPs).",
       "type": "array",
       "items": {
         "oneOf": [

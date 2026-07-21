@@ -15,7 +15,7 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
-| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` (or a word placeholder like `unassigned` / `pending`, which needs no quotes) until a number is assigned. |
+| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` (or a word placeholder like `unassigned` / `pending` / `TBD`, which needs no quotes) until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations
@@ -24,14 +24,14 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 
 | Field | Order | Required? | Validation Rules |
 | ----- | ----- | --------- | ---------------- |
-| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or a placeholder for unassigned: a single quoted `"?"`, `unassigned`, or `pending` (case-insensitive; `"??"`, `"???"`, or an unquoted `?` all fail — see file-level rules). No leading zeros. |
+| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or a placeholder for unassigned: a single quoted `"?"`, `unassigned`, `pending`, or `TBD` (case-insensitive; `"??"`, `"???"`, or an unquoted `?` all fail — see file-level rules). No leading zeros. |
 | **Title** | 2 | Yes | 1-100 characters |
 | **Category** | 3 | Yes | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | Yes | `Proposed`, `Active`, or `Inactive` with a required parenthetical reason (e.g., `Inactive (Superseded by CIP-NNNN)`) |
 | **Authors** | 5 | Yes | Non-empty list, each entry: `Name <email>` |
 | **Implementors** | 6 | Yes | List of `Name <email-or-URI>` strings (the bracketed contact may be an email address or a project URI, same shape as `Authors`), `[]` if no implementor yet, or `N/A` when not applicable |
 | **Discussions** | 7 | Yes | Non-empty list, each entry: `Label: URL`. Must include at least one pull request link of the form `https://github.com/cardano-foundation/CIPs/pull/<N>`. |
-| **Solution To** | (between Discussions and Created, if present) | No | Non-empty list. Each entry is `CPS-NNNN[?] [\| optional title]: URL`. The number must be zero-padded to at least 4 digits and refer to a positive number. URL must be a GitHub CIPs repository link: bare `CPS-NNNN` requires a `/tree/<branch>/CPS-NNNN` or `/blob/<branch>/CPS-NNNN` URL whose referent matches the label; `CPS-NNNN?` requires a `/pull/<N>` URL. A bare `CPS-NNNN` must point to an existing folder; a `CPS-NNNN?` must point to one that does not yet exist. |
+| **Solution To** | (between Discussions and Created, if present) | No | Non-empty list. Each entry is `CPS-NNNN[?] [\| optional title]: URL`. The number must be zero-padded to at least 4 digits and refer to a positive number. URL must be a GitHub CIPs repository link: a `/pull/<N>` URL, or a `/tree/<branch>/CPS-NNNN` / `/blob/<branch>/CPS-NNNN` URL whose referent matches the label. The `?` suffix optionally marks a candidate still in PR; when used, the URL must be a `/pull/<N>` URL and the CPS folder must not exist yet (once merged, drop the `?`). |
 | **Created** | 8 | Yes | Date in `YYYY-MM-DD` format |
 | **License** | 9 | Yes | `CC-BY-4.0` or `Apache-2.0` |
 
@@ -45,12 +45,12 @@ extra validation applies:
 | ---- | ----------- |
 | GitHub URL required | Must be `https://github.com/cardano-foundation/CIPs/...` |
 | Valid URL types | `/pull/NNN` (PR) or `/tree/{branch}/{CIP\|CPS}-NNNN` or `/blob/{branch}/{CIP\|CPS}-NNNN` (merged) |
-| `?` suffix for PRs | `CIP-0030?` / `CPS-0010?` required when linking to a pull request (candidate) |
+| `?` suffix for PRs | `CIP-0030?` / `CPS-0010?` optionally marks a candidate when linking to a pull request; the plain reference is also accepted |
 | No `?` for merged | `CIP-0030` (without `?`) required when linking to a merged document |
 
 Non-CIP/CPS labels (e.g., `Forum Post`, `Pull Request`) are allowed with any valid URL.
 
-The **Solution To** field applies a stricter variant of these rules: every label must be a `CPS-NNNN[?]` reference (optionally followed by ` | descriptive title`), the URL is required to be a GitHub CIPs repository link, and a bare `CPS-NNNN` must additionally match the URL referent (e.g. `CPS-0001` must link to `.../CPS-0001`). See the **Solution To** row above for the full rule.
+The **Solution To** field applies a stricter variant of these rules: every label must be a `CPS-NNNN[?]` reference (optionally followed by ` | descriptive title`), the URL is required to be a GitHub CIPs repository link, and a `CPS-NNNN` label with a merged URL must match the URL referent (e.g. `CPS-0001` must link to `.../CPS-0001`). See the **Solution To** row above for the full rule.
 
 ## Required Sections (H2 Headers)
 

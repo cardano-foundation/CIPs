@@ -15,8 +15,8 @@ import yaml
 
 # Accepted placeholder values for a not-yet-assigned CIP/CPS number.
 # '?' must be quoted in YAML; the word placeholders need no quoting.
-UNASSIGNED_WORD_PLACEHOLDERS = ('unassigned', 'pending')
-UNASSIGNED_PLACEHOLDERS = {'?', *UNASSIGNED_WORD_PLACEHOLDERS}
+UNASSIGNED_WORD_PLACEHOLDERS = ('unassigned', 'pending', 'TBD')
+UNASSIGNED_PLACEHOLDERS = {'?', *(w.lower() for w in UNASSIGNED_WORD_PLACEHOLDERS)}
 
 # Fields other than the number field whose template value is a quoted "?"
 # placeholder (Category's schema enum includes "?"; Title accepts any text).
@@ -487,8 +487,8 @@ def validate_directory_name(frontmatter: Dict, file_path: Path, field_name: str)
 
     For number N, the parent directory must be '<PREFIX>-NNNN' (zero-padded to
     4 digits; no truncation for numbers >= 10000), where the prefix is the
-    number field name ('CIP' or 'CPS'). Unassigned documents ('?',
-    'unassigned', or 'pending' placeholders) skip the number-match check, but
+    number field name ('CIP' or 'CPS'). Unassigned documents (any
+    UNASSIGNED_PLACEHOLDERS value) skip the number-match check, but
     a numbered directory must still be correctly zero-padded.
     """
     errors = []
@@ -509,7 +509,7 @@ def validate_directory_name(frontmatter: Dict, file_path: Path, field_name: str)
     if value is None or isinstance(value, bool):
         return errors  # Missing field / invalid type is reported by header validation
 
-    # Parse to integer; placeholders ('?', 'unassigned', 'pending') and other
+    # Parse to integer; placeholders ('?', 'unassigned', ...) and other
     # non-numeric strings are handled by header validation
     try:
         num = int(value)
@@ -533,8 +533,9 @@ def validate_label_entries(entries: list, field_name: str, label_prefixes: List[
 
     When a label matches one of the given prefixes followed by -NNNN (e.g., CIP-0030):
     - URL must be a GitHub CIPs repository link (PR or merged document)
-    - Pull request URLs require '?' suffix on the number (candidate)
-    - Merged URLs must NOT have '?' suffix
+    - A '?' suffix on the number optionally marks a candidate (in PR); a PR
+      URL without the suffix is also accepted
+    - Merged URLs must NOT have '?' suffix (it is stale once merged)
 
     Other labels are allowed with any valid URL.
 
@@ -553,7 +554,6 @@ def validate_label_entries(entries: list, field_name: str, label_prefixes: List[
 
     prefix_group = '|'.join(label_prefixes)
     label_pattern = re.compile(rf'^({prefix_group})-\d+(\?)?$')
-    pr_pattern = re.compile(r'https://github\.com/cardano-foundation/CIPs/pull/\d+')
     merged_pattern = re.compile(
         rf'https://github\.com/cardano-foundation/CIPs/(tree|blob)/[^/]+/({prefix_group})-\d+'
     )
@@ -589,15 +589,9 @@ def validate_label_entries(entries: list, field_name: str, label_prefixes: List[
             )
             continue
 
-        is_pr = pr_pattern.search(url) is not None
         is_merged = merged_pattern.search(url) is not None
 
-        if is_pr and not has_question_mark:
-            errors.append(
-                f"'{field_name}' entry {i+1}: Pull request URL requires '?' suffix on the reference "
-                f"(use '{ref_id}?' instead of '{ref_id}' to indicate candidate status)"
-            )
-        elif is_merged and has_question_mark:
+        if is_merged and has_question_mark:
             errors.append(
                 f"'{field_name}' entry {i+1}: Merged document should not have '?' suffix "
                 f"(use '{ref_id}' instead of '{ref_id}?' since this document is merged)"
