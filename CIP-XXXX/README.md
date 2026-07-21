@@ -56,7 +56,7 @@ DRep registration certificates MUST include `drepPledge`.
 In CDDL-like form:
 
 ```cddl
-reg_drep_cert = (16, drep_credential, coin, anchor / nil, drep_pledge : coin)
+reg_drep_cert = (16, drep_credential, coin, anchor / nil, coin / nil)
 ```
 
 where:
