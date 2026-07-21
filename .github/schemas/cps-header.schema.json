@@ -17,7 +17,7 @@
   ],
   "properties": {
     "CPS": {
-      "description": "The CPS number (positive integer, without leading 0), or one or more '?' before being assigned. Value-level checks (positive, no leading zero) are enforced by the script.",
+      "description": "The CPS number (positive integer, without leading 0), or a placeholder before being assigned: a single quoted \"?\", 'unassigned', or 'pending'. Value-level checks (positive, no leading zero) are enforced by the script.",
       "oneOf": [
         { "type": "string" },
         { "type": "integer" }
