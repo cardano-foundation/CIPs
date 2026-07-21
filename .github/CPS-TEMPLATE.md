@@ -1,7 +1,7 @@
 ---
 CPS: "?"
-Title: ?
-Category: ?
+Title: "?"
+Category: "?"
 Status: Open
 Authors:
     - John Doe <john.doe@email.domain>

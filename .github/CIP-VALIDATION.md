@@ -15,7 +15,7 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
-| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` until a number is assigned. |
+| No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` (or a word placeholder like `unassigned` / `pending`, which needs no quotes) until a number is assigned. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations
@@ -24,7 +24,7 @@ All 9 required fields must appear in order. The `Solution To` field is optional.
 
 | Field | Order | Required? | Validation Rules |
 | ----- | ----- | --------- | ---------------- |
-| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or quoted `"?"`/`"??"`/etc. for unassigned (an unquoted `?` fails — see file-level rules). No leading zeros. |
+| **CIP** | 1 | Yes | Positive integer (`1`, `42`) or a placeholder for unassigned: a single quoted `"?"`, `unassigned`, or `pending` (case-insensitive; `"??"`, `"???"`, or an unquoted `?` all fail — see file-level rules). No leading zeros. |
 | **Title** | 2 | Yes | 1-100 characters |
 | **Category** | 3 | Yes | One of: `Meta`, `Wallets`, `Tokens`, `Metadata`, `Tools`, `Plutus`, `Ledger`, `Consensus`, `Network`, `?` |
 | **Status** | 4 | Yes | `Proposed`, `Active`, or `Inactive` with a required parenthetical reason (e.g., `Inactive (Superseded by CIP-NNNN)`) |
