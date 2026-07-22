@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Native Confidential Transfers for ADA and Native Tokens
+Title: Native Confidential Transfers
 Category: Ledger
 Status: Proposed
 Authors:
