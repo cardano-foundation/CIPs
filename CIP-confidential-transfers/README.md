@@ -143,6 +143,17 @@ payment addresses an account may use.
   owner may, at their own discretion, share it with **one or more auditors** — each receives the
   same key and the same complete read access.
 
+**Wallet key derivation.** Wallets are expected to derive `sk_view` **deterministically from the
+wallet's existing seed**, using a **new, dedicated derivation path** in the hierarchical-
+deterministic scheme already used on Cardano (in the spirit of [CIP-1852], e.g. a new role or
+purpose index reserved for confidential viewing keys). The viewing key must never be a reused
+signing key: it is a Ristretto255 scalar on its own path, cleanly separated from payment and
+stake keys. Deriving it from the existing seed means: no new seed or backup is required,
+restoring a wallet from its mnemonic also restores the viewing capability (and therefore the
+ability to re-read all of the account's confidential amounts from chain data), and **existing
+accounts can adopt confidential transfers without creating a new wallet or account**. The exact
+derivation path is to be standardised (see Open Questions).
+
 ### 4. Confidential value representation
 
 An asset is identified publicly by `(policy_id, asset_name)`; ADA (lovelace) is treated as a
@@ -464,6 +475,10 @@ change (see Path to Active).
   the account's single viewing public key to its stake credential (a new address/stake component,
   an on-chain registration, or a wallet-level convention) is to be specified — including how a
   sender learns the recipient account's `P_view` and how key rotation is handled.
+- **Viewing-key derivation path.** The dedicated hierarchical-deterministic path for `sk_view`
+  (a new role index under [CIP-1852], or a separate purpose) needs to be standardised so that
+  wallets derive the same key from the same seed interoperably; hardware-wallet firmware support
+  for deriving the key and computing the Diffie–Hellman shared secret is part of this question.
 - **Balancing-proof form.** A single Schnorr excess signature per asset versus per-output
   consistency proofs — a size/verification trade-off — to be finalised.
 - **Multi-party transactions.** Constructing the balancing proof requires the builder to know all
@@ -560,6 +575,7 @@ required for that asset. The token's identity `(policy, name)` stays public; onl
 - A. Fiat and A. Shamir, "How to prove yourself: practical solutions to identification and signature problems," CRYPTO 1986.
 
 [rfc9496]: https://www.rfc-editor.org/rfc/rfc9496
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
 [bulletproofs]: https://eprint.iacr.org/2017/1066
 
 ## Acknowledgements
