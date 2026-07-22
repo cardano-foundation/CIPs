@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 193
 Title: Pruning Abandoned Pools
 Category: Ledger
 Status: Proposed
