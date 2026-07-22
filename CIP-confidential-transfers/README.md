@@ -369,6 +369,12 @@ verifiable (the disclosed key can be checked against the published `P_view`) and
 only. Whether disclosure is on request or mandatory in some contexts is a policy matter outside
 this specification.
 
+Recovering an account's amounts from `sk_view` requires **no chain-wide scanning or trial
+decryption**: because addresses are public, an auditor or tool needs only the outputs already
+indexed for the account's addresses, plus one Diffie–Hellman computation per output (§5).
+Disclosure-based auditing therefore composes directly with existing address-indexing
+infrastructure.
+
 ### 13. Versioning
 
 The feature is gated by the protocol version and is inert below its activation version. The
@@ -442,6 +448,16 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
 - **Confidential ADA does not stake.** ADA in confidential outputs is excluded from stake,
   rewards, and governance voting power while it remains hidden (§9) — an opportunity cost holders
   accept when shielding.
+- **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
+  accounting software supports viewing-key import for *any* chain; users of existing privacy
+  systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
+  the same fallback applies here from day one. Direct viewing-key support in such tools may or
+  may not materialise — until it does, producing auditor-readable reports is the wallet's job,
+  which is an ongoing complexity cost for users and companies relying on the audit path. The
+  design deliberately minimises what a third-party tool must implement — amounts are recoverable
+  from already-indexed outputs with one Diffie–Hellman computation each, with no chain-wide
+  scanning (§12) — but adopters should treat third-party tooling support as an ecosystem
+  dependency, not a given.
 
 ### Alternatives considered
 
