@@ -15,7 +15,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-We propose adding a new builtin function, `multiIndexArray`, to Plutus Core. This function takes a list of integer indices and an array, returning a list of the array elements at those positions in the specified order.
+We propose adding a new builtin function, `multiIndexArray`, to Plutus Core. This function takes an array and a list of integer indices, returning a list of the array elements at those positions in the specified order.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -32,12 +32,12 @@ A single `multiIndexArray` call reduces code and cost overhead by batching looku
 Add the following builtin function:
 
 ```haskell
-multiIndexArray :: forall a. List Integer -> Array a -> List a
+multiIndexArray :: forall a. Array a -> List Integer -> List a
 ```
 
 - **Inputs**:
-  1. A `List Integer` of zero-based indices, in the order elements should be retrieved.
-  2. An `Array a` to index.
+  1. An `Array a` to index.
+  2. A `List Integer` of zero-based indices, in the order elements should be retrieved.
 - **Output**: A `List a` containing the elements at the specified indices, in the same order. In case of repeated indices, the same element is returned multiple times.
 - **Error handling**: If any index is out of bounds (< 0 or ≥ lengthOfArray), the entire call fails with the same error semantics as `indexArray`.
 - **Cost**: Time and memory usage are linear in the length of the index list.
@@ -55,7 +55,8 @@ By batching multiple lookups into one builtin, `multiIndexArray`:
 - **List of Maybe a**: Returning `Nothing` for out-of-bounds indices would require a `Maybe` builtin type, increasing complexity.
 - **Default value argument**: Allowing a default on lookup failure complicates strict evaluation and error detection.
 - **Slice and manual mapping**: Users could write a `slice` or fold, but this remains code-heavy and costly.
-- **Returning Array plus helper**: Have `multiIndexArray :: List Integer -> Array a -> Array a` return an `Array a` of selected elements and provide a new helper `arrayToList :: Array a -> List a`. This avoids constructing a list directly but requires adding `arrayToList` as a builtin and introduces extra conversion and costing complexity.
+- **Returning Array plus helper**: Have `multiIndexArray :: Array a -> List Integer -> Array a` return an `Array a` of selected elements and provide a new helper `arrayToList :: Array a -> List a`. This avoids constructing a list directly but requires adding `arrayToList` as a builtin and introduces extra conversion and costing complexity.
+- **Indices-first argument order**: `List Integer -> Array a -> List a`. Array-first is used instead to match `indexArray :: Array a -> Int -> a`, keeping the array builtins consistent and letting callers partially apply a fixed array.
 
 Failing on first error mirrors `indexArray` and keeps the API simple.
 
