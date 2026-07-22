@@ -1,0 +1,16 @@
+digraph MarloweRequest {
+  rankdir=TD;
+  graph [pad="0.02", nodesep="0.6", ranksep="0.5", splines="line"];
+  node [shape="rect", pad="0.1", style="filled, rounded", fillcolor="#f9f9f9", fontname="Courier New", fontsize="10"];
+  edge [tailport="s", headport="n", color="#aaa", fontname="Courier New", fontsize="10"];
+
+  OracleChoiceStep [label=<<b>WHEN CHOICE</b> <i>x</i> <b>BY</b> <i>oracle pubKeyHash</i>> color="#aaa" ];
+
+  PayStep [label=<<b>PAY </b><i>fee</i> <b>TO</b> <i>oracle pubKeyHash</i>> color="#aaa" ];
+
+  OracleChoiceStep -> PayStep;
+
+  ContinuationStep [label=<<b>post oracle choice contract</b>> color="#aaa" ];
+
+  PayStep -> ContinuationStep;
+}
