@@ -12,10 +12,11 @@ Implementors:
   - OpShin <https://github.com/OpShin>
   - Lucid <https://lucid.spacebudz.io/>
   - Mesh.js <https://martify.io/>
+  - Bloxbean cardano-client-lib <https://github.com/bloxbean/cardano-client-lib>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/258
-  - Discord: https://discord.gg/yUkkhqBnyV
   - GitHub Issue: https://github.com/aiken-lang/aiken/issues/972
+  - Parametric naming: https://github.com/aiken-lang/aiken/issues/1270
 Solution To:
   - CPS-0005: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0005
 Created: 2022-05-15
@@ -280,6 +281,82 @@ This keyword's value must be a non-negative integer. An instance is valid agains
 
 This keyword's value must be an array of valid _Plutus Data Schema_; possibly empty. An instance is valid against this keyword if it represents a Plutus constructor for which each field is valid under each subschema given by this keyword's value. Fields are compared positionally. This keyword is mandatory.
 
+### Parametric (generic) types
+
+Many high-level languages targeting Plutus support parametric polymorphism — type constructors that take other types as arguments (e.g. `Option<a>`, `List<a>`, `Pair<k, v>`, `Map<k, v>`, or user-defined ADTs such as `Wrapped<a>`). Once a compiler instantiates such a constructor with concrete arguments, the resulting type is a distinct on-chain type that may appear in `datum`, `redeemer`, `parameters`, or `fields`. Each distinct instantiation needs a distinct entry in the [`definitions`](#definitions) registry so that `$ref` strings can target it unambiguously.
+
+Implementations producing `definitions` keys and `$ref` strings MUST follow the rules below so that one blueprint can be consumed by tools across the ecosystem. Consumers MUST accept the angle-bracket form; consumer behaviour for legacy forms is described in [Legacy syntaxes](#legacy-syntaxes) below.
+
+#### Definition keys
+
+For each instantiation of a parametric type constructor that appears in a blueprint, producers MUST register one entry under `definitions` whose key follows this grammar (informal EBNF):
+
+```
+key            = qualified-name [ "<" arg-list ">" ]
+qualified-name = path-segment *( "/" path-segment )
+path-segment   = unreserved-char *( unreserved-char )
+arg-list       = key *( "," key )
+unreserved-char = ALPHA / DIGIT / "_"
+```
+
+In prose:
+
+1. The unparameterized part of the key is the type constructor's **fully qualified name** as the producing compiler understands it (e.g. `Option`, `List`, `cardano/address/Credential`, `MyProject/types/order/Action`). Module separators are written as forward slashes (`/`).
+2. If the type constructor takes type arguments, they appear inside a single pair of angle brackets (`<` and `>`) immediately after the qualified name, separated by commas (`,`), with **no whitespace**.
+3. Each type argument is itself a key matching this grammar — angle brackets nest arbitrarily deep for higher-order instantiations.
+4. Names of built-in / shared types (e.g. `Int`, `ByteArray`) MAY be unqualified (i.e. have no `/`-path prefix), at the producer's discretion.
+
+Examples of well-formed definition keys:
+
+```
+Option<Int>
+Option<cardano/address/StakeCredential>
+List<ByteArray>
+List<Option<types/order/Action>>
+Option<List<Option<types/order/Action>>>
+Pair<Int,ByteArray>
+Map<ByteArray,Int>
+my_contract/range/Bound<Int>
+```
+
+##### Tuple keys
+
+For ordered fixed-arity products (n-tuples) that some languages model as a distinct kind from ADTs, producers MUST use the reserved name `Tuple` with a single angle-bracket argument list whose contents are themselves wrapped in angle brackets — i.e. `Tuple<<A,B>>`, `Tuple<<A,B,C>>`. The doubled brackets disambiguate the tuple kind from a hypothetical single-argument generic `Tuple<A>`, which under this grammar would otherwise be indistinguishable.
+
+#### `$ref` strings
+
+References to definitions follow [RFC 6901 — JSON Pointer](https://datatracker.ietf.org/doc/html/rfc6901). The relevant escape rules are:
+
+- `/` (used as a module separator in qualified names) MUST be encoded as `~1` inside a `$ref` value.
+- `~` MUST be encoded as `~0`.
+- Angle brackets (`<`, `>`) and commas (`,`) MUST NOT be percent-encoded; they appear verbatim. JSON Pointer does not reserve them.
+
+Examples:
+
+```
+"$ref": "#/definitions/Option<Int>"
+"$ref": "#/definitions/Option<cardano~1address~1StakeCredential>"
+"$ref": "#/definitions/my_contract~1range~1BoundType<Int>"
+"$ref": "#/definitions/Pair<Int,ByteArray>"
+```
+
+#### `title` for parametric instantiations
+
+`title` is a human-readable hint and does NOT carry type identity. Type identity for a parametric instantiation lives in the definition key and is reached via `$ref`; consumers MUST derive type identity from those and MUST NOT use `title` to distinguish two entries. As a result, producers retain some discretion here:
+
+- Producers SHOULD emit only the **unparameterized constructor name** in `title` (e.g. `"Option"`, `"List"`, `"Pair"`). This keeps `title` stable across instantiations and lets consumers use it directly as a code-generation hint (e.g. the simple class / type name in the generated language).
+- Producers MAY emit the parameterized form (e.g. `"Pairs<ByteArray, Int>"`). Existing toolchains do so for some type constructors and consumers therefore MUST tolerate either form on read. Consumers that derive identifiers from `title` should strip any trailing angle-bracket suffix before using it.
+
+#### Legacy syntaxes
+
+The following historical forms have appeared in blueprints emitted by older toolchains:
+
+- **Dollar-separator form**: `Option$Int`, `List$ByteArray` — emitted by some early producers. Equivalent to the modern `Option<Int>`, `List<ByteArray>`.
+
+New producers MUST NOT emit any of these legacy forms; they MUST emit the modern angle-bracket form defined above.
+
+Consumers MAY support legacy forms for backwards compatibility with older blueprints, but are NOT required to. A consumer that rejects a blueprint solely because it contains legacy-form keys is conformant with this specification. When a consumer that does support legacy forms produces keys itself (e.g. when synthesising auxiliary definitions during code generation), it MUST emit the modern angle-bracket form regardless of which form it consumed.
+
 ### Example(s)
 
 <details>
@@ -386,6 +463,18 @@ One would have written:
 ```
 
 Yet, because we do want `Data` to be the primary binary interface medium, we keep the former notation as it's more succinct and is a unambiguous shorthand. This also allows to segregate all builtins behind a common notation -- that is, prefixed with a `#`.
+
+### Parametric type naming
+
+Angle brackets are the parametric-naming delimiter for three reasons:
+
+1. **Familiarity.** Angle brackets are the dominant generics syntax in the high-level languages most likely to consume blueprints (Java, TypeScript, Rust, C#, Scala). Code generators can use the key string almost verbatim to produce target-language identifiers, modulo escaping.
+2. **Compositionality.** Angle brackets nest naturally (`List<Option<Foo>>`) without ambiguity. A separator built from identifier characters (such as `$`, `_`, or `-`) tends to collide with valid identifier characters in target languages and requires further escaping to express nested instantiations.
+3. **Ecosystem alignment.** Current major producers emit the angle-bracket form; standardising on it minimises churn for both producers and consumers.
+
+JSON Pointer's `~1` escape is reused rather than introducing a new escape mechanism because RFC 6901 is already the substrate `$ref` is built on. Angle brackets and commas are intentionally left unreserved by RFC 6901 and pass through verbatim, so no new escape semantics are introduced.
+
+`title` is not load-bearing for interop — type identity flows through the definition key and `$ref`, so a normative rule on `title` would constrain producers without unlocking any interoperability. The unparameterized form is recommended (SHOULD) because it makes `title` directly usable as a target-language identifier; the parameterized form is tolerated (MAY) because some producers already emit it and a hard rule there would invalidate existing blueprints without adding interop value.
 
 ### Purpose
 
