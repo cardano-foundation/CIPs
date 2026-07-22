@@ -505,27 +505,48 @@ throughout: confidential outputs remain **homomorphically summable Pedersen comm
 publicly bound to stake credentials, whose openings their owners keep** — nothing about the
 transfer layer destroys information a future extension would need.
 
+**Each extension below is anticipated as an independent companion CIP layered on top of this
+proposal — not as a bundled successor version.** They are separable by design: staking and
+governance add machinery *around* the commitments this proposal creates, without changing the
+transfer layer; asset-type blinding and post-quantum migration arrive as new **versioned**
+output and proof forms (§13); address hiding, if ever pursued, would be a coexisting pool.
+Smaller follow-ups also expected as narrow companion proposals: standardisation of the
+viewing-key derivation path, support for script-locked confidential outputs (starting with
+native scripts — multisig and timelocks — which enforce witness conditions without inspecting
+amounts), and multi-party transaction construction (see Open Questions).
+
 #### Staking shielded ADA
 
-*Upgrade path:* known approaches exist at three levels of ambition: (a) **epoch-batched private
-delegation** with public per-pool aggregates (deployed in production by Penumbra); (b) **private
-leader election over a public list of stake commitments** ([Ganesh–Orlandi–Tschudi][got]) — a
-model whose required input this design *already provides*, since an account's committed total
-stake is publicly computable by summing its output commitments; and (c) **fully private leader
-election** ([Ouroboros Crypsinous][crypsinous]), which combines a Zerocash-style shielded pool
-with in-ZK leadership proofs. New machinery would include epoch-snapshot rules over confidential
-outputs, proofs against the (nonlinear) slot-leader threshold or batched aggregate openings, and
-reward distribution that does not leak stake.
+*Upgrade path:* the most concrete sketch reuses this proposal's own machinery. Delegation
+converts shielded ADA into **pool-specific delegation tokens** whose quantities are hidden by
+this very proposal's confidential native-asset mechanism, with rewards accruing through a public
+per-epoch **exchange rate** — so no per-member reward computation ever occurs (the pattern
+deployed in production by Penumbra). The per-pool totals that leader election requires in the
+clear can then be produced at three levels of ambition: **(a)** delegators share their openings
+with their chosen pool, which publishes and provably opens the per-epoch aggregate — no new
+cryptography at all; **(b)** the same aggregate opened by a **threshold committee** instead, so
+no single party learns member amounts — a drop-in upgrade of (a); or **(c)** never opened —
+leader election proven in zero knowledge against the committed total
+([Ganesh–Orlandi–Tschudi][got], a model whose required public stake-commitment list this design
+*already provides*; or, at the maximalist end, [Ouroboros Crypsinous][crypsinous]).
+**None of the three requires a trusted setup:** (a) and (b) introduce no new proof system, and
+(c) is achievable with transparent proof systems. Every variant additionally needs
+epoch-snapshot rules over confidential outputs.
 
-*Conflict with this design:* **none.** Paths (a) and (b) build directly on the commitments this
-proposal creates. Path (c) — Crypsinous — is **not in conflict either**: it would be a separate,
-parallel shielded pool plus a consensus-layer change, coexisting with this design (bridgeable via
-shield/unshield) rather than replacing or contradicting it; this proposal neither blocks nor
-requires it.
+*Conflict with this design:* **none.** Paths (a)–(c) build directly on the commitments this
+proposal creates, and (a) upgrades into (b) without redesign. Crypsinous specifically is **not
+in conflict either**: it would be a separate, parallel shielded pool plus a consensus-layer
+change, coexisting with this design (bridgeable via shield/unshield) rather than replacing it;
+this proposal neither blocks nor requires it. One leakage caveat applies to any variant with
+public per-pool totals: because pool *membership* is public here (addresses and delegation
+certificates are transparent), epoch-to-epoch differences can reveal an individual amount when
+few members change — the anonymity set is the pool's per-epoch churn. Stronger privacy would
+require hiding the delegation link itself, which is graph-hiding territory (see *Hiding
+addresses* below).
 
 *Why descoped:* every path adds consensus-adjacent machinery, new trust assumptions
-(committees), or aggregate-level leakage (batch anonymity) that deserve a dedicated proposal;
-the per-UTXO exclusion rule (§9) is the minimal safe v1 behaviour.
+(committees), or the aggregate-level leakage above, deserving a dedicated companion CIP and its
+own community debate; the per-UTXO exclusion rule (§9) is the minimal safe v1 behaviour.
 
 #### Governance and DRep voting with shielded ADA
 
@@ -638,7 +659,10 @@ questions below concern the v1 design itself.
   out of scope here.
 - **Script addresses.** Confidential outputs are restricted to key-locked addresses (§4).
   Extending them to script-locked outputs — including what a validator script may learn about a
-  hidden amount — is open, and related to the programmable-tokens question above.
+  hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
+  which enforce witness and time conditions without inspecting amounts — important for corporate
+  treasuries — and could form a narrow, early companion proposal; Plutus scripts raise the
+  amount-visibility questions discussed under Future extensions (programmable tokens).
 
 ## Path to Active
 
