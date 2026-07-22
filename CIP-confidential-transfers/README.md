@@ -262,7 +262,8 @@ computation without revealing information about itself. In this proposal, theref
 
 - **Confidential ADA does not contribute to stake.** ADA held in confidential outputs is
   excluded from the stake of the associated stake credential, from reward calculation, and from
-  governance voting power, for as long as it remains confidential.
+  governance voting power — including the ADA-weight of any **DRep vote delegation** and of SPO
+  votes — for as long as it remains confidential.
 - **Unshielding restores participation.** Once ADA is returned to a transparent output, it
   counts toward stake, rewards, and voting power exactly as today.
 
@@ -446,8 +447,10 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
 - **Asset type is public.** Only quantities are hidden; the presence and identity of assets in an
   output remain visible.
 - **Confidential ADA does not stake.** ADA in confidential outputs is excluded from stake,
-  rewards, and governance voting power while it remains hidden (§9) — an opportunity cost holders
-  accept when shielding.
+  rewards, and governance voting power — including DRep vote-delegation weight — while it remains
+  hidden (§9). This is an opportunity cost holders accept when shielding, and a deliberate point
+  for community discussion: whether and when hidden ADA should regain staking or governance
+  participation is addressed under Open Questions.
 - **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
   accounting software supports viewing-key import for *any* chain; users of existing privacy
   systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
@@ -517,8 +520,12 @@ change (see Path to Active).
 - **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
   out of scope here.
 - **Staking in zero knowledge.** In this proposal confidential ADA does not contribute to stake,
-  rewards, or governance voting power (§9). Whether hidden amounts could be counted toward the
-  stake distribution without revealing them is left as future work.
+  rewards, or governance voting power, including DRep delegation (§9). Whether hidden amounts
+  could participate without being revealed is left as future work — but known paths exist:
+  epoch-batched private delegation with public per-pool aggregates (deployed in production by
+  Penumbra), homomorphic vote tallying with threshold decryption of totals only, and fully
+  private leader election ([Ouroboros Crypsinous][crypsinous]). Each adds machinery, trust
+  assumptions, or aggregate-level leakage that warrants a separate proposal.
 - **Script addresses.** Confidential outputs are restricted to key-locked addresses (§4).
   Extending them to script-locked outputs — including what a validator script may learn about a
   hidden amount — is open, and related to the programmable-tokens question above.
@@ -601,9 +608,11 @@ required for that asset. The token's identity `(policy, name)` stays public; onl
 - T. P. Pedersen, "Non-Interactive and Information-Theoretic Secure Verifiable Secret Sharing," CRYPTO 1991.
 - C. P. Schnorr, "Efficient signature generation by smart cards," Journal of Cryptology, 1991.
 - A. Fiat and A. Shamir, "How to prove yourself: practical solutions to identification and signature problems," CRYPTO 1986.
+- T. Kerber, A. Kiayias, M. Kohlweiss, V. Zikas, ["Ouroboros Crypsinous: Privacy-Preserving Proof-of-Stake,"][crypsinous] IEEE S&P 2019 — referenced under Open Questions (staking in zero knowledge).
 
 [rfc9496]: https://www.rfc-editor.org/rfc/rfc9496
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
+[crypsinous]: https://eprint.iacr.org/2018/1132
 [bulletproofs]: https://eprint.iacr.org/2017/1066
 
 ## Acknowledgements
