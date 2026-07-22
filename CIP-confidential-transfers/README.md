@@ -504,7 +504,9 @@ change (see Path to Active).
 - Commission a security audit of the construction and encoding.
 - Propose activation through the on-chain governance process once implementations are available.
 
-## Appendix: Worked example
+## Appendix
+
+### Worked example
 
 A confidential ADA payment from account **A** to account **B**, with change back to **A** and a
 public fee. This illustrates what is hidden, what is public, and how the checks fit together.
