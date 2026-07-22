@@ -494,14 +494,131 @@ unaffected, and transparent value continues to work exactly as today. Confidenti
 value coexist within a transaction via the shield/unshield bridge. Activation requires a protocol
 change (see Path to Active).
 
+### Future extensions and upgrade paths
+
+This proposal is deliberately narrow: amount confidentiality, one viewing key, key-locked
+addresses. This section records, for each anticipated extension, whether an upgrade path exists,
+whether the present design conflicts with it, and why it is descoped now. The goal is **not** to
+design these extensions, but to let the community judge — before ratifying — that today's small
+design choices keep tomorrow's doors open rather than closing them. A guiding principle
+throughout: confidential outputs remain **homomorphically summable Pedersen commitments,
+publicly bound to stake credentials, whose openings their owners keep** — nothing about the
+transfer layer destroys information a future extension would need.
+
+#### Staking shielded ADA
+
+*Upgrade path:* known approaches exist at three levels of ambition: (a) **epoch-batched private
+delegation** with public per-pool aggregates (deployed in production by Penumbra); (b) **private
+leader election over a public list of stake commitments** ([Ganesh–Orlandi–Tschudi][got]) — a
+model whose required input this design *already provides*, since an account's committed total
+stake is publicly computable by summing its output commitments; and (c) **fully private leader
+election** ([Ouroboros Crypsinous][crypsinous]), which combines a Zerocash-style shielded pool
+with in-ZK leadership proofs. New machinery would include epoch-snapshot rules over confidential
+outputs, proofs against the (nonlinear) slot-leader threshold or batched aggregate openings, and
+reward distribution that does not leak stake.
+
+*Conflict with this design:* **none.** Paths (a) and (b) build directly on the commitments this
+proposal creates. Path (c) — Crypsinous — is **not in conflict either**: it would be a separate,
+parallel shielded pool plus a consensus-layer change, coexisting with this design (bridgeable via
+shield/unshield) rather than replacing or contradicting it; this proposal neither blocks nor
+requires it.
+
+*Why descoped:* every path adds consensus-adjacent machinery, new trust assumptions
+(committees), or aggregate-level leakage (batch anonymity) that deserve a dedicated proposal;
+the per-UTXO exclusion rule (§9) is the minimal safe v1 behaviour.
+
+#### Governance and DRep voting with shielded ADA
+
+*Upgrade path:* because ownership is public, an account's ADA-weighted **voting-weight
+commitment is already publicly derivable** (the homomorphic sum of its output commitments). The
+missing piece is opening only *tallies*, never individual weights — standard homomorphic-tally
+techniques (threshold decryption of totals, or aggregate opening proofs), plus snapshot rules.
+
+*Conflict with this design:* **none** — arguably the easiest extension, precisely because public
+attribution makes weight commitments free. The genuinely new ingredient is a tally-opening
+mechanism (e.g. a decryption committee), which is a new trust assumption for Cardano governance.
+
+*Why descoped:* that trust assumption merits its own community debate; v1 excludes hidden ADA
+from voting power (§9) until it happens.
+
+#### Hiding the asset type (policy id and asset name)
+
+*Upgrade path:* blinded asset tags in the style of [Confidential Assets][conf-assets]: each
+quantity committed under an asset-derived generator, with proofs that hidden tags are legitimate
+and that conservation cannot cancel across assets. Mint/burn authorisation — currently tied to a
+public policy — needs rethinking.
+
+*Conflict with this design:* **partial restructuring, not contradiction.** The single value
+generator `H` and per-asset public-tag conservation (§7) are the right choice *while asset
+identity is public* (see Rationale); a tag-blinding upgrade would introduce a **new, versioned
+output form** (§13) with per-asset generators, and existing confidential outputs would migrate by
+unshield/re-shield. Nothing in v1 has to be broken in place.
+
+*Why descoped:* substantially harder cryptography, larger proofs, and most compliance-oriented
+use cases require the asset type visible anyway.
+
+#### Programmable tokens (CIP-113) and token standards (CIP-26 / CIP-68)
+
+*Upgrade path:* amount-dependent transfer logic needs either amounts revealed to the script
+(defeating confidentiality), **zero-knowledge predicates verified by the script against the
+commitment** (the promising direction), or exclusion of programmable tokens from confidentiality.
+Metadata standards themselves are largely orthogonal: CIP-26 is off-chain, and CIP-68's
+reference-NFT/datum machinery lives at script addresses, which this proposal keeps transparent —
+so token metadata is unaffected by hiding user-held quantities.
+
+*Conflict with this design:* **no structural conflict** for ordinary assets; a genuine, open
+tension for amount-*dependent* policies, since a hidden quantity is by definition invisible to a
+validator script. Restricting v1 confidential outputs to key-locked addresses (§4) deliberately
+avoids creating any on-chain state that future programmable-token logic would have to handle
+retroactively.
+
+*Why descoped:* programmable-token semantics (CIP-113) are themselves still being standardised;
+ZK predicates over commitments should be co-designed with them, not pre-empted here.
+
+#### Post-quantum security
+
+*Upgrade path:* replace each primitive with a post-quantum counterpart — lattice-based
+commitments and range proofs, a PQ KEM in place of the Diffie–Hellman transport, a PQ proof of
+knowledge for the balancing proof — under a new proof-system version (§13); value migrates by
+unshield/re-shield.
+
+*Conflict with this design:* **none architecturally** — the structure (commitments +
+conservation + range proofs + viewing keys) is proof-system-agnostic and §13 anticipates
+versioned upgrades. The honest, unavoidable caveat is **harvest-now-decrypt-later**: amounts
+hidden under the v1 discrete-log scheme remain recoverable by a future quantum adversary
+regardless of any later migration; migration protects future outputs only. This is already
+declared in Trade-offs.
+
+*Why descoped:* today's post-quantum equivalents are far larger and slower (conflicting with the
+"fast" requirement), and the ledger's own signatures are not post-quantum either — a chain-wide
+PQ migration is a broader effort than this proposal.
+
+#### Hiding addresses (who transacted with whom)
+
+*Upgrade path:* receiver unlinkability needs stealth/one-time addresses; sender ambiguity needs
+ring signatures or a note-and-nullifier shielded pool. The auditor model would need rebuilding so
+the viewing key also reveals counterparties (as Monero and Zcash viewing keys do).
+
+*Conflict with this design:* **this is the extension in most tension with v1** — several v1
+properties deliberately exploit public addresses: targeted wallet scanning without trial
+decryption, publicly derivable voting-weight commitments, low-cost auditor tooling (§12), and
+staking attribution. A graph-hiding upgrade would forfeit or rebuild those. It is nonetheless
+**not foreclosed**: the amount-confidentiality layer (commitments, conservation, range proofs)
+is exactly the amount layer used inside graph-hiding designs, and a shielded pool could be added
+*alongside* this design as a separate output type — as transparent and shielded pools coexist in
+Zcash — rather than by modifying it.
+
+*Why descoped:* an explicit non-goal (§1): this proposal's compliance-first positioning —
+confidentiality from the public, not from oversight — depends on the graph remaining public, and
+identity hiding would move it into a different regulatory and design category.
+
 ### Open Questions
 
-- **Programmable tokens (CIP-113).** Interaction with programmable/regulated tokens — whose
-  transfer logic may need to inspect amounts — is **out of scope for this proposal** and is left
-  as an open question. A confidential quantity is not visible to such logic, so reconciling amount
-  confidentiality with amount-dependent transfer policies needs separate design.
-- **Hiding asset type.** This proposal hides quantities but not which asset moves. Hiding the
-  asset type as well is significantly harder and is left for future work.
+Longer-horizon extensions — staking and governance participation of shielded ADA, hiding the
+asset type, programmable tokens, post-quantum security, and address hiding — are analysed in
+[Future extensions and upgrade paths](#future-extensions-and-upgrade-paths) above. The open
+questions below concern the v1 design itself.
+
 - **Binding `P_view` to an account (stake credential).** The exact mechanism to publish and bind
   the account's single viewing public key to its stake credential (a new address/stake component,
   an on-chain registration, or a wallet-level convention) is to be specified — including how a
@@ -519,13 +636,6 @@ change (see Path to Active).
   values (hence assets/outputs) per transaction consistent with a verification-cost budget.
 - **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
   out of scope here.
-- **Staking in zero knowledge.** In this proposal confidential ADA does not contribute to stake,
-  rewards, or governance voting power, including DRep delegation (§9). Whether hidden amounts
-  could participate without being revealed is left as future work — but known paths exist:
-  epoch-batched private delegation with public per-pool aggregates (deployed in production by
-  Penumbra), homomorphic vote tallying with threshold decryption of totals only, and fully
-  private leader election ([Ouroboros Crypsinous][crypsinous]). Each adds machinery, trust
-  assumptions, or aggregate-level leakage that warrants a separate proposal.
 - **Script addresses.** Confidential outputs are restricted to key-locked addresses (§4).
   Extending them to script-locked outputs — including what a validator script may learn about a
   hidden amount — is open, and related to the programmable-tokens question above.
@@ -608,11 +718,15 @@ required for that asset. The token's identity `(policy, name)` stays public; onl
 - T. P. Pedersen, "Non-Interactive and Information-Theoretic Secure Verifiable Secret Sharing," CRYPTO 1991.
 - C. P. Schnorr, "Efficient signature generation by smart cards," Journal of Cryptology, 1991.
 - A. Fiat and A. Shamir, "How to prove yourself: practical solutions to identification and signature problems," CRYPTO 1986.
-- T. Kerber, A. Kiayias, M. Kohlweiss, V. Zikas, ["Ouroboros Crypsinous: Privacy-Preserving Proof-of-Stake,"][crypsinous] IEEE S&P 2019 — referenced under Open Questions (staking in zero knowledge).
+- T. Kerber, A. Kiayias, M. Kohlweiss, V. Zikas, ["Ouroboros Crypsinous: Privacy-Preserving Proof-of-Stake,"][crypsinous] IEEE S&P 2019 — referenced under Future extensions (staking shielded ADA).
+- C. Ganesh, C. Orlandi, D. Tschudi, ["Proof-of-Stake Protocols for Privacy-Aware Blockchains,"][got] Cryptology ePrint Archive 2018/1105 — private leader election over a public list of stake commitments; referenced under Future extensions.
+- A. Poelstra, A. Back, M. Friedenbach, G. Maxwell, P. Wuille, ["Confidential Assets,"][conf-assets] Financial Cryptography Workshops 2018 — blinded asset tags; referenced under Future extensions (hiding the asset type).
 
 [rfc9496]: https://www.rfc-editor.org/rfc/rfc9496
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
 [crypsinous]: https://eprint.iacr.org/2018/1132
+[got]: https://eprint.iacr.org/2018/1105
+[conf-assets]: https://blockstream.com/bitcoin17-final41.pdf
 [bulletproofs]: https://eprint.iacr.org/2017/1066
 
 ## Acknowledgements
