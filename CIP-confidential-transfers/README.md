@@ -461,6 +461,18 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
 
 ### Alternatives considered
 
+- **Twisted-ElGamal ciphertexts (commitment plus per-recipient decryption handles).** The
+  commitment used here, `C = v·H + r·G`, is exactly the commitment half of a Twisted-ElGamal
+  ciphertext; the full scheme would add a decryption handle `D = r·P` per authorised reader,
+  allowing each of them to decrypt algebraically from chain data. This was considered and
+  dropped: handles cost +32 bytes per reader per output, handle-based decryption lands on `v·H`
+  and therefore forces a bounded amount space with a precomputed discrete-log lookup table
+  (client-side, megabytes), and under the single-viewing-key model the handles buy nothing — the
+  Diffie–Hellman transport already delivers the amount *and* its blinding to every holder of
+  `sk_view` in constant time, with full 64-bit amounts. Handle-based designs remain the right
+  choice for account-based ledgers, where decryption must operate homomorphically over an
+  aggregated balance; the EUTXO model decrypts outputs individually, so that constraint does not
+  apply here.
 - **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
   delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
   Diffie–Hellman transport keeps everything on chain and self-contained.
