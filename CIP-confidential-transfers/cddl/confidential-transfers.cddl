@@ -39,7 +39,7 @@ confidential_value =
 ; A confidential output, as a map with numbered keys (cf. the Babbage output
 ; format): later proposals extend it by adding new optional keys. `address` is
 ; the ledger's existing address type, deliberately unrestricted here — the
-; key-locked-addresses-only rule is a validation rule, not a format restriction.
+; no-Plutus-addresses rule is a validation rule, not a format restriction.
 confidential_output =
   { 0 : address
   , 1 : confidential_value

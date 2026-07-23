@@ -73,7 +73,7 @@ entirely unaffected.
 
 > **Scope.** This proposal specifies amount confidentiality for ADA and native tokens with the
 > asset *type* (policy id and asset name) remaining public. Hiding the asset type, hiding
-> sender/recipient identity, confidential outputs at script addresses, and interaction with
+> sender/recipient identity, confidential outputs at Plutus script addresses, and interaction with
 > programmable tokens are **out of scope** and discussed under [Open Questions](#open-questions).
 
 ### Overview
@@ -87,7 +87,8 @@ proof** demonstrating, in zero knowledge, that:
 2. for **each asset independently**, the hidden inputs, hidden outputs, public movements
    (fees, mint/burn, and any transparent inputs/outputs) balance exactly.
 
-Spending a confidential output is authorised exactly as today — by the address's key witness.
+Spending a confidential output is authorised exactly as today — by the address's normal
+witness rules (a payment-key signature, or satisfaction of a native script).
 Amount confidentiality is orthogonal to spend authorisation.
 
 ### Cryptographic primitives and parameters
@@ -259,8 +260,13 @@ hides each asset's *quantity* as a Pedersen commitment:
 An output is either fully **transparent** (exactly as today) or fully **confidential**; the two
 forms do not mix within a single output. Every confidential output **must** include an ADA
 commitment, whose quantity is subject to the minimum-ADA rule enforced in zero knowledge (see [range proofs](#range-proofs)).
-In this proposal, confidential outputs are restricted to **key-locked (payment-key) addresses**;
-outputs at script addresses cannot be confidential (see Open Questions).
+In this proposal, confidential outputs are permitted at **key-locked (payment-key) addresses
+and at native-script addresses** — multisig and timelocks, which enforce witness and time
+conditions without ever inspecting amounts, and therefore need no new cryptography (this is
+what lets corporate multisig treasuries hold and pay confidential value). Outputs at
+**Plutus script addresses** cannot be confidential (see Open Questions). Every confidential
+output's address must carry a **stake credential** — already implied by validation rule 12,
+which requires that credential to hold a live viewing-key registration.
 
 ### Amount transport
 
@@ -399,7 +405,7 @@ confidential_value =
 ; A confidential output, as a map with numbered keys (cf. the Babbage output
 ; format): later proposals extend it by adding new optional keys, without
 ; disturbing keys 0-2. `address` is the ledger's existing address type and is
-; deliberately unrestricted here — the key-locked-addresses-only rule (see
+; deliberately unrestricted here — the no-Plutus-addresses rule (see
 ; Confidential value representation) is a validation rule, which a later
 ; proposal may relax, not a data-format restriction.
 confidential_output =
@@ -458,7 +464,7 @@ hold. These rules are what make the construction sound against value creation or
    cannot balance without a negative hidden output, which rule 2 forbids — so no separate
    opening proofs are required for shielding or unshielding (see [shield / unshield](#bridging-transparent-and-confidential-amounts-shield--unshield)).
 6. **Spend authorisation unchanged.** Consuming a confidential output still requires the normal
-   key witness(es) for its address; confidential data is bound into the transaction so it cannot
+   witness(es) for its address — payment-key signature(s), or satisfaction of its native script; confidential data is bound into the transaction so it cannot
    be reattached to a different transaction (replay/malleability protection via the
    domain-separated Fiat–Shamir context).
 7. **Determinism.** Verification is deterministic across all validators; any randomness used in
@@ -478,10 +484,9 @@ hold. These rules are what make the construction sound against value creation or
     parts of the transaction it is checking. Consequently, bridging (shield/unshield) is always
     a separate transaction from any script interaction, and mint/burn of Plutus-policy assets
     happens in a separate transaction from confidential transfers of them. Native scripts are
-    unaffected as witnesses on *transparent* inputs (they enforce signature and time conditions
-    without inspecting amounts), though confidential outputs at native-script addresses remain
-    excluded by the key-locked rule (see
-    [confidential value representation](#confidential-value-representation)). Defining a
+    unaffected throughout: they enforce signature and time conditions without inspecting
+    amounts, and confidential outputs at native-script addresses are admitted by this proposal
+    (see [confidential value representation](#confidential-value-representation)). Defining a
     script-context representation of hidden quantities is deferred to a future proposal (see
     Open Questions). Like every rule in this specification, this restriction is bound to the
     protocol version: a later proposal that defines such a representation may relax it from a
@@ -693,8 +698,10 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   for community discussion: whether and when hidden ADA should regain staking or governance
   participation is addressed under Open Questions.
 - **Confidential value cannot interact with smart contracts while hidden.** Confidential
-  outputs exist only at key-locked addresses, and a transaction carrying confidential
-  components does not execute Plutus scripts (validation rule 10). While value is hidden it is
+  outputs exist only at key-locked and native-script addresses — never at Plutus script
+  addresses — and a transaction carrying confidential components does not execute Plutus
+  scripts (validation rule 10). Multisig and timelocked treasuries are fully supported;
+  *programmable* logic is not. While value is hidden it is
   therefore *transfer-only*: plain payments (with metadata), but no participation in anything
   mediated by smart validators on the Plutus VM — whatever the application built on them — on
   top of the staking and governance exclusion above. This is **not a one-way door**: shielding
@@ -763,8 +770,8 @@ change (see Path to Active).
 
 ### Future extensions and upgrade paths
 
-This proposal is deliberately narrow: amount confidentiality, one viewing key, key-locked
-addresses. This section records, for each anticipated extension, whether an upgrade path exists,
+This proposal is deliberately narrow: amount confidentiality, one viewing key, and outputs
+at key-locked or native-script addresses only. This section records, for each anticipated extension, whether an upgrade path exists,
 whether the present design conflicts with it, and why it is descoped now. The goal is **not** to
 design these extensions, but to let the community judge — before ratifying — that today's small
 design choices keep tomorrow's doors open rather than closing them. A guiding principle
@@ -780,9 +787,9 @@ governance add machinery *around* the commitments this proposal creates, without
 transfer layer; asset-type blinding and post-quantum migration arrive as new **versioned**
 output and proof forms (see [versioning](#versioning)); address hiding, if ever pursued, would be a coexisting pool.
 Smaller follow-ups also expected as narrow companion proposals: standardisation of the
-viewing-key derivation path, support for script-locked confidential outputs (starting with
-native scripts — multisig and timelocks — which enforce witness conditions without inspecting
-amounts), and multi-party transaction construction (see Open Questions).
+viewing-key derivation path, support for confidential outputs at Plutus script addresses
+(native scripts — multisig and timelocks — are already part of this proposal), and
+multi-party transaction construction (see Open Questions).
 
 #### Staking shielded ADA
 
@@ -852,7 +859,7 @@ use cases require the asset type visible anyway.
 *Upgrade path:* programmable tokens keep the underlying native asset **permanently at
 validator-controlled (script) addresses**, with every transfer mediated by the controlling
 script. Making such tokens confidential would therefore require three things: **(1)**
-confidential outputs at script addresses (see the script-address follow-up under Open
+confidential outputs at Plutus script addresses (see the Plutus-script follow-up under Open
 Questions); **(2)** a script-context extension so validator scripts receive commitments where
 they receive amounts today; and **(3)** **zero-knowledge predicates** verified by the script
 against the commitment — but *only for amount-dependent policies*. Notably, most
@@ -865,7 +872,7 @@ machinery is unaffected by hiding user-held quantities.
 
 *Conflict with this design:* **none — the two are disjoint by construction in v1.** A
 programmable token cannot leave script control, and this proposal's confidential outputs cannot
-exist at script addresses (see [confidential value representation](#confidential-value-representation)); each side's rule independently guarantees that no programmable
+exist at Plutus script addresses (see [confidential value representation](#confidential-value-representation)); each side's rule independently guarantees that no programmable
 token can be shielded and no programmable-token validator ever encounters a hidden quantity.
 There is no interaction surface, no carve-out to implement, and no retroactive state a future
 programmable-token standard would have to accommodate.
@@ -951,19 +958,19 @@ questions below concern the v1 design itself.
   implementation effort and impact**; to the authors' knowledge none is foreclosed by this
   design (see [guarantees to future proposals](#guarantees-to-future-proposals)), so the
   question is not *whether* they can come later but *when it is cheapest for the ecosystem*.
-  Reviewers are explicitly asked to weigh whether the lowest-effort, highest-impact items —
-  confidential outputs at **native-script addresses** (a one-rule relaxation serving multisig
-  treasuries, this proposal's own target audience) and **viewing-key rotation** (both fences
-  already in place) — should be merged into this proposal or scheduled for the same hard
-  fork. This is as much an ecosystem and business judgement as a technical one.
-- **Script addresses.** Confidential outputs are restricted to key-locked addresses (see [confidential value representation](#confidential-value-representation)).
-  Extending them to script-locked outputs — including what a validator script may learn about a
-  hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
-  which enforce witness and time conditions without inspecting amounts — important for corporate
-  treasuries — and could form a narrow, early companion proposal; Plutus scripts raise the
-  amount-visibility questions discussed under Future extensions (programmable tokens). Until a
-  script-context representation of hidden quantities is defined there, validation rule 10 keeps
-  Plutus execution and confidential components in strictly separate transactions.
+  (Confidential outputs at native-script addresses were exactly such a case, and this
+  proposal absorbed them for that reason: one relaxed rule, no new cryptography, serving its
+  own target audience.) Reviewers are explicitly asked to weigh whether the next
+  lowest-effort, highest-impact item — **viewing-key rotation** (both fences already in
+  place, no new cryptography) — should be merged into this proposal or scheduled for the
+  same hard fork. This is as much an ecosystem and business judgement as a technical one.
+- **Plutus script addresses.** Confidential outputs are permitted at key-locked and
+  native-script addresses (see [confidential value representation](#confidential-value-representation));
+  extending them to **Plutus**-locked outputs — including what a validator script may learn
+  about a hidden amount — is open, and raises the amount-visibility questions discussed under
+  Future extensions (programmable tokens). Until a script-context representation of hidden
+  quantities is defined there, validation rule 10 keeps Plutus execution and confidential
+  components in strictly separate transactions.
 
 ## Path to Active
 
@@ -1022,7 +1029,7 @@ public fee. This illustrates what is hidden, what is public, and how the checks 
 
 **What a validator checks** (never seeing any amount): encodings are canonical; the aggregated
 range proof verifies; the balancing equation holds and its Schnorr signature verifies; the spend
-of `C_in` is authorised by A's normal key witness. If any amount had been inflated, the value
+of `C_in` is authorised by A's normal witness. If any amount had been inflated, the value
 terms would not cancel and the balancing check would fail.
 
 **What is public:** A's and B's addresses, the fact of the transfer, the fee `f`, the ephemeral
