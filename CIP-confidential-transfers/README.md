@@ -461,10 +461,23 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
 
 ### Trade-offs
 
-- **Transaction size.** Confidential transactions are larger than transparent ones — roughly
-  **3–5×** for typical small payments — dominated by the (near-fixed) aggregated range proof, and
-  growing with the number of distinct assets whose amounts are hidden (each asset needs its own
-  commitment and range contribution). This increases fees proportionally to size.
+- **Transaction size — and therefore ADA fees.** Confidential transactions are larger than
+  transparent ones — roughly **3–5×** for typical small payments — dominated by the (near-fixed)
+  aggregated range proof, and growing with the number of distinct assets whose amounts are hidden
+  (each asset needs its own commitment and range contribution). Because Cardano's fee formula is
+  proportional to transaction size, a typical confidential payment can be expected to cost
+  roughly **3–5× the ADA fee** of its transparent equivalent. Confidentiality is paid for by the
+  user who opts into it, not by the network.
+- **Size-proportional fees do not price verification.** Cardano's fee formula prices *bytes*;
+  script execution is priced separately through execution units, but the proofs defined here are
+  verified by the ledger itself, not by a script, so under the current formula their verification
+  CPU rides along unpriced. The mismatch is structural: an aggregated range proof grows only
+  *logarithmically* in size with the number of committed values, while its verification time
+  grows *linearly* — so a heavily aggregated transaction pays barely more per byte while costing
+  proportionally more CPU. Mempool pre-checks (see the
+  [Appendix](#estimated-node-resource-impact)) bound abuse, but pricing honest usage correctly —
+  whether proof verification should carry an explicit fee term, analogous to execution-unit
+  pricing — is left open (see Open Questions).
 - **Verification cost.** Range-proof verification cost grows with the number of committed values;
   aggregation and batch verification mitigate this, but it remains higher than validating a
   transparent amount — roughly an order of magnitude more CPU per transaction than signature
@@ -696,7 +709,11 @@ questions below concern the v1 design itself.
 - **Range bit-width and aggregation limits.** Confirm `2⁶⁴` and the maximum number of committed
   values (hence assets/outputs) per transaction consistent with a verification-cost budget.
 - **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
-  out of scope here.
+  out of scope here. Separately, whether proof **verification cost** should carry an explicit fee
+  term — a per-committed-value or per-range-statement price, analogous to script execution-unit
+  pricing — or remain covered by size-proportional fees alone is open; the aggregated range
+  proof's logarithmic size versus linear verification time (see Trade-offs) is the argument for
+  an explicit term.
 - **Script addresses.** Confidential outputs are restricted to key-locked addresses (see [confidential value representation](#confidential-value-representation)).
   Extending them to script-locked outputs — including what a validator script may learn about a
   hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
