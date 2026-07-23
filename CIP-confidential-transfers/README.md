@@ -5,7 +5,6 @@ Category: Ledger
 Status: Proposed
 Authors:
     - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
-    - Pawel Jakubas <pawel.jakubas@cardanofoundation.org>
 Implementors: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1233
