@@ -148,6 +148,11 @@ payment addresses an account may use.
 - `P_view` is published/bound to the stake credential so senders can address confidential outputs
   to the account and so a disclosed key can be verified against it (the exact binding — a new
   address/stake component or an on-chain registration — is discussed under Open Questions).
+  Whatever mechanism is chosen, it MUST work uniformly for **any** stake credential type — key
+  hash or script hash — and MUST NOT assume the existence of a single stake signing key:
+  authorisation follows the credential's standard witness rules, so that script-controlled
+  accounts (e.g. multisig treasuries) can bind a viewing key exactly as key-controlled accounts
+  do.
 - Disclosing `sk_view` grants **read** access only and never grants spend authority, which
   remains with the separate spending key(s). The account has exactly **one** viewing key; its
   owner may, at their own discretion, share it with **one or more auditors** — each receives the
@@ -769,7 +774,11 @@ questions below concern the v1 design itself.
 - **Binding `P_view` to an account (stake credential).** The exact mechanism to publish and bind
   the account's single viewing public key to its stake credential (a new address/stake component,
   an on-chain registration, or a wallet-level convention) is to be specified — including how a
-  sender learns the recipient account's `P_view` and how key rotation is handled.
+  sender learns the recipient account's `P_view` and how key rotation is handled. The leading
+  candidate is an on-chain registration **certificate**, alongside the existing stake-key
+  certificates. Whatever form is chosen, it must satisfy the credential-type-neutrality
+  constraint of [Keys](#keys): key-hash and script-hash stake credentials alike, authorised by
+  the credential's standard witness rules, with rotation available to both.
 - **Viewing-key derivation path.** The dedicated hierarchical-deterministic path for `sk_view`
   (a new role index under [CIP-1852], or a separate purpose) needs to be standardised so that
   wallets derive the same key from the same seed interoperably; hardware-wallet firmware support
