@@ -943,6 +943,19 @@ questions below concern the v1 design itself.
   pricing — or remain covered by size-proportional fees alone is open; the aggregated range
   proof's logarithmic size versus linear verification time (see Trade-offs) is the argument for
   an explicit term.
+- **Scope of the initial hard fork — which extensions ride along?** This proposal is
+  deliberately minimal, which keeps it reviewable and its audit surface small — but each
+  separately-shipped extension costs the ecosystem a full upgrade cycle (nodes, wallets,
+  hardware devices, explorers, exchanges). The companion document
+  [extensions.md](extensions.md) lists the anticipated extensions **ordered by
+  implementation effort and impact**; to the authors' knowledge none is foreclosed by this
+  design (see [guarantees to future proposals](#guarantees-to-future-proposals)), so the
+  question is not *whether* they can come later but *when it is cheapest for the ecosystem*.
+  Reviewers are explicitly asked to weigh whether the lowest-effort, highest-impact items —
+  confidential outputs at **native-script addresses** (a one-rule relaxation serving multisig
+  treasuries, this proposal's own target audience) and **viewing-key rotation** (both fences
+  already in place) — should be merged into this proposal or scheduled for the same hard
+  fork. This is as much an ecosystem and business judgement as a technical one.
 - **Script addresses.** Confidential outputs are restricted to key-locked addresses (see [confidential value representation](#confidential-value-representation)).
   Extending them to script-locked outputs — including what a validator script may learn about a
   hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
