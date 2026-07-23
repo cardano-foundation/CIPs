@@ -163,7 +163,12 @@ wallet's existing seed**, using a **new, dedicated derivation path** in the hier
 deterministic scheme already used on Cardano (in the spirit of [CIP-1852], e.g. a new role or
 purpose index reserved for confidential viewing keys). The viewing key must never be a reused
 signing key: it is a Ristretto255 scalar on its own path, cleanly separated from payment and
-stake keys. Deriving it from the existing seed means: no new seed or backup is required,
+stake keys. The path MUST terminate in a hardened **key index**; this proposal uses index `0`
+exclusively. Successive indices are reserved for future viewing keys of the same account
+(key rotation, deferred to a companion proposal), so that a wallet restored from its mnemonic
+recovers every viewing key the account has ever used. An unindexed path would make rotation
+impossible without a new seed, and is therefore ruled out now even though this proposal
+itself never rotates. Deriving it from the existing seed means: no new seed or backup is required,
 restoring a wallet from its mnemonic also restores the viewing capability (and therefore the
 ability to re-read all of the account's confidential amounts from chain data), and **existing
 accounts can adopt confidential transfers without creating a new wallet or account**. The exact
@@ -809,15 +814,22 @@ questions below concern the v1 design itself.
 - **Binding `P_view` to an account (stake credential).** The exact mechanism to publish and bind
   the account's single viewing public key to its stake credential (a new address/stake component,
   an on-chain registration, or a wallet-level convention) is to be specified — including how a
-  sender learns the recipient account's `P_view` and how key rotation is handled. The leading
-  candidate is an on-chain registration **certificate**, alongside the existing stake-key
-  certificates. Whatever form is chosen, it must satisfy the credential-type-neutrality
-  constraint of [Keys](#keys): key-hash and script-hash stake credentials alike, authorised by
-  the credential's standard witness rules, with rotation available to both.
+  sender learns the recipient account's `P_view`. The leading candidate is an on-chain
+  registration **certificate**, alongside the existing stake-key certificates. Whatever form is
+  chosen, it must satisfy the credential-type-neutrality constraint of [Keys](#keys): key-hash
+  and script-hash stake credentials alike, authorised by the credential's standard witness
+  rules. **Key rotation is out of scope for this proposal**: an account's viewing keypair is
+  immutable at this protocol version — re-registration of a different `P_view` for the same
+  credential is invalid. The mechanism must not foreclose rotation, however: immutability is a
+  validation rule, relaxable from a later protocol version onwards exactly as other rules are
+  (see [versioning](#versioning)), and the indexed derivation path of [Keys](#keys) already
+  reserves successive key indices for a future rotation proposal.
 - **Viewing-key derivation path.** The dedicated hierarchical-deterministic path for `sk_view`
   (a new role index under [CIP-1852], or a separate purpose) needs to be standardised so that
   wallets derive the same key from the same seed interoperably; hardware-wallet firmware support
   for deriving the key and computing the Diffie–Hellman shared secret is part of this question.
+  Whatever path is standardised, it terminates in a hardened key index with index `0` used by
+  this proposal (see [Keys](#keys)).
 - **Balancing-proof form.** A single Schnorr excess signature per asset versus per-output
   consistency proofs — a size/verification trade-off — to be finalised. Whatever form is
   finalised MUST remain **linearly aggregatable across independent contributors who do not
