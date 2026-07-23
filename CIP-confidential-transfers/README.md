@@ -361,8 +361,9 @@ hold. These rules are what make the construction sound against value creation or
 2. **Range (no negative, no overflow).** The aggregated range proof verifies that **every**
    committed quantity is in `[0, 2⁶⁴)`. This is what prevents a "negative amount" (a scalar near
    `ℓ`) from being used to inflate a balance, and prevents per-amount overflow. Because each
-   amount is `< 2⁶⁴` and the number of outputs per transaction is bounded, no sum can wrap modulo
-   `ℓ` (`ℓ ≈ 2²⁵²`).
+   amount is `< 2⁶⁴` and the number of committed values per transaction is bounded by
+   `maxConfidentialCommitmentsPerTx` (see [protocol parameters](#protocol-parameters)), no sum
+   can wrap modulo `ℓ` (`ℓ ≈ 2²⁵²`).
 3. **Per-asset conservation (balance is preserved, nothing is created).** For **each** asset the
    balancing equation of [value conservation](#value-conservation) holds and its Schnorr excess signature verifies. This guarantees, for
    every asset, that hidden outputs plus public movements equal hidden inputs — i.e. the net
@@ -403,6 +404,36 @@ hold. These rules are what make the construction sound against value creation or
     [confidential value representation](#confidential-value-representation)). Defining a
     script-context representation of hidden quantities is deferred to a future proposal (see
     Open Questions).
+11. **Bounded verification work.** The number of committed values in a transaction does not
+    exceed `maxConfidentialCommitmentsPerTx`, and their total across a block does not exceed
+    `maxConfidentialCommitmentsPerBlock` — see [protocol parameters](#protocol-parameters) for
+    why this bound is explicit rather than inherited from size limits.
+
+### Protocol parameters
+
+For transparent transactions, byte size is a good proxy for validation work, so the existing
+size limits (`maxTxSize`, `maxBlockBodySize`) bound both at once. For confidential
+transactions it is not: an aggregated range proof grows only **logarithmically in size** with
+the number of committed values while its verification time grows **linearly** (see
+Trade-offs), so a transaction can be small in bytes yet expensive to verify. Verification
+work must therefore be bounded explicitly — for the same reason Plutus execution has its own
+budget (`maxTxExecutionUnits`, `maxBlockExecutionUnits`) alongside the size limits rather
+than relying on them.
+
+This proposal accordingly introduces two **updatable protocol parameters**, denominated in
+what actually drives verification cost — committed values (range statements), not outputs or
+bytes:
+
+- `maxConfidentialCommitmentsPerTx` — the maximum number of committed values in a single
+  transaction, including the shifted minimum-ADA commitments of the
+  [range proofs](#range-proofs) section (enforced by validation rule 11);
+- `maxConfidentialCommitmentsPerBlock` — the corresponding per-block budget, protecting the
+  block-validation deadline within the slot.
+
+As protocol parameters rather than constants baked into the validation rules, both take
+their initial values from the measured benchmarks required under Path to Active and can
+thereafter be adjusted through the standard parameter-update governance process — no hard
+fork — as hardware, batch verification, and adoption evolve.
 
 ### Guarantees to future proposals
 
@@ -794,8 +825,9 @@ questions below concern the v1 design itself.
 - **Multi-party transactions.** Constructing the balancing proof requires the builder to know all
   input and output blindings; collaborative transactions with multiple independent contributors
   need either interaction or partial balancing proofs. Whether to support this initially is open.
-- **Range bit-width and aggregation limits.** Confirm `2⁶⁴` and the maximum number of committed
-  values (hence assets/outputs) per transaction consistent with a verification-cost budget.
+- **Range bit-width and aggregation limits.** Confirm `2⁶⁴` and the **initial values** of
+  `maxConfidentialCommitmentsPerTx` and `maxConfidentialCommitmentsPerBlock`
+  (see [protocol parameters](#protocol-parameters)) consistent with a verification-cost budget.
 - **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
   out of scope here. Separately, whether proof **verification cost** should carry an explicit fee
   term — a per-committed-value or per-range-statement price, analogous to script execution-unit
@@ -921,8 +953,9 @@ decryption material.
 transparent one, so the chain growth *rate* multiplies by roughly `1 + 3×(confidential share)`.
 
 **Available tuning knobs**, all anticipated by this specification: cross-transaction batch
-verification with deterministically derived challenges (see [validation rules](#validation-rules-edge-cases-and-soundness)), protocol-parameter caps on
-confidential outputs per transaction or per block, and mempool pre-checks.
+verification with deterministically derived challenges (see [validation rules](#validation-rules-edge-cases-and-soundness)), the
+`maxConfidentialCommitmentsPerTx` and `maxConfidentialCommitmentsPerBlock` protocol
+parameters (see [protocol parameters](#protocol-parameters)), and mempool pre-checks.
 
 ## References
 
