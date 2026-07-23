@@ -388,6 +388,35 @@ hold. These rules are what make the construction sound against value creation or
     script-context representation of hidden quantities is deferred to a future proposal (see
     Open Questions).
 
+### Guarantees to future proposals
+
+This proposal is designed to be built upon. The following properties of the confidential
+transfer layer are **normative guarantees**, on par with the validation rules above: companion
+proposals may rely on them, and any future amendment to this specification that would break
+one of them is a **breaking change** — it must be introduced as a new versioned form (a new
+alternative tag or map key under a later protocol version, see [versioning](#versioning)) and
+must never alter the behaviour of existing forms in place.
+
+1. **Representation.** Every hidden quantity is a Pedersen commitment over ristretto255 under
+   the fixed generators `G` and `H`, and the commitment itself is stored in the clear in the
+   output — never hashed, truncated, or otherwise made unavailable to chain observers.
+2. **Summability.** The commitments of any set of confidential outputs can be added by any
+   observer, per asset, yielding a commitment to the sum of the hidden quantities.
+3. **Attribution.** Which stake credential a confidential output belongs to remains publicly
+   determinable from chain data.
+4. **Openings.** The owner of a confidential output recovers its opening `(v, r)` from chain
+   data and the account's `sk_view` alone, with no interaction with the sender and no
+   off-chain state.
+5. **Independent conservation.** Each asset's balancing check is verifiable from the
+   transaction alone, without reference to hidden state elsewhere on the chain.
+
+These guarantees are precisely what the extensions anticipated under
+[Future extensions and upgrade paths](#future-extensions-and-upgrade-paths) consume:
+summability and attribution make voting-weight commitments publicly derivable (governance);
+summability and openings enable provable opening of aggregates (staking); attribution and
+openings keep disclosure-based audit tooling scan-free; openings underpin multi-party
+balancing-proof construction.
+
 ### Auditing and selective disclosure
 
 Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
@@ -574,7 +603,9 @@ design these extensions, but to let the community judge — before ratifying —
 design choices keep tomorrow's doors open rather than closing them. A guiding principle
 throughout: confidential outputs remain **homomorphically summable Pedersen commitments,
 publicly bound to stake credentials, whose openings their owners keep** — nothing about the
-transfer layer destroys information a future extension would need.
+transfer layer destroys information a future extension would need. This principle is not
+merely aspirational: it is normative, as the
+[guarantees to future proposals](#guarantees-to-future-proposals) in the Specification.
 
 **Each extension below is anticipated as an independent companion CIP layered on top of this
 proposal — not as a bundled successor version.** They are separable by design: staking and
