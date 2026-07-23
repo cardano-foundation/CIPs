@@ -374,6 +374,19 @@ hold. These rules are what make the construction sound against value creation or
    not defined at the current protocol version is invalid. Rejecting unknown forms today is what
    allows a later protocol version to activate new tags and keys (see [versioning](#versioning))
    without any ambiguity about how older validators treat them.
+10. **No Plutus execution alongside confidential components.** A transaction that contains
+    confidential inputs or outputs must not execute Plutus scripts (for any purpose — spending,
+    minting, or otherwise). Current script contexts represent every output with a cleartext
+    amount and cannot represent a hidden quantity, and a script must never validate blind to
+    parts of the transaction it is checking. Consequently, bridging (shield/unshield) is always
+    a separate transaction from any script interaction, and mint/burn of Plutus-policy assets
+    happens in a separate transaction from confidential transfers of them. Native scripts are
+    unaffected as witnesses on *transparent* inputs (they enforce signature and time conditions
+    without inspecting amounts), though confidential outputs at native-script addresses remain
+    excluded by the key-locked rule (see
+    [confidential value representation](#confidential-value-representation)). Defining a
+    script-context representation of hidden quantities is deferred to a future proposal (see
+    Open Questions).
 
 ### Auditing and selective disclosure
 
@@ -496,6 +509,19 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   hidden (see [staking, rewards, and governance](#staking-rewards-and-governance)). This is an opportunity cost holders accept when shielding, and a deliberate point
   for community discussion: whether and when hidden ADA should regain staking or governance
   participation is addressed under Open Questions.
+- **Confidential value cannot interact with smart contracts while hidden.** Confidential
+  outputs exist only at key-locked addresses, and a transaction carrying confidential
+  components does not execute Plutus scripts (validation rule 10). While value is hidden it is
+  therefore *transfer-only*: plain payments (with metadata), but no participation in anything
+  mediated by smart validators on the Plutus VM — whatever the application built on them — on
+  top of the staking and governance exclusion above. This is **not a one-way door**: shielding
+  and unshielding are ordinary, permissionless transactions available at any time (see
+  [shield / unshield](#bridging-transparent-and-confidential-amounts-shield--unshield)), so the
+  path to script interaction is unshield → interact transparently → optionally shield the
+  proceeds back. Each crossing reveals only the bridged amount, never the remaining
+  confidential balance — though timing correlation between an unshield and an immediately
+  following script interaction can link the two. Wallets should surface this trade-off clearly
+  before users shield funds.
 - **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
   accounting software supports viewing-key import for *any* chain; users of existing privacy
   systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
@@ -719,7 +745,9 @@ questions below concern the v1 design itself.
   hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
   which enforce witness and time conditions without inspecting amounts — important for corporate
   treasuries — and could form a narrow, early companion proposal; Plutus scripts raise the
-  amount-visibility questions discussed under Future extensions (programmable tokens).
+  amount-visibility questions discussed under Future extensions (programmable tokens). Until a
+  script-context representation of hidden quantities is defined there, validation rule 10 keeps
+  Plutus execution and confidential components in strictly separate transactions.
 
 ## Path to Active
 
