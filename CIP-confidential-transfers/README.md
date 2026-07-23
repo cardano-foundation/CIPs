@@ -76,7 +76,7 @@ entirely unaffected.
 > sender/recipient identity, confidential outputs at script addresses, and interaction with
 > programmable tokens are **out of scope** and discussed under [Open Questions](#open-questions).
 
-### 1. Overview
+### Overview
 
 A **confidential output** replaces the cleartext amount of each asset it holds with a homomorphic
 **commitment** to that amount, plus a small piece of data that lets the recipient recover the
@@ -90,7 +90,7 @@ proof** demonstrating, in zero knowledge, that:
 Spending a confidential output is authorised exactly as today — by the address's key witness.
 Amount confidentiality is orthogonal to spend authorisation.
 
-### 2. Cryptographic primitives and parameters
+### Cryptographic primitives and parameters
 
 The scheme uses a deliberately small set of primitives, all over a single prime-order group.
 
@@ -116,15 +116,15 @@ The scheme uses a deliberately small set of primitives, all over a single prime-
   in `[0, 2⁶⁴)`, with no trusted setup and logarithmic proof size. Multiple commitments are
   aggregated into a single proof per transaction.
 - **Amount transport (Diffie–Hellman).** A per-output ephemeral key and a Diffie–Hellman shared
-  secret let the recipient recover the amount and derive its blinding (§5).
+  secret let the recipient recover the amount and derive its blinding (see [amount transport](#amount-transport)).
 - **Balancing proof.** A **Schnorr** signature proving knowledge of the *excess* blinding of a
-  commitment to zero value, establishing value conservation per asset (§7).
+  commitment to zero value, establishing value conservation per asset (see [value conservation](#value-conservation)).
 - **Non-interactivity.** All proofs are made non-interactive with the **Fiat–Shamir** transform,
   using a cryptographic hash and a domain-separation tag bound to the transaction context.
 
 No trusted setup is required by any of these primitives.
 
-### 3. Keys
+### Keys
 
 Confidentiality is keyed at the level of an **account**, defined here as a **single stake address
 (stake credential)** — not an individual payment address. All payment addresses that share the
@@ -153,7 +153,7 @@ ability to re-read all of the account's confidential amounts from chain data), a
 accounts can adopt confidential transfers without creating a new wallet or account**. The exact
 derivation path is to be standardised (see Open Questions).
 
-### 4. Confidential value representation
+### Confidential value representation
 
 An asset is identified publicly by `(policy_id, asset_name)`; ADA (lovelace) is treated as a
 reserved, distinguished asset. A **confidential value** reveals *which* assets are present but
@@ -162,22 +162,22 @@ hides each asset's *quantity* as a Pedersen commitment:
 - ADA quantity `v` → `C = v·H + r·G`.
 - Each native-asset quantity `q` under `(policy_id, asset_name)` → `C = q·H + r·G`.
 
-Conservation (§7) and range proofs (§6) are applied **per asset**.
+[Conservation](#value-conservation) and [range proofs](#range-proofs) are applied **per asset**.
 
 An output is either fully **transparent** (exactly as today) or fully **confidential**; the two
 forms do not mix within a single output. Every confidential output **must** include an ADA
-commitment, whose quantity is subject to the minimum-ADA rule enforced in zero knowledge (§6).
+commitment, whose quantity is subject to the minimum-ADA rule enforced in zero knowledge (see [range proofs](#range-proofs)).
 In this proposal, confidential outputs are restricted to **key-locked (payment-key) addresses**;
 outputs at script addresses cannot be confidential (see Open Questions).
 
-### 5. Amount transport
+### Amount transport
 
 To spend a confidential output, its owner must know the hidden amount **and** its blinding `r`.
 Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciphertext:
 
 1. The sender picks a fresh ephemeral scalar `e` and includes the ephemeral public key `E = e·G`
    in the output. `E` must not be the identity element — a predictable shared secret would expose
-   the amounts — and validators reject it (§11, rule 1).
+   the amounts — and validators reject it (see [validation rules](#validation-rules-edge-cases-and-soundness), rule 1).
 2. The shared secret is `s = e·P_view` (computed by the sender) `= sk_view·E` (computed by the
    recipient) — the same group element.
 3. For each asset in the output, a key-derivation function — domain-separated by the **asset
@@ -191,13 +191,13 @@ Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciph
    must be treated as unspendable.
 
 Because the blinding is recomputable by whoever holds `sk_view`, the recipient can later spend
-the output (construct the balancing proof of §7) **without any interaction** with the original
+the output (construct the balancing proof of [value conservation](#value-conservation)) **without any interaction** with the original
 sender. An auditor given `sk_view` recovers all amounts for the account by the same computation.
 Note that the **sender** also retains knowledge of `(v, r)` for outputs it creates — inherent to
 Diffie–Hellman transport — but this grants no spend authority, which requires the recipient's
 spending key.
 
-### 6. Range proofs
+### Range proofs
 
 Over a prime-order group, a "negative" amount is indistinguishable from a very large scalar that
 wraps modulo `ℓ`; without a bound, a malicious sender could commit to a negative quantity and
@@ -213,7 +213,7 @@ range proof that it lies in `[0, 2⁶⁴)`:
   one extra range statement per confidential output. The requirement is thus enforced without
   revealing `v`.
 
-### 7. Value conservation
+### Value conservation
 
 Cardano requires that value is conserved: for each asset, the sum of inputs equals the sum of
 outputs plus any public movement of that asset. For confidential amounts this is checked
@@ -236,13 +236,13 @@ fail to cancel, so the equation — and hence verification — fails. Fees remai
 as part of `Δ` for ADA. Each asset has its own balancing check; assets cannot be converted into
 one another.
 
-### 8. Bridging transparent and confidential amounts (shield / unshield)
+### Bridging transparent and confidential amounts (shield / unshield)
 
 Confidential amounts must be backed one-to-one by real value. **Shielding** (making transparent
 value confidential) and **unshielding** (revealing confidential value back to transparent) are
 not special operations: they are ordinary transactions that mix transparent and confidential
 inputs and outputs. All transparent components are public, so the net public movement `Δ` of
-each asset (§7) is computed directly from the transaction's public data — transparent inputs and
+each asset (see [value conservation](#value-conservation)) is computed directly from the transaction's public data — transparent inputs and
 outputs, the fee, and any mint or burn — and the per-asset balancing equation then enforces that
 the confidential side absorbed or released **exactly** that amount. No separate opening proofs
 are needed: hidden amounts that do not match the public legs cannot satisfy the balancing
@@ -253,7 +253,7 @@ public quantity — so the confidential pool is conservation-checked against tra
 every step, and no asset can be minted by hiding it. The transparent legs of such transactions
 are the only places where amounts entering or leaving the confidential domain are revealed.
 
-### 9. Staking, rewards, and governance
+### Staking, rewards, and governance
 
 Cardano's stake distribution — used for leader election, rewards, and governance voting power —
 is computed from publicly visible ADA amounts. A hidden amount cannot contribute to that
@@ -270,7 +270,7 @@ This is an explicit, accepted opportunity cost of confidentiality. Contributing 
 to the stake distribution in zero knowledge is substantially more complex and is left as future
 work (see Open Questions).
 
-### 10. Transaction and output structure (CDDL)
+### Transaction and output structure (CDDL)
 
 The following CDDL is **illustrative** and describes the additional structures at a design level;
 concrete field indices and integration with the existing transaction CDDL are to be finalised
@@ -282,32 +282,32 @@ ristretto_point = bytes .size 32
 scalar32        = bytes .size 32
 
 commitment      = ristretto_point      ; Pedersen commitment C = v·H + r·G
-masked_amount   = bytes .size 8        ; v XOR keystream; recoverable with sk_view (see section 5)
+masked_amount   = bytes .size 8        ; v XOR keystream; recoverable with sk_view (see Amount transport)
 
 ; A hidden quantity: the commitment plus the recipient's masked amount.
 confidential_asset = [ commitment, masked_amount ]
 
 ; Confidential value: which assets are present is public; every quantity is hidden.
-; The ADA entry is mandatory: every output must satisfy minimum-ADA (section 6).
+; The ADA entry is mandatory: every output must satisfy minimum-ADA (see Range proofs).
 confidential_value =
   { lovelace : confidential_asset
   , ? assets : { policy_id => { asset_name => confidential_asset } }
   }
 
-; A confidential output. Restricted to key-locked addresses in this proposal (section 4);
+; A confidential output. Restricted to key-locked addresses in this proposal (see Confidential value representation);
 ; `address` refers to the existing transaction CDDL.
 confidential_output =
   { address            : address
   , confidential_value : confidential_value
-  , ephemeral_key      : ristretto_point   ; E = e·G, for amount transport (section 5)
+  , ephemeral_key      : ristretto_point   ; E = e·G, for amount transport (see Amount transport)
   }
 
-; A Schnorr signature (R, s) proving knowledge of the per-asset excess (section 7).
+; A Schnorr signature (R, s) proving knowledge of the per-asset excess (see Value conservation).
 schnorr_sig = [ ristretto_point, scalar32 ]
 
 ; Per-transaction confidential proof, carried in the witness set.
 ; Shield/unshield need no dedicated structures: the public movement of each asset is
-; computed from the transaction's public data and enters the balancing check (section 8).
+; computed from the transaction's public data and enters the balancing check (see Bridging transparent and confidential amounts).
 confidential_proof =
   { range_proof : bytes                        ; aggregated Bulletproofs over all commitments
   , balancing   : { asset_ref => schnorr_sig } ; one excess signature per asset
@@ -318,7 +318,7 @@ asset_name = bytes .size (0..32)
 asset_ref  = 0 / [ policy_id, asset_name ]     ; 0 denotes ADA (lovelace)
 ```
 
-### 11. Validation rules, edge cases and soundness
+### Validation rules, edge cases and soundness
 
 A transaction containing confidential outputs is **invalid** unless **all** of the following
 hold. These rules are what make the construction sound against value creation or theft.
@@ -333,18 +333,18 @@ hold. These rules are what make the construction sound against value creation or
    amount is `< 2⁶⁴` and the number of outputs per transaction is bounded, no sum can wrap modulo
    `ℓ` (`ℓ ≈ 2²⁵²`).
 3. **Per-asset conservation (balance is preserved, nothing is created).** For **each** asset the
-   balancing equation of §7 holds and its Schnorr excess signature verifies. This guarantees, for
+   balancing equation of [value conservation](#value-conservation) holds and its Schnorr excess signature verifies. This guarantees, for
    every asset, that hidden outputs plus public movements equal hidden inputs — i.e. the net
    created value is exactly zero. Combined with rule 2, no value can be created and no negative
    output can exist.
 4. **Minimum quantity.** For any output subject to minimum-ADA, the aggregated range proof also
-   covers the shifted commitment `C − min·H` (§6), proving `v ≥ min`; outputs that cannot prove
+   covers the shifted commitment `C − min·H` (see [range proofs](#range-proofs)), proving `v ≥ min`; outputs that cannot prove
    this are rejected. This preserves anti-dust and related economic rules despite hidden amounts.
 5. **Transparent–confidential bridging.** The public net movement `Δ` of each asset is computed
    from the transaction's public data only (transparent inputs and outputs, fee, mint/burn) and
-   enters that asset's balancing equation (§7). Hidden amounts that do not match the public legs
+   enters that asset's balancing equation (see [value conservation](#value-conservation)). Hidden amounts that do not match the public legs
    cannot balance without a negative hidden output, which rule 2 forbids — so no separate
-   opening proofs are required for shielding or unshielding (§8).
+   opening proofs are required for shielding or unshielding (see [shield / unshield](#bridging-transparent-and-confidential-amounts-shield--unshield)).
 6. **Spend authorisation unchanged.** Consuming a confidential output still requires the normal
    key witness(es) for its address; confidential data is bound into the transaction so it cannot
    be reattached to a different transaction (replay/malleability protection via the
@@ -356,12 +356,12 @@ hold. These rules are what make the construction sound against value creation or
    subject to the same minimum-quantity rule as any other output (rule 4) and is otherwise a
    valid, well-formed commitment.
 
-### 12. Auditing and selective disclosure
+### Auditing and selective disclosure
 
 Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
-single `sk_view` (one key for the whole account, i.e. the stake address — §3) gives the holder of
+single `sk_view` (one key for the whole account, i.e. the stake address — see [Keys](#keys)) gives the holder of
 that key a complete, human-readable history of the **entire account** across all its payment
-addresses — which counterparties, which assets, and how much — recovered by the computation of §5.
+addresses — which counterparties, which assets, and how much — recovered by the computation of [amount transport](#amount-transport).
 This supports auditing and tax reporting: the account owner, of their own volition, hands the
 single `sk_view` to **one or more auditors of their choosing** — a tax authority, an accountant,
 or tax-reporting software. Disclosure is
@@ -371,11 +371,11 @@ this specification.
 
 Recovering an account's amounts from `sk_view` requires **no chain-wide scanning or trial
 decryption**: because addresses are public, an auditor or tool needs only the outputs already
-indexed for the account's addresses, plus one Diffie–Hellman computation per output (§5).
+indexed for the account's addresses, plus one Diffie–Hellman computation per output (see [amount transport](#amount-transport)).
 Disclosure-based auditing therefore composes directly with existing address-indexing
 infrastructure.
 
-### 13. Versioning
+### Versioning
 
 The feature is gated by the protocol version and is inert below its activation version. The
 on-chain structures defined here are versioned so that future revisions of the proof system
@@ -450,7 +450,7 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   output remain visible.
 - **Confidential ADA does not stake.** ADA in confidential outputs is excluded from stake,
   rewards, and governance voting power — including DRep vote-delegation weight — while it remains
-  hidden (§9). This is an opportunity cost holders accept when shielding, and a deliberate point
+  hidden (see [staking, rewards, and governance](#staking-rewards-and-governance)). This is an opportunity cost holders accept when shielding, and a deliberate point
   for community discussion: whether and when hidden ADA should regain staking or governance
   participation is addressed under Open Questions.
 - **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
@@ -461,7 +461,7 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   which is an ongoing complexity cost for users and companies relying on the audit path. The
   design deliberately minimises what a third-party tool must implement — amounts are recoverable
   from already-indexed outputs with one Diffie–Hellman computation each, with no chain-wide
-  scanning (§12) — but adopters should treat third-party tooling support as an ecosystem
+  scanning (see [auditing and selective disclosure](#auditing-and-selective-disclosure)) — but adopters should treat third-party tooling support as an ecosystem
   dependency, not a given.
 
 ### Alternatives considered
@@ -511,7 +511,7 @@ transfer layer destroys information a future extension would need.
 proposal — not as a bundled successor version.** They are separable by design: staking and
 governance add machinery *around* the commitments this proposal creates, without changing the
 transfer layer; asset-type blinding and post-quantum migration arrive as new **versioned**
-output and proof forms (§13); address hiding, if ever pursued, would be a coexisting pool.
+output and proof forms (see [versioning](#versioning)); address hiding, if ever pursued, would be a coexisting pool.
 Smaller follow-ups also expected as narrow companion proposals: standardisation of the
 viewing-key derivation path, support for script-locked confidential outputs (starting with
 native scripts — multisig and timelocks — which enforce witness conditions without inspecting
@@ -548,7 +548,7 @@ addresses* below).
 
 *Why descoped:* every path adds consensus-adjacent machinery, new trust assumptions
 (committees), or the aggregate-level leakage above, deserving a dedicated companion CIP and its
-own community debate; the per-UTXO exclusion rule (§9) is the minimal safe v1 behaviour.
+own community debate; the per-UTXO exclusion rule (see [staking, rewards, and governance](#staking-rewards-and-governance)) is the minimal safe v1 behaviour.
 
 #### Governance and DRep voting with shielded ADA
 
@@ -562,7 +562,7 @@ attribution makes weight commitments free. The genuinely new ingredient is a tal
 mechanism (e.g. a decryption committee), which is a new trust assumption for Cardano governance.
 
 *Why descoped:* that trust assumption merits its own community debate; v1 excludes hidden ADA
-from voting power (§9) until it happens.
+from voting power (see [staking, rewards, and governance](#staking-rewards-and-governance)) until it happens.
 
 #### Hiding the asset type (policy id and asset name)
 
@@ -572,9 +572,9 @@ and that conservation cannot cancel across assets. Mint/burn authorisation — c
 public policy — needs rethinking.
 
 *Conflict with this design:* **partial restructuring, not contradiction.** The single value
-generator `H` and per-asset public-tag conservation (§7) are the right choice *while asset
+generator `H` and per-asset public-tag conservation (see [value conservation](#value-conservation)) are the right choice *while asset
 identity is public* (see Rationale); a tag-blinding upgrade would introduce a **new, versioned
-output form** (§13) with per-asset generators, and existing confidential outputs would migrate by
+output form** (see [versioning](#versioning)) with per-asset generators, and existing confidential outputs would migrate by
 unshield/re-shield. Nothing in v1 has to be broken in place.
 
 *Why descoped:* substantially harder cryptography, larger proofs, and most compliance-oriented
@@ -598,7 +598,7 @@ machinery is unaffected by hiding user-held quantities.
 
 *Conflict with this design:* **none — the two are disjoint by construction in v1.** A
 programmable token cannot leave script control, and this proposal's confidential outputs cannot
-exist at script addresses (§4); each side's rule independently guarantees that no programmable
+exist at script addresses (see [confidential value representation](#confidential-value-representation)); each side's rule independently guarantees that no programmable
 token can be shielded and no programmable-token validator ever encounters a hidden quantity.
 There is no interaction surface, no carve-out to implement, and no retroactive state a future
 programmable-token standard would have to accommodate.
@@ -610,11 +610,11 @@ ZK predicates over commitments should be co-designed with them, not pre-empted h
 
 *Upgrade path:* replace each primitive with a post-quantum counterpart — lattice-based
 commitments and range proofs, a PQ KEM in place of the Diffie–Hellman transport, a PQ proof of
-knowledge for the balancing proof — under a new proof-system version (§13); value migrates by
+knowledge for the balancing proof — under a new proof-system version (see [versioning](#versioning)); value migrates by
 unshield/re-shield.
 
 *Conflict with this design:* **none architecturally** — the structure (commitments +
-conservation + range proofs + viewing keys) is proof-system-agnostic and §13 anticipates
+conservation + range proofs + viewing keys) is proof-system-agnostic and the [versioning](#versioning) section anticipates
 versioned upgrades. The honest, unavoidable caveat is **harvest-now-decrypt-later**: amounts
 hidden under the v1 discrete-log scheme remain recoverable by a future quantum adversary
 regardless of any later migration; migration protects future outputs only. This is already
@@ -632,14 +632,14 @@ the viewing key also reveals counterparties (as Monero and Zcash viewing keys do
 
 *Conflict with this design:* **this is the extension in most tension with v1** — several v1
 properties deliberately exploit public addresses: targeted wallet scanning without trial
-decryption, publicly derivable voting-weight commitments, low-cost auditor tooling (§12), and
+decryption, publicly derivable voting-weight commitments, low-cost auditor tooling (see [auditing and selective disclosure](#auditing-and-selective-disclosure)), and
 staking attribution. A graph-hiding upgrade would forfeit or rebuild those. It is nonetheless
 **not foreclosed**: the amount-confidentiality layer (commitments, conservation, range proofs)
 is exactly the amount layer used inside graph-hiding designs, and a shielded pool could be added
 *alongside* this design as a separate output type — as transparent and shielded pools coexist in
 Zcash — rather than by modifying it.
 
-*Why descoped:* an explicit non-goal (§1): this proposal's compliance-first positioning —
+*Why descoped:* an explicit non-goal (see [Motivation](#motivation-why-is-this-cip-necessary)): this proposal's compliance-first positioning —
 confidentiality from the public, not from oversight — depends on the graph remaining public, and
 identity hiding would move it into a different regulatory and design category.
 
@@ -667,7 +667,7 @@ questions below concern the v1 design itself.
   values (hence assets/outputs) per transaction consistent with a verification-cost budget.
 - **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
   out of scope here.
-- **Script addresses.** Confidential outputs are restricted to key-locked addresses (§4).
+- **Script addresses.** Confidential outputs are restricted to key-locked addresses (see [confidential value representation](#confidential-value-representation)).
   Extending them to script-locked outputs — including what a validator script may learn about a
   hidden amount — is open. A natural first step is **native scripts** (multisig and timelocks),
   which enforce witness and time conditions without inspecting amounts — important for corporate
@@ -684,7 +684,7 @@ questions below concern the v1 design itself.
 - [ ] A complete, versioned specification of the on-chain structures (final CDDL) and the proving
       and verification procedures, sufficient for **independent, interoperable implementations**.
 - [ ] Published **test vectors** (valid and invalid transactions, including the edge cases in
-      §11) that any implementation must agree on.
+      [validation rules](#validation-rules-edge-cases-and-soundness)) that any implementation must agree on.
 - [ ] An independent **security review / audit** of the cryptographic construction and its
       encoding.
 - [ ] Published **performance benchmarks** of verification cost — per transaction and per block,
@@ -709,19 +709,19 @@ A confidential ADA payment from account **A** to account **B**, with change back
 public fee. This illustrates what is hidden, what is public, and how the checks fit together.
 
 **Setup.** Account A owns one confidential input committing to `v_in` lovelace:
-`C_in = v_in·H + r_in·G`. A knows `(v_in, r_in)` from having received it (§5). A wants to send
+`C_in = v_in·H + r_in·G`. A knows `(v_in, r_in)` from having received it (see [amount transport](#amount-transport)). A wants to send
 `v_send` to B, keep `v_change`, and pay a public fee `f`, with `v_in = v_send + v_change + f`.
 
 **A builds the transaction:**
 
 1. Output to B: `C_send = v_send·H + r_send·G`, with ephemeral key `E₁ = e₁·G`. From the shared
    secret `s₁ = e₁·P_view(B)` the sender derives `r_send` and a keystream, and stores the 8-byte
-   masked amount `v_send ⊕ keystream` in the output (§5).
+   masked amount `v_send ⊕ keystream` in the output (see [amount transport](#amount-transport)).
 2. Change to A: `C_change = v_change·H + r_change·G`, with ephemeral key `E₂ = e₂·G`,
    `s₂ = e₂·P_view(A)`, and its own masked amount.
 3. Fee `f` is left **public**.
 4. **Range proof:** one aggregated Bulletproofs proof that `v_send` and `v_change` are each in
-   `[0, 2⁶⁴)`, including the shifted commitments `C − min·H` for the minimum-ADA floor (§6).
+   `[0, 2⁶⁴)`, including the shifted commitments `C − min·H` for the minimum-ADA floor (see [range proofs](#range-proofs)).
 5. **Balancing:** compute `excess = r_in − r_send − r_change`. Then
    `C_in − C_send − C_change − f·H = excess·G` (the value terms cancel because
    `v_in − v_send − v_change − f = 0`). A includes a Schnorr signature under public key `excess·G`.
@@ -784,7 +784,7 @@ decryption material.
 transparent one, so the chain growth *rate* multiplies by roughly `1 + 3×(confidential share)`.
 
 **Available tuning knobs**, all anticipated by this specification: cross-transaction batch
-verification with deterministically derived challenges (§11), protocol-parameter caps on
+verification with deterministically derived challenges (see [validation rules](#validation-rules-edge-cases-and-soundness)), protocol-parameter caps on
 confidential outputs per transaction or per block, and mempool pre-checks.
 
 ## References
