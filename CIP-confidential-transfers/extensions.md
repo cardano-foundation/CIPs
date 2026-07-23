@@ -22,7 +22,7 @@ so the top of the list is where "bake it in anyway" is most plausible.
 | 6 | Confidential governance | Shielding ADA silently costs its owner voting power | Medium–High | Medium | Mostly existing; threshold decryption if committee-based |
 | 7 | Plutus script outputs | Confidential value is locked out of smart contracts entirely | High | High | None |
 | 8 | Programmable-token (CIP-113) integration | Regulated/programmable tokens cannot have confidential amounts | High | High | Existing classes (sigma protocols) |
-| 9 | Confidential staking | Shielding ADA costs its owner staking rewards (~3–4%/yr) | High | High | Varies by variant: none → threshold → heavy ZK |
+| 9 | Confidential staking | Shielding ADA costs its owner the entire staking yield | High | High | Varies by variant: none → threshold → heavy ZK |
 | 10 | Stealth addresses | Address reuse lets observers cluster all payments to one party | High | Medium | Existing techniques, new to Cardano |
 | 11 | Asset-type blinding | Which asset moves reveals the business activity | Very high | Medium | New (surjection proofs, per-asset generators) |
 | 12 | Post-quantum migration | Future quantum adversary reads today's hidden amounts | Very high | Low now | All new (lattice-based) |
@@ -160,7 +160,8 @@ rather than new primitives.
 ## 9. Confidential staking
 
 **Problem.** Hidden ADA earns no staking rewards and contributes no stake (base proposal) —
-an opportunity cost of roughly the network staking yield (~3–4%/yr) that discourages
+an opportunity cost equal to the full network staking yield (a few percent per year,
+currently around 1–2% and declining as reserves deplete) that discourages
 long-term confidential holdings; arguably the single biggest adoption brake in the base
 design.
 **What it adds.** Delegation converts shielded ADA into pool-specific delegation tokens with
