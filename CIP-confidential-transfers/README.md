@@ -403,7 +403,11 @@ hold. These rules are what make the construction sound against value creation or
     excluded by the key-locked rule (see
     [confidential value representation](#confidential-value-representation)). Defining a
     script-context representation of hidden quantities is deferred to a future proposal (see
-    Open Questions).
+    Open Questions). Like every rule in this specification, this restriction is bound to the
+    protocol version: a later proposal that defines such a representation may relax it from a
+    given protocol version onwards, exactly as new structure tags and map keys are activated
+    (see [versioning](#versioning)) — never retroactively, and never ambiguously for older
+    transactions.
 11. **Bounded verification work.** The number of committed values in a transaction does not
     exceed `maxConfidentialCommitmentsPerTx`, and their total across a block does not exceed
     `maxConfidentialCommitmentsPerBlock` — see [protocol parameters](#protocol-parameters) for
