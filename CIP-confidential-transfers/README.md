@@ -284,33 +284,48 @@ scalar32        = bytes .size 32
 commitment      = ristretto_point      ; Pedersen commitment C = v·H + r·G
 masked_amount   = bytes .size 8        ; v XOR keystream; recoverable with sk_view (see Amount transport)
 
-; A hidden quantity: the commitment plus the recipient's masked amount.
-confidential_asset = [ commitment, masked_amount ]
+; A hidden quantity, as a tagged alternative (cf. Babbage's datum_option).
+; Alternative 0 = Pedersen commitment + DH masked amount (this proposal).
+; Future commitment schemes — per-asset generators for asset-type blinding,
+; post-quantum commitments — are added as new alternatives under a later
+; protocol version; an output in the UTXO set therefore always self-describes
+; which scheme its hidden quantities use.
+confidential_asset = [ 0, commitment, masked_amount ]
 
 ; Confidential value: which assets are present is public; every quantity is hidden.
-; The ADA entry is mandatory: every output must satisfy minimum-ADA (see Range proofs).
+; The lovelace entry (key 0) is mandatory: every output must satisfy minimum-ADA
+; (see Range proofs).
 confidential_value =
-  { lovelace : confidential_asset
-  , ? assets : { policy_id => { asset_name => confidential_asset } }
+  { 0   : confidential_asset                                       ; lovelace
+  , ? 1 : { policy_id => { asset_name => confidential_asset } }    ; native assets
   }
 
-; A confidential output. Restricted to key-locked addresses in this proposal (see Confidential value representation);
-; `address` refers to the existing transaction CDDL.
+; A confidential output, as a map with numbered keys (cf. the Babbage output
+; format): later proposals extend it by adding new optional keys, without
+; disturbing keys 0-2. `address` is the ledger's existing address type and is
+; deliberately unrestricted here — the key-locked-addresses-only rule (see
+; Confidential value representation) is a validation rule, which a later
+; proposal may relax, not a data-format restriction.
 confidential_output =
-  { address            : address
-  , confidential_value : confidential_value
-  , ephemeral_key      : ristretto_point   ; E = e·G, for amount transport (see Amount transport)
+  { 0 : address
+  , 1 : confidential_value
+  , 2 : ristretto_point        ; ephemeral key E = e·G (see Amount transport)
   }
 
 ; A Schnorr signature (R, s) proving knowledge of the per-asset excess (see Value conservation).
 schnorr_sig = [ ristretto_point, scalar32 ]
 
+; Proof components are tagged alternatives, so the proof system can evolve
+; independently of the data it proves (see Versioning).
+range_proof     = [ 0, bytes ]                         ; 0 = aggregated Bulletproofs
+balancing_proof = [ 0, { asset_ref => schnorr_sig } ]  ; 0 = per-asset Schnorr excess
+
 ; Per-transaction confidential proof, carried in the witness set.
 ; Shield/unshield need no dedicated structures: the public movement of each asset is
 ; computed from the transaction's public data and enters the balancing check (see Bridging transparent and confidential amounts).
 confidential_proof =
-  { range_proof : bytes                        ; aggregated Bulletproofs over all commitments
-  , balancing   : { asset_ref => schnorr_sig } ; one excess signature per asset
+  { 0 : range_proof
+  , 1 : balancing_proof
   }
 
 policy_id  = bytes .size 28
@@ -355,6 +370,10 @@ hold. These rules are what make the construction sound against value creation or
 8. **Zero-value and empty outputs.** A confidential output committing to zero of every asset is
    subject to the same minimum-quantity rule as any other output (rule 4) and is otherwise a
    valid, well-formed commitment.
+9. **Unknown forms rejected.** A confidential structure carrying an alternative tag or map key
+   not defined at the current protocol version is invalid. Rejecting unknown forms today is what
+   allows a later protocol version to activate new tags and keys (see [versioning](#versioning))
+   without any ambiguity about how older validators treat them.
 
 ### Auditing and selective disclosure
 
@@ -381,6 +400,17 @@ The feature is gated by the protocol version and is inert below its activation v
 on-chain structures defined here are versioned so that future revisions of the proof system
 (for example, a newer range-proof construction) can be introduced under a new version while
 older transactions continue to verify under the version they were created with.
+
+Versioning uses the ledger's own idioms rather than in-band version fields (no ledger
+structure on Cardano carries a `version` integer, and this proposal follows that practice).
+**Incompatible** new forms — a new commitment scheme, a new range-proof or balancing-proof
+construction — are added as new alternatives to the tagged unions in the CDDL
+(`confidential_asset`, `range_proof`, `balancing_proof`); **additive** extensions arrive as
+new numbered keys in the `confidential_output` and `confidential_proof` maps. Which tags and
+keys are valid is determined solely by the protocol version (validation rule 9). Because
+outputs live in the UTXO set across protocol versions, every confidential output
+self-describes its form: outputs created under an older version remain spendable and
+interpretable unchanged after an upgrade.
 
 ## Rationale: How does this CIP achieve its goals?
 
