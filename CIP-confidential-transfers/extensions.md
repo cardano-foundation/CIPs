@@ -12,21 +12,25 @@ foreclosed by the base design (see
 Entries are sorted by **implementation effort (ascending)**, then **impact (descending)** —
 so the top of the list is where "bake it in anyway" is most plausible.
 
-| # | Extension | Problem it solves | Effort | Impact | New cryptography? |
-|---|---|---|---|---|---|
-| 1 | Native-script confidential outputs | Multisig treasuries cannot hold confidential funds | **Low** | **High** | **None** |
-| 2 | Viewing-key rotation | A disclosed or leaked viewing key reads the account **forever** | **Low** | Medium–High | **None** |
-| 3 | Multi-party construction | Collaborative transactions need one party to know all blindings | Low–none | Medium | None on-chain |
-| 4 | Successor range proof | Proof size/verification dominate transaction cost | Medium | Medium | New proof system |
-| 5 | Plutus ristretto255 builtins | Scripts cannot verify anything about a commitment | Medium | Medium–High | None (exposes existing) |
-| 6 | Confidential governance | Shielding ADA silently costs its owner voting power | Medium–High | Medium | Mostly existing; threshold decryption if committee-based |
-| 7 | Plutus script outputs | Confidential value is locked out of smart contracts entirely | High | High | None |
-| 8 | Programmable-token (CIP-113) integration | Regulated/programmable tokens cannot have confidential amounts | High | High | Existing classes (sigma protocols) |
-| 9 | Confidential staking | Shielding ADA costs its owner the entire staking yield | High | High | Varies by variant: none → threshold → heavy ZK |
-| 10 | Stealth addresses | Address reuse lets observers cluster all payments to one party | High | Medium | Existing techniques, new to Cardano |
-| 11 | Asset-type blinding | Which asset moves reveals the business activity | Very high | Medium | New (surjection proofs, per-asset generators) |
-| 12 | Post-quantum migration | Future quantum adversary reads today's hidden amounts | Very high | Low now | All new (lattice-based) |
-| 13 | Shielded pool | The public transaction graph itself reveals relationships | Very high | Non-goal | All new (SNARK/STARK, nullifiers) |
+The **Compliance** column is measured against the base proposal's audit model (a designated
+third party holding the viewing key sees the account's complete history): `-` means the
+extension preserves that model by construction; anything else is spelled out.
+
+| # | Extension | What it lets a user do that they cannot today | Effort | Impact | New cryptography? | Compliance |
+|---|---|---|---|---|---|---|
+| 1 | Native-script confidential outputs | As a company or DAO treasurer, our **multisig treasury itself** can hold and pay confidential amounts — not just single-key wallets | **Low** | **High** | **None** | - |
+| 2 | Viewing-key rotation | As an account owner, I can **end** an auditor's (or a thief's) visibility going forward by switching to a new viewing key | **Low** | Medium–High | **None** | - |
+| 3 | Multi-party construction | As users, several of us can co-build one transaction (e.g. through a batcher) **without revealing our amounts to each other** | Low–none | Medium | None on-chain | - |
+| 4 | Successor range proof | As a user I pay **lower fees**; as a node operator I verify blocks faster | Medium | Medium | New proof system | - |
+| 5 | Plutus ristretto255 builtins | As a dApp developer, my scripts can **verify commitments and proofs** on-chain | Medium | Medium–High | None (exposes existing) | - |
+| 6 | Confidential governance | As a holder of shielded ADA, I **keep my governance voting power** | Medium–High | Medium | Mostly existing; threshold decryption if committee-based | - |
+| 7 | Plutus script outputs | As a user, I can lock confidential funds **under smart-contract conditions** (escrow, vesting, DeFi) | High | High | None | - |
+| 8 | Programmable-token (CIP-113) integration | As a regulated-token issuer, my holders get **confidential balances while my policy rules stay enforced** | High | High | Existing classes (sigma protocols) | - |
+| 9 | Confidential staking | As a holder of shielded ADA, I **keep earning staking rewards** | High | High | Varies by variant: none → threshold → heavy ZK | - |
+| 10 | Stealth addresses | As a payee, observers can **no longer link my incoming payments** by watching my address | High | Medium | Existing techniques, new to Cardano | ⚠ audit-by-key intact, but AML chain-analytics (receiver clustering) breaks; auditor completeness shifts from public indexing to trusting scanning tools |
+| 11 | Asset-type blinding | As a business, observers can no longer see **which tokens** I hold or trade — only that I transact | Very high | Medium | New (surjection proofs, per-asset generators) | ⚠ per-account audit survives **only if** the viewing key is required to reveal asset tags; chain-wide monitoring of a given asset becomes impossible for anyone |
+| 12 | Post-quantum migration | As a user, my hidden amounts stay hidden **even against a future quantum computer** | Very high | Low now | All new (lattice-based) | - |
+| 13 | Shielded pool | As a user, observers can no longer see **whom I transact with** at all | Very high | Non-goal | All new (SNARK/STARK, nullifiers) | ✗ **not compliant**: graph hiding places it in the mixer / anonymity-enhanced category (cf. Tornado Cash sanctions, exchange delistings of privacy coins); with sender ambiguity, counterparties can be unprovable **even to the account's own auditor** — the reason it is an explicit non-goal |
 
 ---
 
@@ -186,6 +190,10 @@ input→output links remain public).
 **Crypto: existing techniques, new to Cardano.** Dual-key stealth derivation is deployed at
 scale elsewhere (Monero; cf. ERC-5564) — no novel constructions, but a primitive class the
 Cardano ledger has never carried, with the audit burden that implies.
+**Regulatory posture: caution.** The account's auditor still sees everything via the viewing
+key, but completeness changes character — from corroborating against public address indexing
+to trusting cryptographic scanning tools — and third-party AML chain-analytics (receiver
+clustering) breaks by design, which risks an anonymity-enhanced-adjacent classification.
 **Effort: high** — it sacrifices scan-free decryption (wallets and auditors must trial-DH
 outputs) and requires reworking the viewing-key-to-credential binding; a substantial
 companion despite its modest privacy gain.
@@ -202,6 +210,11 @@ existing outputs migrate by unshield/re-shield.
 (Confidential-Assets style) proving hidden tags are legitimate and cannot cancel across
 assets — a new proof family with real cryptanalytic surface, the core reason this item sits
 in the very-high-effort tier.
+**Regulatory posture: caution.** Per-account audit survives **only if** the design requires
+the viewing key to reveal asset tags — that must be a hard requirement, not an assumption.
+Even then, chain-wide monitoring of a specific asset (e.g. tracking a sanctioned token's
+flows) becomes impossible for anyone: per-account compliance is preserved, systemic
+observability is not.
 **Effort: very high** — substantially harder cryptography, and most compliance-oriented use
 cases want the asset type visible anyway.
 
@@ -228,6 +241,12 @@ via shield/unshield — the Zcash coexistence model.
 **Crypto: everything new, different paradigm.** Note commitments, nullifiers, incremental
 Merkle trees, and succinct membership proofs (zk-SNARK/STARK) — an entirely different proof
 stack from the base proposal's, which is why it can only ever be a sibling pool.
+**Regulatory posture: not compliant.** Graph hiding crosses a regulatory category line, not
+a technical one: it places the construction in the mixer / anonymity-enhanced bucket (cf.
+the Tornado Cash sanctions and exchange delistings of privacy coins), and with sender
+ambiguity, counterparties can be unprovable **even to the account's own auditor** — tax and
+AML frameworks require exactly what this hides. This is why the base proposal declares it an
+explicit non-goal, and why every *other* extension in this list preserves the public graph.
 **Effort: very high — and an explicit non-goal** of the base proposal, whose
 compliance-first positioning depends on the graph remaining public. Listed for completeness:
 the base design neither blocks nor requires it.
