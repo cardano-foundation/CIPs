@@ -438,7 +438,10 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   commitment and range contribution). This increases fees proportionally to size.
 - **Verification cost.** Range-proof verification cost grows with the number of committed values;
   aggregation and batch verification mitigate this, but it remains higher than validating a
-  transparent amount.
+  transparent amount — roughly an order of magnitude more CPU per transaction than signature
+  checking, while leaving overall node hardware requirements unchanged. Order-of-magnitude
+  estimates are given in the [Appendix](#estimated-node-resource-impact); measured benchmarks are
+  an acceptance criterion (see Path to Active).
 - **Not post-quantum.** Security rests on the elliptic-curve discrete-logarithm and DDH
   assumptions and is not resistant to a future cryptographically-relevant quantum computer;
   amounts recorded today could in principle be recovered by such an adversary
@@ -685,6 +688,9 @@ questions below concern the v1 design itself.
       §11) that any implementation must agree on.
 - [ ] An independent **security review / audit** of the cryptographic construction and its
       encoding.
+- [ ] Published **performance benchmarks** of verification cost — per transaction and per block,
+      batched and unbatched, including full-sync replay impact — demonstrating that
+      block-validation budgets are met (replacing the derived estimates in the Appendix).
 - [ ] Implementation present within block-producing nodes used by **80%+ of stake**, activated
       via the standard protocol-parameter/hard-fork governance process.
 
@@ -741,6 +747,46 @@ account view for tax/audit purposes.
 the output would include an additional commitment `C_T = q·H + r_T·G` for that asset, the range
 proof would also cover `q`, and a **separate** balancing equation and Schnorr signature would be
 required for that asset. The token's identity `(policy, name)` stays public; only `q` is hidden.
+
+### Estimated node resource impact
+
+The figures below are **order-of-magnitude estimates**, derived from published benchmarks of the
+underlying primitives and this proposal's parameters; they are informative, not normative, and
+are to be replaced by measured benchmarks (an acceptance criterion under Path to Active). The
+headline: **no change of hardware class for a node** — the real cost is CPU time on the
+block-validation path.
+
+**CPU (verification; the node never proves and never decrypts).** For a typical 2-input/2-output
+confidential payment (~4 aggregated 64-bit range statements plus one Schnorr excess signature):
+
+| Operation | Approximate cost (one modern core) |
+|---|---|
+| Aggregated range-proof verification | ~2–3 ms unbatched; ~1 ms amortised with cross-transaction batching |
+| Schnorr excess + accumulator arithmetic | ~0.2 ms |
+| For comparison: a transparent transaction | ~0.1–0.2 ms |
+
+A confidential transaction therefore costs roughly **10–20× the verification CPU** of a
+transparent one. Worst case, a block filled entirely with confidential transactions (~60 at
+current block sizes) adds on the order of **0.1–0.2 s** of verification per block unbatched —
+about half that with batch verification — against a block-validation budget of well under the
+slot interval. Verification parallelises trivially across transactions. Two consequences
+follow: **initial sync/replay** time grows with the density of confidential history (strongly
+mitigated by large-batch verification during sync), and **mempool admission** must run cheap
+structural checks (sizes, encodings, fee coverage) before expensive proof verification to bound
+denial-of-service exposure.
+
+**Memory.** Static verification tables are a few megabytes, one-time. The only usage-dependent
+term is the UTXO set: a confidential output stores roughly 100–160 bytes more than a transparent
+one, so even tens of millions of confidential UTXOs add only gigabyte-scale ledger state. The
+decryption side (viewing keys, Diffie–Hellman recovery) is entirely client-side; nodes hold no
+decryption material.
+
+**Disk.** Chain growth scales with adoption: a confidential transaction is ~3–5× the size of a
+transparent one, so the chain growth *rate* multiplies by roughly `1 + 3×(confidential share)`.
+
+**Available tuning knobs**, all anticipated by this specification: cross-transaction batch
+verification with deterministically derived challenges (§11), protocol-parameter caps on
+confidential outputs per transaction or per block, and mempool pre-checks.
 
 ## References
 
