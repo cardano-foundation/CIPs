@@ -784,7 +784,13 @@ questions below concern the v1 design itself.
   wallets derive the same key from the same seed interoperably; hardware-wallet firmware support
   for deriving the key and computing the Diffie–Hellman shared secret is part of this question.
 - **Balancing-proof form.** A single Schnorr excess signature per asset versus per-output
-  consistency proofs — a size/verification trade-off — to be finalised.
+  consistency proofs — a size/verification trade-off — to be finalised. Whatever form is
+  finalised MUST remain **linearly aggregatable across independent contributors who do not
+  share blindings**: multiple parties, each knowing only the blindings of their own inputs and
+  outputs, must be able to produce their shares of the proof independently and combine them
+  into a single valid witness (as Schnorr excess signatures naturally allow, MuSig-style). A
+  form that loses this property forecloses multi-party transaction construction — batchers,
+  collaborative transactions — until a new versioned witness form is introduced.
 - **Multi-party transactions.** Constructing the balancing proof requires the builder to know all
   input and output blindings; collaborative transactions with multiple independent contributors
   need either interaction or partial balancing proofs. Whether to support this initially is open.
