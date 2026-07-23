@@ -1,0 +1,87 @@
+; CIP-???? | Native Confidential Transfers — draft schema (aggregated)
+;
+; STATUS: DRAFT / ILLUSTRATIVE. This file aggregates the CDDL fragments of the
+; proposal's README into one place. Certificate tags (T, T+1) and map/field
+; indices are placeholders: final values are assigned on integration with the
+; ledger's transaction CDDL, at which point this file becomes the normative,
+; machine-validatable schema (an acceptance criterion under Path to Active,
+; together with published test vectors).
+;
+; External types referenced from the existing ledger CDDL (not defined here):
+;   address, stake_credential, coin
+
+; --- Primitive encodings ------------------------------------------------------
+
+; A canonically-encoded ristretto255 point / scalar, 32 bytes each (RFC 9496).
+ristretto_point = bytes .size 32
+scalar32        = bytes .size 32
+
+commitment      = ristretto_point      ; Pedersen commitment C = v·H + r·G
+masked_amount   = bytes .size 8        ; v XOR keystream; recoverable with sk_view
+
+; --- Hidden quantities --------------------------------------------------------
+
+; A hidden quantity, as a tagged alternative (cf. Babbage's datum_option).
+; Alternative 0 = Pedersen commitment + DH masked amount (this proposal).
+; Future commitment schemes are added as new alternatives under a later
+; protocol version; an output in the UTXO set always self-describes its form.
+confidential_asset = [ 0, commitment, masked_amount ]
+
+; Confidential value: which assets are present is public; every quantity is
+; hidden. The lovelace entry (key 0) is mandatory (minimum-ADA).
+confidential_value =
+  { 0   : confidential_asset                                       ; lovelace
+  , ? 1 : { policy_id => { asset_name => confidential_asset } }    ; native assets
+  }
+
+; --- Outputs ------------------------------------------------------------------
+
+; A confidential output, as a map with numbered keys (cf. the Babbage output
+; format): later proposals extend it by adding new optional keys. `address` is
+; the ledger's existing address type, deliberately unrestricted here — the
+; key-locked-addresses-only rule is a validation rule, not a format restriction.
+confidential_output =
+  { 0 : address
+  , 1 : confidential_value
+  , 2 : ristretto_point        ; ephemeral key E = e·G (amount transport)
+  }
+
+; --- Proofs (witness set) -----------------------------------------------------
+
+; A Schnorr signature (R, s) proving knowledge of the per-asset excess.
+schnorr_sig = [ ristretto_point, scalar32 ]
+
+; Proof components are tagged alternatives, so the proof system can evolve
+; independently of the data it proves.
+range_proof     = [ 0, bytes ]                         ; 0 = aggregated Bulletproofs
+balancing_proof = [ 0, { asset_ref => schnorr_sig } ]  ; 0 = per-asset Schnorr excess
+
+; Per-transaction confidential proof, carried in the witness set.
+confidential_proof =
+  { 0 : range_proof
+  , 1 : balancing_proof
+  }
+
+policy_id  = bytes .size 28
+asset_name = bytes .size (0..32)
+asset_ref  = 0 / [ policy_id, asset_name ]     ; 0 denotes ADA (lovelace)
+
+; --- Certificates (viewing-key registration) ----------------------------------
+
+; Registration: bind P_view to the account (stake credential).
+;   coin = the deposit paid; must equal viewingKeyDeposit at submission and is
+;   recorded with the registry entry so the eventual refund matches it.
+viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point)
+
+; Deregistration: remove the binding and refund the deposit.
+;   coin = the refund claimed; must equal the deposit recorded at registration.
+viewing_key_unreg_cert = (T+1, stake_credential, coin)
+
+; Both extend the ledger's existing certificate union (elided here to its first
+; alternative; the full union lives in the ledger's transaction CDDL):
+certificate =
+  [  stake_registration
+  // ...existing alternatives...
+  // viewing_key_reg_cert
+  // viewing_key_unreg_cert
+  ]

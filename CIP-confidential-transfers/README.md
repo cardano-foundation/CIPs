@@ -145,14 +145,13 @@ payment addresses an account may use.
 
 - `sk_view` lets the account owner recover the amount of **every** confidential output addressed
   to any payment address of that account.
-- `P_view` is published/bound to the stake credential so senders can address confidential outputs
-  to the account and so a disclosed key can be verified against it (the exact binding — a new
-  address/stake component or an on-chain registration — is discussed under Open Questions).
-  Whatever mechanism is chosen, it MUST work uniformly for **any** stake credential type — key
-  hash or script hash — and MUST NOT assume the existence of a single stake signing key:
-  authorisation follows the credential's standard witness rules, so that script-controlled
-  accounts (e.g. multisig treasuries) can bind a viewing key exactly as key-controlled accounts
-  do.
+- `P_view` is published and bound to the stake credential by an on-chain **registration
+  certificate** (see [viewing-key registration](#viewing-key-registration)), so senders can
+  address confidential outputs to the account and a disclosed key can be verified against the
+  registered value. The mechanism works uniformly for **any** stake credential type — key hash
+  or script hash — and never assumes a single stake signing key: authorisation follows the
+  credential's standard witness rules, so script-controlled accounts (e.g. multisig treasuries)
+  bind a viewing key exactly as key-controlled accounts do.
 - Disclosing `sk_view` grants **read** access only and never grants spend authority, which
   remains with the separate spending key(s). The account has exactly **one** viewing key; its
   owner may, at their own discretion, share it with **one or more auditors** — each receives the
@@ -173,6 +172,78 @@ restoring a wallet from its mnemonic also restores the viewing capability (and t
 ability to re-read all of the account's confidential amounts from chain data), and **existing
 accounts can adopt confidential transfers without creating a new wallet or account**. The exact
 derivation path is to be standardised (see Open Questions).
+
+### Viewing-key registration
+
+An account publishes its viewing public key with an on-chain **registration certificate**,
+following the ledger's existing registration pattern (stake, pool, and DRep registration): a
+certificate authorised by the credential's own witness rules, carrying a refundable deposit.
+
+```cddl
+; Certificate tag numbers are illustrative; final indices are assigned on integration
+; with the transaction CDDL, like all field indices in this proposal.
+
+; Registration: bind P_view to the account (stake credential).
+viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point)
+
+; Deregistration: remove the binding and refund the deposit.
+viewing_key_unreg_cert = (T+1, stake_credential, coin)
+
+; Both extend the ledger's existing certificate union:
+certificate =
+  [  stake_registration
+  // ...existing alternatives...
+  // viewing_key_reg_cert
+  // viewing_key_unreg_cert
+  ]
+```
+
+A **registration certificate** includes:
+
+- the **stake credential** being registered — a key hash or a script hash;
+- the **deposit** paid: the certificate is invalid unless it equals the current value of
+  `viewingKeyDeposit`; the paid amount is recorded with the registry entry so that the
+  eventual refund matches it even if the parameter changes later;
+- **`P_view`** — the account's confidential viewing public key, a ristretto255 point.
+
+A **deregistration certificate** includes:
+
+- the **stake credential** being deregistered;
+- the **refund** claimed: the certificate is invalid unless it equals the deposit recorded
+  at registration.
+
+Deregistration takes effect immediately upon the chain accepting the certificate, and the
+deposit is returned as part of the transaction that submits it — the same way stake
+credential registration deposits are returned.
+
+- **Authorisation.** The certificate is authorised by the stake credential's standard witness
+  rules — a signature for a key hash, script satisfaction for a script hash. Key-hash and
+  script-hash credentials register identically (the neutrality required in [Keys](#keys)).
+- **Well-formedness.** The registered `P_view` must be a canonical ristretto255 encoding and
+  **must not be the identity element** — an identity key would make every shared secret
+  predictable, exposing all amounts sent to the account (cf. validation rule 1).
+- **One live registration.** Registering a credential that already has a live registration is
+  invalid: the viewing keypair is immutable at this protocol version. Key rotation is out of
+  scope and deferred to a companion proposal — immutability is a validation rule, relaxable
+  from a later protocol version onwards (see [versioning](#versioning)), and the derivation
+  path above already reserves successive key indices for that purpose.
+- **Deposit.** Registration locks the refundable deposit described above, sized by the
+  `viewingKeyDeposit` protocol parameter (see [protocol parameters](#protocol-parameters)).
+- **Deregistration is not key destruction.** The certificate is a **directory entry, not a
+  key store**: deregistration stops the account from receiving new confidential outputs
+  (validation rule 12) but affects nothing already received — existing confidential outputs
+  remain readable and spendable, because keys derive from the wallet seed, not from the
+  certificate.
+- **Independence.** Viewing-key registration neither requires nor interacts with stake
+  registration; the two lifecycles are separate.
+
+Receiving confidential value is therefore **opt-in per account, enforced by consensus**
+(validation rule 12). A sender's wallet resolves the recipient's stake credential to its
+registered `P_view` — the same class of query wallets already run for delegation state. If
+no live registration exists, a confidential output to that account cannot be constructed;
+wallets fall back to a transparent send with the user's consent. Because the account concept
+is keyed to the stake credential, outputs at **enterprise addresses** (which have no stake
+part) can never be confidential in this proposal.
 
 ### Confidential value representation
 
@@ -295,7 +366,11 @@ work (see Open Questions).
 
 The following CDDL is **illustrative** and describes the additional structures at a design level;
 concrete field indices and integration with the existing transaction CDDL are to be finalised
-during implementation.
+during implementation. The fragments in this document (including the certificates of
+[viewing-key registration](#viewing-key-registration)) are aggregated into a single draft
+schema file at [`cddl/confidential-transfers.cddl`](cddl/confidential-transfers.cddl), which
+becomes the normative, machine-validatable schema once indices are finalised (see Path to
+Active).
 
 ```cddl
 ; A canonically-encoded ristretto255 point / scalar, 32 bytes each (RFC 9496).
@@ -417,6 +492,14 @@ hold. These rules are what make the construction sound against value creation or
     exceed `maxConfidentialCommitmentsPerTx`, and their total across a block does not exceed
     `maxConfidentialCommitmentsPerBlock` — see [protocol parameters](#protocol-parameters) for
     why this bound is explicit rather than inherited from size limits.
+12. **Registered recipients only.** Every confidential output is addressed to a payment
+    address whose stake credential has a **live viewing-key registration** (see
+    [viewing-key registration](#viewing-key-registration)); confidential outputs to
+    unregistered credentials are invalid. Certificates in the same transaction take effect
+    in order, before outputs are checked — so an account can be registered and receive its
+    first confidential output in a single transaction, matching the existing
+    register-and-delegate pattern. Note this applies to the sender's confidential change as
+    well: a sender wanting confidential change must itself be registered.
 
 ### Protocol parameters
 
@@ -443,6 +526,16 @@ As protocol parameters rather than constants baked into the validation rules, bo
 their initial values from the measured benchmarks required under Path to Active and can
 thereafter be adjusted through the standard parameter-update governance process — no hard
 fork — as hardware, batch verification, and adoption evolve.
+
+One further parameter is economic rather than computational:
+
+- `viewingKeyDeposit` — the refundable deposit locked by a viewing-key registration
+  certificate (see [viewing-key registration](#viewing-key-registration)), initialised to
+  the value of `stakeAddressDeposit` (currently 2 ADA). It prices the permanent registry
+  entry and deters spam registrations: the entry is the same state class as a stake
+  registration and is priced identically, so that the viewing-key registry is never the
+  cheapest permanent state in the system. It is a dedicated parameter rather than a reuse
+  of `stakeAddressDeposit` so that governance can tune the two independently later.
 
 ### Guarantees to future proposals
 
@@ -640,6 +733,19 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
 - **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
   delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
   Diffie–Hellman transport keeps everything on chain and self-contained.
+- **Publishing `P_view` without a registration certificate.** Three discovery mechanisms were
+  considered and rejected. **Embedding `P_view` in a new address format** solves discovery by
+  construction, but a new address era is the heaviest ecosystem migration Cardano can
+  undertake (every wallet, exchange, dApp, and hardware device must parse it), grows every
+  address by 32 bytes, and permanently fights future key rotation — addresses outlive keys on
+  invoices. **Off-chain publication** (payment requests, directories) fails the auditing
+  requirement that a disclosed key be verifiable against a consensus-published value, and a
+  key substituted in transit would produce outputs the recipient cannot even spend (the
+  blinding becomes unrecoverable). **Piggybacking on stake registration** couples two
+  unrelated lifecycles, and the overwhelming majority of accounts — already stake-registered —
+  would need a dedicated re-registration path anyway, i.e. a separate certificate by another
+  name. A dedicated certificate, the ledger's native idiom for "credential declares X",
+  avoids all three.
 - **General-purpose succinct proofs (zk-SNARK/STARK) over an encrypted note pool.** These can hide
   more (including identities and the graph) but require either a trusted setup or heavier proving,
   a proving circuit, and additional state (note commitments and nullifiers). They are a
@@ -811,19 +917,6 @@ asset type, programmable tokens, post-quantum security, and address hiding — a
 [Future extensions and upgrade paths](#future-extensions-and-upgrade-paths) above. The open
 questions below concern the v1 design itself.
 
-- **Binding `P_view` to an account (stake credential).** The exact mechanism to publish and bind
-  the account's single viewing public key to its stake credential (a new address/stake component,
-  an on-chain registration, or a wallet-level convention) is to be specified — including how a
-  sender learns the recipient account's `P_view`. The leading candidate is an on-chain
-  registration **certificate**, alongside the existing stake-key certificates. Whatever form is
-  chosen, it must satisfy the credential-type-neutrality constraint of [Keys](#keys): key-hash
-  and script-hash stake credentials alike, authorised by the credential's standard witness
-  rules. **Key rotation is out of scope for this proposal**: an account's viewing keypair is
-  immutable at this protocol version — re-registration of a different `P_view` for the same
-  credential is invalid. The mechanism must not foreclose rotation, however: immutability is a
-  validation rule, relaxable from a later protocol version onwards exactly as other rules are
-  (see [versioning](#versioning)), and the indexed derivation path of [Keys](#keys) already
-  reserves successive key indices for a future rotation proposal.
 - **Viewing-key derivation path.** The dedicated hierarchical-deterministic path for `sk_view`
   (a new role index under [CIP-1852], or a separate purpose) needs to be standardised so that
   wallets derive the same key from the same seed interoperably; hardware-wallet firmware support
@@ -866,8 +959,11 @@ questions below concern the v1 design itself.
 - [ ] The design (primitives, transaction/output structure, proofs, and validation rules) is
       reviewed and **ratified by the community** through the CIP process, including review by
       relevant ledger and cryptography stakeholders.
-- [ ] A complete, versioned specification of the on-chain structures (final CDDL) and the proving
-      and verification procedures, sufficient for **independent, interoperable implementations**.
+- [ ] A complete, versioned specification of the on-chain structures — the final CDDL,
+      provided as machine-readable `.cddl` files in this CIP's directory (superseding the
+      draft [`cddl/confidential-transfers.cddl`](cddl/confidential-transfers.cddl)) — and the
+      proving and verification procedures, sufficient for **independent, interoperable
+      implementations**.
 - [ ] Published **test vectors** (valid and invalid transactions, including the edge cases in
       [validation rules](#validation-rules-edge-cases-and-soundness)) that any implementation must agree on.
 - [ ] An independent **security review / audit** of the cryptographic construction and its
@@ -931,6 +1027,19 @@ account view for tax/audit purposes.
 the output would include an additional commitment `C_T = q·H + r_T·G` for that asset, the range
 proof would also cover `q`, and a **separate** balancing equation and Schnorr signature would be
 required for that asset. The token's identity `(policy, name)` stays public; only `q` is hidden.
+
+### Onboarding an unregistered account (sponsored registration)
+
+A new account holds no ADA, so it cannot pay the fee and deposit for its own viewing-key
+registration — but the certificate needs the account's **witness**, not its funds. Anyone may
+therefore build and fund a single transaction combining a transparent transfer to the new
+account, that account's registration certificate, and — thanks to the in-transaction
+certificate ordering of validation rule 12 — even a first confidential payment. An employer
+onboarding an employee for confidential payroll builds and pays for the transaction; the
+employee's wallet co-signs it, refusing unless the certificate carries exactly the `P_view`
+it derives from its own seed. The registration is thereby self-authenticating end to end: no
+party can register a key for an account without its owner's witness, and no transported key
+can be substituted without the owner's wallet detecting it.
 
 ### Estimated node resource impact
 
