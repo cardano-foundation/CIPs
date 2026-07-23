@@ -120,7 +120,18 @@ The scheme uses a deliberately small set of primitives, all over a single prime-
 - **Balancing proof.** A **Schnorr** signature proving knowledge of the *excess* blinding of a
   commitment to zero value, establishing value conservation per asset (see [value conservation](#value-conservation)).
 - **Non-interactivity.** All proofs are made non-interactive with the **Fiat–Shamir** transform,
-  using a cryptographic hash and a domain-separation tag bound to the transaction context.
+  using a cryptographic hash and a **domain-separation tag (DST)** bound to the transaction
+  context. DSTs are namespaced and versioned: every tag defined by this proposal has the form
+  `cardano/ct/<proof>/v<n>`, where `<n>` equals the CDDL alternative tag of the structure being
+  proven — concretely `cardano/ct/range/v0` for the aggregated range proof and
+  `cardano/ct/balancing/v0` for the per-asset excess signatures. A proof therefore verifies only
+  in its intended context and under its intended version: the same bytes can never validate as a
+  different proof kind, under a different proof-system version, or in a protocol that reuses
+  these primitives. Companion proposals MUST NOT reuse the tags defined here; each allocates its
+  own under a distinct path segment (for example `cardano/ct/predicate/v0` for a future
+  script-predicate proof). The exact transcript byte encoding (tag placement, field ordering,
+  serialisation of the bound transaction context) is part of the final specification and its
+  test vectors (see Path to Active).
 
 No trusted setup is required by any of these primitives.
 
@@ -449,7 +460,12 @@ structure on Cardano carries a `version` integer, and this proposal follows that
 construction — are added as new alternatives to the tagged unions in the CDDL
 (`confidential_asset`, `range_proof`, `balancing_proof`); **additive** extensions arrive as
 new numbered keys in the `confidential_output` and `confidential_proof` maps. Which tags and
-keys are valid is determined solely by the protocol version (validation rule 9). Because
+keys are valid is determined solely by the protocol version (validation rule 9). The
+domain-separation tags of the Fiat–Shamir transform mirror the same versioning: each
+proof-system alternative carries its own DST (`cardano/ct/<proof>/v<n>`, see
+[cryptographic primitives](#cryptographic-primitives-and-parameters)), so a proof produced for
+one alternative can never verify under another — cross-version replay is excluded by
+construction, not by convention. Because
 outputs live in the UTXO set across protocol versions, every confidential output
 self-describes its form: outputs created under an older version remain spendable and
 interpretable unchanged after an upgrade.
