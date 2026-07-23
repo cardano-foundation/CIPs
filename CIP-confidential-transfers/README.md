@@ -580,18 +580,26 @@ use cases require the asset type visible anyway.
 
 #### Programmable tokens (CIP-113) and token standards (CIP-26 / CIP-68)
 
-*Upgrade path:* amount-dependent transfer logic needs either amounts revealed to the script
-(defeating confidentiality), **zero-knowledge predicates verified by the script against the
-commitment** (the promising direction), or exclusion of programmable tokens from confidentiality.
-Metadata standards themselves are largely orthogonal: CIP-26 is off-chain, and CIP-68's
-reference-NFT/datum machinery lives at script addresses, which this proposal keeps transparent —
-so token metadata is unaffected by hiding user-held quantities.
+*Upgrade path:* programmable tokens keep the underlying native asset **permanently at
+validator-controlled (script) addresses**, with every transfer mediated by the controlling
+script. Making such tokens confidential would therefore require three things: **(1)**
+confidential outputs at script addresses (see the script-address follow-up under Open
+Questions); **(2)** a script-context extension so validator scripts receive commitments where
+they receive amounts today; and **(3)** **zero-knowledge predicates** verified by the script
+against the commitment — but *only for amount-dependent policies*. Notably, most
+programmable-token policies are **identity- and credential-based** (freeze, blacklist,
+whitelist, authorised-transfer checks) and read addresses and datums, which remain **public** in
+this design — such policies would work over confidential outputs unchanged. Only policies that
+read the quantity itself (transfer limits, proportional fees) need the ZK-predicate machinery.
+Metadata standards are orthogonal: CIP-26 is off-chain, and CIP-68's reference-NFT/datum
+machinery is unaffected by hiding user-held quantities.
 
-*Conflict with this design:* **no structural conflict** for ordinary assets; a genuine, open
-tension for amount-*dependent* policies, since a hidden quantity is by definition invisible to a
-validator script. Restricting v1 confidential outputs to key-locked addresses (§4) deliberately
-avoids creating any on-chain state that future programmable-token logic would have to handle
-retroactively.
+*Conflict with this design:* **none — the two are disjoint by construction in v1.** A
+programmable token cannot leave script control, and this proposal's confidential outputs cannot
+exist at script addresses (§4); each side's rule independently guarantees that no programmable
+token can be shielded and no programmable-token validator ever encounters a hidden quantity.
+There is no interaction surface, no carve-out to implement, and no retroactive state a future
+programmable-token standard would have to accommodate.
 
 *Why descoped:* programmable-token semantics (CIP-113) are themselves still being standardised;
 ZK predicates over commitments should be co-designed with them, not pre-empted here.
