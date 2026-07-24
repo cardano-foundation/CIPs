@@ -251,7 +251,11 @@ credential registration deposits are returned.
   script-hash credentials register identically (the neutrality required in [Keys](#keys)).
 - **Well-formedness.** The registered `P_view` must be a canonical ristretto255 encoding and
   **must not be the identity element** — an identity key would make every shared secret
-  predictable, exposing all amounts sent to the account (cf. validation rule 1).
+  predictable, exposing all amounts sent to the account (cf. validation rule 1). No **proof
+  of possession** of the corresponding `sk_view` is required: viewing keys are never
+  aggregated, so no rogue-key issue arises, and registering a key one cannot use harms only
+  the registrant — confidential outputs sent to that account are simply unreadable (and
+  unspendable) by them.
 - **One live registration.** Registering a credential that already has a live registration is
   invalid: the viewing keypair is immutable at this protocol version. Key rotation is out of
   scope and deferred to a companion proposal — immutability is a validation rule, relaxable
@@ -607,9 +611,12 @@ must never alter the behaviour of existing forms in place.
    observer, per asset, yielding a commitment to the sum of the hidden quantities.
 3. **Attribution.** Which stake credential a confidential output belongs to remains publicly
    determinable from chain data.
-4. **Openings.** The owner of a confidential output recovers its opening `(v, r)` from chain
-   data and the account's `sk_view` alone, with no interaction with the sender and no
-   off-chain state.
+4. **Openings.** The owner of an **honestly constructed** confidential output recovers its
+   opening `(v, r)` from chain data and the account's `sk_view` alone, with no interaction
+   with the sender and no off-chain state. (An output failing the recipient's
+   `C == v·H + r·G` check is not honestly constructed: it is unspendable, its amount unknown
+   even to the recipient, and an auditor sees and flags it as malformed — see
+   [amount transport](#amount-transport).)
 5. **Independent conservation.** Each asset's balancing check is verifiable from the
    transaction alone, without reference to hidden state elsewhere on the chain.
 
