@@ -644,6 +644,50 @@ interpretable unchanged after an upgrade.
 
 ## Rationale: How does this CIP achieve its goals?
 
+### Why native (ledger-level) rather than application-layer
+
+Confidential transfers could instead be built **at the application layer**: a smart-contract
+system holding value whose amounts are ciphertexts or commitments, with proofs verified by
+scripts using existing builtins — no ledger changes, no new primitives in the node. That
+path is legitimate, is being explored on Cardano as a **separate workstream**, and is the
+right answer for some requirements. This proposal is deliberately scoped to the other
+question: **what would confidential transfers look like done natively, with the ledger
+itself as the verifier?** The two approaches are complementary, and the choice between them
+— or the decision to pursue both — belongs to the community. What this section records is
+what the native approach buys, so that comparison can be made explicitly.
+
+- **One standard instead of N applications.** Ledger-level confidentiality means one
+  commitment format, one viewing-key model bound to stake credentials, one derivation path,
+  one auditor integration, one set of test vectors — every wallet, explorer, and audit tool
+  implements it once, and all confidential value is mutually interoperable. Application-layer
+  confidentiality fragments by construction: each system brings its own key model, its own
+  disclosure tooling, its own audit, and value confidential in one is opaque to the others.
+- **Consensus-grade trust.** Here, value conservation over hidden amounts is enforced by the
+  validation rules of every node — the same trust model as the ledger itself, with no
+  additional operator, upgrade key, or contract administrator. An application-layer system
+  inherits the trust model of its contract: its correctness is one codebase's correctness,
+  and its guarantees are bounded by whoever controls that contract's evolution.
+- **The asset itself, not a wrapper.** This proposal hides the amounts of **ADA and native
+  tokens as such**, in the UTXO set, under the assets' own identities. An application-layer
+  system can only hide value *wrapped into it*: ADA itself never becomes confidential, entry
+  and exit are extra visible steps at the wrapper boundary, and the wrapped representation
+  is a distinct asset with distinct semantics (and, for regulated tokens, a distinct
+  compliance story).
+- **A uniform substrate for extensions.** The anticipated extensions — staking and
+  governance participation of hidden ADA, script predicates over amounts — depend on every
+  confidential quantity on the chain sharing one homomorphically-summable commitment format
+  with public attribution (the [guarantees](#guarantees-to-future-proposals)). That property
+  exists only if the format is defined at the ledger; per-application formats cannot be
+  summed, attributed, or reasoned about chain-wide.
+- **The complexity is relocated, not removed, by the alternative.** The dual-mode burden this
+  proposal imposes — new validation rules, certificates, wallet logic coexisting with
+  transparent transfers — is real, acknowledged, and bounded (opt-in, versioned, with
+  normative guarantees fencing what future changes may touch). The application-layer path
+  does not eliminate that complexity; it distributes it across every application that builds
+  its own confidentiality, each with its own audit surface — and history so far (amount
+  confidentiality shipped at the application layer on other chains) shows per-application
+  systems remaining niche wrappers rather than becoming ecosystem-wide standards.
+
 ### Design approach
 
 The scheme is a **commitment-based confidential transaction** design: amounts live inside
