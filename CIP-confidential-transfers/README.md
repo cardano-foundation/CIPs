@@ -766,6 +766,27 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   choice for account-based ledgers, where decryption must operate homomorphically over an
   aggregated balance; the EUTXO model decrypts outputs individually, so that constraint does not
   apply here.
+- **BLS12-381 G1 as the commitment group.** Cardano already carries BLS12-381 (CIP-0381
+  Plutus builtins), and its G1 subgroup is prime-order, so it was considered as the home for
+  the commitments and proofs. Rejected for native validation on five grounds. (1) This scheme
+  uses **no pairings** — BLS12-381's defining feature — so its costs would be paid for
+  nothing: a 381-bit field versus 255-bit means slower group arithmetic on the hottest path
+  in the system (in a native design the verifier is every node at every block, not a
+  prover-side concern). (2) **+50% on every element** (48- versus 32-byte encodings) — every
+  commitment, ephemeral key, and proof element, on top of an already 3–5× transaction-size
+  trade-off. (3) **Cofactor**: G1 sits on a curve with a large cofactor (≈2¹²⁵), so every
+  deserialized point requires an explicit subgroup-membership check — cheap with
+  endomorphism techniques but per-point and a classic implementation hazard — whereas
+  ristretto255 decoding yields canonical prime-order elements by construction, which is what
+  makes validation rule 1 trivially sound and transcript hashing unambiguous. (4) The
+  hardened **Bulletproofs ecosystem is ristretto-native** (the dalek lineage, in production
+  in Monero since 2018); Bulletproofs over G1 would be a bespoke implementation without that
+  audit history. (5) **Field reuse with Ed25519**: ristretto255 shares its field with the
+  signatures every node already verifies at scale, in the node code where this proposal
+  lives. The genuine cost of this choice is deferred, not avoided: the future script track
+  requires new ristretto255 Plutus builtins (see [extensions.md](extensions.md)), whereas
+  BLS commitments could have reused CIP-0381's — an acceptable price for keeping base-layer
+  validation on the smaller, canonical-encoding group.
 - **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
   delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
   Diffie–Hellman transport keeps everything on chain and self-contained.
