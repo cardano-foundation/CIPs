@@ -9,7 +9,7 @@ Implementors: []
 Discussions:
     - Forum thread: https://forum.cardano.org/t/cip-proposal-mobile-deep-link-signing-for-native-dapps-cip-30-extension/154561
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1189
-Solution-To:
+Solution To:
     - CPS-0010
 Created: 2026-05-13
 License: CC-BY-4.0
