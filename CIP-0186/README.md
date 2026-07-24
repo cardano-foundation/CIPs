@@ -115,7 +115,7 @@ capitals.
   (definite-length items, sorted maps, canonical numeric forms). Cardano nodes use this same encoding
   to compute `tx_id`; any deviation will produce a `commit` that does not match the chain's
   transaction identifier and the tx will be rejected at submit time.
-- *tx_body* &mdash; the inner CBOR map of a Conway-era Cardano transaction, extracted per the rule in
+- `tx_body` &mdash; the inner CBOR map of a Conway-era Cardano transaction, extracted per the rule in
   *Specification &sect; Conway transaction body extraction* below.
 
 ### URI format
