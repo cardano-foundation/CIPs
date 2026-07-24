@@ -1,0 +1,15 @@
+{
+  "name": "error_006_decrypt_failed",
+  "spec_section": "Security model (Encryption; Curve25519 low-order key rejection); Appendix A (-7)",
+  "category": "error_response",
+  "input": {
+    "scenario": "payload_ciphertext_byte_flipped",
+    "note": "NaCl box Poly1305 MAC verification fails on any single-bit mutation. Wallet MUST emit -7 and MUST NOT render signing UI."
+  },
+  "expected": {
+    "errorCode": -7,
+    "errorName": "DecryptFailed"
+  },
+  "should_reject": true,
+  "rejection_reason": "decrypt_failed"
+}

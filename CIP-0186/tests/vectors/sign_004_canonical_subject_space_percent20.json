@@ -1,0 +1,19 @@
+{
+  "name": "sign_004_canonical_subject_space_percent20",
+  "spec_section": "Response signing (space MUST encode as %20, never +)",
+  "category": "canonical_subject",
+  "input": {
+    "decoded_params": {
+      "response": "rejected",
+      "errorMessage": "user rejected"
+    },
+    "host": "aegis.example",
+    "scheme": "https",
+    "path": "/cb"
+  },
+  "expected": {
+    "canonical_subject_utf8": "cip30dl-v1\nhttps://aegis.example/cb?errorMessage=user%20rejected&response=rejected"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

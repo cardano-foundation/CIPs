@@ -1,0 +1,13 @@
+{
+  "name": "base64url_001_valid_no_padding",
+  "spec_section": "URI format (base64url strict-decode rule)",
+  "category": "base64url_decode",
+  "input": {
+    "encoded": "AgICAgICAgICAgICAgICAgICAgICAgIC"
+  },
+  "expected": {
+    "bytes_hex": "020202020202020202020202020202020202020202020202"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}
