@@ -1,5 +1,5 @@
 ---
-CIP: "????"
+CIP: TBD
 Title: Handle Provider Registry & Resolver
 Category: Tools
 Status: Proposed
@@ -8,7 +8,7 @@ Authors:
   - Jesse Anderson <papa.goose@koralabs.io>
 Implementors: []
 Discussions:
-  - "CPS-0032 PR: https://github.com/cardano-foundation/CIPs/pull/1199"
+  - CPS-0032: https://github.com/cardano-foundation/CIPs/pull/1199
 Created: 2026-06-01
 License: CC-BY-4.0
 ---
