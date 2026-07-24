@@ -180,6 +180,19 @@ clustering) breaks by design, which risks an anonymity-enhanced-adjacent classif
 **Effort: high** — it sacrifices scan-free decryption (wallets and auditors must trial-DH
 outputs) and requires reworking the viewing-key-to-credential binding; a substantial
 companion despite its modest privacy gain.
+**Interaction with the base proposal (recorded for the future author).** Three specific
+consequences follow from the base design. (1) **Validation rule 12 as written forbids
+stealth outputs outright**: a stealth output's one-time credential is fresh and therefore
+never has a live viewing-key registration — the companion must move registration to the
+*meta-address* and redefine what the ledger checks. (2) **The zero-byte outgoing audit is
+spent**: the base proposal's sender-side auditability works by recomputing the deterministic
+ephemeral scalar and multiplying by the recipient's *publicly registered* key; with hidden
+meta-addresses there is nothing to look up, so sender-side audit requires an additional
+encrypted recipient record per output (the Zcash `outCiphertext` pattern, ≈80 bytes) — the
+structural dividend of public addresses is paid back at the moment they are hidden.
+(3) **Deterministic ephemeral derivation itself remains compatible and desirable** (it is
+sender-side only and keeps the RNG-hardening property); nothing in the base proposal's
+recent amendments forecloses this companion.
 
 ## 10. Asset-type blinding
 
