@@ -678,6 +678,18 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   **ristretto255** (RFC 9496) applies a standard construction over Curve25519 that removes the
   cofactor, giving a clean prime-order group with a unique 32-byte encoding per element, ~128-bit
   security, and reuse of the same well-studied field Cardano already uses for Ed25519.
+  One consequence is a deliberate **cross-curve boundary with Cardano's SNARK tooling**, which
+  is built on BLS12-381 (Groth16 via [CIP-0381]): a ristretto255 commitment cannot be
+  represented efficiently inside a BLS12-381 arithmetic circuit (non-native field arithmetic).
+  This is accepted because the amount-predicates anticipated by future extensions ("hidden
+  amount ≥ X", proportional relations) are **linear relations over commitments** — the native
+  repertoire of sigma protocols and shifted-commitment range statements, proven and verified
+  *directly in the commitment group* with no circuit anywhere; the ecosystem dependency this
+  creates is ristretto255 script builtins, not a SNARK framework (see
+  [extensions.md](extensions.md)). The one composition this boundary genuinely rules out —
+  a *single* proof spanning an amount-predicate and a large BLS-side circuit (e.g. a
+  credential proof) — is served by the standard two-proofs-shared-public-input pattern
+  instead, at the cost of single-proof aesthetics only.
 - **Pedersen commitments.** They are simultaneously hiding, binding, additively homomorphic, and
   directly compatible with efficient range proofs — the exact combination needed to hide amounts
   while keeping conservation checkable. A **single value generator `H` serves all assets**:
@@ -1168,6 +1180,7 @@ parameters (see [protocol parameters](#protocol-parameters)), and mempool pre-ch
 
 [rfc9496]: https://www.rfc-editor.org/rfc/rfc9496
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
+[CIP-0381]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0381
 [crypsinous]: https://eprint.iacr.org/2018/1132
 [got]: https://eprint.iacr.org/2018/1105
 [conf-assets]: https://blockstream.com/bitcoin17-final41.pdf
