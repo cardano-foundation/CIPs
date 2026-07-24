@@ -1,0 +1,1312 @@
+---
+CIP: "?"
+Title: Native Confidential Transfers
+Category: Ledger
+Status: Proposed
+Authors:
+    - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
+Implementors: []
+Discussions:
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1233
+Created: 2026-07-22
+License: CC-BY-4.0
+---
+
+## Abstract
+
+This proposal introduces **native confidential transfers** for Cardano: the ability to send
+ADA and native tokens so that the transferred **amounts** are hidden on chain, while the ledger
+can still verify — without decrypting anything — that no value was created or destroyed. Amounts
+are carried as additively — i.e. **partially** — homomorphic commitments and accompanied by
+zero-knowledge proofs that they are non-negative and that value is conserved. Each account holds a single **confidential viewing key**
+that lets its owner (and anyone the owner discloses it to, such as an auditor) recover the hidden
+amounts addressed to it. Sender and recipient addresses, the transaction graph, fees, and the
+*identity* of native assets remain public; only *quantities* are hidden. The scheme is designed
+to fit the extended UTXO (EUTXO) model directly and to rely on a small set of well-established
+cryptographic primitives with no trusted setup.
+
+This CIP describes a purely **native** (ledger-level) implementation: confidentiality is provided
+by the ledger's own validation rules. It does **not** rely on smart contracts, an escrow, a mixer,
+or any off-ledger service. Smart-contract-based approaches to amount privacy or selective
+disclosure may be possible, but they are explicitly out of scope here.
+
+## Motivation: Why is this CIP necessary?
+
+On Cardano today, every output's ADA and native-token amount is public. This transparency is
+unsuitable for many legitimate uses — payroll, treasury operations, commercial invoicing,
+business-to-business settlement, and any activity where revealing exact balances and payment
+amounts to the entire world is undesirable — yet those users still need a verifiable,
+non-custodial ledger and the ability to satisfy auditors and tax authorities.
+
+Put plainly: some entities need to transact **without the rest of the world learning the details
+of their financial activity — above all, how much they transact and hold**. The aim of this
+proposal is therefore **confidentiality from the general public, not from oversight**: amounts
+are hidden from everyone *except* the parties the owner deliberately authorises.
+A user can, of their own will and choosing, designate **one or more auditors** — a tax
+authority, an accountant, or tax-reporting software — by sharing the account's single viewing
+(decryption) key with them, giving those parties complete read access to the account's amounts
+while the rest of the world sees nothing. **Pure privacy or anonymity transfers are explicitly
+not the goal of this proposal**: designs that hide identities or break the transaction graph
+(mixers, shielded pools, and similar) address a different need and belong to other proposals or
+solutions. This CIP targets the common commercial reality in which confidentiality and
+auditability must coexist.
+
+There is currently no native mechanism on the Cardano ledger to hide transfer amounts. Existing
+cryptographic building blocks in the ecosystem target proof verification inside scripts and do
+not provide amount confidentiality at the ledger level. As a result, amount privacy is either
+unavailable or pushed entirely off the base ledger.
+
+This CIP addresses that gap at the **ledger** level: it defines how confidential amounts are
+represented in transactions, what proofs a transaction must carry, and what validators must
+check, so that:
+
+- amounts of **ADA and native tokens** can be hidden;
+- the ledger remains **publicly and cheaply verifiable** (no validator ever decrypts);
+- **no value can be created or destroyed** by hiding it;
+- amounts can be **selectively disclosed** to an auditor or tax authority via a single per-account
+  key, without weakening confidentiality for everyone else.
+
+Confidentiality is opt-in per output: transactions that do not use confidential outputs are
+entirely unaffected.
+
+## Specification
+
+> **Scope.** This proposal specifies amount confidentiality for ADA and native tokens with the
+> asset *type* (policy id and asset name) remaining public. Hiding the asset type, hiding
+> sender/recipient identity, confidential outputs at Plutus script addresses, and interaction with
+> programmable tokens are **out of scope** and discussed under [Open Questions](#open-questions).
+
+### Overview
+
+A **confidential output** replaces the cleartext amount of each asset it holds with a homomorphic
+**commitment** to that amount, plus a small piece of data that lets the recipient recover the
+amount. A transaction that produces or consumes confidential outputs carries a **confidential
+proof** demonstrating, in zero knowledge, that:
+
+1. every hidden amount is a valid, non-negative quantity within range, and
+2. for **each asset independently**, the hidden inputs, hidden outputs, public movements
+   (fees, mint/burn, and any transparent inputs/outputs) balance exactly.
+
+Spending a confidential output is authorised exactly as today — by the address's normal
+witness rules (a payment-key signature, or satisfaction of a native script).
+Amount confidentiality is orthogonal to spend authorisation.
+
+### Cryptographic primitives and parameters
+
+The scheme uses a deliberately small set of primitives, all over a single prime-order group.
+
+- **Group.** The prime-order group **ristretto255** as defined in
+  [RFC 9496][rfc9496], with its canonical 32-byte encoding. Group elements ("points") and scalars
+  are 32 bytes. Let `ℓ` denote the (prime) group order. Two fixed, independent generators are
+  used: `G` (the standard generator) and `H`, derived by hashing a fixed domain-separation string
+  to a group element so that the discrete-log relation between `G` and `H` is unknown to everyone.
+  A **prime-order** group is required (see [Rationale](#why-a-prime-order-group-ristretto255)):
+  the raw Curve25519 group has cofactor 8 (its order is `8·ℓ`), which admits small-subgroup
+  elements and non-canonical encodings that would break the commitment and proof machinery.
+  ristretto255 removes the cofactor, yielding a clean prime-order group with a unique encoding per
+  element, while reusing the same well-studied field as Cardano's existing Ed25519.
+- **Pedersen commitment.** A commitment to a scalar value `v` with blinding `r` is
+  `C = v·H + r·G`. It is perfectly hiding (reveals nothing about `v`) and computationally binding
+  (the committer cannot later open it to a different value). It is additively homomorphic:
+  `C(v₁,r₁) + C(v₂,r₂) = C(v₁+v₂, r₁+r₂)`. This homomorphism is deliberately **partial**
+  (additive only) — the same class as *partially homomorphic encryption* (PHE): exactly one
+  operation, addition (and hence subtraction), is available on hidden values, an unlimited
+  number of times. That is precisely what value conservation requires; the scheme is *not*
+  fully homomorphic and does not need to be.
+- **Range proof.** A **Bulletproofs** [BBBPWM18][bulletproofs] proof that a committed value lies
+  in `[0, 2⁶⁴)`, with no trusted setup and logarithmic proof size. Multiple commitments are
+  aggregated into a single proof per transaction.
+- **Amount transport (Diffie–Hellman).** A per-output ephemeral key and a Diffie–Hellman shared
+  secret let the recipient recover the amount and derive its blinding (see [amount transport](#amount-transport)).
+- **Balancing proof.** A **Schnorr** signature proving knowledge of the *excess* blinding of a
+  commitment to zero value, establishing value conservation per asset (see [value conservation](#value-conservation)).
+- **Non-interactivity.** All proofs are made non-interactive with the **Fiat–Shamir** transform,
+  using a cryptographic hash and a **domain-separation tag (DST)** bound to the transaction
+  context. DSTs are namespaced and versioned: every tag defined by this proposal has the form
+  `cardano/ct/<proof>/v<n>`, where `<n>` equals the CDDL alternative tag of the structure being
+  proven — concretely `cardano/ct/range/v0` for the aggregated range proof and
+  `cardano/ct/balancing/v0` for the per-asset excess signatures. A proof therefore verifies only
+  in its intended context and under its intended version: the same bytes can never validate as a
+  different proof kind, under a different proof-system version, or in a protocol that reuses
+  these primitives. Companion proposals MUST NOT reuse the tags defined here; each allocates its
+  own under a distinct path segment (for example `cardano/ct/predicate/v0` for a future
+  script-predicate proof). The exact transcript byte encoding (tag placement, field ordering,
+  serialisation of the bound transaction context) is part of the final specification and its
+  test vectors (see Path to Active).
+
+No trusted setup is required by any of these primitives.
+
+### Keys
+
+Confidentiality is keyed at the level of an **account**, defined here as a **single stake address
+(stake credential)** — not an individual payment address. All payment addresses that share the
+same stake credential share **one** confidential viewing keypair `(sk_view, P_view)` with
+`P_view = sk_view·G`. This keeps key management proportional to accounts rather than to the many
+payment addresses an account may use.
+
+- `sk_view` lets the account owner recover the amount of **every** confidential output addressed
+  to any payment address of that account.
+- `P_view` is published and bound to the stake credential by an on-chain **registration
+  certificate** (see [viewing-key registration](#viewing-key-registration)), so senders can
+  address confidential outputs to the account and a disclosed key can be verified against the
+  registered value. The mechanism works uniformly for **any** stake credential type — key hash
+  or script hash — and never assumes a single stake signing key: authorisation follows the
+  credential's standard witness rules, so script-controlled accounts (e.g. multisig treasuries)
+  bind a viewing key exactly as key-controlled accounts do.
+- Disclosing `sk_view` grants **read** access only and never grants spend authority, which
+  remains with the separate spending key(s). The account has exactly **one** viewing key; its
+  owner may, at their own discretion, share it with **one or more auditors** — each receives the
+  same key and the same complete read access.
+
+**Wallet key derivation.** Wallets are expected to derive `sk_view` **deterministically from the
+wallet's existing seed**, using a **new, dedicated derivation path** in the hierarchical-
+deterministic scheme already used on Cardano (in the spirit of [CIP-1852], e.g. a new role or
+purpose index reserved for confidential viewing keys). The viewing key must never be a reused
+signing key: it is a Ristretto255 scalar on its own path, cleanly separated from payment and
+stake keys. The path MUST terminate in a hardened **key index**; this proposal uses index `0`
+exclusively. Successive indices are reserved for future viewing keys of the same account
+(key rotation, deferred to a companion proposal), so that a wallet restored from its mnemonic
+recovers every viewing key the account has ever used. An unindexed path would make rotation
+impossible without a new seed, and is therefore ruled out now even though this proposal
+itself never rotates. Deriving it from the existing seed means: no new seed or backup is required,
+restoring a wallet from its mnemonic also restores the viewing capability (and therefore the
+ability to re-read all of the account's confidential amounts from chain data), and **existing
+accounts can adopt confidential transfers without creating a new wallet or account**.
+
+**Proposed path** (pending wallet-ecosystem review — see Open Questions):
+
+```
+m / 1852' / 1815' / account' / 6 / index'
+```
+
+i.e. a new **role `6` — "confidential viewing key"** — under [CIP-1852], following exactly
+how staking keys (role `2`, CIP-0011) and governance keys (roles `3`–`5`, CIP-0105) were
+introduced; role `6` is the next unallocated value, and ratification of this proposal should
+add the corresponding row to CIP-1852's role table. The `index'` level is the hardened key
+index above, `0'` in this proposal. Because `sk_view` is a ristretto255 scalar rather than
+an Ed25519 key, the final derivation step maps the derived key material to a scalar —
+`sk_view = H(dst || key_material) mod ℓ` under a dedicated domain-separation tag — so soft
+(public-key) derivation does not apply to viewing keys in any case, and the hardened index
+level costs nothing while maximising isolation between successive keys. The exact
+key-material-to-scalar mapping and its test vectors are part of the final specification
+(see Path to Active).
+
+**Script-controlled accounts.** The seed derivation above applies to key-based accounts. An
+account whose stake credential is a **script** (e.g. a multisig treasury) has no single
+wallet seed to derive from: its viewing keypair is generated by the controlling parties and
+the secret is **shared among them** — every co-signer needs `sk_view` anyway, both to read
+the treasury's amounts and to recover the blindings required to construct a spending
+transaction (the remaining co-signers then only add their witnesses). This mirrors the
+trust already inherent in such an account: whoever can co-authorise spending can necessarily
+see what is being spent. How the parties generate and distribute the scalar (a designated
+party, deterministic derivation from a shared secret, or any other convention) is an
+operational choice outside this specification; the on-chain binding is the same
+registration certificate, authorised by the script's own witness rules.
+
+### Viewing-key registration
+
+An account publishes its viewing public key with an on-chain **registration certificate**,
+following the ledger's existing registration pattern (stake, pool, and DRep registration): a
+certificate authorised by the credential's own witness rules, carrying a refundable deposit.
+
+```cddl
+; Certificate tag numbers are illustrative; final indices are assigned on integration
+; with the transaction CDDL, like all field indices in this proposal.
+
+; Registration: bind P_view to the account (stake credential).
+viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point)
+
+; Deregistration: remove the binding and refund the deposit.
+viewing_key_unreg_cert = (T+1, stake_credential, coin)
+
+; Both extend the ledger's existing certificate union:
+certificate =
+  [  stake_registration
+  // ...existing alternatives...
+  // viewing_key_reg_cert
+  // viewing_key_unreg_cert
+  ]
+```
+
+A **registration certificate** includes:
+
+- the **stake credential** being registered — a key hash or a script hash;
+- the **deposit** paid: the certificate is invalid unless it equals the current value of
+  `viewingKeyDeposit`; the paid amount is recorded with the registry entry so that the
+  eventual refund matches it even if the parameter changes later;
+- **`P_view`** — the account's confidential viewing public key, a ristretto255 point.
+
+A **deregistration certificate** includes:
+
+- the **stake credential** being deregistered;
+- the **refund** claimed: the certificate is invalid unless it equals the deposit recorded
+  at registration.
+
+Deregistration takes effect immediately upon the chain accepting the certificate, and the
+deposit is returned as part of the transaction that submits it — the same way stake
+credential registration deposits are returned.
+
+- **Authorisation.** The certificate is authorised by the stake credential's standard witness
+  rules — a signature for a key hash, script satisfaction for a script hash. Key-hash and
+  script-hash credentials register identically (the neutrality required in [Keys](#keys)).
+- **Well-formedness.** The registered `P_view` must be a canonical ristretto255 encoding and
+  **must not be the identity element** — an identity key would make every shared secret
+  predictable, exposing all amounts sent to the account (cf. validation rule 1). No **proof
+  of possession** of the corresponding `sk_view` is required: viewing keys are never
+  aggregated, so no rogue-key issue arises, and registering a key one cannot use harms only
+  the registrant — confidential outputs sent to that account are simply unreadable (and
+  unspendable) by them.
+- **One live registration.** Registering a credential that already has a live registration is
+  invalid: the viewing keypair is immutable at this protocol version. Key rotation is out of
+  scope and deferred to a companion proposal — immutability is a validation rule, relaxable
+  from a later protocol version onwards (see [versioning](#versioning)), and the derivation
+  path above already reserves successive key indices for that purpose.
+- **Deposit.** Registration locks the refundable deposit described above, sized by the
+  `viewingKeyDeposit` protocol parameter (see [protocol parameters](#protocol-parameters)).
+- **Deregistration is not key destruction.** The certificate is a **directory entry, not a
+  key store**: deregistration stops the account from receiving new confidential outputs
+  (validation rule 12) but affects nothing already received — existing confidential outputs
+  remain readable and spendable, because keys derive from the wallet seed, not from the
+  certificate.
+- **Independence.** Viewing-key registration neither requires nor interacts with stake
+  registration; the two lifecycles are separate.
+
+Receiving confidential value is therefore **opt-in per account, enforced by consensus**
+(validation rule 12). A sender's wallet resolves the recipient's stake credential to its
+registered `P_view` — the same class of query wallets already run for delegation state. If
+no live registration exists, a confidential output to that account cannot be constructed;
+wallets fall back to a transparent send with the user's consent. Because the account concept
+is keyed to the stake credential, outputs at **enterprise addresses** (which have no stake
+part) can never be confidential in this proposal.
+
+### Confidential value representation
+
+An asset is identified publicly by `(policy_id, asset_name)`; ADA (lovelace) is treated as a
+reserved, distinguished asset. A **confidential value** reveals *which* assets are present but
+hides each asset's *quantity* as a Pedersen commitment:
+
+- ADA quantity `v` → `C = v·H + r·G`.
+- Each native-asset quantity `q` under `(policy_id, asset_name)` → `C = q·H + r·G`.
+
+[Conservation](#value-conservation) and [range proofs](#range-proofs) are applied **per asset**.
+
+An output is either fully **transparent** (exactly as today) or fully **confidential**; the two
+forms do not mix within a single output. Every confidential output **must** include an ADA
+commitment, whose quantity is subject to the minimum-ADA rule enforced in zero knowledge (see [range proofs](#range-proofs)).
+In this proposal, confidential outputs are permitted at **key-locked (payment-key) addresses
+and at native-script addresses** — multisig and timelocks, which enforce witness and time
+conditions without ever inspecting amounts, and therefore need no new cryptography (this is
+what lets corporate multisig treasuries hold and pay confidential value). Outputs at
+**Plutus script addresses** cannot be confidential (see Open Questions). Every confidential
+output's address must carry a **stake credential** — already implied by validation rule 12,
+which requires that credential to hold a live viewing-key registration.
+
+### Amount transport
+
+To spend a confidential output, its owner must know the hidden amount **and** its blinding `r`.
+Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciphertext:
+
+1. The sender derives a per-output ephemeral scalar `e` **deterministically from its own
+   viewing secret**:
+
+   ```
+   e = KDF("cardano/ct/outgoing/v0", sk_view(sender),
+           outpoint of the transaction's first input, output index)
+   ```
+
+   and includes the ephemeral public key `E = e·G` in the output. Conforming wallets MUST
+   derive `e` this way rather than sampling it at random: the derivation is what makes the
+   sender's **outgoing** payments auditable (see
+   [auditing](#auditing-and-selective-disclosure)), and — because a spent outpoint is unique
+   in the chain's history — it guarantees that no two outputs ever share an ephemeral
+   scalar, even across transactions, eliminating both keystream reuse and any dependence on
+   run-time randomness (in the spirit of deterministic nonces, RFC 6979). To everyone
+   without the sender's `sk_view`, a correctly derived `E` is indistinguishable from a
+   random one. `E` must not be the identity element — a predictable shared secret would
+   expose the amounts — and validators reject it (see
+   [validation rules](#validation-rules-edge-cases-and-soundness), rule 1). The derivation
+   itself cannot be checked by validators (it involves the sender's secret); a
+   non-conforming sender degrades only *its own* account's outgoing auditability, and
+   detectably so (see [auditing](#auditing-and-selective-disclosure)).
+2. The shared secret is `s = e·P_view` (computed by the sender) `= sk_view·E` (computed by the
+   recipient) — the same group element.
+3. For each asset in the output, a key-derivation function — domain-separated by the **asset
+   identifier, the outpoint of the transaction's first input, and the output's position
+   within the transaction** (so that no two derivations ever coincide, within a transaction
+   or across transactions) — derives from `s` the blinding `r` and an amount-encryption
+   keystream. The amount itself cannot be *derived* from `s` (it is chosen freely by the
+   sender): it is stored in the output as an 8-byte **masked amount** `v ⊕ keystream`.
+4. The recipient recomputes `s` from `E` using `sk_view`, derives `r` and the keystream, recovers
+   `v` from the stored masked amount, and **must verify `C == v·H + r·G`** before accepting the
+   payment. If the check fails, the output was not honestly constructed for this recipient and
+   must be treated as unspendable.
+
+Because the blinding is recomputable by whoever holds `sk_view`, the recipient can later spend
+the output (construct the balancing proof of [value conservation](#value-conservation)) **without any interaction** with the original
+sender. An auditor given `sk_view` recovers all amounts for the account by the same computation.
+Note that the **sender** also retains knowledge of `(v, r)` for outputs it creates — inherent to
+Diffie–Hellman transport — but this grants no spend authority, which requires the recipient's
+spending key.
+
+### Range proofs
+
+Over a prime-order group, a "negative" amount is indistinguishable from a very large scalar that
+wraps modulo `ℓ`; without a bound, a malicious sender could commit to a negative quantity and
+mint value. Therefore **every** committed quantity in **every** confidential output carries a
+range proof that it lies in `[0, 2⁶⁴)`:
+
+- `2⁶⁴` covers the full range of ADA (max supply is 45 billion ADA = 4.5 × 10¹⁶ lovelace, below
+  `2⁵⁶`) and of native-asset quantities, which fit an unsigned 64-bit integer.
+- All range proofs in a transaction are **aggregated into a single Bulletproofs proof**.
+- Where the ledger requires a minimum ADA quantity for an output, the requirement `v ≥ min` is
+  proved by additionally range-proving the **shifted commitment** `C − min·H` — a commitment to
+  `v − min` under the same blinding, computable by anyone from the public `min` — at the cost of
+  one extra range statement per confidential output. The requirement is thus enforced without
+  revealing `v`.
+
+### Value conservation
+
+Cardano requires that value is conserved: for each asset, the sum of inputs equals the sum of
+outputs plus any public movement of that asset. For confidential amounts this is checked
+**homomorphically, per asset**, without revealing any quantity.
+
+For a given asset, let the confidential inputs have commitments `Cᵢⁿ` and the confidential
+outputs `Cᵒᵘᵗ`, and let `Δ` be the **public** net movement of that asset (for ADA this includes
+the fee; for native assets it includes any mint or burn and any transparent inputs/outputs of
+that asset). A valid transaction satisfies:
+
+```
+Σ Cᵢⁿ  −  Σ Cᵒᵘᵗ  −  Δ·H   ==   excess·G ,      excess = Σ rᵢⁿ − Σ rᵒᵘᵗ
+```
+
+Because conservation of the hidden quantities forces the `H` (value) components to cancel
+exactly, the left-hand side is a commitment to **zero value** — a pure multiple of `G`. The
+transaction proves knowledge of `excess` with a **Schnorr signature** under the public key
+`excess·G` (the "balancing signature"). Altering any hidden quantity makes the `H` component
+fail to cancel, so the equation — and hence verification — fails. Fees remain public and enter
+as part of `Δ` for ADA. Each asset has its own balancing check; assets cannot be converted into
+one another.
+
+### Bridging transparent and confidential amounts (shield / unshield)
+
+Confidential amounts must be backed one-to-one by real value. **Shielding** (making transparent
+value confidential) and **unshielding** (revealing confidential value back to transparent) are
+not special operations: they are ordinary transactions that mix transparent and confidential
+inputs and outputs. All transparent components are public, so the net public movement `Δ` of
+each asset (see [value conservation](#value-conservation)) is computed directly from the transaction's public data — transparent inputs and
+outputs, the fee, and any mint or burn — and the per-asset balancing equation then enforces that
+the confidential side absorbed or released **exactly** that amount. No separate opening proofs
+are needed: hidden amounts that do not match the public legs cannot satisfy the balancing
+equation without a negative hidden output, which the range proofs forbid.
+
+The total confidential supply of each asset equals (total shielded − total unshielded) — a
+public quantity — so the confidential pool is conservation-checked against transparent value at
+every step, and no asset can be minted by hiding it. The transparent legs of such transactions
+are the only places where amounts entering or leaving the confidential domain are revealed.
+
+### Staking, rewards, and governance
+
+Cardano's stake distribution — used for leader election, rewards, and governance voting power —
+is computed from publicly visible ADA amounts. A hidden amount cannot contribute to that
+computation without revealing information about itself. In this proposal, therefore:
+
+- **Confidential ADA does not contribute to stake.** ADA held in confidential outputs is
+  excluded from the stake of the associated stake credential, from reward calculation, and from
+  governance voting power — including the ADA-weight of any **DRep vote delegation** and of SPO
+  votes — for as long as it remains confidential.
+- **Unshielding restores participation.** Once ADA is returned to a transparent output, it
+  counts toward stake, rewards, and voting power exactly as today.
+
+This is an explicit, accepted opportunity cost of confidentiality. Contributing hidden amounts
+to the stake distribution in zero knowledge is substantially more complex and is left as future
+work (see Open Questions).
+
+### Transaction and output structure (CDDL)
+
+The following CDDL is **illustrative** and describes the additional structures at a design level;
+concrete field indices and integration with the existing transaction CDDL are to be finalised
+during implementation. The fragments in this document (including the certificates of
+[viewing-key registration](#viewing-key-registration)) are aggregated into a single draft
+schema file at [`cddl/confidential-transfers.cddl`](cddl/confidential-transfers.cddl), which
+becomes the normative, machine-validatable schema once indices are finalised (see Path to
+Active).
+
+```cddl
+; A canonically-encoded ristretto255 point / scalar, 32 bytes each (RFC 9496).
+ristretto_point = bytes .size 32
+scalar32        = bytes .size 32
+
+commitment      = ristretto_point      ; Pedersen commitment C = v·H + r·G
+masked_amount   = bytes .size 8        ; v XOR keystream; recoverable with sk_view (see Amount transport)
+
+; A hidden quantity, as a tagged alternative (cf. Babbage's datum_option).
+; Alternative 0 = Pedersen commitment + DH masked amount (this proposal).
+; Future commitment schemes — per-asset generators for asset-type blinding,
+; post-quantum commitments — are added as new alternatives under a later
+; protocol version; an output in the UTXO set therefore always self-describes
+; which scheme its hidden quantities use.
+confidential_asset = [ 0, commitment, masked_amount ]
+
+; Confidential value: which assets are present is public; every quantity is hidden.
+; The lovelace entry (key 0) is mandatory: every output must satisfy minimum-ADA
+; (see Range proofs).
+confidential_value =
+  { 0   : confidential_asset                                       ; lovelace
+  , ? 1 : { policy_id => { asset_name => confidential_asset } }    ; native assets
+  }
+
+; A confidential output, as a map with numbered keys (cf. the Babbage output
+; format): later proposals extend it by adding new optional keys, without
+; disturbing keys 0-2. `address` is the ledger's existing address type and is
+; deliberately unrestricted here — the no-Plutus-addresses rule (see
+; Confidential value representation) is a validation rule, which a later
+; proposal may relax, not a data-format restriction.
+confidential_output =
+  { 0 : address
+  , 1 : confidential_value
+  , 2 : ristretto_point        ; ephemeral key E = e·G (see Amount transport)
+  }
+
+; A Schnorr signature (R, s) proving knowledge of the per-asset excess (see Value conservation).
+schnorr_sig = [ ristretto_point, scalar32 ]
+
+; Proof components are tagged alternatives, so the proof system can evolve
+; independently of the data it proves (see Versioning).
+range_proof     = [ 0, bytes ]                         ; 0 = aggregated Bulletproofs
+balancing_proof = [ 0, { asset_ref => schnorr_sig } ]  ; 0 = per-asset Schnorr excess
+
+; Per-transaction confidential proof, carried in the witness set.
+; Shield/unshield need no dedicated structures: the public movement of each asset is
+; computed from the transaction's public data and enters the balancing check (see Bridging transparent and confidential amounts).
+confidential_proof =
+  { 0 : range_proof
+  , 1 : balancing_proof
+  }
+
+policy_id  = bytes .size 28
+asset_name = bytes .size (0..32)
+asset_ref  = 0 / [ policy_id, asset_name ]     ; 0 denotes ADA (lovelace)
+```
+
+### Validation rules, edge cases and soundness
+
+A transaction containing confidential outputs is **invalid** unless **all** of the following
+hold. These rules are what make the construction sound against value creation or theft.
+
+1. **Well-formed encodings.** Every commitment, ephemeral key, and proof element is a *canonical*
+   ristretto255 encoding (the canonical encoding of ristretto255 makes this unambiguous);
+   non-canonical encodings are rejected. The **ephemeral key must not be the identity element** —
+   an identity `E` yields a predictable shared secret, exposing the output's amounts to anyone.
+2. **Range (no negative, no overflow).** The aggregated range proof verifies that **every**
+   committed quantity is in `[0, 2⁶⁴)`. This is what prevents a "negative amount" (a scalar near
+   `ℓ`) from being used to inflate a balance, and prevents per-amount overflow. Because each
+   amount is `< 2⁶⁴` and the number of committed values per transaction is bounded by
+   `maxConfidentialCommitmentsPerTx` (see [protocol parameters](#protocol-parameters)), no sum
+   can wrap modulo `ℓ` (`ℓ ≈ 2²⁵²`).
+3. **Per-asset conservation (balance is preserved, nothing is created).** For **each** asset the
+   balancing equation of [value conservation](#value-conservation) holds and its Schnorr excess signature verifies. This guarantees, for
+   every asset, that hidden outputs plus public movements equal hidden inputs — i.e. the net
+   created value is exactly zero. Combined with rule 2, no value can be created and no negative
+   output can exist.
+4. **Minimum quantity.** For any output subject to minimum-ADA, the aggregated range proof also
+   covers the shifted commitment `C − min·H` (see [range proofs](#range-proofs)), proving `v ≥ min`; outputs that cannot prove
+   this are rejected. This preserves anti-dust and related economic rules despite hidden amounts.
+5. **Transparent–confidential bridging.** The public net movement `Δ` of each asset is computed
+   from the transaction's public data only (transparent inputs and outputs, fee, mint/burn) and
+   enters that asset's balancing equation (see [value conservation](#value-conservation)). Hidden amounts that do not match the public legs
+   cannot balance without a negative hidden output, which rule 2 forbids — so no separate
+   opening proofs are required for shielding or unshielding (see [shield / unshield](#bridging-transparent-and-confidential-amounts-shield--unshield)).
+6. **Spend authorisation unchanged.** Consuming a confidential output still requires the normal
+   witness(es) for its address — payment-key signature(s), or satisfaction of its native script; confidential data is bound into the transaction so it cannot
+   be reattached to a different transaction (replay/malleability protection via the
+   domain-separated Fiat–Shamir context).
+7. **Determinism.** Verification is deterministic across all validators; any randomness used in
+   batch verification is derived deterministically (via Fiat–Shamir) from the transaction, never
+   from a local source, so that all nodes reach identical accept/reject decisions.
+8. **Zero-value and empty outputs.** A confidential output committing to zero of every asset is
+   subject to the same minimum-quantity rule as any other output (rule 4) and is otherwise a
+   valid, well-formed commitment.
+9. **Unknown forms rejected.** A confidential structure carrying an alternative tag or map key
+   not defined at the current protocol version is invalid. Rejecting unknown forms today is what
+   allows a later protocol version to activate new tags and keys (see [versioning](#versioning))
+   without any ambiguity about how older validators treat them.
+10. **No Plutus execution alongside confidential components.** A transaction that contains
+    confidential inputs or outputs must not execute Plutus scripts (for any purpose — spending,
+    minting, or otherwise). Current script contexts represent every output with a cleartext
+    amount and cannot represent a hidden quantity, and a script must never validate blind to
+    parts of the transaction it is checking. Consequently, bridging (shield/unshield) is always
+    a separate transaction from any script interaction, and mint/burn of Plutus-policy assets
+    happens in a separate transaction from confidential transfers of them. Native scripts are
+    unaffected throughout: they enforce signature and time conditions without inspecting
+    amounts, and confidential outputs at native-script addresses are admitted by this proposal
+    (see [confidential value representation](#confidential-value-representation)). Defining a
+    script-context representation of hidden quantities is deferred to a future proposal (see
+    Open Questions). Like every rule in this specification, this restriction is bound to the
+    protocol version: a later proposal that defines such a representation may relax it from a
+    given protocol version onwards, exactly as new structure tags and map keys are activated
+    (see [versioning](#versioning)) — never retroactively, and never ambiguously for older
+    transactions.
+11. **Bounded verification work.** The number of committed values in a transaction does not
+    exceed `maxConfidentialCommitmentsPerTx`, and their total across a block does not exceed
+    `maxConfidentialCommitmentsPerBlock` — see [protocol parameters](#protocol-parameters) for
+    why this bound is explicit rather than inherited from size limits.
+12. **Registered recipients only.** Every confidential output is addressed to a payment
+    address whose stake credential has a **live viewing-key registration** (see
+    [viewing-key registration](#viewing-key-registration)); confidential outputs to
+    unregistered credentials are invalid. Certificates in the same transaction take effect
+    in order, before outputs are checked — so an account can be registered and receive its
+    first confidential output in a single transaction, matching the existing
+    register-and-delegate pattern. Note this applies to the sender's confidential change as
+    well: a sender wanting confidential change must itself be registered.
+
+### Protocol parameters
+
+For transparent transactions, byte size is a good proxy for validation work, so the existing
+size limits (`maxTxSize`, `maxBlockBodySize`) bound both at once. For confidential
+transactions it is not: an aggregated range proof grows only **logarithmically in size** with
+the number of committed values while its verification time grows **linearly** (see
+Trade-offs), so a transaction can be small in bytes yet expensive to verify. Verification
+work must therefore be bounded explicitly — for the same reason Plutus execution has its own
+budget (`maxTxExecutionUnits`, `maxBlockExecutionUnits`) alongside the size limits rather
+than relying on them.
+
+This proposal accordingly introduces two **updatable protocol parameters**, denominated in
+what actually drives verification cost — committed values (range statements), not outputs or
+bytes:
+
+- `maxConfidentialCommitmentsPerTx` — the maximum number of committed values in a single
+  transaction, including the shifted minimum-ADA commitments of the
+  [range proofs](#range-proofs) section (enforced by validation rule 11);
+- `maxConfidentialCommitmentsPerBlock` — the corresponding per-block budget, protecting the
+  block-validation deadline within the slot.
+
+As protocol parameters rather than constants baked into the validation rules, both take
+their initial values from the measured benchmarks required under Path to Active and can
+thereafter be adjusted through the standard parameter-update governance process — no hard
+fork — as hardware, batch verification, and adoption evolve.
+
+One further parameter is economic rather than computational:
+
+- `viewingKeyDeposit` — the refundable deposit locked by a viewing-key registration
+  certificate (see [viewing-key registration](#viewing-key-registration)), initialised to
+  the value of `stakeAddressDeposit` (currently 2 ADA). It prices the permanent registry
+  entry and deters spam registrations: the entry is the same state class as a stake
+  registration and is priced identically, so that the viewing-key registry is never the
+  cheapest permanent state in the system. It is a dedicated parameter rather than a reuse
+  of `stakeAddressDeposit` so that governance can tune the two independently later.
+
+### Guarantees to future proposals
+
+This proposal is designed to be built upon. The following properties of the confidential
+transfer layer are **normative guarantees**, on par with the validation rules above: companion
+proposals may rely on them, and any future amendment to this specification that would break
+one of them is a **breaking change** — it must be introduced as a new versioned form (a new
+alternative tag or map key under a later protocol version, see [versioning](#versioning)) and
+must never alter the behaviour of existing forms in place.
+
+1. **Representation.** Every hidden quantity is a Pedersen commitment over ristretto255 under
+   the fixed generators `G` and `H`, and the commitment itself is stored in the clear in the
+   output — never hashed, truncated, or otherwise made unavailable to chain observers.
+2. **Summability.** The commitments of any set of confidential outputs can be added by any
+   observer, per asset, yielding a commitment to the sum of the hidden quantities.
+3. **Attribution.** Which stake credential a confidential output belongs to remains publicly
+   determinable from chain data.
+4. **Openings.** The owner of an **honestly constructed** confidential output recovers its
+   opening `(v, r)` from chain data and the account's `sk_view` alone, with no interaction
+   with the sender and no off-chain state. (An output failing the recipient's
+   `C == v·H + r·G` check is not honestly constructed: it is unspendable, its amount unknown
+   even to the recipient, and an auditor sees and flags it as malformed — see
+   [amount transport](#amount-transport).)
+5. **Independent conservation.** Each asset's balancing check is verifiable from the
+   transaction alone, without reference to hidden state elsewhere on the chain.
+
+These guarantees are precisely what the extensions anticipated under
+[Future extensions and upgrade paths](#future-extensions-and-upgrade-paths) consume:
+summability and attribution make voting-weight commitments publicly derivable (governance);
+summability and openings enable provable opening of aggregates (staking); attribution and
+openings keep disclosure-based audit tooling scan-free; openings underpin multi-party
+balancing-proof construction.
+
+### Auditing and selective disclosure
+
+Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
+single `sk_view` (one key for the whole account, i.e. the stake address — see [Keys](#keys)) gives the holder of
+that key a complete, human-readable history of the **entire account** across all its payment
+addresses — which counterparties, which assets, and how much. The two directions are
+recovered by two distinct computations, both from chain data and the key alone:
+
+- **Incoming amounts (including change): direct decryption.** For every output addressed to
+  the account, the auditor computes `s = sk_view·E` and decrypts as the recipient does (see
+  [amount transport](#amount-transport)).
+- **Outgoing amounts: ephemeral-key recomputation.** For every transaction spending the
+  account's outputs (public, since the graph is public), the auditor re-derives the
+  deterministic ephemeral scalar `e` of each output from `sk_view` and the transaction
+  context, confirms authorship by checking `E == e·G`, resolves each recipient's registered
+  `P_view` from the public registry, computes the same shared secret the sender used
+  (`s = e·P_view(recipient)`), and decrypts the amount sent — the auditor reconstructs
+  exactly the sender's own view. This is possible **without any extra on-chain data**
+  precisely because recipients and their registered keys are public; designs that hide
+  recipients must carry an additional encrypted record per output to offer the same
+  capability.
+- **Fallback: balance reconstruction.** If an output's `E` does not match the recomputed
+  `e·G`, the sending wallet did not follow the deterministic derivation (see
+  [amount transport](#amount-transport)) — the deviation is thereby *detectable*, and the
+  auditor still recovers the transaction's outgoing **per-asset totals** from conservation:
+  decrypted inputs minus decrypted change minus the public legs. With a single external
+  recipient this yields the exact amount; with several, the total but not the split. A
+  non-conforming wallet therefore weakens only the resolution of its own account's audit
+  trail, never its correctness.
+
+This supports auditing and tax reporting: the account owner, of their own volition, hands the
+single `sk_view` to **one or more auditors of their choosing** — a tax authority, an accountant,
+or tax-reporting software. Disclosure is
+verifiable (the disclosed key can be checked against the published `P_view`) and grants read access
+only. Whether disclosure is on request or mandatory in some contexts is a policy matter outside
+this specification.
+
+Recovering an account's amounts from `sk_view` requires **no chain-wide scanning or trial
+decryption**: because addresses are public, an auditor or tool needs only the outputs already
+indexed for the account's addresses — plus, for the outgoing direction, the transactions
+spending them, which the same index provides — with one Diffie–Hellman computation per output
+(see [amount transport](#amount-transport)). Disclosure-based auditing therefore composes
+directly with existing address-indexing infrastructure.
+
+### Versioning
+
+The feature is gated by the protocol version and is inert below its activation version. The
+on-chain structures defined here are versioned so that future revisions of the proof system
+(for example, a newer range-proof construction) can be introduced under a new version while
+older transactions continue to verify under the version they were created with.
+
+Versioning uses the ledger's own idioms rather than in-band version fields (no ledger
+structure on Cardano carries a `version` integer, and this proposal follows that practice).
+**Incompatible** new forms — a new commitment scheme, a new range-proof or balancing-proof
+construction — are added as new alternatives to the tagged unions in the CDDL
+(`confidential_asset`, `range_proof`, `balancing_proof`); **additive** extensions arrive as
+new numbered keys in the `confidential_output` and `confidential_proof` maps. Which tags and
+keys are valid is determined solely by the protocol version (validation rule 9). The
+domain-separation tags of the Fiat–Shamir transform mirror the same versioning: each
+proof-system alternative carries its own DST (`cardano/ct/<proof>/v<n>`, see
+[cryptographic primitives](#cryptographic-primitives-and-parameters)), so a proof produced for
+one alternative can never verify under another — cross-version replay is excluded by
+construction, not by convention. Because
+outputs live in the UTXO set across protocol versions, every confidential output
+self-describes its form: outputs created under an older version remain spendable and
+interpretable unchanged after an upgrade.
+
+## Rationale: How does this CIP achieve its goals?
+
+### Why native (ledger-level) rather than application-layer
+
+Confidential transfers could instead be built **at the application layer**: a smart-contract
+system holding value whose amounts are ciphertexts or commitments, with proofs verified by
+scripts using existing builtins — no ledger changes, no new primitives in the node. That
+path is legitimate, is being explored on Cardano as a **separate workstream**, and is the
+right answer for some requirements. This proposal is deliberately scoped to the other
+question: **what would confidential transfers look like done natively, with the ledger
+itself as the verifier?** The two approaches are complementary, and the choice between them
+— or the decision to pursue both — belongs to the community. What this section records is
+what the native approach buys, so that comparison can be made explicitly.
+
+- **One standard instead of N applications.** Ledger-level confidentiality means one
+  commitment format, one viewing-key model bound to stake credentials, one derivation path,
+  one auditor integration, one set of test vectors — every wallet, explorer, and audit tool
+  implements it once, and all confidential value is mutually interoperable. Application-layer
+  confidentiality fragments by construction: each system brings its own key model, its own
+  disclosure tooling, its own audit, and value confidential in one is opaque to the others.
+  The public-address design pays a concrete dividend here: full **bidirectional**
+  auditability from a single key costs zero extra bytes on chain (outgoing amounts are
+  recovered by re-deriving ephemeral keys against the public `P_view` registry — see
+  [auditing](#auditing-and-selective-disclosure)), a property recipient-hiding designs must
+  buy with an additional encrypted record in every output.
+- **Consensus-grade trust.** Here, value conservation over hidden amounts is enforced by the
+  validation rules of every node — the same trust model as the ledger itself, with no
+  additional operator, upgrade key, or contract administrator. An application-layer system
+  inherits the trust model of its contract: its correctness is one codebase's correctness,
+  and its guarantees are bounded by whoever controls that contract's evolution.
+- **The asset itself, not a wrapper.** This proposal hides the amounts of **ADA and native
+  tokens as such**, in the UTXO set, under the assets' own identities. An application-layer
+  system can only hide value *wrapped into it*: ADA itself never becomes confidential, entry
+  and exit are extra visible steps at the wrapper boundary, and the wrapped representation
+  is a distinct asset with distinct semantics (and, for regulated tokens, a distinct
+  compliance story).
+- **A uniform substrate for extensions.** The anticipated extensions — staking and
+  governance participation of hidden ADA, script predicates over amounts — depend on every
+  confidential quantity on the chain sharing one homomorphically-summable commitment format
+  with public attribution (the [guarantees](#guarantees-to-future-proposals)). That property
+  exists only if the format is defined at the ledger; per-application formats cannot be
+  summed, attributed, or reasoned about chain-wide.
+- **The complexity is relocated, not removed, by the alternative.** The dual-mode burden this
+  proposal imposes — new validation rules, certificates, wallet logic coexisting with
+  transparent transfers — is real, acknowledged, and bounded (opt-in, versioned, with
+  normative guarantees fencing what future changes may touch). The application-layer path
+  does not eliminate that complexity; it distributes it across every application that builds
+  its own confidentiality, each with its own audit surface — and history so far (amount
+  confidentiality shipped at the application layer on other chains) shows per-application
+  systems remaining niche wrappers rather than becoming ecosystem-wide standards.
+
+### Design approach
+
+The scheme is a **commitment-based confidential transaction** design: amounts live inside
+additively homomorphic Pedersen commitments, value conservation is checked directly on those
+commitments per asset, and range proofs prevent the only way commitments could be abused
+(negative/overflowing values). This directly matches the EUTXO model, where the ledger already
+reasons about value conservation across inputs and outputs; confidentiality replaces the
+cleartext value in that reasoning with a commitment and a proof, leaving the structure of the
+model intact.
+
+The set of primitives is intentionally minimal for this model: a prime-order group, Pedersen
+commitments, Bulletproofs range proofs, a Diffie–Hellman amount transport, one Schnorr balancing
+proof per asset, and the Fiat–Shamir transform. None require a trusted setup.
+
+The construction is **partially homomorphic by design**. Like partially homomorphic encryption
+(PHE) schemes, it supports exactly one operation over hidden values — addition — an unlimited
+number of times. Balance accounting needs nothing more (addition, subtraction, and range
+checks), and additive-only homomorphism keeps every ledger operation at microsecond scale.
+Fully homomorphic encryption (FHE), which would allow arbitrary computation over hidden data at
+orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
+[Alternatives considered](#alternatives-considered)).
+
+### Why these choices
+
+- <a id="why-a-prime-order-group-ristretto255"></a>**Why a prime-order group (ristretto255).**
+  The commitment and proof machinery needs a group where every non-zero scalar is invertible and
+  every element has exactly one encoding. The raw Curve25519 group does **not** qualify: its order
+  is `8·ℓ` — it has **cofactor 8**, meaning small "torsion" subgroups and multiple valid encodings
+  for what should be the same element. That would enable small-subgroup attacks and would break the
+  deterministic, canonical transcript hashing on which the proofs (and cross-node consensus) rely.
+  A **cofactor-1** (prime-order) group avoids all of this. Rather than adopt a different curve,
+  **ristretto255** (RFC 9496) applies a standard construction over Curve25519 that removes the
+  cofactor, giving a clean prime-order group with a unique 32-byte encoding per element, ~128-bit
+  security, and reuse of the same well-studied field Cardano already uses for Ed25519.
+  One consequence is a deliberate **cross-curve boundary with Cardano's SNARK tooling**, which
+  is built on BLS12-381 (Groth16 via [CIP-0381]): a ristretto255 commitment cannot be
+  represented efficiently inside a BLS12-381 arithmetic circuit (non-native field arithmetic).
+  This is accepted because the amount-predicates anticipated by future extensions ("hidden
+  amount ≥ X", proportional relations) are **linear relations over commitments** — the native
+  repertoire of sigma protocols and shifted-commitment range statements, proven and verified
+  *directly in the commitment group* with no circuit anywhere; the ecosystem dependency this
+  creates is ristretto255 script builtins, not a SNARK framework (see
+  [extensions.md](extensions.md)). The one composition this boundary genuinely rules out —
+  a *single* proof spanning an amount-predicate and a large BLS-side circuit (e.g. a
+  credential proof) — is served by the standard two-proofs-shared-public-input pattern
+  instead, at the cost of single-proof aesthetics only.
+- **Pedersen commitments.** They are simultaneously hiding, binding, additively homomorphic, and
+  directly compatible with efficient range proofs — the exact combination needed to hide amounts
+  while keeping conservation checkable. A **single value generator `H` serves all assets**:
+  because asset identity is public and each asset's conservation is checked over its own disjoint
+  set of commitments, per-asset generators (needed in designs that also blind the asset type,
+  such as Confidential Assets) are unnecessary here.
+- **Bulletproofs.** Short proofs, aggregation, and — crucially for a public chain — **no trusted
+  setup**.
+- **Diffie–Hellman amount transport.** Conveys both the amount and its blinding to the recipient
+  with no extra ciphertext, enabling non-interactive spending in the EUTXO model.
+
+### Trade-offs
+
+- **Transaction size — and therefore ADA fees.** Confidential transactions are larger than
+  transparent ones — roughly **3–5×** for typical small payments — dominated by the (near-fixed)
+  aggregated range proof, and growing with the number of distinct assets whose amounts are hidden
+  (each asset needs its own commitment and range contribution). Because Cardano's fee formula is
+  proportional to transaction size, a typical confidential payment can be expected to cost
+  roughly **3–5× the ADA fee** of its transparent equivalent. Confidentiality is paid for by the
+  user who opts into it, not by the network.
+- **Size-proportional fees do not price verification.** Cardano's fee formula prices *bytes*;
+  script execution is priced separately through execution units, but the proofs defined here are
+  verified by the ledger itself, not by a script, so under the current formula their verification
+  CPU rides along unpriced. The mismatch is structural: an aggregated range proof grows only
+  *logarithmically* in size with the number of committed values, while its verification time
+  grows *linearly* — so a heavily aggregated transaction pays barely more per byte while costing
+  proportionally more CPU. Mempool pre-checks (see the
+  [Appendix](#estimated-node-resource-impact)) bound abuse, but pricing honest usage correctly —
+  whether proof verification should carry an explicit fee term, analogous to execution-unit
+  pricing — is left open (see Open Questions).
+- **Verification cost.** Range-proof verification cost grows with the number of committed values;
+  aggregation and batch verification mitigate this, but it remains higher than validating a
+  transparent amount — roughly an order of magnitude more CPU per transaction than signature
+  checking, while leaving overall node hardware requirements unchanged. Order-of-magnitude
+  estimates are given in the [Appendix](#estimated-node-resource-impact); measured benchmarks are
+  an acceptance criterion (see Path to Active).
+- **Not post-quantum.** Security rests on the elliptic-curve discrete-logarithm and DDH
+  assumptions and is not resistant to a future cryptographically-relevant quantum computer;
+  amounts recorded today could in principle be recovered by such an adversary
+  ("harvest-now-decrypt-later"). This is an accepted trade-off for a fast, small, trusted-setup-free
+  design; post-quantum confidentiality is left for future work.
+- **Asset type is public.** Only quantities are hidden; the presence and identity of assets in an
+  output remain visible.
+- **Confidential ADA does not stake.** ADA in confidential outputs is excluded from stake,
+  rewards, and governance voting power — including DRep vote-delegation weight — while it remains
+  hidden (see [staking, rewards, and governance](#staking-rewards-and-governance)). This is an opportunity cost holders accept when shielding, and a deliberate point
+  for community discussion: whether and when hidden ADA should regain staking or governance
+  participation is addressed under Open Questions.
+- **Confidential value cannot interact with smart contracts while hidden.** Confidential
+  outputs exist only at key-locked and native-script addresses — never at Plutus script
+  addresses — and a transaction carrying confidential components does not execute Plutus
+  scripts (validation rule 10). Multisig and timelocked treasuries are fully supported;
+  *programmable* logic is not. While value is hidden it is
+  therefore *transfer-only*: plain payments (with metadata), but no participation in anything
+  mediated by smart validators on the Plutus VM — whatever the application built on them — on
+  top of the staking and governance exclusion above. This is **not a one-way door**: shielding
+  and unshielding are ordinary, permissionless transactions available at any time (see
+  [shield / unshield](#bridging-transparent-and-confidential-amounts-shield--unshield)), so the
+  path to script interaction is unshield → interact transparently → optionally shield the
+  proceeds back. Each crossing reveals only the bridged amount, never the remaining
+  confidential balance — though timing correlation between an unshield and an immediately
+  following script interaction can link the two. Wallets should surface this trade-off clearly
+  before users shield funds.
+- **The viewing key reveals the full bidirectional history — by design, cutting both ways.**
+  Because outgoing payments are auditable by re-deriving the deterministic ephemeral scalars
+  from `sk_view` (see [auditing](#auditing-and-selective-disclosure)), whoever holds the key
+  — an authorised auditor, or a thief — reads the account's complete history: incoming,
+  change, **and** outgoing, past and future. This is exactly the audit capability the
+  proposal promises, but it means a *compromised* viewing key exposes strictly more than a
+  design without sender-side derivation would (incoming and change only). The mitigation is
+  key hygiene today and key **rotation** as a companion proposal (the derivation path
+  already reserves successive key indices); rotation limits a compromise's damage to
+  history-up-to-rotation.
+- **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
+  accounting software supports viewing-key import for *any* chain; users of existing privacy
+  systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
+  the same fallback applies here from day one. Direct viewing-key support in such tools may or
+  may not materialise — until it does, producing auditor-readable reports is the wallet's job,
+  which is an ongoing complexity cost for users and companies relying on the audit path. The
+  design deliberately minimises what a third-party tool must implement — amounts are recoverable
+  from already-indexed outputs with one Diffie–Hellman computation each, with no chain-wide
+  scanning (see [auditing and selective disclosure](#auditing-and-selective-disclosure)) — but adopters should treat third-party tooling support as an ecosystem
+  dependency, not a given.
+
+### Alternatives considered
+
+- **Twisted-ElGamal ciphertexts (commitment plus per-recipient decryption handles).** The
+  commitment used here, `C = v·H + r·G`, is exactly the commitment half of a Twisted-ElGamal
+  ciphertext; the full scheme would add a decryption handle `D = r·P` per authorised reader,
+  allowing each of them to decrypt algebraically from chain data. This was considered and
+  dropped: handles cost +32 bytes per reader per output, handle-based decryption lands on `v·H`
+  and therefore forces a bounded amount space with a precomputed discrete-log lookup table
+  (client-side, megabytes), and under the single-viewing-key model the handles buy nothing — the
+  Diffie–Hellman transport already delivers the amount *and* its blinding to every holder of
+  `sk_view` in constant time, with full 64-bit amounts. Handle-based designs remain the right
+  choice for account-based ledgers, where decryption must operate homomorphically over an
+  aggregated balance; the EUTXO model decrypts outputs individually, so that constraint does not
+  apply here.
+- **BLS12-381 G1 as the commitment group.** Cardano already carries BLS12-381 (CIP-0381
+  Plutus builtins), and its G1 subgroup is prime-order, so it was considered as the home for
+  the commitments and proofs. Rejected for native validation on five grounds. (1) This scheme
+  uses **no pairings** — BLS12-381's defining feature — so its costs would be paid for
+  nothing: a 381-bit field versus 255-bit means slower group arithmetic on the hottest path
+  in the system (in a native design the verifier is every node at every block, not a
+  prover-side concern). (2) **+50% on every element** (48- versus 32-byte encodings) — every
+  commitment, ephemeral key, and proof element, on top of an already 3–5× transaction-size
+  trade-off. (3) **Cofactor**: G1 sits on a curve with a large cofactor (≈2¹²⁵), so every
+  deserialized point requires an explicit subgroup-membership check — cheap with
+  endomorphism techniques but per-point and a classic implementation hazard — whereas
+  ristretto255 decoding yields canonical prime-order elements by construction, which is what
+  makes validation rule 1 trivially sound and transcript hashing unambiguous. (4) The
+  hardened **Bulletproofs ecosystem is ristretto-native** (the dalek lineage, in production
+  in Monero since 2018); Bulletproofs over G1 would be a bespoke implementation without that
+  audit history. (5) **Field reuse with Ed25519**: ristretto255 shares its field with the
+  signatures every node already verifies at scale, in the node code where this proposal
+  lives. The genuine cost of this choice is deferred, not avoided: the future script track
+  requires new ristretto255 Plutus builtins (see [extensions.md](extensions.md)), whereas
+  BLS commitments could have reused CIP-0381's — an acceptable price for keeping base-layer
+  validation on the smaller, canonical-encoding group.
+- **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
+  delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
+  Diffie–Hellman transport keeps everything on chain and self-contained.
+- **Publishing `P_view` without a registration certificate.** Three discovery mechanisms were
+  considered and rejected. **Embedding `P_view` in a new address format** solves discovery by
+  construction, but a new address era is the heaviest ecosystem migration Cardano can
+  undertake (every wallet, exchange, dApp, and hardware device must parse it), grows every
+  address by 32 bytes, and permanently fights future key rotation — addresses outlive keys on
+  invoices. **Off-chain publication** (payment requests, directories) fails the auditing
+  requirement that a disclosed key be verifiable against a consensus-published value, and a
+  key substituted in transit would produce outputs the recipient cannot even spend (the
+  blinding becomes unrecoverable). **Piggybacking on stake registration** couples two
+  unrelated lifecycles, and the overwhelming majority of accounts — already stake-registered —
+  would need a dedicated re-registration path anyway, i.e. a separate certificate by another
+  name. A dedicated certificate, the ledger's native idiom for "credential declares X",
+  avoids all three.
+- **General-purpose succinct proofs (zk-SNARK/STARK) over an encrypted note pool.** These can hide
+  more (including identities and the graph) but require either a trusted setup or heavier proving,
+  a proving circuit, and additional state (note commitments and nullifiers). They are a
+  substantially larger change and hide more than this proposal aims to; they are noted as possible
+  future or complementary directions.
+- **Fully homomorphic encryption.** Overkill for value transfer, with impractical on-chain
+  verification cost; not pursued.
+
+### Backward compatibility
+
+The feature is opt-in and additive. Transactions that do not use confidential outputs are
+unaffected, and transparent value continues to work exactly as today. Confidential and transparent
+value coexist within a transaction via the shield/unshield bridge. Activation requires a protocol
+change (see Path to Active).
+
+### Future extensions and upgrade paths
+
+This proposal is deliberately narrow: amount confidentiality, one viewing key, and outputs
+at key-locked or native-script addresses only. This section records, for each anticipated extension, whether an upgrade path exists,
+whether the present design conflicts with it, and why it is descoped now. The goal is **not** to
+design these extensions, but to let the community judge — before ratifying — that today's small
+design choices keep tomorrow's doors open rather than closing them. A guiding principle
+throughout: confidential outputs remain **homomorphically summable Pedersen commitments,
+publicly bound to stake credentials, whose openings their owners keep** — nothing about the
+transfer layer destroys information a future extension would need. This principle is not
+merely aspirational: it is normative, as the
+[guarantees to future proposals](#guarantees-to-future-proposals) in the Specification.
+
+**Each extension below is anticipated as an independent companion CIP layered on top of this
+proposal — not as a bundled successor version.** They are separable by design: staking and
+governance add machinery *around* the commitments this proposal creates, without changing the
+transfer layer; asset-type blinding and post-quantum migration arrive as new **versioned**
+output and proof forms (see [versioning](#versioning)); address hiding, if ever pursued, would be a coexisting pool.
+Smaller follow-ups also expected as narrow companion proposals: standardisation of the
+viewing-key derivation path, support for confidential outputs at Plutus script addresses
+(native scripts — multisig and timelocks — are already part of this proposal), and
+multi-party transaction construction (see Open Questions).
+
+#### Staking shielded ADA
+
+*Upgrade path:* the most concrete sketch reuses this proposal's own machinery. Delegation
+converts shielded ADA into **pool-specific delegation tokens** whose quantities are hidden by
+this very proposal's confidential native-asset mechanism, with rewards accruing through a public
+per-epoch **exchange rate** — so no per-member reward computation ever occurs (the pattern
+deployed in production by Penumbra). The per-pool totals that leader election requires in the
+clear can then be produced at three levels of ambition: **(a)** delegators share their openings
+with their chosen pool, which publishes and provably opens the per-epoch aggregate — no new
+cryptography at all; **(b)** the same aggregate opened by a **threshold committee** instead, so
+no single party learns member amounts — a drop-in upgrade of (a); or **(c)** never opened —
+leader election proven in zero knowledge against the committed total
+([Ganesh–Orlandi–Tschudi][got], a model whose required public stake-commitment list this design
+*already provides*; or, at the maximalist end, [Ouroboros Crypsinous][crypsinous]).
+**None of the three requires a trusted setup:** (a) and (b) introduce no new proof system, and
+(c) is achievable with transparent proof systems. Every variant additionally needs
+epoch-snapshot rules over confidential outputs.
+
+*Conflict with this design:* **none.** Paths (a)–(c) build directly on the commitments this
+proposal creates, and (a) upgrades into (b) without redesign. Crypsinous specifically is **not
+in conflict either**: it would be a separate, parallel shielded pool plus a consensus-layer
+change, coexisting with this design (bridgeable via shield/unshield) rather than replacing it;
+this proposal neither blocks nor requires it. One leakage caveat applies to any variant with
+public per-pool totals: because pool *membership* is public here (addresses and delegation
+certificates are transparent), epoch-to-epoch differences can reveal an individual amount when
+few members change — the anonymity set is the pool's per-epoch churn. Stronger privacy would
+require hiding the delegation link itself, which is graph-hiding territory (see *Hiding
+addresses* below).
+
+*Why descoped:* every path adds consensus-adjacent machinery, new trust assumptions
+(committees), or the aggregate-level leakage above, deserving a dedicated companion CIP and its
+own community debate; the per-UTXO exclusion rule (see [staking, rewards, and governance](#staking-rewards-and-governance)) is the minimal safe v1 behaviour.
+
+#### Governance and DRep voting with shielded ADA
+
+*Upgrade path:* because ownership is public, an account's ADA-weighted **voting-weight
+commitment is already publicly derivable** (the homomorphic sum of its output commitments). The
+missing piece is opening only *tallies*, never individual weights — standard homomorphic-tally
+techniques (threshold decryption of totals, or aggregate opening proofs), plus snapshot rules.
+
+*Conflict with this design:* **none** — arguably the easiest extension, precisely because public
+attribution makes weight commitments free. The genuinely new ingredient is a tally-opening
+mechanism (e.g. a decryption committee), which is a new trust assumption for Cardano governance.
+
+*Why descoped:* that trust assumption merits its own community debate; v1 excludes hidden ADA
+from voting power (see [staking, rewards, and governance](#staking-rewards-and-governance)) until it happens.
+
+#### Hiding the asset type (policy id and asset name)
+
+*Upgrade path:* blinded asset tags in the style of [Confidential Assets][conf-assets]: each
+quantity committed under an asset-derived generator, with proofs that hidden tags are legitimate
+and that conservation cannot cancel across assets. Mint/burn authorisation — currently tied to a
+public policy — needs rethinking.
+
+*Conflict with this design:* **partial restructuring, not contradiction.** The single value
+generator `H` and per-asset public-tag conservation (see [value conservation](#value-conservation)) are the right choice *while asset
+identity is public* (see Rationale); a tag-blinding upgrade would introduce a **new, versioned
+output form** (see [versioning](#versioning)) with per-asset generators, and existing confidential outputs would migrate by
+unshield/re-shield. Nothing in v1 has to be broken in place.
+
+*Why descoped:* substantially harder cryptography, larger proofs, and most compliance-oriented
+use cases require the asset type visible anyway.
+
+#### Programmable tokens (CIP-113) and token standards (CIP-26 / CIP-68)
+
+*Upgrade path:* programmable tokens keep the underlying native asset **permanently at
+validator-controlled (script) addresses**, with every transfer mediated by the controlling
+script. Making such tokens confidential would therefore require three things: **(1)**
+confidential outputs at Plutus script addresses (see the Plutus-script follow-up under Open
+Questions); **(2)** a script-context extension so validator scripts receive commitments where
+they receive amounts today; and **(3)** **zero-knowledge predicates** verified by the script
+against the commitment — but *only for amount-dependent policies*. Notably, most
+programmable-token policies are **identity- and credential-based** (freeze, blacklist,
+whitelist, authorised-transfer checks) and read addresses and datums, which remain **public** in
+this design — such policies would work over confidential outputs unchanged. Only policies that
+read the quantity itself (transfer limits, proportional fees) need the ZK-predicate machinery.
+Metadata standards are orthogonal: CIP-26 is off-chain, and CIP-68's reference-NFT/datum
+machinery is unaffected by hiding user-held quantities.
+
+*Conflict with this design:* **none — the two are disjoint by construction in v1.** A
+programmable token cannot leave script control, and this proposal's confidential outputs cannot
+exist at Plutus script addresses (see [confidential value representation](#confidential-value-representation)); each side's rule independently guarantees that no programmable
+token can be shielded and no programmable-token validator ever encounters a hidden quantity.
+There is no interaction surface, no carve-out to implement, and no retroactive state a future
+programmable-token standard would have to accommodate.
+
+*Why descoped:* programmable-token semantics (CIP-113) are themselves still being standardised;
+ZK predicates over commitments should be co-designed with them, not pre-empted here.
+
+#### Post-quantum security
+
+*Upgrade path:* replace each primitive with a post-quantum counterpart — lattice-based
+commitments and range proofs, a PQ KEM in place of the Diffie–Hellman transport, a PQ proof of
+knowledge for the balancing proof — under a new proof-system version (see [versioning](#versioning)); value migrates by
+unshield/re-shield.
+
+*Conflict with this design:* **none architecturally** — the structure (commitments +
+conservation + range proofs + viewing keys) is proof-system-agnostic and the [versioning](#versioning) section anticipates
+versioned upgrades. The honest, unavoidable caveat is **harvest-now-decrypt-later**: amounts
+hidden under the v1 discrete-log scheme remain recoverable by a future quantum adversary
+regardless of any later migration; migration protects future outputs only. This is already
+declared in Trade-offs.
+
+*Why descoped:* today's post-quantum equivalents are far larger and slower (conflicting with the
+"fast" requirement), and the ledger's own signatures are not post-quantum either — a chain-wide
+PQ migration is a broader effort than this proposal.
+
+#### Hiding addresses (who transacted with whom)
+
+*Upgrade path:* receiver unlinkability needs stealth/one-time addresses; sender ambiguity needs
+ring signatures or a note-and-nullifier shielded pool. The auditor model would need rebuilding so
+the viewing key also reveals counterparties (as Monero and Zcash viewing keys do).
+
+*Conflict with this design:* **this is the extension in most tension with v1** — several v1
+properties deliberately exploit public addresses: targeted wallet scanning without trial
+decryption, publicly derivable voting-weight commitments, low-cost auditor tooling (see [auditing and selective disclosure](#auditing-and-selective-disclosure)), and
+staking attribution. A graph-hiding upgrade would forfeit or rebuild those. It is nonetheless
+**not foreclosed**: the amount-confidentiality layer (commitments, conservation, range proofs)
+is exactly the amount layer used inside graph-hiding designs, and a shielded pool could be added
+*alongside* this design as a separate output type — as transparent and shielded pools coexist in
+Zcash — rather than by modifying it.
+
+*Why descoped:* an explicit non-goal (see [Motivation](#motivation-why-is-this-cip-necessary)): this proposal's compliance-first positioning —
+confidentiality from the public, not from oversight — depends on the graph remaining public, and
+identity hiding would move it into a different regulatory and design category.
+
+### Open Questions
+
+Longer-horizon extensions — staking and governance participation of shielded ADA, hiding the
+asset type, programmable tokens, post-quantum security, and address hiding — are analysed in
+[Future extensions and upgrade paths](#future-extensions-and-upgrade-paths) above. The open
+questions below concern the v1 design itself.
+
+- **Viewing-key derivation path — confirmation of the proposed role.** This proposal puts
+  forward `m / 1852' / 1815' / account' / 6 / index'` — a new role `6` under [CIP-1852], the
+  next unallocated value, introduced the same way as staking (CIP-0011) and governance
+  (CIP-0105) roles (see [Keys](#keys)). What remains open is ecosystem confirmation: that no
+  concurrent proposal claims role `6`, agreement from wallet and hardware-wallet implementers
+  (including firmware support for the ristretto255 scalar derivation and the Diffie–Hellman
+  shared-secret computation), and the corresponding row in CIP-1852's table. The
+  key-material-to-scalar mapping is pinned by the final specification's test vectors.
+- **Balancing-proof form.** A single Schnorr excess signature per asset versus per-output
+  consistency proofs — a size/verification trade-off — to be finalised. Whatever form is
+  finalised MUST remain **linearly aggregatable across independent contributors who do not
+  share blindings**: multiple parties, each knowing only the blindings of their own inputs and
+  outputs, must be able to produce their shares of the proof independently and combine them
+  into a single valid witness (as Schnorr excess signatures naturally allow, MuSig-style). A
+  form that loses this property forecloses multi-party transaction construction — batchers,
+  collaborative transactions — until a new versioned witness form is introduced.
+- **Multi-party transactions.** Constructing the balancing proof requires the builder to know all
+  input and output blindings; collaborative transactions with multiple independent contributors
+  need either interaction or partial balancing proofs. Whether to support this initially is open.
+- **Range bit-width and aggregation limits.** Confirm `2⁶⁴` and the **initial values** of
+  `maxConfidentialCommitmentsPerTx` and `maxConfidentialCommitmentsPerBlock`
+  (see [protocol parameters](#protocol-parameters)) consistent with a verification-cost budget.
+- **Fee treatment.** Fees are public in this design; whether any future variant could hide fees is
+  out of scope here. Separately, whether proof **verification cost** should carry an explicit fee
+  term — a per-committed-value or per-range-statement price, analogous to script execution-unit
+  pricing — or remain covered by size-proportional fees alone is open; the aggregated range
+  proof's logarithmic size versus linear verification time (see Trade-offs) is the argument for
+  an explicit term.
+- **Scope of the initial hard fork — which extensions ride along?** This proposal is
+  deliberately minimal, which keeps it reviewable and its audit surface small — but each
+  separately-shipped extension costs the ecosystem a full upgrade cycle (nodes, wallets,
+  hardware devices, explorers, exchanges). The companion document
+  [extensions.md](extensions.md) lists the anticipated extensions **ordered by
+  implementation effort and impact**; to the authors' knowledge none is foreclosed by this
+  design (see [guarantees to future proposals](#guarantees-to-future-proposals)), so the
+  question is not *whether* they can come later but *when it is cheapest for the ecosystem*.
+  (Confidential outputs at native-script addresses were exactly such a case, and this
+  proposal absorbed them for that reason: one relaxed rule, no new cryptography, serving its
+  own target audience.) Reviewers are explicitly asked to weigh whether the next
+  lowest-effort, highest-impact item — **viewing-key rotation** (both fences already in
+  place, no new cryptography) — should be merged into this proposal or scheduled for the
+  same hard fork. This is as much an ecosystem and business judgement as a technical one.
+- **Plutus script addresses.** Confidential outputs are permitted at key-locked and
+  native-script addresses (see [confidential value representation](#confidential-value-representation));
+  extending them to **Plutus**-locked outputs — including what a validator script may learn
+  about a hidden amount — is open, and raises the amount-visibility questions discussed under
+  Future extensions (programmable tokens). Until a script-context representation of hidden
+  quantities is defined there, validation rule 10 keeps Plutus execution and confidential
+  components in strictly separate transactions.
+
+## Path to Active
+
+### Acceptance Criteria
+
+- [ ] The design (primitives, transaction/output structure, proofs, and validation rules) is
+      reviewed and **ratified by the community** through the CIP process, including review by
+      relevant ledger and cryptography stakeholders.
+- [ ] A complete, versioned specification of the on-chain structures — the final CDDL,
+      provided as machine-readable `.cddl` files in this CIP's directory (superseding the
+      draft [`cddl/confidential-transfers.cddl`](cddl/confidential-transfers.cddl)) — and the
+      proving and verification procedures, sufficient for **independent, interoperable
+      implementations**.
+- [ ] Published **test vectors** (valid and invalid transactions, including the edge cases in
+      [validation rules](#validation-rules-edge-cases-and-soundness)) that any implementation must agree on.
+- [ ] An independent **security review / audit** of the cryptographic construction and its
+      encoding.
+- [ ] Published **performance benchmarks** of verification cost — per transaction and per block,
+      batched and unbatched, including full-sync replay impact — demonstrating that
+      block-validation budgets are met (replacing the derived estimates in the Appendix).
+- [ ] Implementation present within block-producing nodes used by **80%+ of stake**, activated
+      via the standard protocol-parameter/hard-fork governance process.
+
+### Implementation Plan
+
+- Produce a reference specification and test vectors for the primitives and proofs described here.
+- Prototype the verification rules against the specification and validate them on the test
+  vectors.
+- Commission a security audit of the construction and encoding.
+- Propose activation through the on-chain governance process once implementations are available.
+
+## Appendix
+
+### Worked example
+
+A confidential ADA payment from account **A** to account **B**, with change back to **A** and a
+public fee. This illustrates what is hidden, what is public, and how the checks fit together.
+
+**Setup.** Account A owns one confidential input committing to `v_in` lovelace:
+`C_in = v_in·H + r_in·G`. A knows `(v_in, r_in)` from having received it (see [amount transport](#amount-transport)). A wants to send
+`v_send` to B, keep `v_change`, and pay a public fee `f`, with `v_in = v_send + v_change + f`.
+
+**A builds the transaction:**
+
+1. Output to B: `C_send = v_send·H + r_send·G`, with ephemeral key `E₁ = e₁·G`. From the shared
+   secret `s₁ = e₁·P_view(B)` the sender derives `r_send` and a keystream, and stores the 8-byte
+   masked amount `v_send ⊕ keystream` in the output (see [amount transport](#amount-transport)).
+2. Change to A: `C_change = v_change·H + r_change·G`, with ephemeral key `E₂ = e₂·G`,
+   `s₂ = e₂·P_view(A)`, and its own masked amount.
+3. Fee `f` is left **public**.
+4. **Range proof:** one aggregated Bulletproofs proof that `v_send` and `v_change` are each in
+   `[0, 2⁶⁴)`, including the shifted commitments `C − min·H` for the minimum-ADA floor (see [range proofs](#range-proofs)).
+5. **Balancing:** compute `excess = r_in − r_send − r_change`. Then
+   `C_in − C_send − C_change − f·H = excess·G` (the value terms cancel because
+   `v_in − v_send − v_change − f = 0`). A includes a Schnorr signature under public key `excess·G`.
+
+**What a validator checks** (never seeing any amount): encodings are canonical; the aggregated
+range proof verifies; the balancing equation holds and its Schnorr signature verifies; the spend
+of `C_in` is authorised by A's normal witness. If any amount had been inflated, the value
+terms would not cancel and the balancing check would fail.
+
+**What is public:** A's and B's addresses, the fact of the transfer, the fee `f`, the ephemeral
+keys, the commitments, and the proofs. **What is hidden:** `v_in`, `v_send`, `v_change`.
+
+**Recipient.** B inspects the outputs at its (public) addresses, computes `s₁ = sk_view(B)·E₁`,
+derives `r_send` and the keystream, recovers `v_send` from the stored masked amount, and verifies
+`C_send == v_send·H + r_send·G`. B now holds a spendable confidential UTXO.
+
+**Auditor.** Given A's single account viewing key `sk_view(A)`, an auditor reads both
+directions of this transaction. **Incoming/change:** for the change output, compute
+`s₂ = sk_view(A)·E₂` and decrypt `v_change` exactly as A does. **Outgoing:** re-derive the
+deterministic ephemeral scalar `e₁` from `sk_view(A)` and the transaction context, confirm
+`E₁ == e₁·G`, look up B's registered `P_view(B)`, compute `s₁ = e₁·P_view(B)`, and decrypt
+`v_send` — the same computation the sender performed. (Had A's wallet deviated from the
+deterministic derivation, the `E₁` check would expose it, and `v_send` would still follow
+from conservation: `v_send = v_in − v_change − f`.) A full account view for tax/audit
+purposes, from the key and chain data alone.
+
+**Native token variant.** If the output to B also carried `q` units of a token `(policy, name)`,
+the output would include an additional commitment `C_T = q·H + r_T·G` for that asset, the range
+proof would also cover `q`, and a **separate** balancing equation and Schnorr signature would be
+required for that asset. The token's identity `(policy, name)` stays public; only `q` is hidden.
+
+### Onboarding an unregistered account (sponsored registration)
+
+A new account holds no ADA, so it cannot pay the fee and deposit for its own viewing-key
+registration — but the certificate needs the account's **witness**, not its funds. Anyone may
+therefore build and fund a single transaction combining a transparent transfer to the new
+account, that account's registration certificate, and — thanks to the in-transaction
+certificate ordering of validation rule 12 — even a first confidential payment. An employer
+onboarding an employee for confidential payroll builds and pays for the transaction; the
+employee's wallet co-signs it, refusing unless the certificate carries exactly the `P_view`
+it derives from its own seed. The registration is thereby self-authenticating end to end: no
+party can register a key for an account without its owner's witness, and no transported key
+can be substituted without the owner's wallet detecting it.
+
+### Estimated node resource impact
+
+The figures below are **order-of-magnitude estimates**, derived from published benchmarks of the
+underlying primitives and this proposal's parameters; they are informative, not normative, and
+are to be replaced by measured benchmarks (an acceptance criterion under Path to Active). The
+headline: **no change of hardware class for a node** — the real cost is CPU time on the
+block-validation path.
+
+**CPU (verification; the node never proves and never decrypts).** For a typical 2-input/2-output
+confidential payment (~4 aggregated 64-bit range statements plus one Schnorr excess signature):
+
+| Operation | Approximate cost (one modern core) |
+|---|---|
+| Aggregated range-proof verification | ~2–3 ms unbatched; ~1 ms amortised with cross-transaction batching |
+| Schnorr excess + accumulator arithmetic | ~0.2 ms |
+| For comparison: a transparent transaction | ~0.1–0.2 ms |
+
+A confidential transaction therefore costs roughly **10–20× the verification CPU** of a
+transparent one. Worst case, a block filled entirely with confidential transactions (~60 at
+current block sizes) adds on the order of **0.1–0.2 s** of verification per block unbatched —
+about half that with batch verification — against a block-validation budget of well under the
+slot interval. Verification parallelises trivially across transactions. Two consequences
+follow: **initial sync/replay** time grows with the density of confidential history (strongly
+mitigated by large-batch verification during sync), and **mempool admission** must run cheap
+structural checks (sizes, encodings, fee coverage) before expensive proof verification to bound
+denial-of-service exposure.
+
+**Memory.** Static verification tables are a few megabytes, one-time. The only usage-dependent
+term is the UTXO set: a confidential output stores roughly 100–160 bytes more than a transparent
+one, so even tens of millions of confidential UTXOs add only gigabyte-scale ledger state. The
+decryption side (viewing keys, Diffie–Hellman recovery) is entirely client-side; nodes hold no
+decryption material.
+
+**Disk.** Chain growth scales with adoption: a confidential transaction is ~3–5× the size of a
+transparent one, so the chain growth *rate* multiplies by roughly `1 + 3×(confidential share)`.
+
+**Available tuning knobs**, all anticipated by this specification: cross-transaction batch
+verification with deterministically derived challenges (see [validation rules](#validation-rules-edge-cases-and-soundness)), the
+`maxConfidentialCommitmentsPerTx` and `maxConfidentialCommitmentsPerBlock` protocol
+parameters (see [protocol parameters](#protocol-parameters)), and mempool pre-checks.
+
+## References
+
+- [RFC 9496 — The ristretto255 and decaf448 Groups][rfc9496]
+- [Bulletproofs: Short Proofs for Confidential Transactions and More (Bünz, Bootle, Boneh, Poelstra, Wuille, Maxwell, 2018)][bulletproofs]
+- Confidential Transactions (G. Maxwell) — commitment-based amount hiding with value conservation.
+- T. P. Pedersen, "Non-Interactive and Information-Theoretic Secure Verifiable Secret Sharing," CRYPTO 1991.
+- C. P. Schnorr, "Efficient signature generation by smart cards," Journal of Cryptology, 1991.
+- A. Fiat and A. Shamir, "How to prove yourself: practical solutions to identification and signature problems," CRYPTO 1986.
+- T. Kerber, A. Kiayias, M. Kohlweiss, V. Zikas, ["Ouroboros Crypsinous: Privacy-Preserving Proof-of-Stake,"][crypsinous] IEEE S&P 2019 — referenced under Future extensions (staking shielded ADA).
+- C. Ganesh, C. Orlandi, D. Tschudi, ["Proof-of-Stake Protocols for Privacy-Aware Blockchains,"][got] Cryptology ePrint Archive 2018/1105 — private leader election over a public list of stake commitments; referenced under Future extensions.
+- A. Poelstra, A. Back, M. Friedenbach, G. Maxwell, P. Wuille, ["Confidential Assets,"][conf-assets] Financial Cryptography Workshops 2018 — blinded asset tags; referenced under Future extensions (hiding the asset type).
+
+[rfc9496]: https://www.rfc-editor.org/rfc/rfc9496
+[CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
+[CIP-0381]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0381
+[crypsinous]: https://eprint.iacr.org/2018/1132
+[got]: https://eprint.iacr.org/2018/1105
+[conf-assets]: https://blockstream.com/bitcoin17-final41.pdf
+[bulletproofs]: https://eprint.iacr.org/2017/1066
+
+## Acknowledgements
+
+<!-- To be completed. -->
+
+## Copyright
+
+This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
