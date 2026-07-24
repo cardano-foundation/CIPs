@@ -302,16 +302,36 @@ which requires that credential to hold a live viewing-key registration.
 To spend a confidential output, its owner must know the hidden amount **and** its blinding `r`.
 Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciphertext:
 
-1. The sender picks a fresh ephemeral scalar `e` and includes the ephemeral public key `E = e·G`
-   in the output. `E` must not be the identity element — a predictable shared secret would expose
-   the amounts — and validators reject it (see [validation rules](#validation-rules-edge-cases-and-soundness), rule 1).
+1. The sender derives a per-output ephemeral scalar `e` **deterministically from its own
+   viewing secret**:
+
+   ```
+   e = KDF("cardano/ct/outgoing/v0", sk_view(sender),
+           outpoint of the transaction's first input, output index)
+   ```
+
+   and includes the ephemeral public key `E = e·G` in the output. Conforming wallets MUST
+   derive `e` this way rather than sampling it at random: the derivation is what makes the
+   sender's **outgoing** payments auditable (see
+   [auditing](#auditing-and-selective-disclosure)), and — because a spent outpoint is unique
+   in the chain's history — it guarantees that no two outputs ever share an ephemeral
+   scalar, even across transactions, eliminating both keystream reuse and any dependence on
+   run-time randomness (in the spirit of deterministic nonces, RFC 6979). To everyone
+   without the sender's `sk_view`, a correctly derived `E` is indistinguishable from a
+   random one. `E` must not be the identity element — a predictable shared secret would
+   expose the amounts — and validators reject it (see
+   [validation rules](#validation-rules-edge-cases-and-soundness), rule 1). The derivation
+   itself cannot be checked by validators (it involves the sender's secret); a
+   non-conforming sender degrades only *its own* account's outgoing auditability, and
+   detectably so (see [auditing](#auditing-and-selective-disclosure)).
 2. The shared secret is `s = e·P_view` (computed by the sender) `= sk_view·E` (computed by the
    recipient) — the same group element.
 3. For each asset in the output, a key-derivation function — domain-separated by the **asset
-   identifier and the output's position within the transaction** (so that no two derivations
-   ever coincide) — derives from `s` the blinding `r` and an amount-encryption keystream. The
-   amount itself cannot be *derived* from `s` (it is chosen freely by the sender): it is stored
-   in the output as an 8-byte **masked amount** `v ⊕ keystream`.
+   identifier, the outpoint of the transaction's first input, and the output's position
+   within the transaction** (so that no two derivations ever coincide, within a transaction
+   or across transactions) — derives from `s` the blinding `r` and an amount-encryption
+   keystream. The amount itself cannot be *derived* from `s` (it is chosen freely by the
+   sender): it is stored in the output as an 8-byte **masked amount** `v ⊕ keystream`.
 4. The recipient recomputes `s` from `E` using `sk_view`, derives `r` and the keystream, recovers
    `v` from the stored masked amount, and **must verify `C == v·H + r·G`** before accepting the
    payment. If the check fails, the output was not honestly constructed for this recipient and
@@ -605,7 +625,31 @@ balancing-proof construction.
 Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
 single `sk_view` (one key for the whole account, i.e. the stake address — see [Keys](#keys)) gives the holder of
 that key a complete, human-readable history of the **entire account** across all its payment
-addresses — which counterparties, which assets, and how much — recovered by the computation of [amount transport](#amount-transport).
+addresses — which counterparties, which assets, and how much. The two directions are
+recovered by two distinct computations, both from chain data and the key alone:
+
+- **Incoming amounts (including change): direct decryption.** For every output addressed to
+  the account, the auditor computes `s = sk_view·E` and decrypts as the recipient does (see
+  [amount transport](#amount-transport)).
+- **Outgoing amounts: ephemeral-key recomputation.** For every transaction spending the
+  account's outputs (public, since the graph is public), the auditor re-derives the
+  deterministic ephemeral scalar `e` of each output from `sk_view` and the transaction
+  context, confirms authorship by checking `E == e·G`, resolves each recipient's registered
+  `P_view` from the public registry, computes the same shared secret the sender used
+  (`s = e·P_view(recipient)`), and decrypts the amount sent — the auditor reconstructs
+  exactly the sender's own view. This is possible **without any extra on-chain data**
+  precisely because recipients and their registered keys are public; designs that hide
+  recipients must carry an additional encrypted record per output to offer the same
+  capability.
+- **Fallback: balance reconstruction.** If an output's `E` does not match the recomputed
+  `e·G`, the sending wallet did not follow the deterministic derivation (see
+  [amount transport](#amount-transport)) — the deviation is thereby *detectable*, and the
+  auditor still recovers the transaction's outgoing **per-asset totals** from conservation:
+  decrypted inputs minus decrypted change minus the public legs. With a single external
+  recipient this yields the exact amount; with several, the total but not the split. A
+  non-conforming wallet therefore weakens only the resolution of its own account's audit
+  trail, never its correctness.
+
 This supports auditing and tax reporting: the account owner, of their own volition, hands the
 single `sk_view` to **one or more auditors of their choosing** — a tax authority, an accountant,
 or tax-reporting software. Disclosure is
@@ -615,9 +659,10 @@ this specification.
 
 Recovering an account's amounts from `sk_view` requires **no chain-wide scanning or trial
 decryption**: because addresses are public, an auditor or tool needs only the outputs already
-indexed for the account's addresses, plus one Diffie–Hellman computation per output (see [amount transport](#amount-transport)).
-Disclosure-based auditing therefore composes directly with existing address-indexing
-infrastructure.
+indexed for the account's addresses — plus, for the outgoing direction, the transactions
+spending them, which the same index provides — with one Diffie–Hellman computation per output
+(see [amount transport](#amount-transport)). Disclosure-based auditing therefore composes
+directly with existing address-indexing infrastructure.
 
 ### Versioning
 
@@ -662,6 +707,11 @@ what the native approach buys, so that comparison can be made explicitly.
   implements it once, and all confidential value is mutually interoperable. Application-layer
   confidentiality fragments by construction: each system brings its own key model, its own
   disclosure tooling, its own audit, and value confidential in one is opaque to the others.
+  The public-address design pays a concrete dividend here: full **bidirectional**
+  auditability from a single key costs zero extra bytes on chain (outgoing amounts are
+  recovered by re-deriving ephemeral keys against the public `P_view` registry — see
+  [auditing](#auditing-and-selective-disclosure)), a property recipient-hiding designs must
+  buy with an additional encrypted record in every output.
 - **Consensus-grade trust.** Here, value conservation over hidden amounts is enforced by the
   validation rules of every node — the same trust model as the ledger itself, with no
   additional operator, upgrade key, or contract administrator. An application-layer system
@@ -797,6 +847,16 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   confidential balance — though timing correlation between an unshield and an immediately
   following script interaction can link the two. Wallets should surface this trade-off clearly
   before users shield funds.
+- **The viewing key reveals the full bidirectional history — by design, cutting both ways.**
+  Because outgoing payments are auditable by re-deriving the deterministic ephemeral scalars
+  from `sk_view` (see [auditing](#auditing-and-selective-disclosure)), whoever holds the key
+  — an authorised auditor, or a thief — reads the account's complete history: incoming,
+  change, **and** outgoing, past and future. This is exactly the audit capability the
+  proposal promises, but it means a *compromised* viewing key exposes strictly more than a
+  design without sender-side derivation would (incoming and change only). The mitigation is
+  key hygiene today and key **rotation** as a companion proposal (the derivation path
+  already reserves successive key indices); rotation limits a compromise's damage to
+  history-up-to-rotation.
 - **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
   accounting software supports viewing-key import for *any* chain; users of existing privacy
   systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
@@ -1147,9 +1207,15 @@ keys, the commitments, and the proofs. **What is hidden:** `v_in`, `v_send`, `v_
 derives `r_send` and the keystream, recovers `v_send` from the stored masked amount, and verifies
 `C_send == v_send·H + r_send·G`. B now holds a spendable confidential UTXO.
 
-**Auditor.** Given A's single account viewing key `sk_view(A)`, an auditor recomputes the shared
-secret for every output addressed to A (here, the change) and reads all of A's amounts — a full
-account view for tax/audit purposes.
+**Auditor.** Given A's single account viewing key `sk_view(A)`, an auditor reads both
+directions of this transaction. **Incoming/change:** for the change output, compute
+`s₂ = sk_view(A)·E₂` and decrypt `v_change` exactly as A does. **Outgoing:** re-derive the
+deterministic ephemeral scalar `e₁` from `sk_view(A)` and the transaction context, confirm
+`E₁ == e₁·G`, look up B's registered `P_view(B)`, compute `s₁ = e₁·P_view(B)`, and decrypt
+`v_send` — the same computation the sender performed. (Had A's wallet deviated from the
+deterministic derivation, the `E₁` check would expose it, and `v_send` would still follow
+from conservation: `v_send = v_in − v_change − f`.) A full account view for tax/audit
+purposes, from the key and chain data alone.
 
 **Native token variant.** If the output to B also carried `q` units of a token `(policy, name)`,
 the output would include an additional commitment `C_T = q·H + r_T·G` for that asset, the range
