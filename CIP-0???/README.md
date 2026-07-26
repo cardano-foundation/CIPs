@@ -5,7 +5,6 @@ Category: Tools
 Status: Proposed
 Authors:
   - Slavcho King <support@getmyid.today>
-  - Jesse Anderson <papa.goose@koralabs.io>
 Implementors: []
 Discussions:
   - CPS-0032: https://github.com/cardano-foundation/CIPs/pull/1199
@@ -184,16 +183,28 @@ In addition to API resolution, providers MUST support on-chain
 resolution so wallets can verify handle ownership trustlessly
 without depending on provider API availability.
 
-On-chain resolution is performed by querying the Cardano
-blockchain for the current holder of the NFT asset identified
-by `{policy_id}{asset_name_hex}` where `asset_name_hex` is
-the UTF-8 encoded handle string in hexadecimal.
-
-The address currently holding that asset is the resolved
-address for the handle.
-
 Providers MUST document their on-chain resolution method in
-their registry entry.
+their registry entry using the `onchain_method` field. The
+following methods are recognized as valid on-chain resolution
+approaches, though this list is not exhaustive:
+
+- `policy_asset_holder` — locate the output holding the
+  asset identified by `{policy_id}{asset_name_hex}` where
+  `asset_name_hex` is the UTF-8 encoded handle string in
+  hexadecimal, and return the holder address
+- `datum_registry` — query a Plutus contract datum for
+  the registered address associated with the handle name
+- `reference_asset` — follow the CIP-67/68 user and
+  reference asset pair to determine the resolved address
+- `delegated` — follow a provider-documented subhandle
+  or delegation chain as described in the provider's
+  registry entry documentation
+
+Providers using architectures not listed here MUST
+document their resolution method sufficiently for wallet
+implementors to verify resolution independently. Wallets
+implementing on-chain resolution for a given provider
+MUST follow the method documented by that provider.
 
 #### Test Vectors
 
@@ -203,6 +214,23 @@ preprod testnet — so wallet implementors can verify their
 integration without spending real ADA.
 
 ### Wallet Display Requirements
+
+Wallets implementing this CIP SHOULD support resolution for
+all active registry entries that meet the technical criteria
+defined in this document. Registry inclusion confirms
+technical conformance only — it does not constitute
+endorsement, create a presumptive right to wallet
+enablement, or transfer wallet security decisions to the
+registry or CIP editors.
+
+Wallets MAY decline to support a specific provider based
+on security, privacy, legal, operational, or
+user-protection requirements. Wallets are not required to
+publicly document reasons for exclusion when doing so would
+compromise security investigations, confidential legal
+advice, or active vulnerability disclosures. Wallets
+SHOULD publish general provider evaluation policies where
+possible.
 
 Wallets implementing this standard MUST:
 
@@ -369,6 +397,26 @@ ensures that handle ownership is always verifiable without
 depending on any provider's infrastructure being available.
 This is consistent with Cardano's decentralization values and
 protects users if a provider's API goes offline.
+
+### Why this CIP benefits wallet teams
+
+A common objection to this standard is that wallet teams
+already have working handle integrations through existing
+provider relationships and have no incentive to implement
+a new standard.
+
+The answer is that this CIP reduces wallet engineering
+burden over time. Today a wallet that wants to support
+three handle providers must build three separate
+integrations, maintain three separate relationships, and
+handle three different API formats. With this standard,
+one implementation supports all current and future
+compliant providers automatically.
+
+The marginal cost of adding a compliant provider after
+initial implementation is minimal — the wallet already
+speaks the standard interface. Provider diversity is free
+after the first implementation.
 
 ## Path to Active
 
