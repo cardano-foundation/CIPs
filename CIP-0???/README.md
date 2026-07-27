@@ -598,6 +598,8 @@ presented as the default option.
       "serial": 1,
       "provider": "Example Provider A",
       "namespace": ".did",
+      "namespace_type": "suffix",
+      "namespace_delimiter": ".",
       "policy_ids": {
         "mainnet": "aabbccddee112233445566778899001122334455667788990011223344",
         "preprod": "112233445566778899001122334455667788990011223344556677889900"
@@ -615,7 +617,8 @@ presented as the default option.
     {
       "serial": 2,
       "provider": "Example Provider B",
-      "namespace": "$name",
+      "namespace": "$",
+      "namespace_type": "prefix",
       "policy_ids": {
         "mainnet": "bbccddee1122334455667788990011223344556677889900112233445566"
       },
@@ -632,7 +635,9 @@ presented as the default option.
     {
       "serial": 3,
       "provider": "Example Provider C",
-      "namespace": "name.ada",
+      "namespace": "_ada",
+      "namespace_type": "suffix",
+      "namespace_delimiter": "_",
       "policy_ids": {
         "mainnet": "ccddee112233445566778899001122334455667788990011223344556677",
         "preprod": "ddee11223344556677889900112233445566778899001122334455667788"
@@ -651,6 +656,8 @@ presented as the default option.
       "serial": 4,
       "provider": "Example Provider D",
       "namespace": ".did",
+      "namespace_type": "suffix",
+      "namespace_delimiter": ".",
       "policy_ids": {
         "mainnet": "eeff001122334455667788990011223344556677889900112233445566778899"
       },
@@ -663,6 +670,24 @@ presented as the default option.
       "security_contact": "security@example-d.com",
       "status": "active",
       "registered": "2026-06-03"
+    }
+    {
+      "serial": 5,
+      "provider": "Example Provider E",
+      "namespace": "",
+      "namespace_type": "bare",
+      "policy_ids": {
+        "mainnet": "aabbccddeeff00112233445566778899001122334455667788990011"
+      },
+      "resolver": {
+        "api": "https://example-e.com/api/resolve/",
+        "onchain_method": "policy_asset_holder"
+      },
+      "metadata_standard": "CIP-25",
+      "website": "https://example-e.com",
+      "security_contact": "security@example-e.com",
+      "status": "active",
+      "registered": "2026-06-04"
     }
   ]
 }
