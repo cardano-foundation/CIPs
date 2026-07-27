@@ -13,6 +13,7 @@
           "serial",
           "provider",
           "namespace",
+          "namespace_type",
           "policy_ids",
           "resolver",
           "metadata_standard",
@@ -34,8 +35,17 @@
           },
           "namespace": {
             "type": "string",
-            "minLength": 1,
-            "description": "Namespace format e.g. .did, $name, name.ada"
+            "minLength": 0,
+            "description": "Namespace value e.g. .did, $, empty string for bare namespace"
+          },
+          "namespace_type": {
+            "type": "string",
+            "enum": ["suffix", "prefix", "bare"],
+            "description": "Namespace type — suffix, prefix, or bare"
+          },
+          "namespace_delimiter": {
+          "type": "string",
+          "description": "Delimiter character used for suffix namespaces only"
           },
           "policy_ids": {
             "type": "object",
