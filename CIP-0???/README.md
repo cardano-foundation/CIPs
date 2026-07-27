@@ -7,7 +7,12 @@ Authors:
   - Slavcho King <support@getmyid.today>
 Implementors: []
 Discussions:
-  - CPS-0032: https://github.com/cardano-foundation/CIPs/pull/1199
+Discussions:
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1229
+  - Early discussion: https://github.com/cardano-foundation/CIPs/pull/1187
+  - CPS-0032 review: https://github.com/cardano-foundation/CIPs/pull/1199
+Solution To:
+  - CPS-0032: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0032
 Created: 2026-06-01
 License: CC-BY-4.0
 ---
