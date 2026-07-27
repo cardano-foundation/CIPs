@@ -100,6 +100,122 @@ for each new entry.
 | status | Yes | One of: active, deprecated, inactive |
 | registered | Yes | ISO 8601 date of registry entry merge |
 
+### Namespace Definition
+
+A namespace in the context of this CIP is a syntactic pattern
+that uniquely identifies handles issued by a specific provider.
+Each provider may register one or more namespaces in the registry under separate entries.
+
+Three namespace types are defined:
+
+#### Suffix Namespace
+
+The distinguishing element appears at the end of the handle
+string, preceded by a delimiter character.
+
+**Format:** `{delimiter}{word}`
+
+**Excluded delimiter characters** (not permitted because they
+conflict with URL encoding, URI parsing, or display rendering):
+`?` `&` `%` `"` `'` `<` `>` `(` `)` `[` `]` `{` `}` `,`
+`^` `` ` `` newline tab space
+
+Any special character not in the excluded list above MAY be used
+as a suffix delimiter.
+
+**Word:** letters and numbers only, 1 to 20 characters
+
+**Examples:** `.did`, `#cardano`, `@id`, `-gid`, `_ada`, `$did`
+
+**Detection rule:** `handle.endsWith(namespace_value)`
+
+**Example:** `john.smith.did` matches namespace `.did`
+
+Only one suffix per provider registration is permitted.
+The suffix is defined as the delimiter character plus
+everything after the LAST occurrence of any delimiter
+character in the handle string.
+
+#### Prefix Namespace
+
+The distinguishing element appears at the start of the
+handle string as a single special character. The prefix
+character is a visual convention and is NOT part of the
+on-chain asset name — it is stripped before on-chain
+lookup.
+
+**Allowed prefix characters:** any single special character not in
+the following excluded list:
+`?` `&` `%` `"` `'` `<` `>` `(` `)` `[` `]` `{` `}` `,`
+`^` `` ` `` newline tab space
+
+**Detection rule:** `handle.startsWith(namespace_value)`
+where the prefix character is stripped before on-chain
+lookup
+
+**Example:** `$john.smith` matches namespace `$` — the
+actual on-chain asset name queried is `john.smith`
+
+#### Bare Namespace
+
+No prefix or suffix. The entire input string is the
+complete on-chain asset name. This is the model used
+by providers whose handles have no distinguishing
+syntactic element.
+
+**Detection rule:** bare namespace providers are always
+queried as a fallback when no suffix or prefix match
+is found among registered providers.
+
+Multiple providers may register under the bare namespace
+type under different Policy IDs. Bare namespace providers
+are displayed with lowest priority in the collision
+selection interface.
+
+#### Namespace Registry Fields
+
+The following fields MUST be added to each registry entry
+to define the provider namespace:
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| namespace | Yes | The namespace value e.g. `.did`, `$`, empty string for bare |
+| namespace_type | Yes | One of: `suffix`, `prefix`, `bare` |
+| namespace_delimiter | Suffix only | The delimiter character used e.g. `.` `#` `@` `-` `_` |
+
+Updated registry entry examples:
+
+Suffix namespace:
+```json
+{
+  "namespace": ".did",
+  "namespace_type": "suffix",
+  "namespace_delimiter": "."
+}
+```
+
+Prefix namespace:
+```json
+{
+  "namespace": "$",
+  "namespace_type": "prefix"
+}
+```
+
+Bare namespace:
+```json
+{
+  "namespace": "",
+  "namespace_type": "bare"
+}
+```
+
+#### Namespace Detection Algorithm
+
+When a user enters a handle string, wallets implementing
+this CIP MUST use the following algorithm to determine
+which registered provider or providers to query:
+
 #### Serial Number and Resolution Order
 
 Serial numbers are assigned in order of pull request merge date
