@@ -3,10 +3,13 @@ CIP: "?"
 Title: Builtin pattern matching in Untyped Plutus Core
 Category: Plutus
 Status: Proposed
-Authors: []
-Implementors: []
+Authors:
+  - Seungheon Oh <seungheon.oh@iohk.io>
+Implementors:
+  - Seungheon Oh <seungheon.oh@iohk.io>
 Discussions:
-  - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1236
+  - Implementation PR: https://github.com/IntersectMBO/plutus/pull/7852
 Created: 2026-07-30
 License: CC-BY-4.0
 ---
