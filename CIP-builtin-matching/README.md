@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Builtin pattern matching in Untyped Plutus Core
+Title: Builtin pattern matching in UPLC
 Category: Plutus
 Status: Proposed
 Authors:
