@@ -65,6 +65,12 @@ The direct stakeholders are:
 
 ## Specification
 
+### Status of this specification
+
+The pure matching rules in [Matching semantics](#matching-semantics) are normative. They define which alternative is selected, which values are captured, their order, and the resulting handler application.
+
+The cost coefficients described in [Costed operational refinement](#costed-operational-refinement) are pre-activation working values. They must be calibrated against representative benchmarks before they are used by the ledger.
+
 ### Scope and type of change
 
 This proposal makes two related changes:
@@ -140,7 +146,7 @@ For builtin lists, `Data.Constr` fields, `Data.List`, and `Data.Map`, `DefaultPa
 
 ### Concrete syntax
 
-In the textual form, `match` is followed by its scrutinee and one or more `pattern` alternatives. Each alternative contains a pattern followed by its handler:
+In the textual form, `match` is followed by its scrutinee and an ordered list of `pattern` alternatives. Each alternative contains a pattern followed by its handler:
 
 ```lisp
 (program 1.2.0
@@ -201,68 +207,473 @@ Default builtin patterns use a four-bit tag:
 
 For prefix tag `13`, the structural descriptor is one of tags `6`, `8`, `9`, or `10`, with the same payload as its exact form. A final one-bit tag selects whether the unconsumed suffix is ignored (`0`) or captured (`1`). Other pattern tags, structural descriptors, and rest tags are invalid.
 
-### Evaluation
+### Matching semantics
 
-`Match` is evaluated as follows:
+This section gives an extensional reduction rule for the UPLC `Match` node. It separates the language semantics—ordered pattern selection and positional capture—from the CEK implementation's explicit work stack and incremental budget accounting.
 
-1. Evaluate the scrutinee.
-2. If the result is not a builtin constant, evaluation fails. Otherwise, inspect alternatives in source order.
-3. Match an alternative depth-first, from left to right, recording captures as they are reached.
-4. On a mismatch, discard that alternative's pending work and captures, then try the next alternative.
-5. On success, select that alternative's handler and apply the captured values to it in source order.
-6. If no alternative matches, evaluation fails explicitly.
+#### Scope and notation
 
-Alternatives that are not selected are not evaluated. A handler must accept one argument for each capture in its associated pattern. Wildcards do not add handler arguments.
+Write a `Match` term as
 
-An implementation may maintain an explicit work stack for pending siblings and fields and a separate capture accumulator. The reference implementation discards both in constant time when an alternative fails. On success, it reverses the capture accumulator into source order and constructs the applications of the selected handler.
+$$
+\mathsf{match}\;M\;[(p_1,H_1),\ldots,(p_n,H_n)],
+$$
 
-### CEK integration
+where $M$ is the scrutinee, $p_i$ is a universe-specific builtin pattern, and $H_i$ is its handler. The alternatives are ordered.
 
-The reference implementation introduces `FrameMatches`, analogous to `FrameCases`. After the scrutinee is evaluated, this frame dispatches to the universe-specific matcher. If a pattern succeeds with captured values, the frame passes those values through `FrameAwaitFunConN` so that they are applied to the selected handler.
+A builtin constant is written $C=\langle u,v\rangle$, pairing a universe tag $u$ with a value $v:\mathsf{El}(u)$. The UPLC constant term containing $C$ is written $\ulcorner C\urcorner$. A capture sequence is written $\overline C=[C_1,\ldots,C_k]$, and $\epsilon$ is the empty sequence. Sequence concatenation is $\mathbin{+\!+}$.
 
-Universe-specific matching is exposed through a type class:
+Define left-associated application of a handler to its captures by
 
-```haskell
-newtype PatternMatchM s a = PatternMatchM
-  { runPatternMatchM :: (PatternWork -> ST s ()) -> ST s a
-  }
+$$
+\begin{aligned}
+\mathsf{apps}(H,\epsilon) &= H,\\
+\mathsf{apps}(H,C_0::\overline C)
+  &= \mathsf{apps}(H\;\ulcorner C_0\urcorner,\overline C).
+\end{aligned}
+$$
 
-class MatchBuiltin uni where
-  type BuiltinPattern uni
+Patterns do not introduce UPLC variables. A `bind` records a constant in $\overline C$; selection turns those captures into ordinary applications of the chosen handler.
 
-  matchBuiltin
-    :: Some (ValueOf uni)
-    -> Vector (BuiltinPattern uni, term)
-    -> PatternMatchM
-         s
-         (HeadSpine Text term (Some (ValueOf uni)))
+#### Universe-supplied matching judgment
+
+The core rule depends on a deterministic partial function supplied by the constant universe:
+
+$$
+\mu_{\mathcal U}(p,C)=\overline C.
+$$
+
+If the pattern does not match, $\mu_{\mathcal U}(p,C)$ is undefined, written $\mu_{\mathcal U}(p,C)\uparrow$.
+
+The alternative-selection function is
+
+$$
+\begin{aligned}
+\mathsf{select}_{\mathcal U}(C,[]) &= \mathsf{noMatch},\\
+\mathsf{select}_{\mathcal U}(C,(p,H)::A) &={}
+  \begin{cases}
+    (H,\overline C)
+      & \text{if }\mu_{\mathcal U}(p,C)=\overline C,\\
+    \mathsf{select}_{\mathcal U}(C,A) & \text{if }\mu_{\mathcal U}(p,C)\uparrow.
+  \end{cases}
+\end{aligned}
+$$
+
+This makes first-match-wins explicit. Captures from a failed alternative are discarded before the next alternative is tried.
+
+#### Typing in Typed Plutus Core
+
+The typed language uses a universe-supplied pattern typing judgment
+
+$$
+\mathcal U;A\vdash p\Rightarrow\overline A,
+$$
+
+Read this as: “In builtin universe $\mathcal U$, pattern $p$ inspects a value of builtin type $A$ and produces captures with types $\overline A$.” This judgment is defined only when $A$ is represented by $\mathcal U$. The universe does not pass a pattern to another pattern. It defines which builtin patterns and constant types are available and how those patterns are typed.
+
+Here, $A$ appears before the turnstile as the type inspected by $p$, while $\Rightarrow$ points to the capture types produced by the pattern. The sequence $\overline A=[A_1,\ldots,A_k]$ contains those capture types in handler-application order.
+
+Let $B$ be the result type of the whole `Match` expression and therefore the result type that every selected handler must eventually produce. Define the handler type for a capture sequence by
+
+$$
+\begin{aligned}
+\epsilon\Rightarrow B &= B,\\
+(A::\overline A)\Rightarrow B &= A\to(\overline A\Rightarrow B).
+\end{aligned}
+$$
+
+Thus a handler for no captures has type $B$. A handler whose first capture has type $A$ takes an $A$ argument, followed by the arguments required for the remaining capture types, and finally produces $B$.
+
+In the rule below, $\Gamma$ is the term-variable typing context; type well-formedness is implicit.
+
+The typing rule for matching is
+
+$$
+\mathrm{TY\_MATCH}\;
+\frac{
+  \Gamma\vdash M:A
+  \qquad
+  \forall i.\;\mathcal U;A\vdash p_i\Rightarrow\overline{A_i}
+  \qquad
+  \forall i.\;\Gamma\vdash H_i:\overline{A_i}\Rightarrow B
+}{
+  \Gamma\vdash
+  \mathsf{match}\;M\;[(p_1,H_1),\ldots,(p_n,H_n)]:B
+}.
+$$
+
+For an empty alternative list, this rule is admissible only when the expected result type $B$ is known or the syntax carries an explicit result-type annotation.
+
+For `DefaultUni`, the leaf-pattern clauses are
+
+$$
+\begin{aligned}
+\mathcal U;A\vdash\mathsf{wildcard}
+  &\Rightarrow\epsilon,\\
+\mathcal U;A\vdash\mathsf{bind}
+  &\Rightarrow[A],\\
+\mathcal U;\mathsf{integer}\vdash\mathsf{integer}(k)
+  &\Rightarrow\epsilon,\\
+\mathcal U;\mathsf{bytestring}\vdash\mathsf{bytestring}(b)
+  &\Rightarrow\epsilon,\\
+\mathcal U;\mathsf{bool}\vdash\mathsf{bool}(q)
+  &\Rightarrow\epsilon,\\
+\mathcal U;\mathsf{unit}\vdash\mathsf{unit}
+  &\Rightarrow\epsilon.
+\end{aligned}
+$$
+
+Pair captures are concatenated left-to-right:
+
+$$
+\frac{
+  \mathcal U;A_L\vdash p\Rightarrow\overline{A_p}
+  \qquad
+  \mathcal U;A_R\vdash q\Rightarrow\overline{A_q}
+}{
+  \mathcal U;\mathsf{pair}\;A_L\;A_R\vdash
+  \mathsf{pair}(p,q)\Rightarrow
+  \overline{A_p}\mathbin{+\!+}\overline{A_q}
+}.
+$$
+
+For a pattern sequence, capture types are concatenated from left to right:
+
+$$
+\mathcal U;A\vdash[]\Rightarrow\epsilon.
+$$
+
+$$
+\frac{
+  \mathcal U;A\vdash p\Rightarrow\overline{A_p}
+  \qquad
+  \mathcal U;A\vdash\bar p\Rightarrow\overline{A_{\bar p}}
+}{
+  \mathcal U;A\vdash(p::\bar p)\Rightarrow
+  \overline{A_p}\mathbin{+\!+}\overline{A_{\bar p}}
+}.
+$$
+
+The field-ending helper determines whether the remaining suffix contributes a capture type:
+
+$$
+\begin{aligned}
+\mathsf{endTypes}(\mathsf{exact},A,\overline{A_p})
+  &=\overline{A_p},\\
+\mathsf{endTypes}(\mathsf{prefixWildcard},A,\overline{A_p})
+  &=\overline{A_p},\\
+\mathsf{endTypes}(\mathsf{prefixCapture},A,\overline{A_p})
+  &=\overline{A_p}\mathbin{+\!+}[\mathsf{list}\;A].
+\end{aligned}
+$$
+
+Here $e$ ranges over $\mathsf{exact}$, $\mathsf{prefixWildcard}$, and $\mathsf{prefixCapture}$. The complete list rule is
+
+$$
+\frac{
+  \mathcal U;A\vdash\bar p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{list}\;A\vdash
+  \mathsf{list}_e(\bar p)\Rightarrow
+  \mathsf{endTypes}(e,A,\overline{A_p})
+}.
+$$
+
+Thus exact lists, prefix lists with an ignored suffix, and prefix lists with a captured suffix are all covered. Exact and prefix-wildcard patterns add only their child captures; prefix-capture patterns add one final list capture.
+
+The field-bearing `Data` patterns use the same helper:
+
+$$
+\frac{
+  \mathcal U;\mathsf{data}\vdash
+  \bar p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{data}\vdash
+  \mathsf{dataConstr}_{t,e}(\bar p)\Rightarrow
+  \mathsf{endTypes}(e,\mathsf{data},\overline{A_p})
+}.
+$$
+
+$$
+\frac{
+  \mathcal U;\mathsf{data}\vdash
+  \bar p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{data}\vdash
+  \mathsf{dataList}_e(\bar p)\Rightarrow
+  \mathsf{endTypes}(e,\mathsf{data},\overline{A_p})
+}.
+$$
+
+$$
+\frac{
+  \mathcal U;\mathsf{pair}\;\mathsf{data}\;\mathsf{data}
+  \vdash\bar p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{data}\vdash
+  \mathsf{dataMap}_e(\bar p)\Rightarrow
+  \mathsf{endTypes}
+  (e,\mathsf{pair}\;\mathsf{data}\;\mathsf{data},\overline{A_p})
+}.
+$$
+
+The scalar `Data` wrappers expose their enclosed builtin type to the child pattern:
+
+$$
+\frac{
+  \mathcal U;\mathsf{integer}\vdash p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{data}\vdash
+  \mathsf{dataI}(p)\Rightarrow\overline{A_p}
+}.
+$$
+
+$$
+\frac{
+  \mathcal U;\mathsf{bytestring}\vdash p\Rightarrow\overline{A_p}
+}{
+  \mathcal U;\mathsf{data}\vdash
+  \mathsf{dataB}(p)\Rightarrow\overline{A_p}
+}.
+$$
+
+Consequently, $\mathsf{dataI}(\mathsf{bind})$ captures an integer, while a plain $\mathsf{bind}$ at the same position captures `Data`. Likewise, $\mathsf{dataB}(\mathsf{bind})$ captures a byte string.
+
+#### Term reduction
+
+$$
+\mathrm{MATCH\_CONSTANT}\;
+\frac{
+  \mathsf{select}_{\mathcal U}(C,A)=(H,\overline C)
+}{
+  \mathsf{match}\;\ulcorner C\urcorner\;A
+  \longrightarrow\mathsf{apps}(H,\overline C)
+}.
+$$
+
+$$
+\mathrm{MATCH\_CONG}\;
+\frac{
+  M\longrightarrow M'
+}{
+  \mathsf{match}\;M\;A
+  \longrightarrow\mathsf{match}\;M'\;A
+}.
+$$
+
+$$
+\mathrm{MATCH\_EXHAUSTED}\;
+\frac{
+  C\text{ is a builtin constant}
+  \qquad
+  \mathsf{select}_{\mathcal U}(C,A)=\mathsf{noMatch}
+}{
+  \mathsf{match}\;\ulcorner C\urcorner\;A
+  \longrightarrow\mathsf{failure}_{\mathsf{match}}
+}.
+$$
+
+$$
+\mathrm{MATCH\_NONBUILTIN}\;
+\frac{
+  V\text{ is a value}
+  \qquad
+  V\text{ is not a builtin constant}
+}{
+  \mathsf{match}\;V\;A
+  \longrightarrow\mathsf{failure}_{\mathsf{match}}
+}.
+$$
+
+Here $\mathsf{failure}_{\mathsf{match}}$ is an evaluation failure raised by matching, not a UPLC `Error` term. Unselected handlers are not evaluation contexts. If there are $k$ captures, selection produces exactly $k$ ordinary applications and performs no handler-arity check.
+
+#### The `DefaultUni` instance
+
+Any combination not covered by an equation below is a mismatch.
+
+##### Leaf patterns
+
+For every builtin constant $C$:
+
+$$
+\begin{aligned}
+\mu(\mathsf{wildcard},C) &= \epsilon,\\
+\mu(\mathsf{bind},C) &= [C].
+\end{aligned}
+$$
+
+Literal patterns match only constants of the corresponding universe type:
+
+$$
+\begin{aligned}
+\mu(\mathsf{integer}(k),\langle\mathsf{integer},n\rangle)
+  &=\epsilon &&\text{if }n=k,\\
+\mu(\mathsf{bytestring}(b),\langle\mathsf{bytestring},b'\rangle)
+  &=\epsilon &&\text{if }b=b',\\
+\mu(\mathsf{bool}(q),\langle\mathsf{bool},q'\rangle)
+  &=\epsilon &&\text{if }q=q',\\
+\mu(\mathsf{unit},\langle\mathsf{unit},()\rangle)
+  &=\epsilon.
+\end{aligned}
+$$
+
+The `Int64` stored by `DefaultPatternInteger` is embedded into `Integer` before comparison.
+
+##### Pairs
+
+$$
+\frac{
+  \mu(p,\langle u,x\rangle)=\overline C_1
+  \qquad
+  \mu(q,\langle v,y\rangle)=\overline C_2
+}{
+  \mu(\mathsf{pair}(p,q),
+  \langle\mathsf{pair}\;u\;v,(x,y)\rangle)
+  =\overline C_1\mathbin{+\!+}\overline C_2
+}.
+$$
+
+##### Homogeneous fields
+
+Define
+
+$$
+\mathsf{prefix}_u([p_1,\ldots,p_k],[x_1,\ldots,x_m])
+=\overline C_1\mathbin{+\!+}\cdots\mathbin{+\!+}\overline C_k
+$$
+
+exactly when $k\le m$ and $\mu(p_i,\langle u,x_i\rangle)=\overline C_i$ for every $1\le i\le k$. Otherwise it is undefined. Then
+
+$$
+\begin{aligned}
+\mathsf{fields}_u(\mathsf{exact},\bar p,\bar x)
+  &=\mathsf{prefix}_u(\bar p,\bar x)
+  &&\text{only if }|\bar p|=|\bar x|,\\
+\mathsf{fields}_u(\mathsf{prefixWildcard},\bar p,\bar x)
+  &=\mathsf{prefix}_u(\bar p,\bar x),\\
+\mathsf{fields}_u(\mathsf{prefixCapture},\bar p,\bar x)
+  &=\mathsf{prefix}_u(\bar p,\bar x)
+  \mathbin{+\!+}
+  [\langle\mathsf{list}\;u,\mathsf{drop}_{|\bar p|}(\bar x)\rangle].
+\end{aligned}
+$$
+
+The two prefix equations are defined only when $|\bar p|\le|\bar x|$. A prefix capture adds one capture even when the suffix is empty, and it does not traverse the suffix.
+
+$$
+\mu(\mathsf{list}_{e}(\bar p),
+\langle\mathsf{list}\;u,\bar x\rangle)
+=\mathsf{fields}_u(e,\bar p,\bar x).
+$$
+
+##### `Data`
+
+$$
+\begin{aligned}
+\mu(\mathsf{dataConstr}_{t,e}(\bar p),
+  \langle\mathsf{data},\mathsf{Constr}\;t'\;\bar D\rangle)
+  &=\mathsf{fields}_{\mathsf{data}}(e,\bar p,\bar D)
+  &&\text{if }t=t',\\
+\mu(\mathsf{dataList}_{e}(\bar p),
+  \langle\mathsf{data},\mathsf{List}\;\bar D\rangle)
+  &=\mathsf{fields}_{\mathsf{data}}(e,\bar p,\bar D),\\
+\mu(\mathsf{dataMap}_{e}(\bar p),
+  \langle\mathsf{data},\mathsf{Map}\;\overline{(D,D')}\rangle)
+  &=\mathsf{fields}_{\mathsf{pair}\;\mathsf{data}\;\mathsf{data}}
+  (e,\bar p,\overline{(D,D')}),\\
+\mu(\mathsf{dataI}(p),
+  \langle\mathsf{data},\mathsf{I}\;n\rangle)
+  &=\mu(p,\langle\mathsf{integer},n\rangle),\\
+\mu(\mathsf{dataB}(p),
+  \langle\mathsf{data},\mathsf{B}\;b\rangle)
+  &=\mu(p,\langle\mathsf{bytestring},b\rangle).
+\end{aligned}
+$$
+
+The `Word64` stored by `DefaultPatternDataConstr` is embedded into `Integer` before comparison with the `Data.Constr` tag.
+
+#### Worked reductions
+
+For
+
+```lisp
+(match (con data (Constr 7 [I 1, B #aa, I 9]))
+  (pattern
+    (data-constr 7 (data-i (bind)) (bind) (wildcard))
+    handler)
+  (pattern (wildcard) fallback))
 ```
 
-Like `CaseBuiltin`, `MatchBuiltin` separates universe-specific behavior from the CEK machine. Unlike `CaseBuiltin`, it runs in `PatternMatchM`, allowing matching work to be charged as traversal proceeds.
+the matching function returns
 
-The `MatchBuiltin DefaultUni` instance sets `BuiltinPattern DefaultUni` to `DefaultBuiltinPattern` and recursively traverses that syntax. Captures are accumulated during traversal. If the current alternative later fails, its captures are discarded before matching continues with the next alternative.
+$$
+[\langle\mathsf{integer},1\rangle,
+ \langle\mathsf{data},\mathsf{B}\;\mathtt{\#aa}\rangle].
+$$
 
-### Costing
+The term reduces to
 
-All work performed by `Match` is charged incrementally. Matching steps are divided into four CEK step kinds:
-
-```haskell
-data StepKind
-  = ...
-  | BMatch
-  | BPattern
-  | BStructural
-  | BMatchNext
+```lisp
+[[handler (con integer 1)] (con data (B #aa))]
 ```
 
-- `BMatch` accounts for entering the `Match` term.
-- `BPattern` accounts for root and scalar matching, byte-string words, captures, and wildcards.
-- `BStructural` accounts for child or field edges and bounded arity probes in recursively matched lists, pairs, and `Data`.
-- `BMatchNext` accounts for abandoning a failed alternative and probing the next one.
+For
 
-Each scalar match, structural traversal, capture, wildcard, and alternative transition increments the appropriate counter directly. This permits arbitrary pattern depth and width without an uncosted traversal or an arbitrary syntactic bound.
+```lisp
+(match (con (list integer) [1, 2, 3, 4])
+  (pattern
+    (list (prefix (integer 1) (bind) (bind)))
+    handler))
+```
 
-The initial values for these parameters are estimates based on local measurements. They must be calibrated against a representative CEK benchmark suite before activation.
+the captures are the integer `2` and the list `[3, 4]`, so the selected term is
+
+```lisp
+[[handler (con integer 2)] (con (list integer) [3, 4])]
+```
+
+#### Costed operational refinement
+
+NOTE: These costing step does not seem to well represent the cost of pattern works. I'm still testing different options. This section can be ignored for now.
+
+The source-language reduction remains atomic. The CEK machine refines selection with an explicit work stack and an incrementally costed judgment:
+
+$$
+\mathsf{select}_{\mathcal U}(C,A)
+\Downarrow^{(n_P,n_S,n_N)}(H,\overline C),
+$$
+
+or the corresponding $\mathsf{noMatch}$ result, where:
+
+- $n_P$ counts ordinary pattern-work units (`BPattern`): the initial alternative/root probe, including the empty-alternative check; prefix endpoints; equal-length byte-string precharge units; and two units for every reached capture. Nested child dispatch is covered by the preceding `BStructural` event, while a later alternative's root probe is bundled into `BMatchNext`.
+- $n_S$ counts reached structural child or field edges (`BStructural`), including child dispatch and bounded exact-arity probing.
+- $n_N$ counts transitions after a known mismatch (`BMatchNext`), including abandoning the failed attempt and probing the next alternative, or discovering exhaustion after the final mismatch.
+
+If the three cost-model entries are $c_P,c_S,c_N$, the match-selection component is
+
+$$
+n_Pc_P+n_Sc_S+n_Nc_N.
+$$
+
+Entering the AST node separately incurs `cekMatchCost`. Evaluating the scrutinee and selected handler retains the usual CEK costs. Applications introduced by `Match` do not create syntactic `Apply` nodes and do not incur `BApply`; the second `BPattern` unit for each reached capture prepays its implicit handler application. These charges are not refunded if the alternative later fails.
+
+For equal-length byte strings, equality prepays
+
+$$
+\max\left(1,\left\lceil\frac{|b|}{8}\right\rceil\right)
+$$
+
+`BPattern` units before native equality. Unequal lengths fail from length metadata without that per-word precharge. An ignored or captured prefix suffix is not walked.
+
+The costed judgment must erase to the pure result:
+
+$$
+\mathsf{select}_{\mathcal U}(C,A)\Downarrow^w R
+\quad\Longrightarrow\quad
+\mathsf{select}_{\mathcal U}(C,A)=R.
+$$
+
+The event placement is normative. The coefficients $c_P,c_S,c_N$ are pre-activation working values and require calibration before ledger activation.
 
 ### Versioning
 
@@ -378,32 +789,6 @@ Capturing values is more expensive because each captured value must be stored an
 
 The cost parameters used for these measurements are not fully calibrated. Preliminary CPU and memory budgets improved by between 10% and 90%, depending on the amount of capture work. Typical script-context use is expected to capture only a few fields; with the initial conservative parameters, the observed budget improvement in those cases was approximately 40% to 60%.
 
-### Typed integration and compiler support
-
-TPLC, PIR, and compiler support are not part of the initial implementation specified by this proposal.
-
-A later typed implementation can derive the capture-argument types of each handler from its pattern and the normalized scrutinee type. Given the result type of the `Match` expression, a type checker can check each handler against the function type formed by its capture types followed by the result type. This is similar to builtin casing but requires a static pattern annotator corresponding to the runtime matcher:
-
-```haskell
-class AnnotatePatternBuiltin pat uni where
-  annotateCaseBuiltin
-    :: UniOf term ~ uni
-    => PatOf term ~ pat
-    => Type TyName uni pat ann
-    -> [(pat, term)]
-    -> Either Text [(term, [Type TyName uni ann])]
-```
-
-Exhaustiveness checking is not required for evaluation semantics because failure to match any alternative is an explicit CEK failure.
-
-### Remaining implementation considerations
-
-The following implementation questions do not change the specified behavior:
-
-- Whether `PatternMatchM`, currently an `ST` wrapper used for costing, can be made less CEK-specific without reducing performance.
-- Whether internal match-cost counters should remain in `StepKind` or move to a separate mechanism while preserving the same charged work.
-- How to expand the benchmark and budget-calibration suite before activation.
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -426,6 +811,8 @@ The following implementation questions do not change the specified behavior:
 ### Implementation Plan
 
 The reference implementation adds `Match` to UPLC and its Flat encoding, implements universe-specific matching in the CEK machine, and provides costing, benchmarks, and conformance tests in the `plutus` repository.
+
+The main matching rules are implemented in `plutus-core/plutus-core/src/PlutusCore/Default/Universe.hs`. CEK evaluation and incremental costing are implemented in `plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs`.
 
 The change requires Plutus Core language version 1.2.0 and new cost-model parameters. Under CIP-0035, these are introduced through a hard fork. Ledger integration must gate the new language version and supply the calibrated parameters. Activation should occur only after specification review, cost calibration, conformance testing, independent implementation or test implementation, and release in the node.
 
