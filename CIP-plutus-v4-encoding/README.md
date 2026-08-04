@@ -8,7 +8,8 @@ Authors:
 Implementors:
     - IOG Plutus Team <https://iohk.io>
 Discussions:
-    - https://github.com/IntersectMBO/plutus/issues/7342
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1238
+    - Plutus repo discussion: https://github.com/IntersectMBO/plutus/issues/7342
 Created: 2026-08-03
 License: CC-BY-4.0
 ---
