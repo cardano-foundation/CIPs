@@ -19,7 +19,7 @@ License: CC-BY-4.0
 This CIP specifies how the Plutus V4 ledger API types, including script context and the types it mentions, are to be encoded as `Data` objects.
 New UPLC primitives and language features, together with lessons learned from Plutus V1-V3, create an opportunity to adopt a simpler and more efficient encoding scheme.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 __Choosing between lists and arrays.__
 UPLC now includes `Array` as a built-in type, with support for constant-time indexing.
