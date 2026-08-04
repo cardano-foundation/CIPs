@@ -250,7 +250,7 @@ The encoding rules are:
    Sum types encode as `Constr t [x1...xn]`, where `t` is the constructor's 0-based index, and `xi` is the encoding of the `i`th constructor field.
    Constructors are indexed in the order in which they appear in the above Haskell datatypes.
 
-### Alternatives considered
+## Rationale: How does this CIP achieve its goals?
 
 The previous section already explains why we prefer list-encoding to array-encoding.
 We also considered the following alternatives along other dimensions.
