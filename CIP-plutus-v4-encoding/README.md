@@ -285,7 +285,9 @@ Also, under this approach, a product type and a sum type could have the same `Da
 
 ### Implementation Plan
 
-This should be implemented by the Plutus team as well as author of other languages targeting UPLC, and related tooling.
+- [ ] Implementation by the Plutus team
+- [ ] Implementation by any authors of other languages targeting UPLC
+- [ ] Implementation in related tooling
 
 ## Copyright
 
