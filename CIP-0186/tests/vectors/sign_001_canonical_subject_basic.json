@@ -1,0 +1,13 @@
+{
+  "name": "sign_001_canonical_subject_basic",
+  "spec_section": "Response signing (Signature construction)",
+  "category": "canonical_subject",
+  "input": {
+    "emitted_url": "https://aegis.example/cb?response=approved&walletKey=AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM&nonce=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&payload=ZXhhbXBsZS1jaXBoZXJ0ZXh0LWZvci1zZXNzaW9uLWpzb24&signature=ZmFrZS1zaWc"
+  },
+  "expected": {
+    "canonical_subject_utf8": "cip30dl-v1\nhttps://aegis.example/cb?nonce=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&payload=ZXhhbXBsZS1jaXBoZXJ0ZXh0LWZvci1zZXNzaW9uLWpzb24&response=approved&walletKey=AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

@@ -1,0 +1,13 @@
+{
+  "name": "sign_002_canonical_subject_host_lowercased",
+  "spec_section": "Response signing (host case-folded per RFC 3986 §3.2.2)",
+  "category": "canonical_subject",
+  "input": {
+    "emitted_url": "https://Aegis.Example/cb?response=approved&payload=eA&signature=zz"
+  },
+  "expected": {
+    "canonical_subject_utf8": "cip30dl-v1\nhttps://aegis.example/cb?payload=eA&response=approved"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

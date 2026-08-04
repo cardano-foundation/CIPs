@@ -1,0 +1,11 @@
+{
+  "name": "base64url_004_reject_noncanonical_tail",
+  "spec_section": "URI format (base64url strict-decode rule, RFC 4648 §3.5)",
+  "category": "base64url_decode",
+  "input": {
+    "encoded": "AQB"
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "noncanonical_tail_bits"
+}

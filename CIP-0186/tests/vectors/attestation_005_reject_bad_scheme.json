@@ -1,0 +1,21 @@
+{
+  "name": "attestation_005_reject_bad_scheme",
+  "spec_section": "Vendor attestation manifest",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "lace",
+      "protocol_versions": ["1"],
+      "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getRewardAddresses", "getNetworkId"],
+      "https_prefix": "https://lace.io/cip30dl/v1/",
+      "scheme": "cip30dl:",
+      "max_payload_bytes": 12288
+    }
+  },
+  "expected": {
+    "schema_valid": false,
+    "failing_constraint": "scheme.pattern"
+  },
+  "should_reject": true,
+  "rejection_reason": "shared_scheme_forbidden"
+}

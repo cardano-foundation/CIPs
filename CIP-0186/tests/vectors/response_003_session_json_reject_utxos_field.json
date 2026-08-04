@@ -1,0 +1,20 @@
+{
+  "name": "response_003_session_json_reject_utxos_field",
+  "spec_section": "Privacy budget; Methods (connect)",
+  "category": "response_envelope",
+  "input": {
+    "decrypted_session_json": {
+      "session": "c2Vzc2lvbi1pZC0wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA",
+      "network": 0,
+      "addresses": ["addr_test1qz_example"],
+      "chain": "cardano:preprod",
+      "walletId": "lace",
+      "expiresAt": 1810000000,
+      "signingPublicKey": "c2Vzc2lvbi12a2V5LWVkMjU1MTktZXhhbXBsZS0zMi1ieXRlcy0wMA",
+      "utxos": ["leaked-utxo"]
+    }
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "privacy_budget_utxos_leaked"
+}
