@@ -144,6 +144,10 @@
     "description": "CIP-0149 - Optional DRep compensation"
   },
   {
+    "transaction_metadatum_label": 6607,
+    "description": "BROCK Bot - Discord moderation bot subscription payment"
+  },
+  {
     "transaction_metadatum_label": 6676,
     "description": "Maya Protocol - Cross-chain swap memo (bifrost observer)"
   },
