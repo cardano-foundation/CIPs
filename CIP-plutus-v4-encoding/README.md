@@ -6,8 +6,7 @@ Status: Proposed
 Authors:
     - Ziyang Liu <ziyang.liu@iohk.io>
 Implementors:
-    - Plutus team
-    - Developers of languages targeting UPLC
+    - IOG Plutus Team <https://iohk.io>
 Discussions:
     - https://github.com/IntersectMBO/plutus/issues/7342
 Created: 2026-08-03
