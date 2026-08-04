@@ -1,0 +1,13 @@
+{
+  "name": "canonical_subject: signed connect response (method + echo)",
+  "spec_section": "Response signing; connect",
+  "category": "canonical_subject",
+  "input": {
+    "emitted_url": "https://aegis.example/cb?response=approved&method=connect&walletKey=zo060cy2M-x7cMF4FKXHbs0CloUFDTRHRboFhw5YfVk&nonce=BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF&echo=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&payload=P_8d1DthyMd6nNu82TN7IwirTdKo-nqUzbFquSNwHvoBZFwSm1scp_C9B0W76BA7p5nSUCbhGub9eh7ILPl9aXWrrWoYX3lW8zUkmugnnwKnTsGaYdKue5v7_QIkgVqBncwteT0LONE70JxjxyNGD2FJPctQl3Uel-ei6jWEXXKCaqwr2o0ad9_fScXqlebG7HhGSqn8VYVZTY0Tuq0VFveVNYgZV6iuqX5eQhVx9i_cTe7k2tVjOTT-mUSBzoSoHBpXcP5gh98x4li7mXGHUSDEaNFmd6eR0hVfPfN0CwXFUr1qgiGXcqwfDTZqLlLiXZZYIgI7KJDj-UM88xC0aprXpyT_7RDPoSeNPlVnakGQlWC5BCfEjbnNRfvkHD8fyCjoROAkgiXsPtxhZSCJbZgtnz6IvxTGOkxzmgIv1li6jIkYHWomJg&signature=9YMkhxwJqYUD0yI1Yhcj1_qoIcJoldtbQTQF0RT4_mABIGnlucKd8Ir6g9VIiOYZpw3wL4_clZ5GAyNG96-qCQ"
+  },
+  "expected": {
+    "canonical_subject_utf8": "cip30dl-v1\nhttps://aegis.example/cb?echo=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&method=connect&nonce=BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF&payload=P_8d1DthyMd6nNu82TN7IwirTdKo-nqUzbFquSNwHvoBZFwSm1scp_C9B0W76BA7p5nSUCbhGub9eh7ILPl9aXWrrWoYX3lW8zUkmugnnwKnTsGaYdKue5v7_QIkgVqBncwteT0LONE70JxjxyNGD2FJPctQl3Uel-ei6jWEXXKCaqwr2o0ad9_fScXqlebG7HhGSqn8VYVZTY0Tuq0VFveVNYgZV6iuqX5eQhVx9i_cTe7k2tVjOTT-mUSBzoSoHBpXcP5gh98x4li7mXGHUSDEaNFmd6eR0hVfPfN0CwXFUr1qgiGXcqwfDTZqLlLiXZZYIgI7KJDj-UM88xC0aprXpyT_7RDPoSeNPlVnakGQlWC5BCfEjbnNRfvkHD8fyCjoROAkgiXsPtxhZSCJbZgtnz6IvxTGOkxzmgIv1li6jIkYHWomJg&response=approved&walletKey=zo060cy2M-x7cMF4FKXHbs0CloUFDTRHRboFhw5YfVk"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

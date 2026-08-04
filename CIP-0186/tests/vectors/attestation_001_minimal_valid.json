@@ -1,0 +1,20 @@
+{
+  "name": "attestation_001_minimal_valid",
+  "spec_section": "Vendor attestation manifest",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "lace",
+      "protocol_versions": ["1"],
+      "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getRewardAddresses", "getNetworkId"],
+      "https_prefix": "https://lace.io/cip30dl/v1/",
+      "scheme": "cip30dl-lace",
+      "max_payload_bytes": 12288
+    }
+  },
+  "expected": {
+    "schema_valid": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

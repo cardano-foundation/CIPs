@@ -161,6 +161,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
+| 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -169,7 +170,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-06-23</i></p>
+<p align="right"><i>Last updated on 2026-07-08</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -178,7 +179,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 
 The following link lists "candidate" CIPs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-**[CIP pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECIP-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
+**[CIP pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECIP-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
 
 ## Cardano Problem Statements (CPS)
 
@@ -200,11 +201,13 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0020 | [Governance Stakeholder Incentivization](./CPS-0020) | Open |
 | 0021 | [Ouroboros Randomness Manipulation](./CPS-0021) | Open |
 | 0022 | [Lost Stake](./CPS-0022) | Open |
+| 0025 | [Small pool disadvantage in VRF tiebreakers](./CPS-0025) | Open |
 | 0026 | [Approaches to Fully Homomorphic Encryption](./CPS-0026) | Open |
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
+| 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
 
-<p align="right"><i>Last updated on 2026-05-12</i></p>
+<p align="right"><i>Last updated on 2026-07-08</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
@@ -213,7 +216,7 @@ The following link lists "candidate" CIPs still under discussion with the commun
 
 The following link lists "candidate" CPSs still under discussion with the community; these are assigned numbers to avoid later clashes and to facilitate community discussion (see further below for stalled proposals):
 
-**[CPS pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECPS-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
+**[CPS pull requests under active review](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+%2F%5ECPS-%2F+in%3Atitle+label%3A%22State%3A+Confirmed%22%2C%22State%3A+Last+Check%22+draft%3Afalse+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-desc)** (most recently discussed first)
 
 ## Updates Under Consideration
 
@@ -226,10 +229,10 @@ The following link shows updates to existing CIPs and CPSs that have entered the
 The following links list proposals deemed ready for review but requiring further update
 from the original author(s) or other confirmation of proposal elgibility (if considered deprecated):
 
-[**Stalled CIPs and CPSs**](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22%2C%22State%3A+Likely+Abandoned%22%2C%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc) (all lists least recently discussed first) - consisting of:
-* [proposals Waiting for Author](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
-* [proposals Likely Abandoned](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Abandoned%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
-* [proposals Likely Deprecated](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+new+registry+entry%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
+[**Stalled CIPs and CPSs**](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22%2C%22State%3A+Likely+Abandoned%22%2C%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc) (all lists least recently discussed first) - consisting of:
+* [proposals Waiting for Author](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Waiting+for+Author%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
+* [proposals Likely Abandoned](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Abandoned%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
+* [proposals Likely Deprecated](https://github.com/cardano-foundation/CIPs/pulls?q=is%3Apr+is%3Aopen+draft%3Afalse+in%3Atitle+label%3A%22State%3A+Likely+Deprecated%22+-label%3AUpdate%2CCorrection%2CTranslation%2C%22Bi-Weekly+Notes+%2F+Editorial+Housekeeping%22%2C%22CIP-0010%3A+registry+change%22%2C%22CIP-0067%3A+new+label%22%2C%22CIP-0088%3A+new+extension%22+sort%3Aupdated-asc)
 
 Proposals stalled without any updates from their authors will eventually be closed. However, authors are invited to re-open pull requests or open new ones should they want to bring the discussion back to life.
 

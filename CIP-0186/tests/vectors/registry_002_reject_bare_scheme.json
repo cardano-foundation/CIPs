@@ -1,0 +1,16 @@
+{
+  "name": "registry_002_reject_bare_scheme",
+  "spec_section": "Appendix B - Wallet registry (per-wallet schemes prevent shared-scheme hijack)",
+  "category": "wallet_registry",
+  "input": {
+    "registry": [
+      {"id": "lace", "scheme": "cip30dl", "https": "https://lace.io/cip30dl/v1/"}
+    ]
+  },
+  "expected": {
+    "schema_valid": false,
+    "failing_constraint": "scheme.pattern"
+  },
+  "should_reject": true,
+  "rejection_reason": "shared_scheme_forbidden"
+}

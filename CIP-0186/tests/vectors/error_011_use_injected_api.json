@@ -1,0 +1,17 @@
+{
+  "name": "error_011_use_injected_api",
+  "spec_section": "In-process WebView dApps (special case); Appendix A (-14)",
+  "category": "error_response",
+  "input": {
+    "scenario": "request_originated_from_wallets_own_webview",
+    "wallet_webview_host": "lace.io",
+    "request_host": "lace.io"
+  },
+  "expected": {
+    "errorCode": -14,
+    "errorName": "UseInjectedAPI",
+    "alternate_behavior_allowed": "silent_route_to_injected_cip30"
+  },
+  "should_reject": true,
+  "rejection_reason": "use_injected_api"
+}
