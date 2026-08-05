@@ -160,6 +160,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
+| 0186 | [Cardano Wallet Deep-Link Signing](./CIP-0186) | Proposed |
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
 | 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
@@ -170,7 +171,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-07-08</i></p>
+<p align="right"><i>Last updated on 2026-08-04</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
