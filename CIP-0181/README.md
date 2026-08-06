@@ -8,6 +8,8 @@ Authors:
 Implementors: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1159
+Solution To:
+  - CPS-0033 | DRep Voting Power Concentration: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0033
 Created: 2026-03-05
 License: CC-BY-4.0
 ---
