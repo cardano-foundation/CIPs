@@ -28,7 +28,7 @@ Array-based encoding may sound like the automatic winner, but that's not the cas
 
 __Addressing known inefficiencies.__
 For example, in Plutus V1-V3 every product type is encoded with a redundant `Constr 0` tag, where a plain `List` could have been used.
-Small nested sum types such as `Maybe StakingCredential` require multiple layers of `Constr`, even though they could have been encoded more compactly using one `Constr`.
+Small nested types also require more layers of `Constr` than necessary: reaching a bound of an `Interval` requires peeling off two layers of `Constr`, and reaching the credential inside a `Maybe StakingCredential` also requires two, even though one layer would suffice in each case.
 
 __Providing a better specification.__
 In Plutus V1-V3 the `Data` encoding of ledger API types was not formally specified.
@@ -88,16 +88,18 @@ Doing so avoids the overhead of pair-destruction.
 
 __Nested sum types.__
 Nested sum types can sometimes be flattened to reduce encoding and decoding overhead.
-For example, `Maybe StakingCredential` combines two two-constructor sum types, and its `Data` representation requires two layers of `Constr`.
-Replacing it with a single three-constructor sum type removes one layer and improves efficiency.
+For example, the V1-V3 `Address` type has a `Maybe StakingCredential` field, which combines two two-constructor sum types, so its `Data` representation requires two layers of `Constr`.
+Replacing it with a single three-constructor sum type would remove one layer and improve efficiency.
 
 This should, however, not be done blindly since there are drawbacks:
 - it could cause constructor proliferation if we flatten a large nested sum type;
 - it could also cause datatype proliferation if we need to keep the original nested type because it is used independently.
   For example, if `StakingCredential` is used independently (not under `Maybe`), then we may need to keep both `StakingCredential`, as well as the flattened `Maybe StakingCredential`.
 
-Given these considerations, it appears that the only suitable candidate for flattening in the [originally proposed script context definition](https://github.com/IntersectMBO/plutus/issues/7342#issuecomment-4799132923) is `Maybe StakingCredential`.
-Since `StakingCredential` always appears under `Maybe`, we can replace `Maybe StakingCredential` with a flattened datatype without also retaining the original `StakingCredential` type.
+_We did not identify any nested sum type in the Plutus V4 types that is worth flattening._
+`Maybe StakingCredential` was the one clear candidate in the script context of Plutus V1-V3, because `StakingCredential` only ever appear under `Maybe`, and so could be flattened without retaining the original type.
+But `StakingCredential` no longer exists in Plutus V4, whose `Address` type now carries a `Maybe AccountId` instead of `Maybe StakingCredential` (see the type definitions below).
+That candidate is therefore gone, and every remaining nested sum type in the V4 types runs into one of the two drawbacks above.
 
 __Nested product types.__
 Nested product types can likewise be flattened into a single larger product type.
@@ -200,6 +202,54 @@ data TopTxInfo = TopTxInfo
   -- top level transaction all concatenated together with loss of some information
   }
 
+data TopTxInfoSimplified = TopTxInfoSimplified
+  { ttisIds :: [V3.TxId]
+  -- ^ List of all `TxId`s fro the whole transaction, including the top-level transaction, which is
+  -- always going to be the last one in the list.
+  , ttisInputs :: [TxInInfo]
+  -- ^ Concatenated list of all `txInfoInputs`'
+  , ttisReferenceInputs :: [TxInInfo]
+  -- ^ Concatenated list of all `txInfoReferenceInputs`'
+  , ttisOutputs :: [V2.TxOut]
+  -- ^ Concatenated list of all `txInfoOutputs`'
+  , ttisMints :: V3.MintValue
+  -- ^ `MintValue`s from all `txInfoMint` with positive amounts
+  , ttisBurns :: V3.MintValue
+  -- ^ `MintValue`s from all `txInfoMint` with negative amounts
+  , ttisTxCerts :: [TxCert]
+  -- ^ Concatenated list of all `ttisTxCerts`'. Note, that unlike individual lists in each
+  -- `txInfoTxCerts`, this one can contain duplicates.
+  , ttisWithdrawals :: Map V2.Credential V2.Lovelace
+  -- ^ Union of all `txInfoWithdrawals` with a sum on the range for duplicate credentials
+  , ttisDirectDeposits :: Map V2.Credential V2.Lovelace
+  -- ^ Union of all `txInfoWithdrawals` with a sum on the range for duplicate credentials
+  , ttisValidRange :: V2.POSIXTimeRange
+  -- ^ Intersection of all validity intervals from within the whole transaction
+  , ttisGuards :: [V2.Credential]
+  -- ^ Concatenated list of all `txInfoGuards`'
+  , ttisRequiredTopLevelGuards :: Map V2.Credential ()
+  -- ^ Deduplicated set of required top level guards. It is impossible to keep the range of the Map
+  -- due to potential presence of duplicates in the domain between different sub-transactions,
+  -- therefore the range is eliminated.
+  , ttisScriptPurposes :: Map ScriptPurpose ()
+  -- ^ Union of all of the `Redeemer`s. Note that it is not possible to preserve actual `Redeemer`s
+  -- upon `union` operation due to potential duplicates in the domain. Therefore it is collapsed to
+  -- a Set of `ScriptPurpose`s only with duplicates removed.
+  , ttisData :: Map V2.DatumHash V2.Datum
+  -- ^ Union of all `txInfoData`. Duplicates are simply removed, since domain and range are
+  -- a one-to-one mapping.
+  , ttisVotes :: Map Voter (Map GovernanceActionId Vote)
+  -- ^ Union of all of the votes. Note that a vote in a sub-sequent sub-transaction or a top level
+  -- transaction can replace a vote from a prior sub-transaction.
+  , ttisProposalProcedures :: [ProposalProcedure]
+  -- ^ Concatenated list of all `ProposalPrecedure`s.
+  , ttisCurrentTreasuryAmount :: Haskell.Maybe V2.Lovelace
+  -- ^ Value of the treasury, which will be present if any of sub-transactions or top level
+  -- transaction included such value
+  , ttisTreasuryDonations :: V2.Lovelace
+  -- ^ Sum of all `txInfoTreasuryDonation`s
+  }
+
 data Address = Address
   { addressCredential :: Credential
   -- ^ the payment credential
@@ -207,24 +257,19 @@ data Address = Address
   -- ^ the staking credential (flattened)
   }
 
--- flattend from `Maybe StakingCredential`
-data StakingCredential
-  = {-| The staking hash is the `Credential` required to unlock a transaction output. Either
-    a public key credential (`Crypto.PubKeyHash`) or
-    a script credential (`ScriptHash`). Both are hashed with /BLAKE2b-244/. 28 byte. -}
-    StakingHash Credential
-  | {-| The certificate pointer, constructed by the given
-    slot number, transaction and certificate indices.
-    NB: The fields should really be all `Word64`, as they are implemented in `Word64`,
-    but 'Integer' is our only integral type so we need to use it instead. -}
-    StakingPtr
-      Integer
-      -- ^ the slot number
-      Integer
-      -- ^ the transaction index (within the block)
-      Integer
-      -- ^ the certificate index (within the transaction)
-  | NoStakingCredential
+data TxInInfo = TxInInfo
+  { txInInfoOutRef   :: V3.TxOutRef
+  , txInInfoResolved :: TxOut
+  }
+
+data TxOut = TxOut
+  { txOutAddress         :: Address
+  , txOutValue           :: Value -- now a built-in type
+  , txOutDatum           :: V2.OutputDatum
+  , txOutReferenceScript :: Maybe V2.ScriptHash
+  }
+
+newtype AccountId = AccountId V2.Credential
 
 -- flattened from the `Interval` in V1-V3
 data Interval a = Interval
