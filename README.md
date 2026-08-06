@@ -153,9 +153,11 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0164 | [Ouroboros Linear Leios - Greater transaction throughput](./CIP-0164) | Proposed |
 | 0165 | [Canonical Ledger State](./CIP-0165) | Proposed |
 | 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
+| 0169 | [Governance Metadata - On-Chain Binding](./CIP-0169) | Proposed |
 | 0170 | [KERI-backed metadata attestations](./CIP-0170) | Proposed |
 | 0171 | [On-chain Smart Contract Bytecode Verification](./CIP-0171) | Proposed |
 | 0173 | [Net Change Limit Parameter](./CIP-0173) | Proposed |
+| 0175 | [Stake Pool Hot Credentials](./CIP-0175) | Proposed |
 | 0176 | [Non-segregated Block Body Serialization](./CIP-0176) | Proposed |
 | 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
