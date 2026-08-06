@@ -60,7 +60,7 @@ __Lists are usually faster than arrays for working with datatypes__:
   Even with this overhead, list-encoding remains faster for the 20th field.
 
   It is true that if `k` is sufficiently large, accessing the `k`th field of a list can be arbitrarily more expensive than accessing the `k`th field of an array.
-  However, this is irrelevant since among the Plutus V4 types, the constructor with the most fields is `TxInfo`, which as 20 fields.
+  However, this is irrelevant since among the Plutus V4 types, the constructor with the most fields is `TxInfo`, which has 20 fields.
 
 - For multi-field access, array encoding can benefit from the `multiIndexArray` builtin.
   However, our testing indicates that array-encoding is still slower than list-encoding most of the time, and is faster only in corner cases (such as accessing a few widely-separated fields from a constructor with many fields).
