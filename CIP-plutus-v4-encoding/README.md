@@ -105,7 +105,7 @@ As with sum types, this should be done selectively, especially if we use list-en
 - Flattening produces a longer list, making `dropList` more expensive
 - Flattening makes constructing the nested type harder.
   For example, suppose type `A` contains a field of type `B`.
-  If we flatten `B` into `A`, producing a flattend type `A'`, reconstructing `B` from `A'` becomes much more difficult and costly than extracting `B` directly from `A`.
+  If we flatten `B` into `A`, producing a flattened type `A'`, reconstructing `B` from `A'` becomes much more difficult and costly than extracting `B` directly from `A`.
 
 Considering these trade-offs, we identified only one case where flattening a nested product type is clearly worthwhile: the `Interval` type.
 It is currently defined as:
