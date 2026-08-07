@@ -7,7 +7,7 @@ Authors:
   - Pawel Jakubas <jakubas.pawel@gmail.com>
 Implementors: N/A
 Discussions:
-  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1213
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1242
 Created: 2026-08-07
 License: CC-BY-4.0
 ---
