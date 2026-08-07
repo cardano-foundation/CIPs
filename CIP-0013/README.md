@@ -1,23 +1,26 @@
 ---
 CIP: 13
 Title: Cardano URI Scheme
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
     - Robert Phair <rphair@cosd.com>
     - Sebastien Guillemot <sebastien@emurgo.io>
     - Vicente Almonacid <vicente@emurgo.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/Emurgo/EmIPs/pull/2
-    - https://forum.cardano.org/t/cip-cardano-payment-uri-scheme/41457
-    - https://github.com/cardano-foundation/CIPs/pull/25
-    - https://github.com/cardano-foundation/CIPs/pull/61
-    - https://github.com/cardano-foundation/CIPs/pull/86
-    - https://forum.cardano.org/t/cip-stake-uri-scheme-for-pools-delegation-portfolios/40594
-    - https://forum.cardano.org/t/cip-generalized-cardano-urls/57464
-    - https://github.com/cardano-foundation/CIPs/pull/546
-    - https://github.com/cardano-foundation/CIPs/pull/559
+    - Early PR: https://github.com/cardano-foundation/CIPs/pull/25
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/30
+    - EmIps PR: https://github.com/Emurgo/EmIPs/pull/2
+    - Cardano Forum: https://forum.cardano.org/t/cip-cardano-payment-uri-scheme/41457
+    - Cardano Forum: https://forum.cardano.org/t/cip-stake-uri-scheme-for-pools-delegation-portfolios/40594
+    - Cardano Forum: https://forum.cardano.org/t/cip-generalized-cardano-urls/57464
+    - Extend URI scheme with single stake pool links: https://github.com/cardano-foundation/CIPs/pull/61
+    - Extend URI scheme for delegation portfolio links: https://github.com/cardano-foundation/CIPs/pull/86
+    - CIP-0099? | Proof of Onboarding: https://github.com/cardano-foundation/CIPs/pull/546
+    - CIP-0013 | Generalise for further protocols: https://github.com/cardano-foundation/CIPs/pull/559
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2020-09-22
 License: CC-BY-4.0
 ---
@@ -26,7 +29,7 @@ License: CC-BY-4.0
 
 This describes a general standard URI scheme with two specific protocols to handle Ada transfers and links to weighted lists of stake pools.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### In general:
 
@@ -149,7 +152,7 @@ An ABNF grammar should be specified and explained similarly for each CIP that de
 2. For either payment or staking links, we should be wary of people who disguise links as actually opening up a phishing website that LOOKS like that corresponding part of the wallet UI.
 3. If wallets *create* stake pool links, the actual ada or lovelace balance should not be used literally as the `proportion` figure, to avoid revealing the identity of the wallet owner who is creating the portfolio (e.g. the proportions could be scaled to normalise the largest to `1`).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Rationale for general URI scheme
 

@@ -1,15 +1,17 @@
 ---
 CIP: 72
-Title: Cardano dApp Registration & Discovery
-Status: Proposed
+Title: dApp Registration & Verification
 Category: Metadata
-Authors: 
+Status: Proposed
+Authors:
   - Bruno Martins <bruno.martins@iohk.io>
   - Mateusz Czeladka <mateusz.czeladka@cardanofoundation.org>
   - Daniel Main <daniel.main@iohk.io>
-Implementors: ["Lace Wallet dApp Store", "DappsOnCardano dApp Store"]
+Implementors:
+  - Lace Wallet <https://www.lace.io>
+  - DappsOnCardano <https://dappsoncardano.com>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/355
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/355
 Created: 2022-10-18
 License: CC-BY-4.0
 ---
@@ -20,7 +22,7 @@ dApp developers do not have a standardised method to record immutable, persisten
 
 This proposal aims to standardise the process of dApp registration and verification, and to provide a set of claims that dApp developers can use to register their dApp(s).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 dApps can express a plethora of information. Some of this information could be claims about who the developer is, what the dApp's associated metadata is, and more. This data lacks standardisation, persistence, and immutability. Data without these features, means that dApp users cannot verify if the dApp's expressed information is consistent across time. The goal of this CIP is to formalise how dApps register their information with a new transaction metadata format that can record the dApp's metadata, ownership, and potentially developer's identity. This formalisation means dApp users can verify if the data expressed by a dApp is consistent with what was registered on-chain.
 
@@ -180,7 +182,7 @@ There are multiple options to store metadata offchain. The most common options a
 - [Bitbucket](https://bitbucket.org/)
 - Any REST JSON API
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Decoupling of dApp Registration From Certifications / Audits
 

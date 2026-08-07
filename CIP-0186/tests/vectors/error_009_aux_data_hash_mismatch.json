@@ -1,0 +1,16 @@
+{
+  "name": "error_009_aux_data_hash_mismatch",
+  "spec_section": "Conway transaction body extraction (Auxiliary data consistency); Appendix A (-11)",
+  "category": "error_response",
+  "input": {
+    "tx_body_aux_data_hash_hex": "0000000000000000000000000000000000000000000000000000000000000000",
+    "auxiliary_data_cbor_hex": "a0",
+    "computed_aux_data_hash_hex": "d36a2619a672494604e11bb447cbcf5231e9f2ba25c2169177edc941bd50ad6c"
+  },
+  "expected": {
+    "errorCode": -11,
+    "errorName": "AuxiliaryDataHashMismatch"
+  },
+  "should_reject": true,
+  "rejection_reason": "aux_data_hash_mismatch"
+}

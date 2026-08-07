@@ -18,10 +18,10 @@
 ;          doc: epoch
 ;          type: u8
 ;  ```
-record_entry = committee
+record_entry = committee/ nil
 
 ;  Storage of the committee members
-committee = {* credential => committee_authorization}
+committee = [{* credential => epoch_no}, unit_interval]
 
 credential = [0, addr_keyhash// 1, script_hash]
 
@@ -39,13 +39,13 @@ hash28 = bytes .size 28
 ;   - "\x03" for Plutus V3 scripts
 script_hash = hash28
 
-;  0 - hot committee member
-;  1 - resignation
-committee_authorization = [0, credential// 1, anchor/ nil]
+epoch_no = uint .size 8
 
-;
-;  Signed url
-anchor = [anchor_url : url, anchor_data_hash : bytes]
-
-url = text .size (0 .. 128)
-
+; NOTE: The real unit_interval is: #6.30([uint, uint])
+; 
+;  A unit interval is a number in the range between 0 and 1, which
+;  means there are two extra constraints:
+;     1. numerator <= denominator
+;     2. denominator > 0
+unit_interval = 
+  #6.30([uint .le 18446744073709551615, uint .le 18446744073709551615])

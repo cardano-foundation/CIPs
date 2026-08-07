@@ -1,14 +1,14 @@
 ---
 CIP: 167
-Title: Remove `isValid` from transactions
+Title: Remove isValid from transactions
 Category: Ledger
+Status: Proposed
 Authors:
   - Teodora Danciu <teodora.danciu@iohk.io>
   - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: N/A
-Status: Proposed
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1089
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1089
 Created: 2025-09-01
 License: CC-BY-4.0
 ---
@@ -18,7 +18,7 @@ License: CC-BY-4.0
 We propose removing the `isValid` boolean from the CBOR encoding of standalone transactions (e.g. for mempool).
 This would not affect the serialization of the transactions within blocks, since isValid flag is already stored separately from the transaction
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The `isValid` flag in standalone transaction CBOR is not intrinsic to the protocol or to the ledger-consensus boundary:
   * it is not signed by the transaction creator, so anyone can set it to any value they like.
@@ -43,7 +43,7 @@ The proposal is to change it to:
 transaction = [transaction_body, transaction_witness_set, auxiliary_data/ nil]
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Removing the `isValid` flag from standalone transaction serialization simplifies the wire format without changing consensus or ledger semantics.
 

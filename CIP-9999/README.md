@@ -8,7 +8,7 @@ Authors:
     - Michael Peyton Jones <michael.peyton-jones@iohk.io>
 Implementors: N/A
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pulls/366
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/366
 Created: 2022-10-14
 License: CC-BY-4.0
 ---
@@ -20,7 +20,7 @@ A Cardano Problem Statement (CPS) is a formalized document for the Cardano ecosy
 > [!NOTE]
 > Read this CIP's number as "CIP minus 1" (in [tens' complement](https://en.wikipedia.org/wiki/Method_of_complements#Decimal_example))
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 A common friction point regarding complex CIPs is how their main problems are stated. For example, the _'Motivation'_ section in CIPs is sometimes not sufficient -- or simply underused -- to describe the various aspects of a problem, its scope, and its constraints in the necessary detail. This lack of clarity leads, in the end, to poorly defined issues and unfruitful debates amongst participants who understand problems differently.
 
@@ -80,7 +80,7 @@ Proposed Solutions:
     - CIP-1234 | Solve the Trilemma: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1234
 Discussions:
     - Forum discussion: https://forum.cardano.org/t/solving-the-blockchain-trilemma/107720
-    - Original pull request: https://github.com/cardano-foundation/cips/pulls/9999
+    - Original PR: https://github.com/cardano-foundation/cips/pull/9999
 Created: 2009-02-14
 License: CC-BY-4.0
 ---
@@ -163,7 +163,7 @@ Of course, a solution may only partially address a problem. In this case, one ca
 
 As defined in [CIP-0001][].
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Goals
 
@@ -183,8 +183,8 @@ This section is meant to _save time_, especially for problem statement authors w
 
 - [x] Review this proposal with existing actors of the ecosystem
 - [x] Formulate at least one problem statement following this process
-    - [CPS-0001: Metadata Discoverability & Trust](https://github.com/cardano-foundation/CIPs/pull/371)
-    - [CPS-0002: Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374)
+    - [CPS-0001?: Metadata Discoverability & Trust](https://github.com/cardano-foundation/CIPs/pull/371)
+    - [CPS-0002?: Pointer Addresses](https://github.com/cardano-foundation/CIPs/pull/374)
 
 ### Implementation Plan
 

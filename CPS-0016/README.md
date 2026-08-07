@@ -17,7 +17,7 @@ Discussions:
   - Issue - CIP-0013 Current state of integration and further advancements: https://github.com/cardano-foundation/CIPs/issues/836
   - CIP-0013 pull request: https://github.com/cardano-foundation/CIPs/pull/559
   - CIP-0107 pull request: https://github.com/cardano-foundation/CIPs/pull/635
-  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/841
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/841
   - CIP-0134 pull request: https://github.com/cardano-foundation/CIPs/pull/888
 Created: 2024-06-15
 License: CC-BY-4.0

@@ -13,3 +13,4 @@
 | 2023/02 | Goguen   | Babbage |    84844885 |          394 |              8,0 | Praos           | Ouroboros Praos         | Valentine HF       |
 | 2024/09 | Voltaire | Conway  |   133660855 |          507 |              9,0 | Praos           | Ouroboros Genesis/Praos | Chang HF           |
 | 2025/01 | Voltaire | Conway  |   146620809 |          537 |             10,0 | Praos           | Ouroboros Genesis/Praos | Plomin HF          |
+| 2026/07 | Voltaire | Conway  |   192845302 |          644 |             11,0 | Praos           | Ouroboros Genesis/Praos | van Rossem HF      |

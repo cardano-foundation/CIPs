@@ -1,5 +1,9 @@
 [
   {
+    "transaction_metadatum_label": 17,
+    "description": "CIP-XXXX - On-chain surveys and polls metadata"
+  },
+  {
     "transaction_metadatum_label": 22,
     "description": "Clarity - DAO creation metadata"
   },
@@ -25,7 +29,7 @@
   },
   {
     "transaction_metadatum_label": 309,
-    "description": "Proof of Existence record"
+    "description": "CIP-0190 - Proof of Existence record"
   },
   {
     "transaction_metadatum_label": 544,
@@ -138,6 +142,10 @@
   {
     "transaction_metadatum_label": 3692,
     "description": "CIP-0149 - Optional DRep compensation"
+  },
+  {
+    "transaction_metadatum_label": 6607,
+    "description": "BROCK Bot - Discord moderation bot subscription payment"
   },
   {
     "transaction_metadatum_label": 6676,

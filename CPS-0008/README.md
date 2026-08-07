@@ -2,13 +2,13 @@
 CPS: 8
 Title: Domain Name Resolution
 Category: Tools
-Status: Open
+Status: Inactive (superseded by CPS-0032)
 Authors:
   - Hinson Wong <hinson@cns.space>
 Proposed Solutions: []
 Discussions: 
   - Cardano Name Service CIPs fork: https://github.com/cns-space/CIPs
-  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/605
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/605
 Created: 2023-10-14
 License: CC-BY-4.0
 ---

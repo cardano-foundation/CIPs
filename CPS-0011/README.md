@@ -5,9 +5,10 @@ Category: Tools
 Status: Open
 Authors:
     - Vladimir Kalnitsky <vladimir@mlabs.city>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-0116 | Canonical JSON Encoding for Domain Types: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0116
 Discussions:
-    - Original pull request: https://github.com/cardano-foundation/cips/pulls/742
+    - Original PR: https://github.com/cardano-foundation/cips/pull/742
 Created: 2024-01-10
 License: CC-BY-4.0
 ---

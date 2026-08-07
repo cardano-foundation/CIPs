@@ -1,0 +1,19 @@
+{
+  "name": "error_001_commit_mismatch",
+  "spec_section": "Methods (signTx); Appendix C.3; Appendix A (-2)",
+  "category": "error_response",
+  "input": {
+    "request_url": "https://lace.io/cip30dl/v1/signTx?v=1&dappKey=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&redirect=https%3A%2F%2Faegis.example%2Fcb&nonce=BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF&commit=__________________________________________8&ttl=1810000300&payload=cGF5bG9hZC1zaWdudHgtdmFsaWQtZml4dHVyZS1iYXNlNjR1cmw",
+    "decrypted_tx_body_cbor_hex": "a0",
+    "computed_commit_hex": "d36a2619a672494604e11bb447cbcf5231e9f2ba25c2169177edc941bd50ad6c",
+    "url_commit_hex": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  },
+  "expected": {
+    "response_url_pattern": "https://aegis.example/cb?response=rejected&errorCode=-2&errorMessage=commit%20mismatch",
+    "errorCode": -2,
+    "errorName": "CommitMismatch",
+    "signing_ui_shown": false
+  },
+  "should_reject": true,
+  "rejection_reason": "commit_mismatch"
+}

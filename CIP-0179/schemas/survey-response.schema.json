@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "survey-response.schema.json",
+  "title": "CIP-0179 Survey Response Payload (Label 17)",
+  "type": "object",
+  "properties": {
+    "17": {
+      "type": "array",
+      "prefixItems": [
+        {
+          "const": 1
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/survey_response"
+          },
+          "minItems": 1
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    }
+  },
+  "required": [
+    "17"
+  ],
+  "additionalProperties": false
+}

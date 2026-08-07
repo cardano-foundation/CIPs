@@ -1,8 +1,8 @@
 ---
 CIP: 3
 Title: Wallet Key Generation
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Sebastien Guillemot <seba@dcspark.io>
@@ -10,10 +10,10 @@ Implementors:
     - Matthias Benkort <matthias.benkort@cardanofoundation.org>
     - Sebastien Guillemot <seba@dcspark.io>
 Discussions:
-    - https://github.com/input-output-hk/implementation-decisions/pull/18
-    - https://github.com/cardano-foundation/cips/pull/33
-    - https://github.com/cardano-foundation/cips/pull/76
-    - https://github.com/cardano-foundation/cips/pull/132
+    - Implementation PR: https://github.com/input-output-hk/implementation-decisions/pull/18
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/33
+    - CIP-0003 | clarify Trezor deviation at 24-word mnemonics: https://github.com/cardano-foundation/CIPs/pull/76
+    - CIP-0003 | Fix Ledger algorithm and one wrong test vector: https://github.com/cardano-foundation/CIPs/pull/132
 Created: 2020-05-07
 License: CC-BY-4.0
 ---
@@ -24,7 +24,7 @@ Many wallets utilize some way of mapping a sentence of words (easy to read and w
 
 This document outlines the various mapping algorithms used in the Cardano ecosystem.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The philosophy of cryptocurrencies is that you are in charge of your own finances. Therefore, it is very anti-thematic for wallet software to lock in a user by explicitly describing the algorithm used to derive keys for a wallet (both the master key and key derivation)
 
@@ -62,7 +62,7 @@ Throughout the years, Cardano has used different styles of master key generation
 | [Icarus-Trezor](./Icarus.md)            | Trezor          | Ae2                     | No             | No              |
 | [Ledger/BitBox02](./Ledger_BitBox02.md) | Ledger/BitBox02 | Ae2                     | No             | No              |
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP is merely to document the existing standards and not to provide rationales for the various methods used.
 
