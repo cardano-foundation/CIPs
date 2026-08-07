@@ -206,10 +206,10 @@ sequenceDiagram
     participant N as "Node / Consensus"
 
     U->>W: seed / mnemonic (CIP-9)
-    W->>W: derive m/1852'/1815'/account'/role/index ; A = kL·B ; address = blake2b-224(A)
+    W->>W: derive m/1852'/1815'/account'/role/index<br>A = kL·B<br>address = blake2b-224(A)
     W->>P: request derivation proof (anchor = account')
     P-->>W: tau = (pi_deriv, hkR)   [one-time]
-    U->>W: initiate payment ; W builds tx body M
+    U->>W: initiate payment<br>W builds tx body M
     W->>P: request signing proof for M
     P-->>W: sigma = (pi_sign, hkR)
     alt Phase 1 — off-chain verification
