@@ -234,104 +234,112 @@ a clearly accessible user override option.
 
 ### Resolver Interface
 
-#### API Resolution
+#### On-Chain Resolution
 
-All registered providers MUST implement the following HTTP
-endpoint:
+Wallets MUST use on-chain resolution when populating
+a transaction recipient address from a handle.
+On-chain resolution queries the Cardano blockchain
+directly and does not involve any provider
+infrastructure.
 
-```
-GET /resolve/{handle}
-```
+On-chain resolution is performed as follows:
 
-Optional query parameter:
-```
-?network=mainnet|preprod|preview
-```
+**Step 1 — Construct the asset name hex:**
 
-If no network parameter is provided the provider MUST default
-to mainnet resolution.
+Encode the handle string as UTF-8 bytes and convert
+to lowercase hexadecimal:
 
-**Response 200 — handle found:**
+asset_name_hex = UTF8_bytes(handle_string).to_hex()
 
-```json
-{
-  "handle": "john.smith.did",
-  "address": "addr1qx...",
-  "policy_id": "abc123...",
-  "provider": "Provider Name",
-  "network": "mainnet"
-}
-```
+Example:
+handle = "slavcho.did"
+asset_name_hex = "736c617663686f2e646964"
 
-**Response 404 — handle not found:**
+**Step 2 — Construct the full asset ID:**
 
-```json
-{
-  "error": "Handle not found",
-  "handle": "john.smith.did",
-  "provider": "Provider Name"
-}
-```
+asset_id = policy_id + asset_name_hex
 
-**Response 400 — invalid handle format:**
+Example:
+policy_id = "10dd14b19beadb996be9d322d7f4a3a8ed20d0002f48e0ef10e4f1f6"
+asset_id = "10dd14b19beadb...736c617663686f2e646964"
 
-```json
-{
-  "error": "Invalid handle format",
-  "handle": "..."
-}
-```
+**Step 3 — Query the blockchain for the current NFT
+holder using any of the following:**
 
-All responses MUST use `Content-Type: application/json` and
-MUST use HTTPS.
+- A third-party node provider (Blockfrost, Koios,
+  Maestro or equivalent):
+
+GET https://preprod.koios.rest/api/v1/asset_addresses
+?_asset_policy={policy_id}
+&_asset_name={asset_name_hex}
+
+- A self-hosted Cardano node via cardano-db-sync,
+  Ogmios, or any other Cardano chain indexer that
+  can query asset holders
+
+**Step 4 — Use the holder address:**
+
+The address currently holding the NFT with this
+asset ID is the resolved address. If no address
+holds the asset the handle has not been minted and
+cannot be resolved.
+
+Wallets MUST NOT use a provider API endpoint as the
+sole basis for populating a transaction recipient
+address. The resolved address used for any financial
+transaction MUST be obtained from a blockchain query
+as defined above.
 
 #### Input Handling Requirements
 
 Wallets and dApps implementing this standard MUST:
 
-- Not rely solely on debounce techniques for handle resolution.
-  Resolution MUST be triggered by an explicit user action such
-  as pressing Enter or Tab, clicking a button, or the input
-  field losing focus. If debounce is used it MUST be
-  re-confirmed after an explicit user action.
-- Disable browser autofill on address input fields to prevent
-  inadvertent selection of autofill values.
+- Trigger handle resolution on explicit user action
+  only — pressing Enter or Tab, clicking a button,
+  or the input field losing focus. Debounce alone
+  is not sufficient.
+- Disable browser autofill on address input fields
+  to prevent unintended address substitution.
 
-#### On-Chain Resolution
+#### API Resolution (Non-financial use only)
 
-In addition to API resolution, providers MUST support on-chain
-resolution so wallets can verify handle ownership trustlessly
-without depending on provider API availability.
+Providers MAY publish an HTTPS resolver API endpoint
+at the URL registered in the `resolver.api` field.
 
-Providers MUST document their on-chain resolution method in
-their registry entry using the `onchain_method` field. The
-following methods are recognized as valid on-chain resolution
-approaches, though this list is not exhaustive:
+This endpoint MAY be used for:
 
-- `policy_asset_holder` — locate the output holding the
-  asset identified by `{policy_id}{asset_name_hex}` where
-  `asset_name_hex` is the UTF-8 encoded handle string in
-  hexadecimal, and return the holder address
-- `datum_registry` — query a Plutus contract datum for
-  the registered address associated with the handle name
-- `reference_asset` — follow the CIP-67/68 user and
-  reference asset pair to determine the resolved address
-- `delegated` — follow a provider-documented subhandle
-  or delegation chain as described in the provider's
-  registry entry documentation
+- Developer tooling and testing
+- dApps displaying handle information without
+  initiating financial transactions
+- Address book lookups where the user manually
+  confirms the resolved address before any
+  transaction is submitted
 
-Providers using architectures not listed here MUST
-document their resolution method sufficiently for wallet
-implementors to verify resolution independently. Wallets
-implementing on-chain resolution for a given provider
-MUST follow the method documented by that provider.
+The API endpoint MUST NOT be used as the sole basis
+for populating a transaction recipient address in
+any wallet or dApp that initiates financial
+transactions.
+
+When API resolution is used for non-financial
+purposes the resolved address SHOULD be verified
+against an on-chain query before any transaction
+is submitted.
 
 #### Test Vectors
 
-Providers SHOULD include at least one publicly documented test
-vector — a known handle and its expected resolved address on
-preprod testnet — so wallet implementors can verify their
-integration without spending real ADA.
+Providers SHOULD include at least one publicly
+documented test vector — a known handle and its
+expected resolved address on preprod testnet — so
+wallet implementors can verify their integration
+without spending real ADA.
+
+Example test vector for GetMyID on preprod:
+
+handle = "slavcho.did"
+policy_id = "10dd14b19beadb996be9d322d7f4a3a8ed20d0002f48e0ef10e4f1f6"
+asset_name_hex = "736c617663686f2e646964"
+network = preprod
+expected_holder = addr_test1qzhgu6hg0a6ujuurfvc0mdzpq98gn5fgt9aafh3r25gqtkryzeqzvxl258rhm8y7p6g0xn42dx98p3qp3j9gxqdejxzqs4ektt
 
 ### Wallet Display Requirements
 
@@ -452,33 +460,59 @@ select a provider.
 
 ### Security Considerations
 
+#### Resolution Security
+
+On-chain resolution eliminates dependence on any
+provider infrastructure for financial transactions.
+A provider API being compromised, their DNS being
+hijacked, or their service being unavailable does
+not affect on-chain resolution because the wallet
+queries Cardano directly.
+
+Both on-chain resolution via third-party RPC and
+API resolution share a common trust assumption —
+the wallet must connect to a service that accurately
+represents the current blockchain state. Wallets
+running their own Cardano node eliminate this
+dependency entirely.
+
+For the highest security wallets SHOULD use their
+own Cardano node or validate results across multiple
+independent RPC providers before populating a
+transaction recipient address.
+
 #### Homograph Attacks
 
-Wallets MUST display the full resolved address alongside any
-handle and MUST NOT replace the address display with only the
-handle name at any point in the transaction flow.
+Wallets MUST display the full resolved address
+alongside any handle and MUST NOT replace the
+address display with only the handle name at any
+point in the transaction flow.
 
 #### Script Address Warnings
 
-Wallets MUST display a prominent warning when a handle resolves
-to a script address. Unless the script address has an attached
-datum, this is most likely an error and users should be
-discouraged from proceeding without verification.
+Wallets MUST display a prominent warning when a
+handle resolves to a script address. Unless the
+script address has an attached datum this is most
+likely an error and users should be discouraged
+from proceeding without verification.
 
 #### Provider Impersonation
 
-The registry is the authoritative source of provider policy
-IDs. Wallets MUST verify that the policy ID returned in a
-resolver response matches the policy ID declared in the
-registry entry for that provider. Responses with mismatched
-policy IDs MUST be rejected and the user MUST be warned.
+The registry is the authoritative source of provider
+Policy IDs. Wallets MUST verify that the on-chain
+asset queried uses the Policy ID declared in the
+registry entry for that provider. Assets under
+unregistered Policy IDs MUST NOT be resolved as
+handles under this standard.
 
 #### API Availability
 
-Wallets SHOULD implement on-chain resolution as a fallback
-when a provider's API endpoint is unavailable. Wallets MUST
-NOT silently fail when a provider API is unavailable — they
-MUST notify the user that resolution was unsuccessful.
+Wallets SHOULD implement on-chain resolution as the
+primary method at all times. If a third-party RPC
+provider is unavailable wallets SHOULD notify the
+user that resolution was unsuccessful rather than
+falling back to API resolution for financial
+transactions.
 
 ## Rationale: How does this CIP achieve its goals?
 
