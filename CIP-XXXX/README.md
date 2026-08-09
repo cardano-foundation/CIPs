@@ -265,7 +265,7 @@ web+cardano://pay/v1/Ae2tdPwUPEZHSvyvbTYWCVUw3wBhDGenxhhH1BEJndFhaMcD5tm1R4RtuAr
 Supports backward compatibility for Byron-era Base58 addresses. All query
 parameters work the same.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP achieves its goals by defining a new, explicit `Payment URI` standard
 that is aligned with modern Cardano transaction standards such as:
