@@ -21,7 +21,7 @@ This CIP will propose a new [CIP-13] Extension; introducing a new, dedicated
 _Metadata_ as well as providing for extensibility and versioning. All features
 lacking in the original [CIP-13] payment URIs.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 [CIP-13] was originally introduced in early 2021, prior to the Mary hard fork
 event that brought _Native Assets_ to Cardano. Since that time the Cardano
