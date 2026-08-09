@@ -1,14 +1,14 @@
 ---
 CIP: 10
 Title: Transaction Metadata Label Registry
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/34
-  - https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/34
+  - Cardano Forum: https://forum.cardano.org/t/cip10-transaction-metadata-label-registry/41746
 Created: 2020-10-31
 License: CC-BY-4.0
 ---
@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 Cardano transaction metadata forces metadata entries to namespace their content using an unsigned integer key. This specification is a registry of which use cases has allocated which number to avoid collisions.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The top level of the transaction metadata CBOR object is a mapping of `transaction_metadatum_label` to the actual metadata where the `transaction_metadatum_label` represents an (ideally unique) key for a metadata use case. This allows enables the following:
 
@@ -46,19 +46,22 @@ transaction_metadata =
 
 ### Structure
 
-These are the reserved `transaction_metadatum_label` values
+These are the reserved `transaction_metadatum_label` values:
 
 `transaction_metadatum_label` | description
 ----------------------------  | -----------------------
-0 - 15                        | reserved\*
+0 - 15                        | reserved
 65536 - 131071                | reserved - private use
 
-For the registry itself, please see [registry.json](./registry.json) in the machine-readable format. Please open your pull request against
-this file.
+For the registry itself, please see [registry.json](./registry.json). To add or modify a label definition, please open a pull request against this file. For new label numbers, include background information about your project and/or documentation of the label if available (and state your intended usage if not).
 
-\* It's best to avoid using `0` or any a similar number like `1` that other people are very likely to use. Prefer instead to generate a random number
+You can check if a label number is already in use with an API query.  For instance: to check if label `8414` is in use via Koios (no API key needed for `curl`):
 
-## Rationale: how does this CIP achieve its goals?
+```
+curl -s "https://api.koios.rest/api/v1/tx_by_metalabel?_label=8414" -H "accept: application/json"
+```
+
+## Rationale: How does this CIP achieve its goals?
 
 Creating a registry for `transaction_metadatum_label` values has the following benefit:
 

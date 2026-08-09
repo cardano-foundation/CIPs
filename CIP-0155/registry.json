@@ -1,0 +1,14 @@
+[
+  { "service": "cardano",
+    "prefix": "_cardano._tcp",
+    "status": "Active"
+  },
+  { "name": "mithril.dmq",
+    "prefix": "_dmq._mithril._cardano._tcp",
+    "status": "Active"
+  },
+  { "name": "mithril.aggregator",
+    "prefix": "_aggregator._mithril._cardano._tcp",
+    "status": "Active"
+  }
+]

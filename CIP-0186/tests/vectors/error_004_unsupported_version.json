@@ -1,0 +1,15 @@
+{
+  "name": "error_004_unsupported_version",
+  "spec_section": "Versioning; Appendix A (-9)",
+  "category": "error_response",
+  "input": {
+    "request_v_param": "2",
+    "wallet_supported_versions": ["1"]
+  },
+  "expected": {
+    "errorCode": -9,
+    "errorName": "UnsupportedVersion"
+  },
+  "should_reject": true,
+  "rejection_reason": "unsupported_version"
+}

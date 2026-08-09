@@ -1,0 +1,13 @@
+{
+  "name": "sign_003_canonical_subject_strict_percent_uppercase",
+  "spec_section": "Response signing (strict-unreserved percent-encoding, uppercase hex)",
+  "category": "canonical_subject",
+  "input": {
+    "emitted_url": "https://aegis.example/cb?response=approved&path=%2fa%2fb&signature=zz"
+  },
+  "expected": {
+    "canonical_subject_utf8": "cip30dl-v1\nhttps://aegis.example/cb?path=%2Fa%2Fb&response=approved"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}
