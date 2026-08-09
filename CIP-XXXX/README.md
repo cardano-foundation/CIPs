@@ -8,8 +8,8 @@ Authors:
 Implementors:
     - Begin Wallet <@francisluz>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/843
-    - https://github.com/cardano-foundation/CIPs/issues/836
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/843
+    - Implementation discussion: https://github.com/cardano-foundation/CIPs/issues/836
 Created: 2024-06-15
 License: Apache-2.0
 ---
