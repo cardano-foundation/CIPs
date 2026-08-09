@@ -75,8 +75,8 @@
               },
               "onchain_method": {
                 "type": "string",
-                "minLength": 1,
-                "description": "On-chain resolution method identifier"
+                "enum": ["policy_asset_holder"],
+                "description": "On-chain resolution method. Currently only policy_asset_holder is defined. Additional methods may be added in future CIP versions."
               }
             }
           },
