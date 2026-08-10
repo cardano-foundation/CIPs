@@ -43,14 +43,15 @@ constitutional-committee roles uniformly.
 ### Background
 
 **How a Cardano wallet makes keys today.** A wallet starts from a single seed (backed
-up as a mnemonic) and derives a whole tree of keys from it. Each key is a pair of
-secret halves: a "left" half that does the actual Ed25519 signing and a "right" half
-that acts as extra secret material. Steps down the tree use a keyed hash
+up as a mnemonic [CIP-9]) and derives a whole tree of keys from it, per the
+HD-sequential conventions of [CIP-0003] and the BIP32-Ed25519 scheme [KL17]. Each key
+is a pair of secret halves: a "left" half that does the actual Ed25519 signing and a
+"right" half that acts as extra secret material. Steps down the tree use a keyed hash
 (HMAC-SHA512). Steps marked with an apostrophe are *hardened* — they can only be
 computed from the private key — while plain steps are *non-hardened*, meaning anyone
 who knows the parent's public key can derive the children. The public key is the left
 half multiplied onto the Edwards curve (`A = kL·B`), and the Cardano address is a
-short hash of it (`blake2b-224(A)`). Cardano's path
+short hash of it (`blake2b-224(A)`, per [CIP-19]). Cardano's path
 `m/1852'/1815'/account'/role/index` consists of three hardened steps followed by two
 non-hardened ones.
 
@@ -122,8 +123,8 @@ Phase 2):
 ### Instantiation
 
 **The proving system.** Proofs are ZK-STARKs — the proof family that stays secure
-against quantum adversaries — produced by the RISC Zero virtual machine in the
-reference implementation. Using a zkVM means the proof relations are written in
+against quantum adversaries — produced by the RISC Zero virtual machine [RISC-ZERO] in
+the reference implementation. Using a zkVM means the proof relations are written in
 ordinary Rust, reusing well-tested libraries (`curve25519-dalek`, `hmac`, `sha2`)
 instead of hand-built arithmetic circuits, which keeps engineering and audit cost
 low.
@@ -131,7 +132,11 @@ low.
 **The hashes.** Binding hashes use SHA-256; the key-derivation MAC remains
 HMAC-SHA512, unchanged from BIP32-Ed25519 — so the derivation itself is not touched.
 
-**What it costs.** Reference figures from the paper, on a 16-core box:
+**What it costs.** Reference figures from the paper [ZKPoSP], §9, measured on the paper's
+dedicated OVH EU-central cloud server: AMD Ryzen 9 9950X3D, 16 cores / 32 threads at
+4.5 GHz, 64 GB RAM, no GPU, running Ubuntu, with the proving code in Rust over RISC Zero
+v5.0.0-rc.1. These are the authors' reference numbers, not our own measurements; we will
+re-validate them on our reference implementation before they are relied upon:
 
 | Operation | When | Cost |
 |---|---|---|
@@ -233,7 +238,11 @@ server.
 
 - **Why an additive signature layer:** public keys are byte-identical to standard
   BIP32-Ed25519 output, so there is no migration, no re-registration, and no hardware
-  wallet or multisig (CIP-1854) breakage.
+  wallet or multisig (CIP-1854) breakage. Reusing the existing derivation also keeps
+  the two hardened rounds of the Cardano path out of the proof circuit; each hardened
+  round costs two HMAC-SHA512 calls (four SHA-512 hashes), which are expensive inside a
+  circuit. Anchoring the proof at `account'` (see next bullet) drops that cost entirely,
+  decreasing proving time while maintaining the soundness of the goal.
 - **Why anchor at `account'`:** proofs over non-hardened leaves are unsound (the tweaks
   are public); only a hardened anchor binds the witness to a legitimate seed — decisive
   for Cardano because every leaf is non-hardened.
@@ -274,16 +283,55 @@ server.
 - Conformance test vectors for the Cardano path covering derivation, signing, and
   verification, including the anchor-at-`account'` constraint.
 - Public, independent security audit of the proof system and its Cardano integration.
+- Benchmark report for the reference implementation on the paper's machine (AMD Ryzen 9
+  9950X3D) and on a browser/WASM target, covering proving and verification time, proof
+  size, and peak prover memory (including the FRI-commitment-phase peak).
 - At least one wallet adopting Phase 1 (off-chain witness).
 - A documented proposal for the post-Q-day rule as a protocol parameter.
 
+### Proving Backend Options
+
+The proving backend is an implementation choice with **several viable options**; this CIP
+does not mandate one. The only hard constraint is a **post-quantum prover** — pairing- and
+discrete-log-based schemes (KZG, standard Nova, out-of-the-box Halo2) are excluded, since
+Shor's algorithm breaks them. Within that constraint, the backend is chosen by
+benchmarking the same relations, comparing proving time, peak memory, proof size, and
+audit cost:
+
+1. **RISC Zero zkVM — the paper's backend; the default baseline.** Proof relations are
+   written in ordinary Rust, reusing audited primitives (`curve25519-dalek`, `hmac`,
+   `sha2`). Lowest engineering risk (no hand-built constraints), but the zkVM's own
+   arithmetization, prover, and commitment scheme still require audit. Reference figures
+   (paper §9, AMD Ryzen 9 9950X3D): signing proof ~12.5 s, derivation proof ~156 s,
+   verification ~9–10 ms, proof ~219 KB.
+2. **Halo2/midnight-zk with a FRI polynomial commitment scheme.** A heavily optimized
+   circuit for this relation already exists (≈114k rows @ k=17). The default KZG PCS is
+   pairing-based and therefore *not* quantum-safe; swapping it for FRI is real work — it
+   changes the commitment scheme, the FRI domain/blow-up, proof size, and soundness
+   parameters — and the security argument must be re-opened and re-audited. This is not
+   hypothetical: the Tachyon zkVM [TACHYON] already implements Halo2 with a FRI PCS, and
+   Zcash's own quantum-readiness roadmap plans hash-based or STARK-style hardening of its
+   Halo2 proofs [ZCASH-QR], a staged posture that mirrors this CIP's Phase 1 → 2.
+3. **Plonky3-style native FRI-STARK circuits.** The paper's own forward plan for
+   proof-size reduction; removes the zkVM's fixed per-segment overhead, but requires an
+   audited circuit implementation that is at an earlier stage of maturity. The Tachyon
+   backend also tracks Plonky3 [TACHYON].
+4. **Nova / groth16-prover [NOVA] — efficiency comparison only.** Efficient and readily
+   available, but not quantum-proof and requires a trusted setup; useful as a performance
+   bound and for a possible hybrid, not as the primary mechanism.
+
 ### Implementation Plan
 
-- Rust implementation of `R_pruned-deriv` / `R_pruned-sign` over the RISC Zero zkVM,
-  reusing audited Ed25519/HMAC/SHA primitives.
+The plan below is **tentative** — it is a menu of options to pursue, not a settled
+commitment. The backend is chosen by benchmarking the [Proving Backend
+Options](#proving-backend-options) above; nothing here is final.
+
 - Integration with an existing Cardano wallet library (cardano-addresses) to emit
   `tau` and `sigma` out-of-band (Phase 1).
-- Evaluation of proof-size reduction (ZK-friendly hashing, Plonky3, smaller FRI
+- Browser/WASM benchmark of the wallet integration: verification, the per-transaction
+  signing proof, and the one-time derivation proof (timing and peak memory), to confirm
+  the Phase 1 off-chain verification story on the worst-case environment.
+- Evaluation of proof-size reduction (ZK-friendly hashing, smaller FRI
   configurations) to unlock Phase 2.
 - CDDL specification of the witness format for a future native STARK-verifier
   primitive.
@@ -293,10 +341,24 @@ server.
 - [ZKPoSP] Botta, Pospieszalski, Ragnoli, Ranvier, "ZKPoSP: Post-Quantum
   Zero-Knowledge Proofs for Hierarchical Deterministic Wallets",
   ePrint 2026/1508: https://eprint.iacr.org/2026/1508
+- [CIP-9] Wallet Mnemonic Sequence. https://cips.cardano.org/cip/CIP-0009
+- [CIP-19] Cardano Addresses. https://cips.cardano.org/cip/CIP-0019
 - [CIP-1852] HD (Hierarchy for Deterministic) Wallets for Cardano.
 - [CIP-1854] Multi-signatures HD Wallets.
 - [CIP-0003] Withdrawal scripts and address formats (HD Random vs HD Sequential).
-- [KL17] Khovratovich and Law, BIP32-Ed25519 (EuroS&PW 2017).
+- [KL17] Khovratovich and Law, "BIP32-Ed25519: Hierarchical Deterministic Keys over a
+  Non-linear Keyspace" (EuroS&PW 2017).
+  https://eprint.iacr.org/2016/1097
+- [RISC-ZERO] RISC Zero zkVM. https://dev.risczero.com/
+- [HALO2] zcash/halo2, The Halo2 zero-knowledge proving system.
+  https://github.com/zcash/halo2
+- [TACHYON] Tachyon, modular zero-knowledge backend (Halo2 with a FRI polynomial
+  commitment scheme, GPU-accelerated). https://github.com/kroma-network/tachyon
+- [NOVA] cardano-foundation/bls, groth16-prover (Nova-based proving).
+  https://github.com/cardano-foundation/bls/tree/main/groth16-prover
+- [ZCASH-QR] CoinDesk Research, "Building the Zcash Machine: Tachyon and Quantum
+  Readiness", June 2026.
+  https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
 
 ## Copyright
 
