@@ -97,7 +97,7 @@ This should, however, not be done blindly since there are drawbacks:
   For example, if `StakingCredential` is used independently (not under `Maybe`), then we may need to keep both `StakingCredential`, as well as the flattened `Maybe StakingCredential`.
 
 _We did not identify any nested sum type in the Plutus V4 types that is worth flattening._
-`Maybe StakingCredential` was the one clear candidate in the script context of Plutus V1-V3, because `StakingCredential` only ever appear under `Maybe`, and so could be flattened without retaining the original type.
+`Maybe StakingCredential` was the one clear candidate in the script context of Plutus V1-V3, because `StakingCredential` only ever appears under `Maybe`, and so could be flattened without retaining the original type.
 But `StakingCredential` no longer exists in Plutus V4, whose `Address` type now carries a `Maybe AccountId` instead of `Maybe StakingCredential` (see the type definitions below).
 That candidate is therefore gone, and every remaining nested sum type in the V4 types runs into one of the two drawbacks above.
 
