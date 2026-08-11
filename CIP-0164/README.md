@@ -767,14 +767,14 @@ VRF key and signed by the KES key) was likewise considered and would let the
 key ride the operational-certificate path, at the cost of requiring the ledger
 to observe block headers.
 
-The registered key material is a public key together with a proof of
-possession. In the BLS instantiation this is `bls_key = [bls_pubkey: G2 (96
-bytes), bls_possessionproof: G1 (48 bytes)]`. The proof of possession is
-mandatory and verified at registration: BLS aggregate signatures are otherwise
-vulnerable to rogue-key attacks, in which an adversary registers a key crafted
-relative to others' keys so that an aggregate appears to include voters who
-never signed. Only a key with a valid proof of possession may occupy a
-committee seat or contribute to a certificate. Because committee membership is
+The registered key material is a public key together with a proof of possession
+carried in an optional `bls_key` field of the pool registration certificate (see
+[Pool Registration](#pool-registration-cddl) in Appendix B). The proof of
+possession is mandatory and verified at registration: BLS aggregate signatures
+are otherwise vulnerable to rogue-key attacks, in which an adversary registers a
+key crafted relative to others' keys so that an aggregate appears to include
+voters who never signed. Only a key with a valid proof of possession may occupy
+a committee seat or contribute to a certificate. Because committee membership is
 stake-based (see [Committee Structure](#committee-structure)), a pool may be
 selected by stake without having registered a valid voting key; such a seat is
 *keyless* — it cannot sign, and any certificate marking a keyless seat as a
@@ -3252,7 +3252,39 @@ wire at vote time.
 ; BLS12-381 MinSig encodings for Leios
 leios_bls_verification_key = bytes .size 96
 leios_bls_signature        = bytes .size 48
-leios_bls_pop              = bytes .size 96
+leios_bls_pop              = bytes .size 48
+```
+
+<a id="pool-registration-cddl" href="#pool-registration-cddl">**Pool
+Registration**</a>
+
+Registering a voting key extends the existing stake pool registration
+certificate with an optional `bls_key` field that may also be `nil` (for
+backwards compatibility). A pool that has not registered a voting key occupies a
+*keyless* committee seat (see [Key Registration and
+Rotation](#key-registration)):
+
+
+```diff
+ pool_registration_cert = (3, pool_params)
+
+ pool_params =
+   (   operator       : pool_keyhash
+   ,   vrf_keyhash    : vrf_keyhash
++  , ? bls_key        : bls_key/ nil
+   ,   pledge         : coin
+   ,   cost           : coin
+   ,   margin         : unit_interval
+   ,   reward_account : reward_account
+   ,   pool_owners    : set<addr_keyhash>
+   ,   relays         : [* relay]
+   ,   pool_metadata  : pool_metadata/ nil
+   )
+
++bls_key =
++  [ leios_bls_verification_key
++  , leios_bls_pop
++  ]
 ```
 
 ## Copyright
