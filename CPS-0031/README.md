@@ -90,7 +90,7 @@ From stakeholder interviews during Buidler Fest #3, hosted by Carlos Lopez De La
 
 2. **Permissionless access.** Priority must be available to anyone willing to fulfil the necessary prerequisites, not negotiated through relationships or in private arrangements.
 
-3. **Predictability over raw speed.** The signal predictably improves access to timely inclusion, rather than only modestly improving odds. This includes a reduction in wait time variance for high-urgency transactions.
+3. **Predictability over raw speed.** The signal predictably improves access to timely inclusion, rather than only modestly improving odds. This includes making the wait more consistent for high-urgency transactions.
 
 ### Constraints
 
