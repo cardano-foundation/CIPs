@@ -15,10 +15,10 @@ License: CC-BY-4.0
 ## Abstract
 
 An optional, additive post-quantum signing layer for Cardano HD wallets using the
-BIP32-Ed25519 derivation of [CIP-1852]. Keys, addresses, and derivation are
+BIP32-Ed25519 derivation of [CIP-1852](#CIP-1852). Keys, addresses, and derivation are
 unchanged; the classical Ed25519 signature is replaced by (or, in the recommended
 deployment, accompanied by) a zero-knowledge proof of knowledge of the seed witness
-underlying the existing public key, per the ZKPoSP construction [ZKPoSP].
+underlying the existing public key, per the ZKPoSP construction [ZKPoSP](#ZKPoSP).
 Post-quantum security reduces to the conjectured quantum hardness of SHA-256/SHA-512
 and the soundness of the STARK proof system — no key re-registration, no address
 migration, no change to the derivation path. Adoption is opt-in and phased; the
@@ -34,7 +34,7 @@ constitutional-committee roles uniformly.
 - Replacing the derivation scheme (lattice or hash-based keys) would invalidate every
   existing address and break hardware wallets, CIP-1854 multisig, and governance keys.
   A purely additive, signature-layer upgrade avoids that.
-- [ZKPoSP] already specialises to BIP32-Ed25519 and to exactly the "three hardened +
+- [ZKPoSP](#ZKPoSP) already specialises to BIP32-Ed25519 and to exactly the "three hardened +
   two non-hardened" path shape Cardano uses (`m/1852'/1815'/account'/role/index`),
   making Cardano the natural first deployment.
 
@@ -43,15 +43,15 @@ constitutional-committee roles uniformly.
 ### Background
 
 **How a Cardano wallet makes keys today.** A wallet starts from a single seed (backed
-up as a mnemonic [CIP-9]) and derives a whole tree of keys from it, per the
-HD-sequential conventions of [CIP-0003] and the BIP32-Ed25519 scheme [KL17]. Each key
+up as a mnemonic [CIP-0009](#CIP-0009)) and derives a whole tree of keys from it, per the
+HD-sequential conventions of [CIP-0003](#CIP-0003) and the BIP32-Ed25519 scheme [KL17](#KL17). Each key
 is a pair of secret halves: a "left" half that does the actual Ed25519 signing and a
 "right" half that acts as extra secret material. Steps down the tree use a keyed hash
 (HMAC-SHA512). Steps marked with an apostrophe are *hardened* — they can only be
 computed from the private key — while plain steps are *non-hardened*, meaning anyone
 who knows the parent's public key can derive the children. The public key is the left
 half multiplied onto the Edwards curve (`A = kL·B`), and the Cardano address is a
-short hash of it (`blake2b-224(A)`, per [CIP-19]). Cardano's path
+short hash of it (`blake2b-224(A)`, per [CIP-0019](#CIP-0019)). Cardano's path
 `m/1852'/1815'/account'/role/index` consists of three hardened steps followed by two
 non-hardened ones.
 
@@ -123,7 +123,7 @@ Phase 2):
 ### Instantiation
 
 **The proving system.** Proofs are ZK-STARKs — the proof family that stays secure
-against quantum adversaries — produced by the RISC Zero virtual machine [RISC-ZERO] in
+against quantum adversaries — produced by the RISC Zero virtual machine [RISC-ZERO](#RISC-ZERO) in
 the reference implementation. Using a zkVM means the proof relations are written in
 ordinary Rust, reusing well-tested libraries (`curve25519-dalek`, `hmac`, `sha2`)
 instead of hand-built arithmetic circuits, which keeps engineering and audit cost
@@ -132,7 +132,7 @@ low.
 **The hashes.** Binding hashes use SHA-256; the key-derivation MAC remains
 HMAC-SHA512, unchanged from BIP32-Ed25519 — so the derivation itself is not touched.
 
-**What it costs.** Reference figures from the paper [ZKPoSP], §9, measured on the paper's
+**What it costs.** Reference figures from the paper [ZKPoSP](#ZKPoSP), §9, measured on the paper's
 dedicated OVH EU-central cloud server: AMD Ryzen 9 9950X3D, 16 cores / 32 threads at
 4.5 GHz, 64 GB RAM, no GPU, running Ubuntu, with the proving code in Rust over RISC Zero
 v5.0.0-rc.1. These are the authors' reference numbers, not our own measurements; we will
@@ -163,7 +163,9 @@ in what goes on-chain.
   The classical Ed25519 signature remains the on-chain witness; proofs travel
   out-of-band and are verified by wallets, exchanges, and indexers. No ledger or node
   change, fully backward compatible — quantum *readiness* now. Enforcement of
-  quantum-safe *settlement* requires Phase 2 or the post-Q-day rule.
+  quantum-safe *settlement* requires Phase 2 or the post-Q-day rule. Lova [LOVA](#LOVA),
+  the lattice-based, quantum-proof descendant of Nova, can also be evaluated as an
+  alternative prover-verifier pair within this off-chain Phase 1.
 - **Phase 2 — native STARK verifier in the node (future, conditional).** The proofs
   replace the classical witness on-chain and the ledger verifies them via a native
   (non-Plutus) STARK-verifier primitive. Requires a consensus/ledger change, a
@@ -309,16 +311,23 @@ audit cost:
    pairing-based and therefore *not* quantum-safe; swapping it for FRI is real work — it
    changes the commitment scheme, the FRI domain/blow-up, proof size, and soundness
    parameters — and the security argument must be re-opened and re-audited. This is not
-   hypothetical: the Tachyon zkVM [TACHYON] already implements Halo2 with a FRI PCS, and
+   hypothetical: the Tachyon zkVM [TACHYON](#TACHYON) already implements Halo2 with a FRI PCS, and
    Zcash's own quantum-readiness roadmap plans hash-based or STARK-style hardening of its
-   Halo2 proofs [ZCASH-QR], a staged posture that mirrors this CIP's Phase 1 → 2.
+   Halo2 proofs [ZCASH-QR](#ZCASH-QR), a staged posture that mirrors this CIP's Phase 1 → 2.
 3. **Plonky3-style native FRI-STARK circuits.** The paper's own forward plan for
    proof-size reduction; removes the zkVM's fixed per-segment overhead, but requires an
    audited circuit implementation that is at an earlier stage of maturity. The Tachyon
-   backend also tracks Plonky3 [TACHYON].
-4. **Nova / groth16-prover [NOVA] — efficiency comparison only.** Efficient and readily
+   backend also tracks Plonky3 [TACHYON](#TACHYON).
+4. **Nova / groth16-prover [NOVA](#NOVA) — efficiency comparison only.** Efficient and readily
    available, but not quantum-proof and requires a trusted setup; useful as a performance
    bound and for a possible hybrid, not as the primary mechanism.
+5. **Lova [LOVA](#LOVA) — lattice-based IVC.** A recursive-SNARK descendant of Nova that
+   replaces its pairing-based assumptions with a lattice-based construction, making it
+   quantum-proof. Its incrementally verifiable computation gives linear prover time and
+   constant verification, which fits the Phase 1 off-chain story; the caveat is early
+   maturity — a first-of-its-kind Nova implementation, unproven at Cardano scale — so it
+   is a candidate for Phase 1 evaluation alongside the STARK route, not the default
+   baseline.
 
 ### Implementation Plan
 
@@ -338,25 +347,29 @@ Options](#proving-backend-options) above; nothing here is final.
 
 ## References
 
-- [ZKPoSP] Botta, Pospieszalski, Ragnoli, Ranvier, "ZKPoSP: Post-Quantum
+- <a id="ZKPoSP"></a>[ZKPoSP] Botta, Pospieszalski, Ragnoli, Ranvier, "ZKPoSP: Post-Quantum
   Zero-Knowledge Proofs for Hierarchical Deterministic Wallets",
   ePrint 2026/1508: https://eprint.iacr.org/2026/1508
-- [CIP-9] Wallet Mnemonic Sequence. https://cips.cardano.org/cip/CIP-0009
-- [CIP-19] Cardano Addresses. https://cips.cardano.org/cip/CIP-0019
-- [CIP-1852] HD (Hierarchy for Deterministic) Wallets for Cardano.
-- [CIP-1854] Multi-signatures HD Wallets.
-- [CIP-0003] Withdrawal scripts and address formats (HD Random vs HD Sequential).
-- [KL17] Khovratovich and Law, "BIP32-Ed25519: Hierarchical Deterministic Keys over a
-  Non-linear Keyspace" (EuroS&PW 2017).
-  https://eprint.iacr.org/2016/1097
-- [RISC-ZERO] RISC Zero zkVM. https://dev.risczero.com/
-- [HALO2] zcash/halo2, The Halo2 zero-knowledge proving system.
+- <a id="CIP-0009"></a>[CIP-0009] Wallet Mnemonic Sequence. https://cips.cardano.org/cip/CIP-0009
+- <a id="CIP-0019"></a>[CIP-0019] Cardano Addresses. https://cips.cardano.org/cip/CIP-0019
+- <a id="CIP-1852"></a>[CIP-1852] HD (Hierarchy for Deterministic) Wallets for Cardano.
+  https://cips.cardano.org/cip/CIP-1852
+- <a id="CIP-1854"></a>[CIP-1854] Multi-signatures HD Wallets. https://cips.cardano.org/cip/CIP-1854
+- <a id="CIP-0003"></a>[CIP-0003] Withdrawal scripts and address formats (HD Random vs HD Sequential).
+  https://cips.cardano.org/cip/CIP-0003
+- <a id="KL17"></a>[KL17] Khovratovich and Law, "BIP32-Ed25519: Hierarchical Deterministic Keys over a
+  Non-linear Keyspace" (EuroS&PW 2017). https://input-output-hk.github.io/adrestia/static/Ed25519_BIP.pdf
+- <a id="RISC-ZERO"></a>[RISC-ZERO] RISC Zero zkVM. https://dev.risczero.com/
+- <a id="HALO2"></a>[HALO2] zcash/halo2, The Halo2 zero-knowledge proving system.
   https://github.com/zcash/halo2
-- [TACHYON] Tachyon, modular zero-knowledge backend (Halo2 with a FRI polynomial
+- <a id="TACHYON"></a>[TACHYON] Tachyon, modular zero-knowledge backend (Halo2 with a FRI polynomial
   commitment scheme, GPU-accelerated). https://github.com/kroma-network/tachyon
-- [NOVA] cardano-foundation/bls, groth16-prover (Nova-based proving).
+- <a id="NOVA"></a>[NOVA] cardano-foundation/bls, groth16-prover (Nova-based proving).
   https://github.com/cardano-foundation/bls/tree/main/groth16-prover
-- [ZCASH-QR] CoinDesk Research, "Building the Zcash Machine: Tachyon and Quantum
+- <a id="LOVA"></a>[LOVA] Elias, "Lova: A Novel Framework for Verifying Mathematical Proofs with
+  Incrementally Verifiable Computation" (SaT-CPS '25, June 2025), lattice-based and
+  quantum-secure. https://dl.acm.org/doi/10.1145/3716816.3727971
+- <a id="ZCASH-QR"></a>[ZCASH-QR] CoinDesk Research, "Building the Zcash Machine: Tachyon and Quantum
   Readiness", June 2026.
   https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
 
