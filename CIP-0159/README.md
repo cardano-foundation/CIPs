@@ -310,7 +310,7 @@ account_balance_interval =
   ] 
 
 account_balance_intervals = 
-  { + reward_account => account_balance_interval }
+  { + credential => account_balance_interval }
 
 transaction_body = 
   {   0  : set<transaction_input>         
@@ -329,9 +329,30 @@ be mentioned:
    balance interval must be set to `[n, n+1)`.
 3. If the account balance interval is used for an asset not supported in the current whitelist, the
    transaction will fail *Phase 1 Validation*.
+4. The referenced account must be registered; an interval on an unregistered credential fails
+   *Phase 1 Validation*.
+5. In a nested transaction, account balance intervals are validated independently at the top level
+   and within each sub-transaction, against that level's balances before its own withdrawals and
+   direct deposits are applied, and only when the enclosing transaction is phase-2 valid.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
 `ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
+
+### Starting Account Balance Intervals
+
+`account_balance_intervals` are evaluated against each transaction level's balances as that level is
+processed. In a nested transaction, a sub-transaction's intervals therefore see the balances
+*threaded through* any earlier sub-transactions, and so cannot express an assertion about the balances
+at the very start of the whole transaction. A separate top-level field,
+`starting_account_balance_intervals`, fills this gap: it asserts intervals against the account balances
+at the start of the whole transaction, before any sub-transaction or top-level withdrawal or direct
+deposit is applied. It uses the same representation as `account_balance_intervals`, requires the
+referenced accounts to be registered, requires no witness, and is only present in the top-level
+transaction body.
+
+```cddl
+starting_account_balance_intervals = {+ credential => account_balance_interval}
+```
 
 ### New Ledger State
 
@@ -433,6 +454,7 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 2. Partial withdrawals from account addresses in sub-transactions, or in a top-level transaction
    but only when plutus v1-v3 scripts are not used in it.
 3. Account balance intervals validated as part of *Phase 1 Validation*.
+4. Starting (whole-transaction) account balance intervals validated as part of *Phase 1 Validation*.
 
 **CDDL Changes**
 ```cddl
@@ -441,18 +463,24 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 ; Same definition as current withdrawals.
 direct_deposits = {+ reward_account => coin}
 
-account_balance_intervals = 
-  { + reward_account => 
-        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / nil ]  /
-        [ inclusive_lower_bound: coin / nil, exclusive_upper_bound: coin ] 
-  }
+account_balance_intervals          = {+ credential => account_balance_interval}
+starting_account_balance_intervals = {+ credential => account_balance_interval}
+
+; account_balance_interval is keyed by a `credential` (no network byte), unlike
+; direct_deposits/withdrawals which use `reward_account`. A `coin` means exact (balance == coin).
+account_balance_interval =
+    [inclusive_lower_bound : coin, exclusive_upper_bound : coin/ nil]
+  / [inclusive_lower_bound : coin/ nil, exclusive_upper_bound : coin]
+  / coin
 
 transaction_body = 
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
   ...
-  , ? 23 : direct_deposits ; new field
-  , ? 24 : account_balance_intervals ; new field
+  ; fields 23 (sub_transactions) and 24 (required_top_level_guards) come from CIP-0118.
+  , ? 25 : direct_deposits ; new field
+  , ? 26 : account_balance_intervals ; new field
+  , ? 27 : starting_account_balance_intervals ; new field (top-level body only)
   }
 ```
 
@@ -542,7 +570,7 @@ account_balance_interval =
   ] 
 
 account_balance_intervals = 
-  { + reward_account => account_balance_interval }
+  { + credential => account_balance_interval }
 ```
 
 **New `AccountState`**
