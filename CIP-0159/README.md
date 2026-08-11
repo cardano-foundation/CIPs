@@ -326,12 +326,49 @@ be mentioned:
 
 1. Using the account balance interval does *not* require a witness from the associated credential.
 2. To declare that a certain asset in the `AccountValue` has a specific balance of `n`, the asset's
-   balance interval must be set to `[n, n+1)`.
+   balance interval must be set to `[n, n+1)`. For ADA, a bare `coin` is accepted as a shorthand for
+   the same assertion.
 3. If the account balance interval is used for an asset not supported in the current whitelist, the
    transaction will fail *Phase 1 Validation*.
+4. The referenced account must be registered; an interval on an unregistered account fails
+   *Phase 1 Validation*.
+5. The network id of each reward account must match the network of the ledger the transaction is
+   submitted to; an interval on an account address of the wrong network fails *Phase 1 Validation*.
+6. Interval checks are part of *Phase 1 Validation*, but they are only evaluated when the top-level
+   transaction's `isValid` flag is true. A transaction marked `isValid = false` is processed for
+   collateral only and applies no withdrawals or deposits, so its interval assertions — which guard
+   those effects — are not reached. This holds at every level of a nested transaction: each
+   `account_balance_intervals` map is checked independently at the top level and within each
+   sub-transaction, against the account balances in the ledger state as of that level, before that
+   level's own withdrawals and direct deposits are applied.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
-`ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
+`ScriptContext`, keyed by credential: the network id of the reward account is not carried into the
+script context, in the same way that it is not for withdrawals. See the
+[New Plutus Script Context section](#new-plutus-script-context).
+
+### Starting Account Balance Intervals
+
+`account_balance_intervals` are evaluated against account balances for each transaction level as that level is
+processed. In a nested transaction, a sub-transaction's intervals therefore see the account balances
+*threaded through* any earlier sub-transactions, and so cannot express an assertion about the balances
+at the very start of the whole transaction. A separate top-level field,
+`starting_account_balance_intervals`, fills this gap: it asserts intervals against the account balances
+at the start of the whole transaction, before any sub-transaction or top-level withdrawal or direct
+deposit is applied. It uses the same representation as `account_balance_intervals`, requires the
+referenced accounts to be registered and to carry the correct network id, requires no witness, and is
+only present in the top-level transaction body.
+
+This field is deliberately absent from sub-transaction bodies. Every sub-transaction observes the same
+whole-transaction starting balances, so a per-sub-transaction copy could assert nothing that the
+top-level field cannot already express. In keeping with the CIP-0118 design — where top-level guards
+are responsible for the holistic view of a transaction, while other script purposes focus on the
+contents of an individual transaction — a sub-transaction builder that needs assurance about the
+starting balances can require it through a script in `required_top_level_guards`.
+
+```cddl
+starting_account_balance_intervals = {+ reward_account => account_balance_interval}
+```
 
 ### New Ledger State
 
@@ -433,6 +470,7 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 2. Partial withdrawals from account addresses in sub-transactions, or in a top-level transaction
    but only when plutus v1-v3 scripts are not used in it.
 3. Account balance intervals validated as part of *Phase 1 Validation*.
+4. Starting (whole-transaction) account balance intervals validated as part of *Phase 1 Validation*.
 
 **CDDL Changes**
 ```cddl
@@ -441,18 +479,23 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 ; Same definition as current withdrawals.
 direct_deposits = {+ reward_account => coin}
 
-account_balance_intervals = 
-  { + reward_account => 
-        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / nil ]  /
-        [ inclusive_lower_bound: coin / nil, exclusive_upper_bound: coin ] 
-  }
+account_balance_intervals          = {+ reward_account => account_balance_interval}
+starting_account_balance_intervals = {+ reward_account => account_balance_interval}
+
+; A `coin` means exact (balance == coin).
+account_balance_interval =
+    [inclusive_lower_bound : coin, exclusive_upper_bound : coin/ nil]
+  / [inclusive_lower_bound : coin/ nil, exclusive_upper_bound : coin]
+  / coin
 
 transaction_body = 
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
   ...
-  , ? 23 : direct_deposits ; new field
-  , ? 24 : account_balance_intervals ; new field
+  ; fields 23 (sub_transactions) and 24 (required_top_level_guards) come from CIP-0118.
+  , ? 25 : direct_deposits ; new field
+  , ? 26 : account_balance_intervals ; new field
+  , ? 27 : starting_account_balance_intervals ; new field (top-level body only)
   }
 ```
 
