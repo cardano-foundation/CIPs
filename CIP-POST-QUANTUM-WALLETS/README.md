@@ -85,7 +85,7 @@ only in secure long-term storage.
 
 Why the anchor must be hardened: the `role` and `index` steps are non-hardened, so
 they can be derived from public keys alone. A proof covering only non-hardened steps
-could be faked by anyone who knows the public keys but not the seed (the paper's
+could be faked by anyone who knows the public keys but not the seed (the [ZKPoSP](#ZKPoSP) paper's
 unsoundness result, Prop. 6.3/7.2). Every Cardano leaf is non-hardened, which is
 precisely why this distinction matters on Cardano.
 
@@ -285,7 +285,7 @@ server.
 - Conformance test vectors for the Cardano path covering derivation, signing, and
   verification, including the anchor-at-`account'` constraint.
 - Public, independent security audit of the proof system and its Cardano integration.
-- Benchmark report for the reference implementation on the paper's machine (AMD Ryzen 9
+- Benchmark report for the reference implementation on the [ZKPoSP](#ZKPoSP) paper's machine (AMD Ryzen 9
   9950X3D) and on a browser/WASM target, covering proving and verification time, proof
   size, and peak prover memory (including the FRI-commitment-phase peak).
 - At least one wallet adopting Phase 1 (off-chain witness).
@@ -300,7 +300,7 @@ Shor's algorithm breaks them. Within that constraint, the backend is chosen by
 benchmarking the same relations, comparing proving time, peak memory, proof size, and
 audit cost:
 
-1. **RISC Zero zkVM — the paper's backend; the default baseline.** Proof relations are
+1. **RISC Zero zkVM — the [ZKPoSP](#ZKPoSP) paper's backend; the default baseline.** Proof relations are
    written in ordinary Rust, reusing audited primitives (`curve25519-dalek`, `hmac`,
    `sha2`). Lowest engineering risk (no hand-built constraints), but the zkVM's own
    arithmetization, prover, and commitment scheme still require audit. Reference figures
@@ -314,7 +314,7 @@ audit cost:
    hypothetical: the Tachyon zkVM [TACHYON](#TACHYON) already implements Halo2 with a FRI PCS, and
    Zcash's own quantum-readiness roadmap plans hash-based or STARK-style hardening of its
    Halo2 proofs [ZCASH-QR](#ZCASH-QR), a staged posture that mirrors this CIP's Phase 1 → 2.
-3. **Plonky3-style native FRI-STARK circuits.** The paper's own forward plan for
+3. **Plonky3-style native FRI-STARK circuits.** The [ZKPoSP](#ZKPoSP) paper's own forward plan for
    proof-size reduction; removes the zkVM's fixed per-segment overhead, but requires an
    audited circuit implementation that is at an earlier stage of maturity. The Tachyon
    backend also tracks Plonky3 [TACHYON](#TACHYON).
