@@ -809,10 +809,15 @@ the initial stake snapshots.
 Structure**: The voting committee for an epoch is determined by **stake-based
 truncation** of the active stake distribution. At the epoch boundary, pools
 are ordered by stake in descending order and selected, in order, until the
-cumulative selected stake reaches a target threshold (or, equivalently, until
-the truncation error falls below a target maximum). The resulting committee
+cumulative selected stake reaches a target coverage. The resulting committee
 is fixed for the entire epoch; every committee member is eligible to vote on
 every EB produced within that epoch.
+
+> [!WARNING]
+>
+> TODO: the stake-based committee scheme is resilient to under-representation
+> because each vote's weight is known. That means we don't need to trade-off
+> anything here and could go with a fixed committee size!
 
 The committee is configured by a *cumulative-stake* (or *maximum-error*)
 protocol parameter, not by a fixed committee count. The realized committee
@@ -824,39 +829,32 @@ realized committee grows beyond what is optimal for voting throughput, that
 cost is paid on the optimistic (certifying) path of the protocol and is
 acceptable. Under-representation is the case the parameter is tuned against.
 
-There is no per-EB sortition. There are no non-persistent voters. Membership is
-determined once per epoch, deterministically, from the stake distribution
-available at the epoch boundary; this matches the cadence of the existing
-VRF-key handling for pool parameters. The rationale for selecting this scheme
-over the alternatives considered (notably wFA^LS) is recorded in [Design
-Decisions](#voting-committee-selection).
+The rationale for selecting this scheme over the alternatives considered
+(notably wFA^LS) is recorded in [Design Decisions](#voting-committee-selection).
 
 The certificate accordingly consists of a bitfield indicating which committee
 members signed plus a single aggregated BLS signature. Its size grows linearly
 in committee size, dominated by the bitfield ($\lceil N/8 \rceil$ bytes) plus
 a fixed signature and overhead.
 
-<a id="vote-structure" href="#vote-structure"></a>**Vote Structure**: All votes
-include the `endorser_block_hash` field that uniquely identifies the target EB:
+<a id="vote-structure" href="#vote-structure"></a>**Vote Structure**: Votes are
+cast on EB announcements, which uniquely identifies an EB extending a
+Praos chain and have the following structure:
 
-Under the stake-based committee scheme, all votes share a single uniform
-structure:
-
-- `slot_no`: Identifier for the voting round and equal to slot number of the RB
-  that announced the target EB.
-- `endorser_block_hash`: Hash of the EB to vote on.
+- `announcing_rb_hash`: Announcement to vote on; a hash of the RB header
+  pointing to an EB via `announced_eb`.
 - `voter_id`: Index into the epoch's stake-based committee (pools ordered by
   descending stake at the epoch boundary; see [Committee
   Selection](#committee-selection))
-- `vote_signature`: BLS signature over `concat(slot_no, endorser_block_hash)`
+- `vote_signature`: BLS signature over `announcing_rb_hash`
 
-Votes do not carry per-EB sortition eligibility proofs. Eligibility is
-determined by epoch-level committee membership and verified by direct lookup
-against the committee derived at the epoch boundary.
+Votes do not carry eligibility proofs. Eligibility is determined by epoch-level
+committee membership and verified by direct lookup against the committee derived
+at the epoch boundary.
 
-Binding the vote signature to `slot_no` in addition to `endorser_block_hash`
-ensures voters validated the EB against the same ledger state it extends when
-certified on chain; recall that multiple RB headers could announce the same EB.
+Binding the vote to `announcing_rb_hash` ensures voters validated the EB against
+the same ledger state it extends when certified on chain; recall that multiple
+RB headers could announce the same EB.
 
 A [CDDL for votes and certificates](#votes-certificates-cddl) is available in
 Appendix B.
