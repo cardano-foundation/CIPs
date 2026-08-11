@@ -29,6 +29,11 @@ assigning namespace ownership or mandatory resolution priority
 to any single provider.
 
 This CIP addresses the problems documented in CPS-0032.
+This version defines resolution for NFT-holder based
+handle systems using the `policy_asset_holder` method.
+Alternative resolution architectures such as datum-based
+registries and Plutus contracts may be defined in future
+versions of this CIP.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -168,8 +173,9 @@ is found among registered providers.
 
 Multiple providers may register under the bare namespace
 type under different Policy IDs. Bare namespace providers
-are displayed with lowest priority in the collision
-selection interface.
+are included as candidates
+alongside prefix and suffix matches. No namespace
+type has automatic priority over another.
 
 #### Namespace Registry Fields
 
@@ -478,12 +484,13 @@ from proceeding without verification.
 
 #### Provider Impersonation
 
-The registry is the authoritative source of provider
-Policy IDs. Wallets MUST verify that the on-chain
+The registry is the authoritative source of Policy IDs
+for providers that have chosen to register. Wallets
+implementing this CIP MUST verify that the on-chain
 asset queried uses the Policy ID declared in the
-registry entry for that provider. Assets under
-unregistered Policy IDs MUST NOT be resolved as
-handles under this standard.
+registry entry for that provider. Wallets MAY also
+support providers outside this registry through direct
+integration or other standards.
 
 #### API Availability
 
@@ -495,6 +502,33 @@ falling back to API resolution for financial
 transactions.
 
 ## Rationale: How does this CIP achieve its goals?
+
+### Registry Governance
+
+The registry follows the governance model established
+by CIP-0010. CIP editors review pull requests adding
+or modifying registry entries for technical schema
+conformance only. CIP editors do not verify provider
+legitimacy, trustworthiness, or operational quality.
+Those assessments remain at wallet discretion.
+
+Providers are responsible for keeping their own
+registry entries accurate. Providers SHOULD update
+their status field to `deprecated` or `inactive`
+when they cease operation or migrate to a new
+Policy ID.
+
+CIP editors MAY mark an entry as `inactive` if a
+provider is demonstrably defunct — for example if
+their registered website and resolver are both
+unreachable for an extended period.
+
+Emergency security incidents affecting registered
+providers are handled on a best-effort basis by
+CIP editors. Wallets or users discovering a security
+issue with a registered provider SHOULD contact that
+provider directly using the `security_contact` field
+in the registry entry.
 
 ### Registry model
 
@@ -672,7 +706,7 @@ presented as the default option.
       "namespace_type": "suffix",
       "namespace_delimiter": ".",
       "policy_ids": {
-        "mainnet": "eeff001122334455667788990011223344556677889900112233445566778899"
+        "mainnet": "eeff0011223344556677889900112233445566778899001122334455"
       },
       "resolver": {
         "api": "https://example-d.com/api/resolve/",
@@ -683,7 +717,7 @@ presented as the default option.
       "security_contact": "security@example-d.com",
       "status": "active",
       "registered": "2026-06-03"
-    }
+    },
     {
       "serial": 5,
       "provider": "Example Provider E",
@@ -713,6 +747,14 @@ Example Provider A (serial 1) and Example Provider D
 resolve the handle, the wallet MUST present a provider
 selection interface. Example Provider A SHOULD be presented
 as the default option due to its lower serial number.
+
+When a handle input matches multiple namespace types
+simultaneously — for example `$alice.did` matching a
+prefix provider (`$`), a suffix provider (`.did`), and
+bare namespace providers — all matching providers are
+added as candidates. The collision handling interface
+is then shown to the user to select the intended provider.
+No namespace type has automatic priority over another.
 
 ## Copyright
 
