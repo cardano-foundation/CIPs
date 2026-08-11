@@ -366,9 +366,9 @@ Options](#proving-backend-options) above; nothing here is final.
   commitment scheme, GPU-accelerated). https://github.com/kroma-network/tachyon
 - <a id="NOVA"></a>[NOVA] cardano-foundation/bls, groth16-prover (Nova-based proving).
   https://github.com/cardano-foundation/bls/tree/main/groth16-prover
-- <a id="LOVA"></a>[LOVA] Elias, "Lova: A Novel Framework for Verifying Mathematical Proofs with
-  Incrementally Verifiable Computation" (SaT-CPS '25, June 2025), lattice-based and
-  quantum-secure. https://dl.acm.org/doi/10.1145/3716816.3727971
+- <a id="LOVA"></a>[LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
+  Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
+  https://eprint.iacr.org/2024/1964
 - <a id="ZCASH-QR"></a>[ZCASH-QR] CoinDesk Research, "Building the Zcash Machine: Tachyon and Quantum
   Readiness", June 2026.
   https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
