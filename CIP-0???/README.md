@@ -438,26 +438,6 @@ Wallets reading a deprecated or inactive registry entry MUST:
 - Not remove previously resolved addresses from transaction
   history
 
-### Payment URI Integration
-
-Payment URIs that include handle resolution SHOULD use the
-following parameter format to specify provider context
-explicitly:
-
-```
-cardano:{address}?handle={handle}&handle-provider={provider-name}
-```
-
-Example:
-```
-cardano:addr1qx...?handle=john.smith.did&handle-provider=GetMyID
-```
-
-When a wallet receives a payment URI containing a
-`handle-provider` parameter it SHOULD use the specified
-provider for resolution rather than prompting the user to
-select a provider.
-
 ### Security Considerations
 
 #### Resolution Security
