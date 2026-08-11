@@ -1,15 +1,15 @@
 ---
 CIP: 27
 Title: CNFT Community Royalties Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Huth S0lo <john@digitalsyndicate.io>
   - TheRealAdamDean <adam@crypto2099.io>
 Implementors: N/A
 Discussions:
-  - https://forum.cardano.org/t/cip-royalties/68599
-  - https://github.com/cardano-foundation/CIPs/pull/116
+  - Cardano Forum: https://forum.cardano.org/t/cip-royalties/68599
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/116
 Created: 2021-08-29
 License: Apache-2.0
 ---
@@ -18,7 +18,7 @@ License: Apache-2.0
 
 This proposed standard will allow for uniform royalties' distributions across the secondary market space. It is easy to implement using metadata only, and does not require a smart contract.  However, it is scalable to allow for the usage of a downstream smart contract, as needed by the asset creator.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 There is a significant interest within the Cardano Community for an implementation of royalties distribution when a Cardano Asset is resold on the secondary market. It has become a common theme to see and hear statements that the only thing stopping artists from adopting Cardano, is that they are waiting for an implementation of royalties.
 
@@ -63,7 +63,7 @@ A new tag of 777 is proposed for this implementation.  The community guidelines 
 3) Burn no name token to free up UTxO (recommended, but not required).
 4) Mint planned assets using this same policy.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 By creating a new tag for the distinct purpose of royalties distributions, Cardano Asset makers, and Marketplaces can uniformly apply royalties to assets with predictable results.
 
@@ -96,4 +96,4 @@ The solution is scalable to any desired royalty percentage.  It is easy to work 
 
 ## Copyright
 
-This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+This CIP is licensed under [Apache-2.0](http://www.apache.org/licenses/LICENSE-2.0).

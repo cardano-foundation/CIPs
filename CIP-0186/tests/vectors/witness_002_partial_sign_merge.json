@@ -1,0 +1,16 @@
+{
+  "name": "witness_002_partial_sign_merge",
+  "spec_section": "Methods (signTx; partialSign semantics inherited from CIP-30:343-347)",
+  "category": "witness_splice",
+  "input": {
+    "existing_tx_cbor_hex": "84a0a10081825820aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa5840bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbf5f6",
+    "wallet_returned_witness_set_cbor_hex": "a10081825820cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc5840dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "partialSign": true,
+    "shape_note": "Pre-existing tx already carries vkey A. Wallet partial-signs and returns vkey B only. Caller merges the two vkey-witness arrays."
+  },
+  "expected": {
+    "merged_tx_cbor_hex": "84a0a10082825820aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa5840bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb825820cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc5840ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddf5f6"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

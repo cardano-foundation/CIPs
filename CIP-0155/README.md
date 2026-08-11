@@ -1,12 +1,12 @@
 ---
 CIP: 155
 Title: SRV registry
-Status: Proposed
 Category: Network
+Status: Proposed
 Authors:
   - Marcin Szamotulski <marcin.szamotulski@iohk.io>
 Implementors: N/A
-Discussions: 
+Discussions:
   - Submission: https://github.com/cardano-foundation/CIPs/pull/1033
 Created: 2025-04-22
 License: CC-BY-4.0
@@ -18,7 +18,7 @@ This CIP defines the procedure for assigning Service Record (SRV) prefixes for C
 
 This creates a means of sharing authoritative information between SPOs who deploy services and _decentralised protocol_ developers who write them.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The **Cardano Ledger** allows the use of SRV records in the **SPO** registration certificate (see [register-stake-pool]).
 
@@ -89,7 +89,7 @@ From this, we learn that a Cardano node is available on port `3001` on IPs resol
 Refer to the [Cloudflare documentation][srv] for a deeper understanding of other fields.
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP constructs a process to maintain SRV registry, and thus provides authritative information for SPOs and decentralised protocol developers.
 

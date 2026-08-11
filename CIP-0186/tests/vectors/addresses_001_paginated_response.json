@@ -1,0 +1,15 @@
+{
+  "name": "addresses_001_paginated_response",
+  "spec_section": "Methods (getUsedAddresses; pagination 50 per page)",
+  "category": "addresses",
+  "input": {
+    "decrypted_request": {"session": "c2Vzc2lvbi1pZA", "page": 0, "limit": 50},
+    "decrypted_response": {"addresses": ["60aa", "60bb", "60cc"], "nextPage": 1}
+  },
+  "expected": {
+    "addresses_length_le_50": true,
+    "next_page_int": 1
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

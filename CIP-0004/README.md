@@ -1,8 +1,8 @@
 ---
 CIP: 4
 Title: Wallet Checksums
-Status: Proposed
 Category: Wallets
+Status: Proposed
 Authors:
   - Ruslan Dudin <ruslan@emurgo.io>
   - Sebastien Guillemot <seba@dcspark.io>
@@ -10,8 +10,8 @@ Implementors:
   - Ruslan Dudin <ruslan@emurgo.io>
   - Sebastien Guillemot <seba@dcspark.io>
 Discussions:
-  - https://forum.cardano.org/t/cip4-wallet-checksum/32819
-  - https://github.com/cardano-foundation/CIPs/pull/4
+  - Cardano Forum: https://forum.cardano.org/t/cip4-wallet-checksum/32819
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/4
 Created: 2019-05-01
 License: Apache-2.0
 ---
@@ -20,7 +20,7 @@ License: Apache-2.0
 
 We introduce a checksum algorithm to help users verify they are restoring the right wallet before the restoration actually takes place.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Users occasionally enter the wrong [mnemonic](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki) for their wallet. In this case, they simply see a 0 ADA wallet after syncing is over. This not only wastes the user's time, in the worst case it makes them think they either lost all their ADA or think there is a bug in the wallet implementation.
 
@@ -47,7 +47,7 @@ To satisfy (2) and (3), the a hash of the public key is used
 
 To satisfy (4) and (5), we generate for an *ImagePart* and a *TextPart*. The brain can roughly remember images allowing you to quickly dismiss checksums that look totally different. However, since images can sometimes be similar, a *TextPart* is also provided for double-checking. Additionally, if the user does not have access to a printer, the text part can be easily written down by hand on a piece of paper to satisfy (5).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We first provide a template for the code, explain the template and then provide the parameterization we use for Cardano
 

@@ -1,8 +1,8 @@
 ---
 CIP: 8
 Title: Message Signing
-Status: Active
 Category: Tools
+Status: Active
 Authors:
   - Sebastien Guillemot <sebastien@emurgo.io>
 Implementors:
@@ -11,9 +11,9 @@ Implementors:
   - SundaeSwap governance <https://governance.sundaeswap.finance/>
   - Emurgo <https://www.emurgo.io/>
 Discussions:
-  - https://github.com/Emurgo/EmIPs/pull/5
-  - https://forum.cardano.org/t/message-signing-specification/41032
-  - https://cardano.ideascale.com/a/dtd/Create-message-signing-standard/323158-48088
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/42
+  - EmIPs PR: https://github.com/Emurgo/EmIPs/pull/5
+  - Cardano Forum: https://forum.cardano.org/t/message-signing-specification/41032
 Created: 2020-09-28
 License: CC-BY-4.0
 ---
@@ -22,7 +22,7 @@ License: CC-BY-4.0
 
 Private keys can be used to sign arbitrary data. If you have the public key, you can verify the data was signed by the owner of the private key. This is how transaction signing works internally but its utility is not limited to transactions. This document tries to set a standard for how to represent and verify signed messages for Cardano.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Most common use cases:
 
@@ -289,7 +289,7 @@ We recommend usage of unprotected headers vs protected headers when possible. Th
 
 The public key SHOULD NOT contain any chaincode information, as it could compromise child non-hardened keys. It is both a privacy and a security risk (see [here](https://bitcoin.org/en/wallets-guide#hierarchical-deterministic-key-creation) for more detail).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Requirements
 
