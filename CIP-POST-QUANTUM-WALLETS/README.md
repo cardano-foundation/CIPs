@@ -364,8 +364,9 @@ Options](#proving-backend-options) above; nothing here is final.
   https://github.com/zcash/halo2
 - <a id="TACHYON"></a>[TACHYON] Tachyon, modular zero-knowledge backend (Halo2 with a FRI polynomial
   commitment scheme, GPU-accelerated). https://github.com/kroma-network/tachyon
-- <a id="NOVA"></a>[NOVA] cardano-foundation/bls, groth16-prover (Nova-based proving).
+- <a id="NOVA"></a>[NOVA] cardano-foundation/bls, groth16-prover, nova-prover.
   https://github.com/cardano-foundation/bls/tree/main/groth16-prover
+  https://github.com/cardano-foundation/bls/tree/main/nova-prover
 - <a id="LOVA"></a>[LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
   Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
   https://eprint.iacr.org/2024/1964
