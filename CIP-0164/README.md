@@ -754,6 +754,57 @@ voting scheme alongside their existing VRF and KES keys. In the BLS
 implementation described here, this would be a BLS key over the BLS12-381
 elliptic curve.
 
+<a id="key-registration" href="#key-registration"></a>**Key Registration and
+Rotation**: The proposed mechanism is to extend the existing stake pool
+registration certificate to carry the voting key, rather than introduce a
+dedicated certificate or place the key in the block header. Extending the pool
+registration certificate binds the voting key's lifecycle to the pool's —
+registered, re-registered, and retired together — and reuses the authorization
+already required to register a pool, adding no new certificate type or
+witnessing rule. A dedicated certificate would also work but adds a new type
+and lifecycle to specify and maintain; a header-carried key (analogous to the
+VRF key and signed by the KES key) was likewise considered and would let the
+key ride the operational-certificate path, at the cost of requiring the ledger
+to observe block headers.
+
+The registered key material is a public key together with a proof of
+possession. In the BLS instantiation this is `bls_key = [bls_pubkey: G2 (96
+bytes), bls_possessionproof: G1 (48 bytes)]`. The proof of possession is
+mandatory and verified at registration: BLS aggregate signatures are otherwise
+vulnerable to rogue-key attacks, in which an adversary registers a key crafted
+relative to others' keys so that an aggregate appears to include voters who
+never signed. Only a key with a valid proof of possession may occupy a
+committee seat or contribute to a certificate. Because committee membership is
+stake-based (see [Committee Structure](#committee-structure)), a pool may be
+selected by stake without having registered a valid voting key; such a seat is
+*keyless* — it cannot sign, and any certificate marking a keyless seat as a
+signer must be rejected.
+
+Voting keys **rotate** on a cadence comparable to KES *key rotation* (~90 days
+on Cardano mainnet), which a corresponding key time-to-live should enforce.
+This is distinct from KES *key evolution* (~12 hours): evolution provides
+forward secrecy within a single key's lifetime and is not required for voting
+keys. Unlike a KES key, which takes effect immediately on the chain it is used
+to build, a voting key must be **activated at an epoch boundary**, because the
+committee is fixed once per epoch from the stake distribution — so a voting
+key's activation resembles that of a VRF key.
+
+A voting key could in principle activate sooner than a VRF key: VRF keys are
+held back to prevent grinding of the leader-election nonce, a concern voting
+keys do not share, so a registered voting key could become active as soon as
+the stake snapshot it appears in stabilizes. The recommended design nonetheless
+**aligns voting-key activation with VRF-key rotation**. Activation is not merely
+an on-chain event — an operator must install the newly-active key on the hot,
+block-producing machine for the epoch in which it becomes effective — so a
+staggered schedule would force an operator who rotates both keys in one epoch to
+perform two separate hot-key swaps in consecutive epochs. Aligning the two
+schedules collapses this into a single swap, trading a slightly longer window in
+which the new key is registered but not yet active for materially simpler key
+handling. A newly registered or rotated key is not eligible to vote until the
+snapshot in which it appears becomes active; a committee that must be live from
+the first epoch (e.g. at genesis) therefore requires its keys to be present in
+the initial stake snapshots.
+
 <a id="committee-structure" href="#committee-structure"></a>**Committee
 Structure**: The voting committee for an epoch is determined by **stake-based
 truncation** of the active stake distribution. At the epoch boundary, pools
@@ -2640,12 +2691,12 @@ stake data.)
   future revisitation if simulation or operational data warrant it.
 
 The adaptive-security argument above is contingent on BLS key rotation
-(Appendix A requirement 2). The on-chain mechanism for registering rotations
-— likely an extension of the existing pool-registration certificate path with
-epoch-boundary activation — is left to a follow-up PR amending this CIP.
-Until that mechanism is specified, the static-vs-adaptive distinction
-collapses for *all* schemes considered here (stake-based truncation, wFA^LS,
-and All-vote alike), so the relative comparison above is unaffected.
+(Appendix A requirement 2). The on-chain mechanism — extending the pool
+registration certificate to carry the voting key, with epoch-boundary
+activation aligned to VRF-key rotation — is specified under [Key Registration
+and Rotation](#key-registration). The static-vs-adaptive distinction applies
+equally to *all* schemes considered here (stake-based truncation, wFA^LS, and
+All-vote alike), so the relative comparison above is unaffected.
 
 **wFA^IID as a forward-looking option.** A variant **wFA^IID** (Fait Accompli
 with IID stake-proportional sampling for non-persistent seats) is recorded here
