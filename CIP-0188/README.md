@@ -8,7 +8,7 @@ Authors:
 Implementors:
     - Marius Georgescu <georgescumarius@live.com>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1200
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1200
 Created: 2026-05-19
 License: CC-BY-4.0
 ---
@@ -49,7 +49,7 @@ This CIP standardises the pattern. A single canonical validator, applied to a si
 
 ## Specification
 
-The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
+The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, **RECOMMENDED**, and **MAY** in this document are to be interpreted as described in [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) and [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) when, and only when, they appear in all capitals.
 
 The TOA address is derived as follows:
 
@@ -68,7 +68,7 @@ Delegated/staking TOAs are explicitly out of scope for v1: any optional stake cr
 
 - **Token-Owned Address (TOA):** a Cardano enterprise script address whose payment credential is the hash of the `TOA v1` validator applied to a specific `(toa_version, policy_id, asset_name)`. The TOA exists conceptually whether or not any UTxO currently sits at it.
 - **Controlling NFT:** the asset class `(policy_id, asset_name)` baked into a TOA's parameters. The term "Controlling NFT" is used throughout this CIP for readability, but TOA v1 operates mechanically on an asset class; historical uniqueness of that asset class is not proven by the validator (see *Policy Classification*).
-- **Controller:** any party able to construct a transaction that consumes a UTxO containing the controlling NFT and preserves that NFT in the outputs. In the ordinary case this is the NFT holder. If the controlling NFT is inside its own TOA (see *Self-deposit*), control becomes permissionless.
+- **Controller:** any party able to construct a transaction that consumes a UTxO containing the controlling NFT and preserves that NFT in the outputs. In the ordinary case this is the NFT holder. If the controlling NFT is inside its own TOA (see *Self-deposit*), control becomes permissionless. If it is inside **another** TOA, control passes transitively to whoever controls that TOA's controlling NFT (see *Security Considerations — Control cycles and nested TOAs*).
 - **Carry-through:** the validator requirement that the controlling NFT must appear in transaction outputs with total quantity exactly 1. The recipient of the carry-through output is unconstrained by the validator.
 - **Self-deposit:** the case where the controlling NFT is sent to its own TOA. Self-deposit intentionally makes the TOA permissionlessly spendable (subject only to standard ledger witness requirements such as a datum preimage for a `Datum Hash` UTxO); see *Security Considerations — Self-deposit of the controlling NFT* for the full explanation.
 - **TOA deposit:** a UTxO sent to a TOA address. Classified by the *datum shape* of the UTxO into one of four categories:
@@ -77,7 +77,7 @@ Delegated/staking TOAs are explicitly out of scope for v1: any optional stake cr
   - **Datum Hash** — a bare 32-byte hash with no on-chain preimage. Spending requires the off-chain datum preimage.
   - **No Datum** — no datum attached.
 
-  The TOA v1 validator MUST NOT reject a UTxO based on its datum classification.
+  The TOA v1 validator does not reject a UTxO based on its datum classification.
 - **`toa_version`:** an integer baked into the validator parameters that pins the standard revision. A change in `toa_version` yields a different address for the same `(policy_id, asset_name)`.
 
 ### Canonical Parameter Encoding (CDDL)
@@ -90,7 +90,7 @@ toa_params_v1 = #6.121([
 ])
 ```
 
-`#6.121` is the CBOR tag for `Constr 0` in PlutusData. Serialisation MUST be canonical PlutusData CBOR as produced by the Plutus V3 `serialiseData` builtin: `Constr 0` fields are encoded with an *indefinite-length array* (`0x9f` … `0xff`); integers and bytestrings use smallest CBOR major-type form. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`. Note this is **not** strict RFC 8949 §4.2.1 (which mandates definite-length items); see *Mandatory Normative Artifacts — Identity of the parameter encoder*.
+`#6.121` is the CBOR tag for `Constr 0` in PlutusData. Serialisation MUST be canonical PlutusData CBOR as produced by the Plutus V3 `serialiseData` builtin: a `Constr 0` with a non-empty field list — always the case for `toa_params_v1`'s three fields — is encoded with an *indefinite-length array* (`0x9f` … `0xff`), while an empty `Constr 0 []` encodes as the definite-length `d8 79 80` (the Unit Datum byte sequence in *Definitions*); integers and bytestrings use smallest CBOR major-type form. For the unsigned-integer field this means: values `0..23` are encoded in the initial byte alone (major type 0 — `toa_version = 1` → `0x01`, `toa_version = 2` → `0x02`); values `24..255` as `0x18` followed by one value byte. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`. Note this is **not** strict RFC 8949 §4.2.1 (which mandates definite-length items); see *Mandatory Normative Artifacts — Identity of the parameter encoder*.
 
 ### Address Derivation
 
@@ -114,7 +114,7 @@ Each ingredient:
 
 - `params_cbor` is the canonical PlutusData CBOR as produced by the Plutus V3 `serialiseData` builtin (`Constr 0` fields encoded with indefinite-length array `0x9f…0xff`; integers and bytestrings in smallest CBOR major-type form). The CDDL `toa_params_v1` in *Canonical Parameter Encoding* defines the input.
 - `FLAT_PREFIX_TOA_V1` (528 bytes) and `FLAT_SUFFIX_TOA_V1` (1 byte = `0x01`) are normative byte-level artifacts pinned by blake2b-256 — see *Mandatory Normative Artifacts*.
-- The chunked-bytestring frame (`consByteString(len, paramCbor) || 0x00`) is the on-chain flat encoding of `paramCbor` as a `Constant ByteString`: a single 1-byte length chunk header followed by the chunk content, terminated by a `0x00` byte. This frame is valid for `len(paramCbor) ≤ 255`, a precondition always satisfied for TOA v1 (in practice `len(paramCbor)` is at most ~68 bytes). Longer parameters would require multi-chunk encoding and a new `toa_version`.
+- The chunked-bytestring frame (`consByteString(len, params_cbor) || 0x00`) is the on-chain flat encoding of `params_cbor` as a `Constant ByteString`: a single 1-byte length chunk header followed by the chunk content, terminated by a `0x00` byte. This frame is valid for `len(params_cbor) ≤ 255`, a precondition always satisfied for TOA v1 (`len(params_cbor)` is at most 69 bytes). Longer parameters would require multi-chunk encoding and a new `toa_version`.
 - `cbor_bytestring_header(n)` is a pure deterministic function specified inline below.
 
 The CBOR bytestring-header encoder is specified as:
@@ -128,7 +128,7 @@ cbor_bytestring_header(n) :=
     otherwise          error
 ```
 
-For TOA v1, `n` is always in `[~561, ~593]` so only the `0x59 + 2-byte-length` branch is ever active in practice; the spec defines the full function for forward compatibility.
+For TOA v1, `n = 531 + len(params_cbor)` with `len(params_cbor) ∈ [36, 69]` (the range steps by 1 byte at the CBOR header transition of `asset_name` length 23→24), so `n ∈ [567, 600]` and only the `0x59 + 2-byte-length` branch is ever active; the spec defines the full function for forward compatibility.
 
 **Reference recipe in Plinth/Plutus-Tx style** (illustrative; this is the same procedure executed on-chain):
 
@@ -153,9 +153,9 @@ The same procedure, executed off-chain in any language with bytestring concatena
 
 #### Derivation of the canonical artifacts
 
-The byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived from the compiled, unapplied `validators/ToaV1.uplc` artifact in the reference repository. The derivation procedure — applying a `Constant Data` parameter to the unapplied UPLC, observing that the resulting applied bytes admit a unique byte-aligned decomposition around `params_cbor`, and extracting the invariant prefix/suffix slices — is documented and reproducible via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable. This audit path is informative; the byte-level constants and the procedure above are normative.
+The byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived from the compiled, unapplied `validators/ToaV1.uplc` artifact in the reference repository. The derivation procedure — applying a `Constant Data` parameter to the unapplied UPLC, observing that the resulting applied bytes admit a unique byte-aligned decomposition around `params_cbor`, and extracting the invariant prefix/suffix slices — is documented and reproducible via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable. This audit path is informative; the byte-level constants and the procedure above are normative.
 
-Header bytes follow [CIP-0019](https://cips.cardano.org/cip/CIP-0019); the resulting addresses are type-7 (enterprise script), header byte `0b0111_xxxx` where the low nibble encodes the network (`0x0` testnet, `0x1` mainnet) — i.e., concrete header bytes `0x70` and `0x71`.
+Header bytes follow [CIP-0019](https://cips.cardano.org/cip/CIP-0019); the resulting addresses are type-7 (enterprise script), header byte `0b0111_xxxx` where the low nibble encodes the network (`0x0` testnet, `0x1` mainnet) — i.e., concrete header bytes `0x70` and `0x71`. The textual form (derivation step 8) is bech32 per [BIP-173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) — checksum constant `1`, **not** bech32m — with human-readable prefixes `addr` (mainnet) and `addr_test` (testnets), as CIP-0019 prescribes.
 
 ### Validator Rules
 
@@ -164,24 +164,30 @@ Let `ac = (policy_id, asset_name)` be the controlling asset class.
 A TOA-spending transaction is valid only if **all** of the following hold:
 
 1. **No mint or burn of the controlling asset class.**
-  ```
-  valueOf(txInfoMint, ac) == 0
-  ```
+
+   ```
+   valueOf(txInfoMint, ac) == 0
+   ```
 
 2. **Total quantity of `ac` in consumed transaction inputs is exactly 1.**
-  ```
-  sumSpentInputs(ac) == 1
-  ```
-  `sumSpentInputs(ac)` is computed over **regular spent (consumed) transaction inputs only**. **Reference inputs are explicitly excluded** and do not authorise TOA spending; including the controlling NFT in a reference input MUST NOT contribute toward satisfying this rule.
+
+   ```
+   sumSpentInputs(ac) == 1
+   ```
+
+   `sumSpentInputs(ac)` is computed over **regular spent (consumed) transaction inputs only**. **Reference inputs are explicitly excluded** and do not authorise TOA spending; including the controlling NFT in a reference input does not contribute toward satisfying this rule.
 
 3. **Total output quantity of `ac` is exactly 1.**
-  ```
-  sumOutputs(ac) == 1
-  ```
+
+   ```
+   sumOutputs(ac) == 1
+   ```
 
 The validator does **not** require the controlling NFT input to come from a key wallet, from the transaction signer, or from an address different from the TOA itself. Control is defined purely by NFT presence in **spent** transaction inputs.
 
 **Self-deposit.** If the controlling NFT is locked inside its own TOA, any transaction author who can provide the required ledger witnesses — including any required datum preimage for a `Datum Hash` UTxO — may spend that TOA UTxO by consuming it and carrying the NFT through. See *Security Considerations — Self-deposit of the controlling NFT*.
+
+**Non-spending invocations.** The canonical validator rejects every non-spending script purpose — minting, rewarding, certifying, voting, proposing — with trace `T3`; spending a UTxO at the TOA address is the only ledger interaction it validates. (On Conway ledgers a stake-address *registration* certificate for the script credential requires no witness and is therefore possible without the validator running, but it creates only inert state: delegation and withdrawal do invoke the validator and are rejected.)
 
 Through these rules, the standard states clearly:
 
@@ -191,63 +197,65 @@ The rationale for choosing transaction-local NFT uniqueness over an attempt at h
 
 ### Datum and Redeemer Schema
 
-For Plutus V3 spending scripts, the datum is **not** a required validator argument: per [CIP-0069](https://cips.cardano.org/cip/CIP-0069), the datum argument is removed from the validator interface, and the script accesses the spending UTxO's datum (if any) via `ScriptInfo` — the `SpendingScript` variant carries `Maybe Datum`. TOA v1 does not inspect this field, so absence of datum, hash-only datum, and non-unit inline datum MUST NOT by themselves cause the spend to fail. Wallet and indexer conventions are stated below as SHOULD-level guidance.
+For Plutus V3 spending scripts, the datum is **not** a required validator argument: per [CIP-0069](https://cips.cardano.org/cip/CIP-0069), the datum argument is removed from the validator interface, and the script accesses the spending UTxO's datum (if any) via `ScriptInfo` — the `SpendingScript` variant carries `Maybe Datum`. TOA v1 does not inspect this field: absence of datum, hash-only datum, and non-unit inline datum do not by themselves cause the spend to fail. Wallet and indexer conventions are stated below as SHOULD-level guidance.
 
 **TOA deposits SHOULD use Unit Datum**, i.e. the inline PlutusData value `Constr 0 []` (CBOR `#6.121([])`, byte sequence `d8 79 80`). This makes such deposits trivially recognisable to wallets, explorers, and indexers, and lets any conforming wallet spend them without recovering an off-chain datum preimage.
 
-Deposits MAY use **Inline Datum** when they carry application-specific data — marketplace offer markers, state markers, inventory, badges, receipts. The TOA validator does not inspect or interpret application datums; wallets that do not recognise the schema MUST treat the deposit as opaque value plus an unknown datum payload (and SHOULD surface the `Inline Datum` classification in UI rather than silently swallowing it).
+Deposits MAY use **Inline Datum** when they carry application-specific data — marketplace offer markers, state markers, inventory, badges, receipts. The TOA validator does not inspect or interpret application datums; wallets that do not recognise the schema MUST treat the deposit as opaque value plus an unknown datum payload, surfacing the `Inline Datum` classification per *Wallet Behaviour — Surface the datum classification*.
 
-Per *Definitions — TOA deposit*, the TOA v1 validator MUST NOT fail based on datum classification: UTxOs classified as **No Datum**, **Datum Hash**, or non-unit **Inline Datum** remain spendable if and only if *Validator Rules* are satisfied. Datum shape determines wallet and indexer interpretation, not on-chain spend validity.
+Per *Definitions — TOA deposit*, the TOA v1 validator does not fail based on datum classification: UTxOs classified as **No Datum**, **Datum Hash**, or non-unit **Inline Datum** remain spendable if and only if *Validator Rules* are satisfied. Datum shape determines wallet and indexer interpretation, not on-chain spend validity.
 
 **The spend redeemer SHOULD be unit** (`Constr 0 []`, same encoding as above). The validator does not inspect the redeemer; using a canonical redeemer improves recognisability and avoids unnecessary implementation divergence, but a non-unit redeemer does not by itself cause a TOA spend to fail.
 
 ### Policy Classification
 
-TOA v1 cannot prove on-chain that the controlling asset class is historically unique. Implementations therefore use the following policy classifications to determine what safety claims they may make to users.
+TOA v1 cannot prove on-chain that the controlling asset class is historically unique. This section defines a RECOMMENDED three-value vocabulary for communicating what safety claims an implementation makes to users about a controlling policy.
 
-- **`ProvenClosed`** — the controlling asset's minting policy has been verified to be incapable of further minting or burning. `ProvenClosed` SHOULD be reserved for cases such as: native scripts whose relevant time-lock has provably expired; policies listed in an accepted audited registry; or policies verified by an implementation-specific trusted analysis mechanism. Implementations MUST NOT tag a policy as `ProvenClosed` without one of these grounds.
+- **`ProvenClosed`** — the controlling asset's minting policy has been verified to be incapable of further minting or burning. `ProvenClosed` SHOULD be reserved for cases such as: native scripts whose relevant time-lock has provably expired; policies listed in an accepted audited registry; or policies verified by an implementation-specific trusted analysis mechanism. A policy for which no such grounds exist is not `ProvenClosed`.
 - **`KnownOpen`** — the minting policy is known to permit further minting or burning under some condition — e.g. an unrestricted native multi-sig, or a Plutus policy with a visible mint/burn path.
 - **`Unknown`** — closure has not been proven. By default, **every controlling policy is `Unknown`** unless explicitly upgraded to `ProvenClosed` or downgraded to `KnownOpen`. Static analysis of arbitrary Plutus policies is not generally automatable, so most policies encountered in the wild will remain `Unknown`.
 
-Wallets, indexers, and other tooling that claim TOA v1 support MUST assign each displayed TOA's controlling policy one of these three classifications. The default classification MUST be `Unknown`. Implementations MAY upgrade a policy to `ProvenClosed` or downgrade it to `KnownOpen` using implementation-specific analysis, audited registries, or trusted attestations; the **classification mechanism itself** (static analysis, registry lookup, audited list, third-party attestation) is out of scope for TOA v1. Implementations MUST NOT present a TOA as safely controlled by a unique NFT unless the controlling policy is classified as `ProvenClosed`. See *Wallet Behaviour*, *Indexer and Explorer Behaviour*, and *Security Considerations — Permanent loss and policy-permissiveness risks*.
+Wallets, indexers, and other tooling that display TOAs SHOULD assign each displayed TOA's controlling policy one of these three classifications, defaulting to `Unknown`. Implementations MAY upgrade a policy to `ProvenClosed` or downgrade it to `KnownOpen` using implementation-specific analysis, audited registries, or trusted attestations; the **classification mechanism itself** (static analysis, registry lookup, audited list, third-party attestation) is out of scope for TOA v1, as is the exact vocabulary an implementation exposes in its UI.
+
+The one hard requirement is the safety outcome: implementations MUST NOT present a TOA as safely controlled by a unique NFT unless closure of the controlling policy has been verified — i.e. unless the policy meets the `ProvenClosed` bar above. See *Wallet Behaviour*, *Indexer and Explorer Behaviour*, and *Security Considerations — Permanent loss and policy-permissiveness risks*.
 
 ### Mandatory Normative Artifacts
 
 Two hashes are distinguished throughout this CIP:
 
-- **Template hash** — the hash of the un-parameterised `TOA v1` validator (a single value pinned by this CIP), concretely `blake2b_224(0x03 || unapplied_script_bytes)`. It identifies the TOA validator code itself, independently of any NFT. Under R-canonic, the template hash is an **audit reference**: it identifies the compiled artifact from which `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived, but it is NOT on the critical address-derivation path.
-- **Applied script hash** — the per-NFT 28-byte hash produced by *Address Derivation* (R). This is the payment credential of every TOA address. Under R-canonic it is computed directly from `FLAT_PREFIX_TOA_V1`, `FLAT_SUFFIX_TOA_V1`, `params_cbor`, and the CBOR bytestring-header encoder — no parameter-application step is required.
+- **Template hash** — the hash of the un-parameterised `TOA v1` validator (a single value pinned by this CIP), concretely `blake2b_224(0x03 || unapplied_script_bytes)`. It identifies the TOA validator code itself, independently of any NFT. Under R, the template hash is an **audit reference**: it identifies the compiled artifact from which `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are derived, but it is NOT on the critical address-derivation path.
+- **Applied script hash** — the per-NFT 28-byte hash produced by *Address Derivation* (R). This is the payment credential of every TOA address. Under R it is computed directly from `FLAT_PREFIX_TOA_V1`, `FLAT_SUFFIX_TOA_V1`, `params_cbor`, and the CBOR bytestring-header encoder — no parameter-application step is required.
 
-Conformance to TOA v1 is determined by R and the byte-level artifacts below, NOT by the compiled validator. The Plinth source, the compiled UPLC artifact, the pinned toolchain, and the template hash are published so that any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form. The byte-level constants are pinned by blake2b-256 content hash so any implementer can verify byte-for-byte that they hold the exact bytes referenced below.
+Conformance to TOA v1 is determined by R and the byte-level artifacts below, NOT by the compiled validator. The Plinth source, the compiled UPLC artifact, the pinned toolchain, and the template hash are published so that any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form. The byte-level constants are pinned by blake2b-256 content hash so any implementer can verify byte-for-byte that they hold the exact bytes referenced below.
 
 | Artifact | Role | Reference |
 |---|---|---|
-| Plinth source | Audit reference | [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.0/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) at `en7angled/toa@0.2.0` |
-| Compiled unapplied UPLC artifact | Audit reference | [`validators/ToaV1.uplc`](https://github.com/en7angled/toa/blob/0.2.0/validators/ToaV1.uplc) — 529 bytes, blake2b-256 `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0` |
-| Pinned toolchain | Audit reference | GHC 9.6 series; Plutus Core target version 1.1.0; `plutus-tx` / `plutus-tx-plugin` / `plutus-ledger-api` at Conway-era IOG CHaP pins frozen via [`cabal.project.freeze`](https://github.com/en7angled/toa/blob/0.2.0/cabal.project.freeze) at tag `0.2.0` |
+| Plinth source | Audit reference | [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.1/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) at `en7angled/toa@0.2.1` |
+| Compiled unapplied UPLC artifact | Audit reference | [`validators/ToaV1.uplc`](https://github.com/en7angled/toa/blob/0.2.1/validators/ToaV1.uplc) — 529 bytes, blake2b-256 `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0` |
+| Pinned toolchain | Audit reference | GHC 9.6 series; Plutus Core target version 1.1.0; `plutus-tx` / `plutus-tx-plugin` / `plutus-ledger-api` at Conway-era IOG CHaP pins frozen via [`cabal.project.freeze`](https://github.com/en7angled/toa/blob/0.2.1/cabal.project.freeze) at tag `0.2.1` |
 | Template hash | Audit reference | `blake2b_224(0x03 \|\| unapplied_script_bytes)` = `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c` |
-| **`FLAT_PREFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_PREFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.0/validators/FLAT_PREFIX_TOA_V1.bin) — 528 bytes, blake2b-256 `6ab7ef002cda6f7e3c60e5975fce175c6e56a91b51b7d488d2ae69af23520235` |
-| **`FLAT_SUFFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_SUFFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.0/validators/FLAT_SUFFIX_TOA_V1.bin) — 1 byte (`0x01`), blake2b-256 `ee155ace9c40292074cb6aff8c9ccdd273c81648ff1149ef36bcea6ebb8a3e25` |
+| **`FLAT_PREFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_PREFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.1/validators/FLAT_PREFIX_TOA_V1.bin) — 528 bytes, blake2b-256 `6ab7ef002cda6f7e3c60e5975fce175c6e56a91b51b7d488d2ae69af23520235` |
+| **`FLAT_SUFFIX_TOA_V1`** | **Normative for derivation** | [`validators/FLAT_SUFFIX_TOA_V1.bin`](https://github.com/en7angled/toa/blob/0.2.1/validators/FLAT_SUFFIX_TOA_V1.bin) — 1 byte (`0x01`), blake2b-256 `ee155ace9c40292074cb6aff8c9ccdd273c81648ff1149ef36bcea6ebb8a3e25` |
 | **CBOR bytestring-header encoder** | **Normative for derivation** | Specified inline in *Address Derivation* (function `cbor_bytestring_header(n)`) |
 | **Parameter encoder** | **Normative for derivation** | `serialiseData` over `TOAParamsV1` per the CDDL in *Canonical Parameter Encoding* (canonical PlutusData CBOR) |
 
-**Identity of the parameter encoder.** The `serialiseData` referenced in *Address Derivation* and in this table is the **Plutus V3 builtin** `serialiseData`. Its output is the canonical PlutusData CBOR of the input: `Constr 0` is encoded as CBOR tag `121` (`0xd8 0x79`) followed by an *indefinite-length* array (`0x9f` … `0xff`); integers and bytestrings use smallest CBOR major-type headers. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`, allowing off-chain implementations to reproduce the same bytes. Any implementation that uses a non-matching CBOR encoder (e.g. definite-length Constr arrays) does NOT conform.
+**Identity of the parameter encoder.** The `serialiseData` referenced in *Address Derivation* and in this table is the **Plutus V3 builtin** `serialiseData`. Its output is the canonical PlutusData CBOR of the input: `Constr 0` is encoded as CBOR tag `121` (`0xd8 0x79`) followed by an *indefinite-length* array (`0x9f` … `0xff`) for a non-empty field list (an empty `Constr 0 []` encodes as definite-length `d8 79 80` — the Unit Datum byte sequence); integers and bytestrings use smallest CBOR major-type headers. This is byte-identical to what `Codec.Serialise.serialise` produces over `PlutusLedgerApi.V3.Data` in `plutus-core`, allowing off-chain implementations to reproduce the same bytes. Any implementation that uses a non-matching CBOR encoder (e.g. definite-length Constr arrays) does NOT conform.
 
 ### Wallet Behaviour
 
-Wallets that integrate TOA have the following obligations.
+Wallets that integrate TOA have the following obligations. The MUST items are deliberately few. Together with the misrepresentation prohibitions stated in context elsewhere — never present a TOA deposit as escrowed (*Security Considerations — TOA is not an escrow*); treat unrecognised datum schemas as opaque (*Definitions — TOA deposit*) — they are the minimum for a wallet to claim TOA v1 support: derive addresses correctly, do not misrepresent control safety, and do not hide spendability-relevant UTxO state. The SHOULD and MAY items describe the full recommended user experience; a wallet may adopt them incrementally.
 
 **MUST:**
 
 - **Derive TOA addresses using the canonical algorithm** in *Address Derivation*. Wallets MUST NOT infer TOA identity from any other heuristic.
-- **Surface the TOA version** to the user before any deposit or spend. A v1 TOA and a hypothetical v2 TOA with the same `(policy_id, asset_name)` resolve to different addresses; users must know which version they are interacting with. (See also: *Versioning*.)
-- **Warn that TOA control follows the ability to consume the controlling NFT.** Any party or script that can cause the controlling NFT to be consumed as a transaction input controls the TOA for that transaction. Sending, lending, escrowing, renting, or otherwise transferring practical control of the controlling NFT may transfer practical control of the TOA. Sending the controlling NFT to its own TOA MUST be described as making the TOA permissionlessly spendable, subject to ordinary ledger witness requirements such as datum-preimage availability for `Datum Hash` UTxOs, not merely as "transferring the NFT to another address." (See *Security Considerations — Self-deposit of the controlling NFT* and *Security Considerations — Temporary control during lending, escrow, or rental* for the full explanations.)
-- **Assign a policy classification, default `Unknown`.** Wallets MUST assign each TOA's controlling policy one of `ProvenClosed`, `KnownOpen`, or `Unknown` (see *Policy Classification*). The default MUST be `Unknown`. Implementations MUST NOT present a TOA as safely controlled by a unique NFT unless the controlling policy is classified as `ProvenClosed`. Wallets MUST warn for `KnownOpen` and `Unknown` policies (see *Security Considerations — Permanent loss and policy-permissiveness risks*).
-- **Satisfy minimum-UTxO ADA for TOA deposits.** TOA outputs are normal Cardano UTxOs; wallets MUST ensure each TOA deposit output satisfies the current **minimum-UTxO** requirement for the full `Value` and datum shape being deposited. Token-heavy TOA deposits (many policy IDs, many asset names, or a large inline datum) may require substantially more ADA than a pure-ADA deposit. Wallets SHOULD compute the min-UTxO from **current protocol parameters at the moment of transaction construction**, not from cached or hard-coded defaults.
+- **Warn that TOA control follows the ability to consume the controlling NFT.** Any party or script that can cause the controlling NFT to be consumed as a transaction input controls the TOA for that transaction. Sending, lending, escrowing, renting, or otherwise transferring practical control of the controlling NFT may transfer practical control of the TOA. Sending the controlling NFT to its own TOA SHOULD be described as making the TOA permissionlessly spendable, subject to ordinary ledger witness requirements such as datum-preimage availability for `Datum Hash` UTxOs — not merely as "transferring the NFT to another address." In particular, wallets MUST warn before any action that sends the controlling NFT to its own TOA (self-deposit). (See *Security Considerations — Self-deposit of the controlling NFT* and *Security Considerations — Temporary control during lending, escrow, or rental* for the full explanations.)
+- **Never present a TOA as safely controlled by a unique NFT without verified policy closure.** This is the safety outcome defined in *Policy Classification*: unless the controlling policy meets the `ProvenClosed` bar, the wallet MUST NOT claim the TOA is safely controlled. Wallets SHOULD assign each TOA's controlling policy a classification from *Policy Classification* (default `Unknown`) and SHOULD warn for `KnownOpen` and `Unknown` policies (see *Security Considerations — Permanent loss and policy-permissiveness risks*).
 - **Surface the datum classification** of every TOA UTxO. Each UTxO falls into exactly one of `Unit Datum`, `Inline Datum`, `Datum Hash`, or `No Datum` (see *Definitions — TOA deposit*). Wallets MUST display this classification before any spend, because it affects whether spending requires off-chain data (a `Datum Hash` UTxO cannot be spent without the off-chain datum preimage) and whether the deposit followed the canonical TOA convention. Wallets MUST NOT silently coerce all classifications into a single bucket.
 
 **SHOULD:**
 
+- **Surface the TOA version** to the user before any deposit or spend. A v1 TOA and a hypothetical v2 TOA with the same `(policy_id, asset_name)` resolve to different addresses; users must know which version they are interacting with. (See also: *Versioning*.)
+- **Compute minimum-UTxO ADA for TOA deposits from current protocol parameters** at the moment of transaction construction, not from cached or hard-coded defaults. TOA outputs are normal Cardano UTxOs — the ledger itself enforces the minimum-UTxO requirement — and token-heavy TOA deposits (many policy IDs, many asset names, or a large inline datum) may require substantially more ADA than a pure-ADA deposit.
 - **Display the [CIP-0014](https://cips.cardano.org/cip/CIP-0014) fingerprint** of the controlling NFT (`asset1...`) alongside the TOA address, so users can recognise which asset controls a given TOA without manually decoding `(policy_id, asset_name)`.
 - **Label TOA addresses** distinctly from regular wallet addresses in UI (e.g. "Token-Owned Address for asset X"), so users do not confuse a TOA with a personal address.
 - **Default the NFT carry-through recipient to the spending user's own wallet.** The validator permits any recipient (e.g. atomic-sale spends), but the safe default in a wallet UI is to return the NFT to the user; any other recipient should require an explicit confirmation to avoid accidental NFT loss. If the carry-through recipient is the TOA itself, the wallet MUST warn that this makes the TOA permissionlessly spendable, subject to ordinary ledger witness requirements such as datum-preimage availability for `Datum Hash` UTxOs (per the MUST "Warn that TOA control follows the ability to consume the controlling NFT" above).
@@ -269,11 +277,11 @@ Indexers and explorers that claim TOA v1 support address the read-side of TOA: d
 
 - **Derive TOA addresses from the canonical applied validator hash** per *Address Derivation*. Indexers MUST NOT infer TOA identity from datum content, address-labelling conventions, or any other heuristic.
 - **Preserve raw UTxO access.** Even when the UI hides or collapses spam UTxOs (see MAY below), the indexer MUST expose the full raw UTxO set at a TOA address — via an "advanced" view, an explicit reveal, or an API endpoint that returns the unfiltered UTxO set.
-- **Assign a policy classification, default `Unknown`**, per *Policy Classification*. Indexers MUST attach the classification to every TOA they display and MUST NOT present a TOA as safely controlled by a unique NFT unless the controlling policy is `ProvenClosed`.
+- **Never present a TOA as safely controlled by a unique NFT without verified policy closure**, per *Policy Classification*. Indexers SHOULD attach a classification (default `Unknown`) to every TOA they display.
 
 **SHOULD:**
 
-- **Display the TOA version**, the controlling policy ID, the controlling asset name as both raw hex and (where decodable) UTF-8, the CIP-0014 fingerprint, the policy classification, and whether the controlling NFT currently appears at its own TOA (self-deposit state).
+- **Display the TOA version**, the controlling policy ID, the controlling asset name as both raw hex and (where decodable) UTF-8, the CIP-0014 fingerprint, the policy classification, and whether the controlling NFT currently resides at a TOA address — its own (self-deposit) or another's (nested control; see *Security Considerations — Control cycles and nested TOAs*).
 - **Label TOA addresses** distinctly from regular script addresses (e.g. "Token-Owned Address for asset X").
 - **Surface the control-follows-NFT warning** described in *Wallet Behaviour* on any UI that displays a TOA balance or recent activity. A self-deposited TOA SHOULD be signalled as currently permissionlessly spendable, subject to ordinary ledger witness requirements such as datum-preimage availability for `Datum Hash` UTxOs.
 
@@ -299,7 +307,7 @@ The normative components of TOA v1 are:
 - the validator rules (in *Validator Rules*);
 - the normative test vectors (in *Test Vector Format*).
 
-The compiled, **unapplied** Plutus V3 validator artifact and the template hash are **audit artifacts**. They are useful for reproducing `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` from source via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, but they are NOT on the critical derivation path. Conformance is determined by R and the byte-level artifacts pinned in *Mandatory Normative Artifacts*, not by the compiled validator. The Plinth source is required for auditability and reproducibility of the byte-level constants, but no implementation needs to compile it or apply parameters to it in order to derive a TOA address. The Haskell reference off-chain library and any supplementary language bindings are **non-normative reference artifacts**.
+The compiled, **unapplied** Plutus V3 validator artifact and the template hash are **audit artifacts**. They are useful for reproducing `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` from source via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, but they are NOT on the critical derivation path. Conformance is determined by R and the byte-level artifacts pinned in *Mandatory Normative Artifacts*, not by the compiled validator. The Plinth source is required for auditability and reproducibility of the byte-level constants, but no implementation needs to compile it or apply parameters to it in order to derive a TOA address. The Haskell reference off-chain library and any supplementary language bindings are **non-normative reference artifacts**.
 
 A conflict between a non-normative reference artifact and any normative component is resolved in favour of the normative component. A conflict among normative components is a specification erratum and MUST be corrected.
 
@@ -314,7 +322,7 @@ All other artifacts (normative and audit) — `FLAT_PREFIX_TOA_V1`, `FLAT_SUFFIX
 
 #### Reference validator (Plinth)
 
-The canonical TOA v1 validator is written in **Plinth** (Haskell compiled to Plutus Core) and published at [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.0/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) in the reference repository. **Under TOA v1's byte-level R derivation, the Plinth source and the compiled UPLC artifact are audit references, not derivation steps.** Implementers do NOT need to compile the validator or apply parameters to it in order to derive a TOA address; they implement R directly using the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` and the CBOR encoders specified inline. The validator artifact is published so that any implementer can verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form.
+The canonical TOA v1 validator is written in **Plinth** (Haskell compiled to Plutus Core) and published at [`Onchain/Validators/ToaV1Validator.hs`](https://github.com/en7angled/toa/blob/0.2.1/src/lib/onchain-lib/Onchain/Validators/ToaV1Validator.hs) in the reference repository. **Under TOA v1's byte-level R derivation, the Plinth source and the compiled UPLC artifact are audit references, not derivation steps.** Implementers do NOT need to compile the validator or apply parameters to it in order to derive a TOA address; they implement R directly using the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` and the CBOR encoders specified inline. The validator artifact is published so that any implementer can verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable or equivalent) that R is consistent with the canonical validator's compiled form.
 
 #### Address derivation helper
 
@@ -322,7 +330,7 @@ Specified normatively in *Address Derivation* above. A reference implementation 
 
 #### Reference off-chain library — external repository
 
-A non-normative Haskell reference implementation is published at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.2.0`](https://github.com/en7angled/toa/releases/tag/0.2.0)), comprising:
+A non-normative Haskell reference implementation is published at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.2.1`](https://github.com/en7angled/toa/releases/tag/0.2.1)), comprising:
 
 - `onchain-lib` — the canonical Plinth validator (`Onchain.Validators.ToaV1Validator`), `TOAParamsV1` parameter type, and `Onchain.Derivation.R` (Plinth on-chain R implementation, exposed via the canonical .bin files);
 - `offchain-lib` — Atlas-based transaction building, queries, CIP-14 fingerprinting, canonical PlutusData CBOR encoding of `TOAParamsV1`, and address derivation. It now exposes `TxBuilding.Toa.DerivationR` — a pure-Haskell mirror of R usable without Plutus tooling;
@@ -338,18 +346,18 @@ A non-normative reference frontend exercising address derivation, deposit, spend
 
 ### Test Vector Format
 
-The normative test-vector file is [`test-vectors/toa-v1.json`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/toa-v1.json) — published at `en7angled/toa@0.2.0`, blake2b-256 = `4024deefd5bc9553099d1ac89e857d835fe2e7ab55367b6a3e8b4a8b157c6486`. The file is regenerated deterministically from the same Plinth source as the validator artifact, by the [`toa-gen-vectors`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-gen-vectors/Main.hs) executable.
+The normative test-vector file is [`test-vectors/toa-v1.json`](https://github.com/en7angled/toa/blob/0.2.1/test-vectors/toa-v1.json) — published at `en7angled/toa@0.2.1`, blake2b-256 = `03ebfb996f8e2b6cde462d30a8292dc6e8c403c224074c4cbdb86aa247b77a81`. The file is regenerated deterministically from the same Plinth source as the validator artifact, by the [`toa-gen-vectors`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-gen-vectors/Main.hs) executable.
 
 Test vectors are split into two categories with **distinct conformance rules**:
 
 - **(a) Address-derivation vectors.** Implementations MUST reproduce the `expected_script_hash`, `expected_address_mainnet`, and `expected_address_testnet` fields **byte-for-byte** for the corresponding `(toa_version, policy_id, asset_name)`. Six such vectors are currently published (see *Coverage* below).
-- **(b) Validator scenarios.** Each scenario specifies the situation (inputs, outputs, mint, datums, redeemers) and the expected pass/fail result. Implementations need not produce byte-identical transaction bodies unless a scenario explicitly includes canonical transaction CBOR — different transaction builders may legitimately differ on input ordering, fee balancing, change outputs, collateral selection, and reference-script handling. Validator scenarios are not yet published in `toa-v1.json`; they are tracked as outstanding work in *Path to Active — Acceptance Criteria*.
+- **(b) Validator scenarios.** Each scenario specifies the situation (inputs, outputs, mint, datums, redeemers) and the expected pass/fail result. Implementations need not produce byte-identical transaction bodies unless a scenario explicitly includes canonical transaction CBOR — different transaction builders may legitimately differ on input ordering, fee balancing, change outputs, collateral selection, and reference-script handling. Validator scenarios are not yet published in `toa-v1.json`; they are tracked as outstanding work in *Path to Active — Implementation Plan* (step 4).
 
-Conformance for category (b) is **pass/fail correctness only**. Execution-unit usage and transaction-size budgets are deliberately not part of the standard: the validator's correctness is independent of the Plutus cost model, and pinning a cost model would impose ongoing erratum maintenance every time governance amends it. The reference repository's [`toa-bench`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-bench/Main.hs) tool tracks ExUnits and script-size as a non-normative regression baseline; it is informational and has no bearing on conformance.
+Conformance for category (b) is **pass/fail correctness only**. Execution-unit usage and transaction-size budgets are deliberately not part of the standard: the validator's correctness is independent of the Plutus cost model, and pinning a cost model would impose ongoing erratum maintenance every time governance amends it. The reference repository's [`toa-bench`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-bench/Main.hs) tool tracks ExUnits and script-size as a non-normative regression baseline; it is informational and has no bearing on conformance.
 
-Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.2.0/test-vectors/README.md), identified by blake2b-256 content hash `234d5a00e9c8a0da08c873f9d9294ac22d8ece4f2de8a8d2f445438249af180a`. Conformance for category (a) is determined by the `expected_script_hash`, `expected_address_mainnet`, and `expected_address_testnet` fields per vector; other per-vector fields (`params_cbor_hex`, `applied_script_cbor_hex`, `applied_script_bytes`, `flat_body_length`, etc.) are diagnostic aids whose semantics are documented in the external schema.
+Field-level schema documentation — the JSON envelope shape, top-level field semantics, and per-vector field semantics — is published alongside the vectors at [`test-vectors/README.md`](https://github.com/en7angled/toa/blob/0.2.1/test-vectors/README.md), identified by blake2b-256 content hash `234d5a00e9c8a0da08c873f9d9294ac22d8ece4f2de8a8d2f445438249af180a`. Conformance for category (a) is determined by the `expected_script_hash`, `expected_address_mainnet`, and `expected_address_testnet` fields per vector; other per-vector fields (`params_cbor_hex`, `applied_script_cbor_hex`, `applied_script_bytes`, `flat_body_length`, etc.) are diagnostic aids whose semantics are documented in the external schema.
 
-**Rationale for `asset_name` length coverage at the CBOR-threshold boundaries.** Length 23 is the last `asset_name` length that fits in a single-byte CBOR bytestring header (`0x57 || <23 bytes>`). Length 24 is the first length that requires an explicit length byte (`0x58 0x18 || <24 bytes>`). Covering these two boundary lengths confirms — across the published category-(a) vectors — that `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` remain byte-invariant across the full domain `len(asset_name) ∈ [0, 32]`, and that no CBOR encoding transition (in either `params_cbor` or the outer flat-body envelope) breaks R for any valid input. Lengths 31 and 32 cover the upper boundary of the permitted domain.
+**Rationale for `asset_name` length coverage at the CBOR-threshold boundaries.** Length 23 is the last `asset_name` length that fits in a single-byte CBOR bytestring header (`0x57 || <23 bytes>`). Length 24 is the first length that requires an explicit length byte (`0x58 0x18 || <24 bytes>`). Exercising these boundary lengths confirms that `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` remain byte-invariant across the full domain `len(asset_name) ∈ [0, 32]`, and that no CBOR encoding transition (in either `params_cbor` or the outer flat-body envelope) breaks R for any valid input. Today this verification is performed by the `toa-verify-reconstruction` audit executable, which checks lengths 0, 1, 16, 23, 24, 25, 31, and 32 against the canonical artifact (see *Rationale — Design Decisions*); the published category-(a) vectors cover the domain endpoints (`empty`, `max32`), and dedicated boundary-length vectors are listed as outstanding in *Coverage* below.
 
 Coverage MUST include at minimum:
 
@@ -360,8 +368,16 @@ Coverage MUST include at minimum:
 - CIP-0067 / CIP-0068 label 222 asset name (user NFT) — **published** (`cip67-222`);
 - `toa_version` isolation — at least one vector with `toa_version` ≠ 1 that produces a distinct script hash and addresses for the same `(policy_id, asset_name)` as a v1 vector, confirming version-bump address-divergence — **published** (`ascii-v2`);
 - UTF-8 / non-ASCII Unicode asset name — outstanding;
+- **CBOR-boundary asset-name lengths** — dedicated address-derivation vectors at lengths 23 and 24 (single-byte → two-byte bytestring-header transition) and 31 (just below the domain maximum) — outstanding;
+- **single-TOA negative cases** — spends rejecting `sumSpentInputs(ac) ≠ 1` (zero units and multiple copies), `sumOutputs(ac) ≠ 1` (zero and more than one unit carried through), and `mint(ac) ≠ 0` — outstanding;
 - **self-deposit spend case** — the controlling NFT is at its own TOA and is spent permissionlessly — outstanding;
 - **reference-input attack case** — the controlling NFT appears only in a reference input; regular spent inputs contain zero units; expected result: **fail** (the reference input does not satisfy `sumSpentInputs(ac) == 1`) — outstanding;
+- **authorisation-scope batch case** — one controlling-NFT input authorises spending many UTxOs at the same TOA in a single transaction, with a single carry-through output; expected result: **pass** (see *Security Considerations — Authorisation scope*) — outstanding;
+- **multi-TOA composition cases** — two distinct TOAs spent in one transaction: **pass** when both controlling NFTs are consumed and carried through; **fail** when either NFT is absent from spent inputs; **pass** when an unrelated asset class is additionally present (see *Security Considerations — Authorisation scope*) — outstanding;
+- **transitive-control drain** — NFT `Y` resides at `TOA(X)`; a single transaction consuming `X` spends `TOA(X)` (obtaining `Y`) and `TOA(Y)` together; expected result: **pass** (see *Security Considerations — Control cycles and nested TOAs*) — outstanding;
+- **control-cycle case** — `X` resides at `TOA(Y)` and `Y` at `TOA(X)`; a single transaction consuming both spends both TOAs with no external authorisation; expected result: **pass** (see *Security Considerations — Control cycles and nested TOAs*) — outstanding;
+- **non-spending purpose rejection** — the validator is invoked with a non-spending script purpose; expected result: **fail** with trace `T3` (see *Validator Rules — Non-spending invocations*) — outstanding;
+- **value-shape stress case** — spend of a token-heavy TOA UTxO (many policy IDs and asset names in its `Value`); expected result: **pass**, exercising worst-case value traversal (see *Security Considerations — Value-cost and dust risks*) — outstanding;
 - **datum-classification coverage — all four must be spendable:** (i) **Unit Datum**, (ii) **Inline Datum** (non-unit), (iii) **Datum Hash**, (iv) **No Datum** — outstanding;
 - **permissive-policy warning fixture** — a vector documenting (as metadata, not validator proof) that the controlling minting policy permits further mints, so wallets and indexers can verify their warning UX against a concrete example — outstanding;
 - **single-`policy_id`-change vectors** — at least one pair of vectors differing only in `policy_id` (same `toa_version`, same `asset_name`), used to isolate which region of R depends on `policy_id` — outstanding;
@@ -379,7 +395,7 @@ Coverage MUST include at minimum:
     - is implementable in any language using only bytestring operations and hashing, with no Plutus-specific dependencies;
     - is identical off-chain and on-chain, eliminating the dual-procedure conformance burden.
 
-  R is normatively grounded in the same compiled artifact that `apply_params` would target — the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are extracted from `ToaV1.uplc` and pinned by content hash. The artifact and its derivation via Plinth and a pinned toolchain remain published for audit, and any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable) that R reproduces the same bytes that `apply_params` would produce. This audit path is documented in *Address Derivation — Derivation of the canonical artifacts* and is informative, not normative.
+  R is normatively grounded in the same compiled artifact that `apply_params` would target — the byte-level constants `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1` are extracted from `ToaV1.uplc` and pinned by content hash. The artifact and its derivation via Plinth and a pinned toolchain remain published for audit, and any implementer can independently verify (via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable) that R reproduces the same bytes that `apply_params` would produce. This audit path is documented in *Address Derivation — Derivation of the canonical artifacts* and is informative, not normative.
 
   **Technical precondition for R.** The standard Plutus V3 primitives are sufficient to derive a TOA address on-chain **if and only if** the ledger-serialised applied script bytes admit a byte-aligned decomposition around the encoded parameter. This is not a property guaranteed by Plinth, `plutus-tx`, or any current Plutus toolchain — UPLC flat encoding is bit-aligned by default, and whether the parameter falls on a byte boundary in the applied script depends on the specific compilation output. For TOA v1, the parameter is delivered via a single UPLC `Constant Data` term (the same shape `cardano-api`'s `applyArguments` produces), and the resulting flat-encoded applied script does admit the byte-aligned decomposition — empirically verified by `toa-verify-reconstruction` for `asset_name` lengths 0, 1, 16, 23, 24, 25, 31, 32 across the canonical artifact. If a future revision of the artifact lost this property, R would no longer be definable for that revision and a new `toa_version` would be required (see *Open Questions and Limitations — Stability of `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`*).
 
@@ -390,8 +406,8 @@ Coverage MUST include at minimum:
 - **Why not normative transaction-shape DSL?** Conformance is fully defined by *Validator Rules* and *Test Vector Format*. Constraining the *shape* of valid transactions beyond what the validator enforces would force every implementation through a specific DSL or codegen toolchain without strengthening the on-chain guarantee.
 - **Why no stake credential in v1?** Any optional stake credential is an interop fork — two wallets disagreeing on the canonical choice produce different addresses for the same NFT. v1 picks the safest single value (none); delegated TOAs are deferred to a future CIP.
 - **Why transaction-local NFT uniqueness (`sumSpentInputs(ac) == 1`, `sumOutputs(ac) == 1`) rather than "validator enforces supply = 1"?** The validator cannot prove historical total supply on-chain — it sees only one transaction at a time. Transaction-local uniqueness over *spent* inputs is the strongest invariant the validator can actually enforce: it rules out in-transaction multi-copy edge cases and reference-input attacks (where the NFT is observed but not consumed), while leaving the responsibility of choosing a sound minting policy to the NFT issuer (and to wallet warnings, per *Wallet Behaviour*).
-- **Why total quantity rather than "some input contains the NFT"?** Checking `sumSpentInputs(ac) == 1` and `sumOutputs(ac) == 1` rejects three failure modes that "some input contains the NFT" would miss: (1) zero NFT inputs, (2) multi-copy NFT inputs (only possible if the upstream minting policy is permissive), and (3) an NFT visible only as a *reference* input. The third case is particularly important: a reference input lets a transaction observe a UTxO without consuming it, and treating reference-input visibility as authorisation would let any party who finds a UTxO containing the controlling NFT (anywhere on the ledger) drain the TOA. The validator MUST count only spent inputs.
-- **Why permit self-deposit rather than forbid it?** TOA control is defined by NFT presence in transaction inputs, *not* by external ownership. Disallowing self-deposit is technically possible — a Plutus V3 spending validator can recover its own input via `ScriptInfo`'s `SpendingScript` purpose and reject transactions where the controlling NFT input originates at the same TOA script credential — but TOA v1 deliberately does not add such an input-origin restriction. The chosen semantics define control solely by NFT presence in transaction inputs, which keeps the design eUTxO-natural and lets the NFT flow through wallets, escrow scripts, lending scripts, marketplace scripts, and, intentionally, its own TOA. The permissionless-spend consequence of self-deposit is made explicit in *Definitions* and *Security Considerations*, and wallets MUST warn before performing self-deposit.
+- **Why total quantity rather than "some input contains the NFT"?** Checking `sumSpentInputs(ac) == 1` and `sumOutputs(ac) == 1` rejects three failure modes that "some input contains the NFT" would miss: (1) zero NFT inputs, (2) multi-copy NFT inputs (only possible if the upstream minting policy is permissive), and (3) an NFT visible only as a *reference* input. The third case is particularly important: a reference input lets a transaction observe a UTxO without consuming it, and treating reference-input visibility as authorisation would let any party who finds a UTxO containing the controlling NFT (anywhere on the ledger) drain the TOA. The validator counts only spent inputs.
+- **Why permit self-deposit rather than forbid it?** TOA control is defined by NFT presence in transaction inputs, *not* by external ownership. Disallowing self-deposit is technically possible — a Plutus V3 spending validator can recover its own input via `ScriptInfo`'s `SpendingScript` purpose and reject transactions where the controlling NFT input originates at the same TOA script credential — but TOA v1 deliberately does not add such an input-origin restriction. The chosen semantics define control solely by NFT presence in transaction inputs, which keeps the design eUTxO-natural and lets the NFT flow through wallets, escrow scripts, lending scripts, marketplace scripts, and, intentionally, its own TOA. The permissionless-spend consequence of self-deposit is made explicit in *Definitions* and *Security Considerations*, and wallets MUST warn before performing self-deposit (per *Wallet Behaviour*).
 - **Why raw parameter embedding rather than hashing parameters?** Background on the byte-level technique and the prior generic library is in *Related Work and Prior Art*. TOA embeds `params_cbor` directly in the applied script bytes rather than hashing each component to a 28-byte footprint as that library does. The reasons:
 
   **Keystone: the canonical validator does not need to re-derive its own address.** When spending from a TOA, the ledger already requires that the script whose hash equals the UTxO's payment credential be supplied and executed — so the ledger enforces the address↔hash match. The validator does not prove its own address; it only applies the NFT-in / NFT-out rule using parameters it holds directly via parameterisation. On-chain re-derivation (the library's `apply_param`-style reconstruction) is therefore relevant only to *third-party* consumer contracts — for example, a royalty splitter verifying "this output goes to NFT X's TOA" — not to the standardised validator itself.
@@ -414,7 +430,7 @@ External prior art is discussed in *Motivation* — chiefly [ERC-6551](https://e
 
 **Within the Aiken / Plutus design-patterns ecosystem:**
 
-- The [`parameter-validation`](https://github.com/Anastasia-Labs/aiken-design-patterns/blob/main/lib/aiken-design-patterns/parameter-validation.ak) module of Anastasia Labs' [aiken-design-patterns](https://github.com/Anastasia-Labs/aiken-design-patterns) library captures, in a more general form, the byte-level technique TOA's R uses to reconstruct a parameterised script's hash without invoking `apply_params` at runtime — splicing precomputed prefix and suffix bytes around the parameter region and hashing the result with `blake2b_224`. Example usage of the library is at [`validators/examples/parameter-validation.ak`](https://github.com/Anastasia-Labs/aiken-design-patterns/blob/main/validators/examples/parameter-validation.ak). TOA's R is conceptually a specific instance of the same pattern, specialised to a single composite parameter and pinned to a single canonical artifact. The encoding choices differ: the library hashes each parameter to a constant 28-byte footprint (`blake2b_224(serialise(param))`) so that arbitrary parameter types — and, in particular, multiple interleaved parameters — share a uniform on-chain layout; TOA embeds the raw `serialiseData` output of a single composite parameter `Constr 0 [toa_version, policy_id, asset_name]`, variable in length, framed by a fixed 1-byte suffix. The two encodings reflect different design goals — generality across parameter shapes versus a specialised single-parameter form — not a quality judgement. See *Why raw parameter embedding rather than hashing parameters?* in *Rationale — Design Decisions* for the specific reasons TOA chose the latter.
+- The [`parameter-validation`](https://github.com/Anastasia-Labs/aiken-design-patterns/blob/v1.7.0/lib/aiken-design-patterns/parameter-validation.ak) module of Anastasia Labs' [aiken-design-patterns](https://github.com/Anastasia-Labs/aiken-design-patterns) library (pinned at [`v1.7.0`](https://github.com/Anastasia-Labs/aiken-design-patterns/releases/tag/v1.7.0)) captures, in a more general form, the byte-level technique TOA's R uses to reconstruct a parameterised script's hash without invoking `apply_params` at runtime — splicing precomputed prefix and suffix bytes around the parameter region and hashing the result with `blake2b_224`. Example usage of the library is at [`validators/examples/parameter-validation.ak`](https://github.com/Anastasia-Labs/aiken-design-patterns/blob/v1.7.0/validators/examples/parameter-validation.ak). TOA's R is conceptually a specific instance of the same pattern, specialised to a single composite parameter and pinned to a single canonical artifact. The encoding choices differ: the library hashes each parameter to a constant 28-byte footprint (`blake2b_224(serialise(param))`) so that arbitrary parameter types — and, in particular, multiple interleaved parameters — share a uniform on-chain layout; TOA embeds the raw `serialiseData` output of a single composite parameter `Constr 0 [toa_version, policy_id, asset_name]`, variable in length, framed by a fixed 1-byte suffix. The two encodings reflect different design goals — generality across parameter shapes versus a specialised single-parameter form — not a quality judgement. See *Why raw parameter embedding rather than hashing parameters?* in *Rationale — Design Decisions* for the specific reasons TOA chose the latter.
 
 **CIPs TOA builds on directly:** [CIP-0019](https://cips.cardano.org/cip/CIP-0019) (Cardano Addresses) for the enterprise script address format; [CIP-0014](https://cips.cardano.org/cip/CIP-0014) (User-Facing Asset Fingerprint) for the `asset1...` identifier displayed alongside TOA addresses; CIP-0069 (Plutus Script Type Uniformization) for the V3 spending validator interface; and CIP-0067 / [CIP-0068](https://cips.cardano.org/cip/CIP-0068) (asset name labels and datum-based metadata) for asset-name handling in test vectors. None of these require modification.
 
@@ -425,22 +441,22 @@ TOA is purely additive — no existing standard or implementation changes behavi
 - **[CIP-0014](https://cips.cardano.org/cip/CIP-0014) (user-facing asset fingerprint):** TOA derivation operates on raw `(policy_id, asset_name)` bytes; the CIP-0014 fingerprint (`asset1...`) is a parallel user-facing identifier and is independent of address derivation. Wallets and explorers SHOULD display the CIP-0014 fingerprint of the controlling NFT alongside the TOA address so users can recognise which asset controls a given TOA. Tooling MAY accept a CIP-0014 fingerprint as a lookup key, resolving it to `(policy_id, asset_name)` via an indexer before derivation. No conflict.
 - **[CIP-0025](https://cips.cardano.org/cip/CIP-0025) (NFT metadata):** TOA addresses are derived from `(policy_id, asset_name)` regardless of which metadata standard the asset uses. No conflict.
 - **[CIP-0067](https://cips.cardano.org/cip/CIP-0067) (asset name labels):** TOA derivation treats `asset_name` as raw bytes. CIP-0067 labels are not interpreted by the TOA validator; they are simply part of the asset name bytes, so different labelled asset names produce different TOAs. No conflict.
-- **[CIP-0068](https://cips.cardano.org/cip/CIP-0068) (datum-based metadata):** TOA derivation is independent of datum content and equally agnostic to CIP-0068 label semantics. A CIP-0068 reference NFT (label 100) and its corresponding user NFT (label 222) have distinct asset names and therefore each have their own TOA. No conflict.
+- **[CIP-0068](https://cips.cardano.org/cip/CIP-0068) (datum-based metadata):** TOA derivation is independent of datum content and equally agnostic to CIP-0068 label semantics. A CIP-0068 reference NFT (label 100) and its corresponding user NFT (label 222) have distinct asset names and therefore each have their own TOA. No derivation conflict — but note the control implication: a label-100 reference NFT is conventionally locked at the issuer's metadata validator, so a TOA controlled by a label-100 asset is controlled by that validator's spending policy, **not** by the holder of the corresponding label-222 user NFT. In configurations where the reference NFT can never leave the metadata validator, such a TOA is permanently inaccessible from creation (see *Security Considerations — Permanent loss and policy-permissiveness risks*). The `cip67-100` test vector exercises byte-level derivation only; it is not a recommendation to use label-100 assets as controlling assets.
 - **Existing token-gating implementations:** TOA does not invalidate any current pattern. It offers a standard target that new implementations should converge on, with no requirement to migrate existing dApps.
 
-## Security Considerations
+### Security Considerations
 
 These risks are intrinsic to the design and must be addressed by implementers and surfaced to users.
 
-### Permanent loss and policy-permissiveness risks
+#### Permanent loss and policy-permissiveness risks
 
-A TOA is recoverable only by a party that can construct a transaction consuming the controlling NFT as an input. If the controlling NFT is **burned** (only possible if the minting policy permits burns) or becomes locked in a script from which no valid transaction can consume it, **all assets at the TOA become permanently inaccessible** — there is no recovery path at the ledger level. The mirror failure mode is *Self-deposit* (below), in which the TOA becomes not inaccessible but *permissionlessly spendable*.
+A TOA is recoverable only by a party that can construct a transaction consuming the controlling NFT as an input. If the controlling NFT is **burned** (only possible if the minting policy permits burns) or becomes locked in a script from which no valid transaction can consume it, **all assets at the TOA become permanently inaccessible** — there is no recovery path at the ledger level. A concrete instance of the locked-forever case is a CIP-0068 label-100 reference NFT used as controlling asset while permanently locked at a metadata validator (see *Backward Compatibility — CIP-0068*). The mirror failure mode is *Self-deposit* (below), in which the TOA becomes not inaccessible but *permissionlessly spendable*.
 
-If the controlling NFT's minting policy is **not `ProvenClosed`** (i.e. is classified `KnownOpen` or `Unknown` per *Policy Classification*), the policy may permit duplication or burning of the controlling asset by a party with mint authority — and TOA v1 cannot prove on-chain that this isn't the case. The validator's `mint == 0` rule closes only the **single-transaction** variant of any duplication-then-drain attack: an attacker cannot atomically mint-and-drain in one transaction. It does **not** close the two-transaction variant (mint in tx A, then spend the TOA in tx B). The validator's contribution is removing the atomic coupling and making any duplication observable on-chain between the two transactions; the residual risk is mitigated at the wallet/UX layer via the policy-class warning MUSTs in *Wallet Behaviour*, which treat `KnownOpen` and `Unknown` policies as unsafe unless independently verified.
+If the controlling NFT's minting policy is **not `ProvenClosed`** (i.e. is classified `KnownOpen` or `Unknown` per *Policy Classification*), the policy may permit duplication or burning of the controlling asset by a party with mint authority — and TOA v1 cannot prove on-chain that this isn't the case. The validator's `mint == 0` rule closes only the **single-transaction** variant of any duplication-then-drain attack: an attacker cannot atomically mint-and-drain in one transaction. It does **not** close the two-transaction variant (mint in tx A, then spend the TOA in tx B). The validator's contribution is removing the atomic coupling and making any duplication observable on-chain between the two transactions; the residual risk is mitigated at the wallet/UX layer per *Wallet Behaviour*: wallets MUST NOT present a TOA as safely controlled without verified policy closure, and SHOULD warn for `KnownOpen` and `Unknown` policies.
 
-Wallets MUST warn for `KnownOpen` and `Unknown` controlling-asset policies (see *Wallet Behaviour — Assign a policy classification, default `Unknown`*), and SHOULD additionally warn before any deposit to a TOA whose controlling NFT is held in cold storage or otherwise at elevated key-loss risk.
+Per *Wallet Behaviour*, wallets MUST NOT present a TOA as safely controlled by a unique NFT unless the controlling policy's closure has been verified, SHOULD warn for `KnownOpen` and `Unknown` controlling-asset policies, and SHOULD additionally warn before any deposit to a TOA whose controlling NFT is held in cold storage or otherwise at elevated key-loss risk.
 
-### Self-deposit of the controlling NFT
+#### Self-deposit of the controlling NFT
 
 If the controlling NFT is locked inside its own TOA, any transaction author who can provide the required ledger witnesses — including any required datum preimage for a `Datum Hash` UTxO — may spend that TOA UTxO by consuming it and carrying the NFT through. This is what we mean by "permissionlessly spendable."
 
@@ -450,78 +466,96 @@ A self-deposited TOA is therefore **publicly controllable**: subject to the abov
 
 This is **not** a validator bug. It is an intentional consequence of defining control by NFT presence in transaction inputs rather than by signatures or by an external ownership address. Disallowing self-deposit would require enforcing an "input must not come from this script address" predicate, which breaks the eUTxO-natural design and the symmetry that lets the NFT itself flow through lending, escrow, and marketplace scripts.
 
-Wallets MUST warn users before sending the controlling NFT to its own TOA, and MUST describe the action as making the TOA publicly spendable rather than merely as transferring the NFT to another address (see *Wallet Behaviour — Warn that TOA control follows the ability to consume the controlling NFT*).
+#### Control cycles and nested TOAs
 
-### Authorisation scope: one NFT input authorises any number of TOA UTxOs
+Self-deposit is the length-1 case of a more general phenomenon: **control is transitive across TOAs**. If NFT `Y` resides at `TOA(X)`, then whoever can consume `X` controls `TOA(X)`, can thereby obtain `Y` in the same transaction, and therefore also controls `TOA(Y)`. A single transaction can consume `X`, spend `TOA(X)` and `TOA(Y)` together, and satisfy both validators — each sees its own controlling NFT among the spent inputs.
+
+Cycles collapse to permissionless control. If `X` resides at `TOA(Y)` and `Y` resides at `TOA(X)` (a 2-cycle), a single transaction consuming both UTxOs satisfies both validators with no external authorisation — exactly like self-deposit (the 1-cycle). Any cycle of TOAs whose controlling NFTs all reside inside the cycle is permissionlessly spendable as a whole.
+
+The wallet implication: a check implementing only the letter of self-deposit ("the NFT appears at its **own** TOA") reports both nested and cyclic configurations as safe when they are not. Wallets and indexers SHOULD detect the one-hop case — the controlling NFT resides at *a* TOA address, its own or another's — and MAY additionally detect full cycles (which requires resolving each nesting hop to its controlling asset). The corresponding validator-scenario coverage cases (transitive drain, control cycle) are listed in *Test Vector Format — Coverage*.
+
+Wallets MUST warn users before sending the controlling NFT to its own TOA, and SHOULD describe the action as making the TOA publicly spendable rather than merely as transferring the NFT to another address (see *Wallet Behaviour — Warn that TOA control follows the ability to consume the controlling NFT*).
+
+#### Authorisation scope: one NFT input authorises any number of TOA UTxOs
 
 A single valid controlling-NFT input authorises the transaction to spend **any number** of UTxOs at that NFT's TOA, subject only to transaction-size and execution-unit limits. This is intentional: authorisation is per transaction, not per TOA UTxO. It enables efficient batched cleanup of spam deposits and atomic multi-output spends from a TOA, and it is what allows the carry-through rule (`sumOutputs(ac) == 1`) to remain coherent in spite of multiple TOA inputs.
 
-Test vectors include a positive case demonstrating this (one NFT input → many TOA UTxOs in / single carry-through out) and negative cases that reject `sumSpentInputs(ac) ≠ 1`, `sumOutputs(ac) ≠ 1`, or `mint(ac) ≠ 0`, including a reference-input attack vector where the NFT appears only as a reference input (see *Path to Active — Acceptance Criteria*).
+**Distinct TOAs compose independently in one transaction.** A transaction may spend UTxOs at several different TOAs at once; each TOA's validator counts only its own controlling asset class `ac`, so the rules compose without double-satisfaction: one controlling NFT cannot stand in for another, and the presence of unrelated asset classes in inputs or outputs does not affect any TOA's rule. Each spent TOA independently requires its own controlling NFT to be consumed and carried through.
 
-### Value-cost and dust risks
+The validator-scenario coverage cases for both properties — the positive batched-spend case (one NFT input → many TOA UTxOs in / single carry-through out), the multi-TOA composition cases, and the negative cases rejecting `sumSpentInputs(ac) ≠ 1`, `sumOutputs(ac) ≠ 1`, or `mint(ac) ≠ 0`, including the reference-input attack — are enumerated (outstanding) in *Test Vector Format — Coverage*.
+
+#### Value-cost and dust risks
 
 TOA addresses are open vaults; the validator cannot disallow foreign tokens without destroying the use case. Two consequences:
 
 - TOA-spending transactions traverse the full `Value` of every TOA UTxO they consume, so cost grows with the size of the token map. Worst-case behaviour must be covered by test vectors and by sensible transaction-builder defaults (UTxO selection, output coalescing).
 - Spam deposits (covered separately in *Spam and DoS via deposits*) compound this risk by inflating UTxO counts. Wallets SHOULD coalesce conservatively when constructing TOA spends and SHOULD allow the user to select which TOA UTxOs to include rather than consuming the full set.
 
-### Validator bugs are unrecoverable
+#### Validator bugs are unrecoverable
 
-A bug in the canonical `TOA v1` validator could allow assets to be drained from every TOA derived from it. Because the validator hash is baked into every TOA address, no fix can be retrofitted to existing addresses — a corrected validator is a new `toa_version` with new addresses, and funds on the old version remain at the old version. The canonical validator therefore requires extensive independent audit before publication, and any future revision MUST be released as a new `toa_version` per the *Versioning* section.
+A bug in the canonical `TOA v1` validator could allow assets to be drained from every TOA derived from it. Because the validator hash is baked into every TOA address, no fix can be retrofitted to existing addresses — a corrected validator is a new `toa_version` with new addresses, and funds on the old version remain at the old version. The canonical validator therefore requires extensive independent audit before publication; any future revision is by definition a new `toa_version`, per *Versioning*.
 
-### Spam and DoS via deposits
+#### Spam and DoS via deposits
 
 Any party can send UTxOs to a TOA, and the standard does not (and cannot) prevent this at the validator level — this is fundamental to the deterministic-address model. High UTxO counts inflate the cost of TOA-spending transactions and can in extreme cases push them over the transaction-size or execution-unit limits. [CIP-0160](https://cips.cardano.org/cip/CIP-0160) is the proposed ledger-level mitigation (see *Open Questions and Limitations*). Wallets MAY filter spam in UI and SHOULD coalesce UTxOs sensibly when constructing TOA spends.
 
-### Temporary control during lending, escrow, or rental
+#### Temporary control during lending, escrow, or rental
 
 Any party or script that can cause the controlling NFT to be consumed as a transaction input can control the TOA for that transaction. This includes borrowers, escrow contracts, marketplaces, lending protocols, and any other script that temporarily holds or controls the NFT.
 
 This is intentional (see *Open Questions and Limitations*) and is what makes TOA composable with the rest of the eUTxO ecosystem, but it does mean that any borrower can drain a TOA before returning the NFT. The wallet-side MUST for surfacing this risk is stated normatively in *Wallet Behaviour* and is the same obligation, not an additional one. Lending protocols built on top of TOA-controlling NFTs SHOULD treat the TOA balance as part of the economic exposure of lending the controlling NFT, and SHOULD ensure the TOA balance is part of the loan collateral terms.
 
-### TOA is not an escrow
+#### TOA is not an escrow
 
 A TOA is controlled by whichever party can consume the controlling NFT as a transaction input. Assets sent to a TOA can be spent by that party at any time, without giving the depositor anything in return. The TOA validator enforces NFT carry-through; it does **not** enforce any payment-for-NFT, time-lock, or exchange semantics.
 
-**Binding marketplace offers that escrow real value MUST use a separate offer validator** that enforces the exchange (e.g. "pay X ADA, receive the controlling NFT atomically"). A TOA MAY serve as a discovery channel for such offers — the offer validator's address can be referenced from data deposited at the TOA, or the offer UTxO can be created at the TOA with an inline datum describing the terms — but the TOA v1 validator alone does not enforce sale semantics.
+**TOA v1 provides no escrow semantics.** Binding marketplace offers that escrow real value require a separate offer validator that enforces the exchange (e.g. "pay X ADA, receive the controlling NFT atomically"). A TOA MAY serve as a discovery channel for such offers — the offer validator's address can be referenced from data deposited at the TOA, or the offer UTxO can be created at the TOA with an inline datum describing the terms — but the TOA v1 validator alone does not enforce sale semantics.
 
 Wallets and dApp authors MUST NOT present a TOA deposit as "escrowed" to the depositor unless an external offer validator with appropriate escrow semantics also locks the assets. Treating a TOA as escrow is the most likely user-level misuse of this standard.
 
-### Front-running
+#### Consumer contracts deriving TOA addresses on-chain
+
+R's on-chain executability is a headline design goal: a third-party validator (a "consumer contract" — e.g. a royalty splitter checking "this output pays NFT X's TOA") can derive a TOA payment credential using only standard Plutus V3 builtins. Three hazards are specific to this usage:
+
+- **Constants provenance.** A consumer contract that embeds incorrect `FLAT_PREFIX_TOA_V1` / `FLAT_SUFFIX_TOA_V1` bytes derives a credential that corresponds to no real TOA — value paid to it is unrecoverable, since no controlling NFT can ever authorise a spend there. Consumer-contract build pipelines SHOULD verify the embedded constants against the pinned blake2b-256 hashes in *Mandatory Normative Artifacts* at build time.
+- **Double-satisfaction.** "Some output pays TOA(X)" is a predicate that a single output can satisfy for multiple consumer scripts running in the same transaction. Consumer contracts SHOULD identify the specific output they require (by index, uniqueness check, or an application-level marker) rather than merely asserting existence of a matching output.
+- **Payee semantics.** "Paid to TOA(X)" means paid to whichever party can consume `X` at some future time — not settlement to a fixed counterparty. The recipient can change with every transfer of `X`, including into scripts, nested TOAs, or self-deposit. Consumer contracts whose economics assume a stable payee need additional mechanisms outside TOA v1.
+
+#### Front-running
 
 In the **ordinary case** (controlling NFT outside the TOA, held by a wallet or specific script), spend transactions are NFT-gated at the input level: a mempool observer cannot front-run a TOA spend without also being able to consume the UTxO containing the controlling NFT. No additional mitigation is required beyond what the validator already enforces.
 
-In the **self-deposit case** (controlling NFT inside its own TOA), spending is intentionally permissionless for any transaction author able to provide the required ledger witnesses. Mempool competition is expected and is not treated as front-running against an owner — it is a direct consequence of self-deposit semantics, surfaced to the user by the *Self-deposit warning* MUST in *Wallet Behaviour*.
+In the **self-deposit case** (controlling NFT inside its own TOA), spending is intentionally permissionless for any transaction author able to provide the required ledger witnesses. Mempool competition is expected and is not treated as front-running against an owner — it is a direct consequence of self-deposit semantics, surfaced to the user by the self-deposit warning required by *Wallet Behaviour — Warn that TOA control follows the ability to consume the controlling NFT*.
 
-## Open Questions and Limitations
+### Open Questions and Limitations
 
 The following known limitations are intentionally left unresolved in TOA v1. Each is listed with an explicit **Disposition** so reviewers don't have to guess what stance the CIP takes.
 
-### 1. UTxO spam and junk deposits
+#### 1. UTxO spam and junk deposits
 
 Anyone can send UTxOs to an ordinary Cardano script address. TOA v1 deliberately uses ordinary enterprise script addresses, so it cannot prevent unsolicited deposits at the validator level — this is fundamental to the deterministic-address model.
 
 **Disposition:** Out of scope for v1. Wallets and indexers MAY filter or hide spam UTxOs in UI. Transaction builders SHOULD allow users to select which TOA UTxOs to consume. [CIP-0160](https://cips.cardano.org/cip/CIP-0160) ("Receiving Script Purpose and Addresses") proposes a ledger-level mechanism — a new `Receiving` script purpose plus a `ProtectedAddress` concept — that would let scripts validate UTxO creation at their address. If CIP-0160 is adopted, a future TOA version may use it to restrict or validate deposits into TOAs. TOA v1 does not depend on CIP-0160 and remains compatible with the current unprotected script-address model.
 
-### 2. Token lending and temporary delegation
+#### 2. Token lending and temporary delegation
 
 If the NFT owner lends the NFT, the borrower temporarily controls the TOA.
 
 **Disposition:** Intentional feature, not a bug. See *Security Considerations — Temporary control during lending, escrow, or rental*.
 
-### 3. Multiple address variants
+#### 3. Multiple address variants
 
 Changes to `stake_credential`, `toa_version`, or the validator template all produce different addresses.
 
 **Disposition:** Resolved in v1 by pinning a single template, `toa_version = 1`, and no stake credential. Future variants (delegated TOAs, alternative templates) live in separate CIPs.
 
-### 4. Multi-quantity asset classes
+#### 4. Multi-quantity asset classes
 
 What if the controlling asset has total supply > 1?
 
 **Disposition:** Out of scope for v1. The validator cannot prove historical total supply on-chain; instead it enforces transaction-local uniqueness (`sumSpentInputs(ac) == 1`, `sumOutputs(ac) == 1`, `mint == 0`). Asset classes with intended supply > 1 fall outside this CIP's scope. See *Validator Rules* and *Rationale — Design Decisions*.
 
-### 5. Reference scripts
+#### 5. Reference scripts
 
 Could publishing the TOA validator as a reference script change the derived address?
 
@@ -529,31 +563,29 @@ Could publishing the TOA validator as a reference script change the derived addr
 
 However, because TOA uses a parameterised validator, a reference script must correspond to the **applied** script for the specific `(toa_version, policy_id, asset_name)` being spent. A reference script for the *unapplied* template is not sufficient to spend a concrete TOA — each TOA needs (or shares with peers) a reference UTxO carrying its own applied script bytes.
 
-### 6. Stability of `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`
+#### 6. Stability of `FLAT_PREFIX_TOA_V1` and `FLAT_SUFFIX_TOA_V1`
 
 The byte-level constants used by R are extracted from the pinned compiled UPLC artifact. **The byte-aligned decomposition that makes R definable is a property of the specific compiled artifact, not a property of the Plinth source code, nor a property of TOA v1 as a specification.** A future recompilation with a different Plinth, `plutus-tx`, `plutus-tx-plugin`, or `plutus-ledger-api` version may produce applied bytes that do not admit the same decomposition — because flat-encoding bit-alignment around the parameter is not guaranteed by the surface-level Haskell source.
 
 Any recompilation of the canonical validator with a different toolchain version would therefore yield different constants and likely different addresses for the same `(toa_version, policy_id, asset_name)` — exactly as recompilation would under any address-derivation procedure.
 
-**Disposition.** The pinned UPLC artifact and the derived R constants are immutable for `toa_version = 1`. Any change to the underlying validator — including a recompilation with a different toolchain — requires a new `toa_version` per *Versioning*. The CIP authors MUST NOT republish `ToaV1.uplc`, `FLAT_PREFIX_TOA_V1`, or `FLAT_SUFFIX_TOA_V1` under the same `toa_version` after this CIP reaches `Active`. The verification procedure is the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, which is run on every release of the artifact and MUST pass before publication.
+**Disposition.** The pinned UPLC artifact and the derived R constants are immutable for `toa_version = 1`. Any change to the underlying validator — including a recompilation with a different toolchain — requires a new `toa_version` per *Versioning*. The CIP authors MUST NOT republish `ToaV1.uplc`, `FLAT_PREFIX_TOA_V1`, or `FLAT_SUFFIX_TOA_V1` under the same `toa_version` after this CIP reaches `Active`. The verification procedure is the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository, which is run on every release of the artifact and MUST pass before publication.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-These are the concrete, testable conditions for the CIP to move from `Proposed` to `Active`.
+These are the concrete, testable conditions that must hold at the moment the CIP moves from `Proposed` to `Active`. Progress toward them is tracked in *Implementation Plan* below.
 
-- [x] *Mandatory Normative Artifacts* in the reference implementation at [en7angled/toa](https://github.com/en7angled/toa) (tag [`0.2.0`](https://github.com/en7angled/toa/releases/tag/0.2.0))
-  - [x] Canonical Plinth source for the TOA v1 validator published (external, content-hash-referenced).
-  - [x] Compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) published — 529 bytes, blake2b-256 = `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0`.
-  - [x] Compiler/toolchain versions pinned — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`.
-  - [x] Template hash documented, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c`.
-  - [x] Canonical byte-level R implementation published (Haskell reference in `offchain-lib` and Plinth implementation in `onchain-lib`; supplementary TypeScript and Rust ports encouraged for ecosystem reach but non-normative — outstanding).
-  - [x] R implementation verified against the compiled UPLC artifact — for every published address-derivation test vector, R reproduces `expected_script_hash` byte-for-byte. This verification is performed by the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable in the reference repository and MUST pass on every release of the artifact.
-  - [x] At least one non-normative reference off-chain implementation published, including address derivation, deposit, spend, and NFT carry-through (`offchain-lib`, exercised by the test suite via [CLB](https://github.com/mlabs-haskell/clb) scenarios).
-  - [x] A testnet demonstration or reference workflow exercises address derivation, deposit, spend, and NFT carry-through end-to-end on a public testnet — [toa.e7d.tech](https://toa.e7d.tech) runs the reference frontend against the Cardano Preview testnet (and mainnet) and exercises all four operations.
-- [ ] Normative test vectors published per *Test Vector Format* and verified against **at least two independent implementations**. Address-derivation vectors are published; validator-scenario vectors and second-implementation verification are outstanding.
-- [ ] At least two independent integrations: e.g. one wallet displaying TOA addresses with proper labelling, and one explorer/indexer (Cexplorer, Pool.pm, Cardanoscan, or equivalent) labelling TOA addresses as such.
+- *Mandatory Normative Artifacts* published in the reference implementation at [en7angled/toa](https://github.com/en7angled/toa), pinned by immutable git tag and blake2b-256 content hash:
+  - the canonical Plinth source for the TOA v1 validator;
+  - the compiled, **unapplied** Plutus V3 validator artifact (binary UPLC bytes) — 529 bytes, blake2b-256 = `60e2e90cd3b48b3daab28a409b257cfa0554bd24b4c552b985df9aee654fbda0`;
+  - pinned compiler/toolchain versions — GHC 9.6 series, Plutus Core target version 1.1.0, plutus-tx / plutus-tx-plugin / plutus-ledger-api at Conway-era IOG CHaP pins frozen via `cabal.project.freeze`;
+  - the template hash, computed as `blake2b_224(0x03 || unapplied_script_bytes)` per *Mandatory Normative Artifacts* — `b4e7310faacb77c9e5a68f325eb348a93d2025ecf472bc43007d5e1c`;
+  - the canonical byte-level R implementation (Haskell reference in `offchain-lib`, Plinth implementation in `onchain-lib`), verified against the compiled UPLC artifact by the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable on every release of the artifact.
+- Normative test vectors published per *Test Vector Format* — both address-derivation vectors (category (a)) and validator scenarios (category (b)) — and verified against **at least two independent implementations**.
+- At least one non-normative reference off-chain implementation published (address derivation, deposit, spend, NFT carry-through), exercised end-to-end on a public testnet.
+- At least two independent integrations: e.g. one wallet displaying TOA addresses with proper labelling, and one explorer/indexer (Cexplorer, Pool.pm, Cardanoscan, or equivalent) labelling TOA addresses as such.
 
 ### Implementation Plan
 
@@ -562,8 +594,8 @@ The Implementation Plan describes the **ordered work** required to move TOA v1 f
 1. **Publish the canonical Plinth validator source** and the compiled, unapplied Plutus V3 artifact (binary UPLC bytes), with pinned toolchain versions and the documented template hash. Identify the validator artifact by its immutable content hash, published as an external immutable release per *Reference Artifacts — What lives where*. (Done — see *Mandatory Normative Artifacts* and *Acceptance Criteria*.)
 2. **Publish the parameter-encoding CDDL** and confirm it round-trips through at least two independent CBOR libraries. (CDDL published inline in *Canonical Parameter Encoding*; multi-library round-trip verification outstanding.)
 3. **Publish the address-derivation test vectors** (category (a) in *Test Vector Format*) covering ASCII / non-ASCII Unicode / empty / max-length / CIP-0067 label 100 / CIP-0067 label 222 asset names. (Done for ASCII / empty / max-length / label-100 / label-222 plus a `toa_version`-isolation vector; non-ASCII Unicode outstanding — see *Test Vector Format — Coverage*.)
-4. **Publish the validator-scenario test vectors** (category (b)) covering all positive, negative, authorisation-scope, value-shape stress, spend, and reference-input cases enumerated in *Test Vector Format — Coverage*. Each scenario asserts pass/fail correctness only; ExUnit and tx-size measurements are tracked non-normatively in `toa-bench`.
-5. **Publish the canonical byte-level R implementation** (Haskell reference in `offchain-lib` and Plinth implementation in `onchain-lib`; supplementary TypeScript and Rust ports as non-normative), and verify it against the compiled UPLC artifact via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.0/src/exe/toa-verify-reconstruction/Main.hs) executable on every artifact release. (Done — `offchain-lib` and `onchain-lib` in the reference repository; supplementary ports outstanding.)
+4. **Publish the validator-scenario test vectors** (category (b)) covering the cases enumerated in *Test Vector Format — Coverage*: positive, negative, authorisation-scope, multi-TOA composition, transitive-control and control-cycle, non-spending purpose, value-shape stress, and reference-input cases. Each scenario asserts pass/fail correctness only; ExUnit and tx-size measurements are tracked non-normatively in `toa-bench`. (Outstanding.)
+5. **Publish the canonical byte-level R implementation** (Haskell reference in `offchain-lib` and Plinth implementation in `onchain-lib`; supplementary TypeScript and Rust ports as non-normative), and verify it against the compiled UPLC artifact via the [`toa-verify-reconstruction`](https://github.com/en7angled/toa/blob/0.2.1/src/exe/toa-verify-reconstruction/Main.hs) executable on every artifact release. (Done — `offchain-lib` and `onchain-lib` in the reference repository; supplementary ports outstanding.)
 6. **Publish at least one non-normative reference off-chain implementation**, including address derivation, deposit, spend, and NFT carry-through. (Done — `offchain-lib` + `interaction-api` + [toa.e7d.tech](https://toa.e7d.tech).)
 7. **Verify against independent implementation #1** — an external party (wallet team, library author, or auditor) reproduces every test vector byte-for-byte for address derivation and pass/fail-correct for validator scenarios.
 8. **Verify against independent implementation #2** — a second independent party does the same against a different stack (e.g. lucid-evolution, MeshJS, cardano-transaction-lib, or PyCardano).
@@ -577,7 +609,7 @@ Steps 1–6 are owned by the CIP authors. Steps 7–9 are owned by the ecosystem
 
 - A TOA v1 address and a hypothetical TOA v2 address for the same `(policy_id, asset_name)` resolve to **different addresses**.
 - Addresses **do not migrate** between versions. Funds on a v1 TOA stay on the v1 TOA.
-- Wallets MUST surface the TOA version to the user before any deposit or spend.
+- Wallets SHOULD surface the TOA version to the user before any deposit or spend (see *Wallet Behaviour*).
 - Each new version is a new validator and lives in its own CIP (or as a versioned addendum to this one).
 
 ## References
@@ -587,7 +619,6 @@ Steps 1–6 are owned by the CIP authors. Steps 7–9 are owned by the ecosystem
 - [CIP-0014](https://cips.cardano.org/cip/CIP-0014) — User-Facing Asset Fingerprint
 - [CIP-0019](https://cips.cardano.org/cip/CIP-0019) — Cardano Addresses
 - [CIP-0025](https://cips.cardano.org/cip/CIP-0025) — Media NFT Metadata Standard
-- [CIP-0030](https://cips.cardano.org/cip/CIP-0030) — Cardano dApp-Wallet Web Bridge
 - [CIP-0067](https://cips.cardano.org/cip/CIP-0067) — Asset Name Label Registry
 - [CIP-0068](https://cips.cardano.org/cip/CIP-0068) — Datum Metadata Standard
 - [CIP-0069](https://cips.cardano.org/cip/CIP-0069) — Plutus Script Type Uniformization
@@ -599,6 +630,7 @@ Steps 1–6 are owned by the CIP authors. Steps 7–9 are owned by the ecosystem
 **External standards and tools:**
 
 - [ERC-6551](https://eips.ethereum.org/EIPS/eip-6551) — Token-Bound Accounts (Ethereum)
+- [BIP-173](https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki) — Base32 address format (bech32)
 - [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119) — Key words for use in RFCs to Indicate Requirement Levels
 - [RFC 8174](https://www.rfc-editor.org/rfc/rfc8174) — Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words
 - [RFC 8949](https://www.rfc-editor.org/rfc/rfc8949) — Concise Binary Object Representation (CBOR), §4.2.1 "Core Deterministic Encoding"
