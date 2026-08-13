@@ -331,17 +331,20 @@ be mentioned:
    transaction will fail *Phase 1 Validation*.
 4. The referenced account must be registered; an interval on an unregistered credential fails
    *Phase 1 Validation*.
-5. In a nested transaction, account balance intervals are validated independently at the top level
-   and within each sub-transaction, against that level's balances before its own withdrawals and
-   direct deposits are applied, and only when the enclosing transaction is phase-2 valid.
+5. The check runs only when the top-level transaction's isValid flag is true (the script-valid branch).
+   A transaction marked isValid = false is processed for collateral only and applies no withdrawals
+   or deposits, so its interval assertions — which guard those effects — are not evaluated. This holds
+   at every level of a nested transaction: each interval is checked independently at the top level and
+   within each sub-transaction, against the account balances in the ledger state as of that level,
+   before that level's own withdrawals and direct deposits are applied.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
 `ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
 
 ### Starting Account Balance Intervals
 
-`account_balance_intervals` are evaluated against each transaction level's balances as that level is
-processed. In a nested transaction, a sub-transaction's intervals therefore see the balances
+`account_balance_intervals` are evaluated against account balances for each transaction level as that level is
+processed. In a nested transaction, a sub-transaction's intervals therefore see the account balances
 *threaded through* any earlier sub-transactions, and so cannot express an assertion about the balances
 at the very start of the whole transaction. A separate top-level field,
 `starting_account_balance_intervals`, fills this gap: it asserts intervals against the account balances
