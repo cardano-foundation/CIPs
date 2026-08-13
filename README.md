@@ -162,6 +162,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
+| 0186 | [Cardano Wallet Deep-Link Signing](./CIP-0186) | Proposed |
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
 | 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
@@ -172,7 +173,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-07-22</i></p>
+<p align="right"><i>Last updated on 2026-08-04</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -208,8 +209,9 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
 | 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
+| 0033 | [DRep Voting Power Concentration](./CPS-0033) | Open |
 
-<p align="right"><i>Last updated on 2026-07-08</i></p>
+<p align="right"><i>Last updated on 2026-08-06</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
