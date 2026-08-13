@@ -40,23 +40,24 @@ constitutional-committee roles uniformly.
 
 ## Quantum strategy options
 
-For the key material behind Cardano signatures there are two coherent strategies — they
-are alternatives, not three independent workstreams:
+For the key material behind Cardano signatures there are exactly two coherent
+strategies — and they are alternatives, not complements:
 
 | | **Path A — prove over today's keys** (this CIP) | **Path B — native PQ keys** |
 |---|---|---|
 | **Signature primitive** | ZKPoSP zero-knowledge proof over the existing BIP32-Ed25519 key | Standard PQ scheme (ML-DSA, Falcon, SPHINCS+) |
 | **Key derivation** | unchanged BIP32-Ed25519 | comes with its own PQ derivation (QBIP32-style) — BIP32 cannot produce PQ-scheme keys |
 | **Migration needed** | none — addresses, keys, hardware wallets stay as they are | yes — new key formats mean new addresses; existing funds still need Path A as a bridge |
-| **Signature size** | ~219 KB | ~1–3 KB |
-| **Proving cost** | ~12.5 s per transaction | microseconds |
+| **Signature size** | ~219 KB | ~1–8 KB |
+| **Proving cost** | ~12.5 s per transaction | near-instant |
 | **On-chain settlement** | not feasible today | plausible |
 
-The key insight: **"PQ derivation" is not a third option — it is a built-in consequence of
-Path B.** A native PQ signature scheme brings its own key schedule, which BIP32-Ed25519
-cannot produce. So you can have Path A alone (this CIP is already a complete post-quantum
-signing layer), or Path B for new keys with Path A as the migration bridge for existing
-funds — but never three separate things.
+The key insight is that **PQ derivation is not a third, independent option — it is a
+built-in consequence of Path B.** A native PQ signature scheme brings its own key
+schedule, which BIP32-Ed25519 cannot produce. So the full solution is either Path A
+alone — this CIP is already a complete post-quantum signing layer — or Path A and
+Path B together, with Path B for new keys and Path A as the migration bridge for
+existing funds.
 
 **This CIP pursues Path A.** The whole design — unchanged derivation and addresses,
 proofs anchored at the hardened `account'`, the two-phase deployment — exists to keep
@@ -76,7 +77,7 @@ can run in either phase.
 
 **How a Cardano wallet makes keys today.** A wallet starts from a single seed (backed
 up as a mnemonic [CIP-0009](#CIP-0009)) and derives a whole tree of keys from it, per the
-HD-sequential conventions of [CIP-0003](#CIP-0003) and the BIP32-Ed25519 scheme [KL17](#KL17). Each key
+BIP32-Ed25519 scheme [KL17](#KL17). Each key
 is a pair of secret halves: a "left" half that does the actual Ed25519 signing and a
 "right" half that acts as extra secret material. Steps down the tree use a keyed hash
 (HMAC-SHA512). Steps marked with an apostrophe are *hardened* — they can only be
@@ -403,8 +404,6 @@ Options](#proving-backend-options) above; nothing here is final.
 - <a id="CIP-1852"></a>[CIP-1852] HD (Hierarchy for Deterministic) Wallets for Cardano.
   https://cips.cardano.org/cip/CIP-1852
 - <a id="CIP-1854"></a>[CIP-1854] Multi-signatures HD Wallets. https://cips.cardano.org/cip/CIP-1854
-- <a id="CIP-0003"></a>[CIP-0003] Withdrawal scripts and address formats (HD Random vs HD Sequential).
-  https://cips.cardano.org/cip/CIP-0003
 - <a id="KL17"></a>[KL17] Khovratovich and Law, "BIP32-Ed25519: Hierarchical Deterministic Keys over a
   Non-linear Keyspace" (EuroS&PW 2017). https://input-output-hk.github.io/adrestia/static/Ed25519_BIP.pdf
 - <a id="RISC-ZERO"></a>[RISC-ZERO] RISC Zero zkVM. https://dev.risczero.com/
