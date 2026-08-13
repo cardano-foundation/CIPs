@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Post-Quantum Zero-Knowledge Signatures for Cardano HD Wallets
+Title: Post-Quantum ZK Signatures for HD Wallets
 Category: Wallets
 Status: Proposed
 Authors:
