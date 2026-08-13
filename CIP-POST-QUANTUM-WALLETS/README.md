@@ -38,6 +38,38 @@ constitutional-committee roles uniformly.
   two non-hardened" path shape Cardano uses (`m/1852'/1815'/account'/role/index`),
   making Cardano the natural first deployment.
 
+## Quantum strategy options
+
+For the key material behind Cardano signatures there are two coherent strategies — they
+are alternatives, not three independent workstreams:
+
+| | **Path A — prove over today's keys** (this CIP) | **Path B — native PQ keys** |
+|---|---|---|
+| **Signature primitive** | ZKPoSP zero-knowledge proof over the existing BIP32-Ed25519 key | Standard PQ scheme (ML-DSA, Falcon, SPHINCS+) |
+| **Key derivation** | unchanged BIP32-Ed25519 | comes with its own PQ derivation (QBIP32-style) — BIP32 cannot produce PQ-scheme keys |
+| **Migration needed** | none — addresses, keys, hardware wallets stay as they are | yes — new key formats mean new addresses; existing funds still need Path A as a bridge |
+| **Signature size** | ~219 KB | ~1–3 KB |
+| **Proving cost** | ~12.5 s per transaction | microseconds |
+| **On-chain settlement** | not feasible today | plausible |
+
+The key insight: **"PQ derivation" is not a third option — it is a built-in consequence of
+Path B.** A native PQ signature scheme brings its own key schedule, which BIP32-Ed25519
+cannot produce. So you can have Path A alone (this CIP is already a complete post-quantum
+signing layer), or Path B for new keys with Path A as the migration bridge for existing
+funds — but never three separate things.
+
+**This CIP pursues Path A.** The whole design — unchanged derivation and addresses,
+proofs anchored at the hardened `account'`, the two-phase deployment — exists to keep
+today's BIP32-Ed25519 keys quantum-safe without migration. **Path B is deliberately out
+of scope here and should be pursued in a separate CIP** (native PQ signature schemes for
+newly generated keys, together with their PQ derivation scheme); this CIP references it
+only to delineate the boundary and to frame Path A as the migration bridge that Path B
+would lean on for existing funds.
+
+These paths answer *which keys and schemes* to use; they are orthogonal to the CIP's
+Phase 1/2, which answer *where proofs are verified* (off-chain vs on-chain) — either path
+can run in either phase.
+
 ## Specification
 
 ### Background
@@ -200,6 +232,22 @@ primary deployment (Conway-era limits; updatable via governance):
 Raising `maxTxSize` alone would not suffice (the receipt also exceeds
 `maxBlockBodySize`), and the post-Q-day variant does not reduce proof size — it only
 shortens proving time.
+
+### Proof-size fallback plan
+
+If proofs cannot fit on-chain, three fallback options are available, each one tried
+only if the previous one is closed for some reason:
+
+1. **One tx, small enough proof.** Pursue proof-size reduction (ZK-friendly hashing,
+   smaller FRI configurations) until the receipt fits `maxTxSize`. The primary target
+   for Phase 2.
+2. **One proof across several txs.** If no single tx can hold the receipt, split it
+   over multiple mutually-referencing transactions, so the fragment proofs together
+   form the full receipt.
+3. **Out-of-band proofs + node-side cache.** If neither fits, proofs travel
+   out-of-band; nodes keep a cache of proofs and only adopt blocks of signatures for
+   which they have seen the corresponding zk proof. This needs additional handling of
+   the VRF (block-leadership) gap.
 
 ### End-to-end flow
 
