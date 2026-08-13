@@ -1,6 +1,6 @@
 ---
 CPS: "?"
-Title: Portable property-based conformance testing for Plutus Core evaluators
+Title: Extending Plutus Core conformance testing 
 Category: Plutus
 Status: Open
 Authors:
@@ -35,12 +35,14 @@ node implementation so that no single codebase or team is a single point of
 failure for the network. This is only safe if all implementations agree
 precisely on the result (and cost) of evaluating a Plutus Core script: any
 divergence is dangerous because a fork could occur if nodes disagree on the
-validity of a block.  
+validity of a block.
 
-The existing conformance tests in `plutus-conformance` are simple hand-written
-unit tests which check that scripts succeed with expected results in typical
-cases, and that specific edge conditions are handled correctly.  These are
-useful but limited in number and in the range of inputs they exercise.
+We currently provide a number of conformance tests in the `plutus-conformance`
+directory in the Plutus repository which implementers can use to check that their
+evaluator behaves properly. These are simple hand-written unit tests which check
+that scripts succeed with expected results in typical cases, and that specific
+edge conditions are handled correctly.  The tests are useful but limited in
+number and in the range of inputs they exercise.
 
 The Haskell codebase contains many property tests that generate large numbers
 (hundreds or thousands) of carefully-distributed random inputs, build Plutus
