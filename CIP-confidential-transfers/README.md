@@ -18,9 +18,9 @@ This proposal introduces **native confidential transfers** for Cardano: the abil
 ADA and native tokens so that the transferred **amounts** are hidden on chain, while the ledger
 can still verify — without decrypting anything — that no value was created or destroyed. Amounts
 are carried as additively — i.e. **partially** — homomorphic commitments and accompanied by
-zero-knowledge proofs that they are non-negative and that value is conserved. Each account holds a single **confidential viewing key**
-that lets its owner (and anyone the owner discloses it to, such as an auditor) recover the hidden
-amounts addressed to it. Sender and recipient addresses, the transaction graph, fees, and the
+zero-knowledge proofs that they are non-negative and that value is conserved. Each account holds one active **confidential viewing key** — rotatable
+by superseding its registration — that lets its owner (and anyone the owner discloses it to,
+such as an auditor) recover the hidden amounts addressed to it. Sender and recipient addresses, the transaction graph, fees, and the
 *identity* of native assets remain public; only *quantities* are hidden. The scheme is designed
 to fit the extended UTXO (EUTXO) model directly and to rely on a small set of well-established
 cryptographic primitives with no trusted setup.
@@ -43,7 +43,7 @@ of their financial activity — above all, how much they transact and hold**. Th
 proposal is therefore **confidentiality from the general public, not from oversight**: amounts
 are hidden from everyone *except* the parties the owner deliberately authorises.
 A user can, of their own will and choosing, designate **one or more auditors** — a tax
-authority, an accountant, or tax-reporting software — by sharing the account's single viewing
+authority, an accountant, or tax-reporting software — by sharing the account's viewing
 (decryption) key with them, giving those parties complete read access to the account's amounts
 while the rest of the world sees nothing. **Pure privacy or anonymity transfers are explicitly
 not the goal of this proposal**: designs that hide identities or break the transaction graph
@@ -154,21 +154,26 @@ payment addresses an account may use.
   credential's standard witness rules, so script-controlled accounts (e.g. multisig treasuries)
   bind a viewing key exactly as key-controlled accounts do.
 - Disclosing `sk_view` grants **read** access only and never grants spend authority, which
-  remains with the separate spending key(s). The account has exactly **one** viewing key; its
-  owner may, at their own discretion, share it with **one or more auditors** — each receives the
-  same key and the same complete read access.
+  remains with the separate spending key(s). The account has exactly **one active viewing key
+  at a time**; the key may be **rotated** by superseding the registration (see
+  [viewing-key registration](#viewing-key-registration)), each rotation opening a new
+  **generation**. The owner may, at their own discretion, share keys with **one or more
+  auditors** — the whole history, or only the generations covering an engagement
+  (time-boxed disclosure).
 
 **Wallet key derivation.** Wallets are expected to derive `sk_view` **deterministically from the
 wallet's existing seed**, using a **new, dedicated derivation path** in the hierarchical-
 deterministic scheme already used on Cardano (in the spirit of [CIP-1852], e.g. a new role or
 purpose index reserved for confidential viewing keys). The viewing key must never be a reused
 signing key: it is a Ristretto255 scalar on its own path, cleanly separated from payment and
-stake keys. The path MUST terminate in a hardened **key index**; this proposal uses index `0`
-exclusively. Successive indices are reserved for future viewing keys of the same account
-(key rotation, deferred to a companion proposal), so that a wallet restored from its mnemonic
-recovers every viewing key the account has ever used. An unindexed path would make rotation
-impossible without a new seed, and is therefore ruled out now even though this proposal
-itself never rotates. Deriving it from the existing seed means: no new seed or backup is required,
+stake keys. The path MUST terminate in a hardened **key index**, and the index tracks the
+account's **generation**: a new account derives generation 0 at index `0'`, and each rotation
+advances to the next index alongside its superseding registration (see
+[viewing-key registration](#viewing-key-registration)). A wallet restored from its mnemonic
+walks the indices against the account's on-chain certificate history and recovers **every**
+viewing key the account has ever used — an unindexed path would make rotation impossible
+without a new seed, and is therefore ruled out. Deriving keys from the existing seed means:
+no new seed or backup is required,
 restoring a wallet from its mnemonic also restores the viewing capability (and therefore the
 ability to re-read all of the account's confidential amounts from chain data), and **existing
 accounts can adopt confidential transfers without creating a new wallet or account**.
@@ -183,7 +188,8 @@ i.e. a new **role `6` — "confidential viewing key"** — under [CIP-1852], fol
 how staking keys (role `2`, CIP-0011) and governance keys (roles `3`–`5`, CIP-0105) were
 introduced; role `6` is the next unallocated value, and ratification of this proposal should
 add the corresponding row to CIP-1852's role table. The `index'` level is the hardened key
-index above, `0'` in this proposal. Because `sk_view` is a ristretto255 scalar rather than
+index above — the account's generation number, starting at `0'`. Because `sk_view` is a
+ristretto255 scalar rather than
 an Ed25519 key, the final derivation step maps the derived key material to a scalar —
 `sk_view = H(dst || key_material) mod ℓ` under a dedicated domain-separation tag — so soft
 (public-key) derivation does not apply to viewing keys in any case, and the hardened index
@@ -197,7 +203,8 @@ wallet seed to derive from: its viewing keypair is generated by the controlling 
 the secret is **shared among them** — every co-signer needs `sk_view` anyway, both to read
 the treasury's amounts and to recover the blindings required to construct a spending
 transaction (the remaining co-signers then only add their witnesses). This mirrors the
-trust already inherent in such an account: whoever can co-authorise spending can necessarily
+trust already inherent in such an account (a rotation simply has the parties generate and
+share a fresh scalar for the new generation): whoever can co-authorise spending can necessarily
 see what is being spent. How the parties generate and distribute the scalar (a designated
 party, deterministic derivation from a shared secret, or any other convention) is an
 operational choice outside this specification; the on-chain binding is the same
@@ -234,9 +241,12 @@ certificate =
 A **registration certificate** includes:
 
 - the **stake credential** being registered — a key hash or a script hash;
-- the **deposit** paid: the certificate is invalid unless it equals the current value of
-  `viewingKeyDeposit`; the paid amount is recorded with the registry entry so that the
-  eventual refund matches it even if the parameter changes later;
+- the **deposit**: on a first registration (from `NeverRegistered` or `Inactive`) the
+  certificate is invalid unless this equals the current value of `viewingKeyDeposit`, and
+  that amount is recorded with the registry entry so the eventual refund matches it even if
+  the parameter changes later; on a **superseding** registration (rotation) it must equal
+  the deposit currently recorded — the existing deposit is carried, and no additional value
+  is locked;
 - **`P_view`** — the account's confidential viewing public key, a ristretto255 point;
 - a **proof of possession** of the corresponding `sk_view`: a Schnorr signature `(R, z)`
   made with the viewing secret itself (see the proof-of-possession rule below).
@@ -275,13 +285,35 @@ credential registration deposits are returned.
   possession is checked at registration time only; it cannot (and does not claim to)
   protect against a key whose secret is *later* lost — that is ordinary key-management
   risk, identical to losing spending keys.
-- **One live registration.** Registering a credential that already has a live registration is
-  invalid: the viewing keypair is immutable at this protocol version. Key rotation is out of
-  scope and deferred to a companion proposal — immutability is a validation rule, relaxable
-  from a later protocol version onwards (see [versioning](#versioning)), and the derivation
-  path above already reserves successive key indices for that purpose.
-- **Deposit.** Registration locks the refundable deposit described above, sized by the
-  `viewingKeyDeposit` protocol parameter (see [protocol parameters](#protocol-parameters)).
+- **Registration lifecycle (generations) — key rotation.** An account's registrations form
+  an explicit lifecycle:
+
+  ```
+  NeverRegistered ──register(P₀)──▶ Active(generation 0)
+  Active(gen n)   ──register(Pₙ₊₁)─▶ Active(generation n+1)   ; supersede: rotation
+  Active(gen n)   ──deregister────▶ Inactive                  ; deposit refunded
+  Inactive        ──register(P)───▶ Active(generation n+1)    ; re-enrolment
+  ```
+
+  Registering while a registration is live is **valid** and is the rotation mechanism: the
+  new certificate **supersedes** the previous one ("current certificate wins"), closing
+  generation *n* and opening generation *n+1*. The deposit is locked once, carried across
+  supersedes, and refunded only at deregistration; every registration — first or
+  superseding — carries its own proof of possession. The ledger retains only the **current**
+  live binding; the full generation history needs no consensus state, because it *is* the
+  sequence of certificates already on chain, resolved by wallets, auditors, and indexers.
+  Senders always use the currently active key (validation rule 12 is unchanged); an output
+  built moments before a supersede simply decrypts under the previous generation, which its
+  owner still holds — nothing is lost in the race. Rotation exists for two reasons: it
+  limits the damage of a **compromised** viewing key to the generations it covered, and it
+  lets an account **end an auditor's forward visibility** (see
+  [auditing](#auditing-and-selective-disclosure)) — with the honest limit that rotation
+  protects the *future only*: a disclosed or stolen key reads the generations it covered,
+  forever.
+- **Deposit.** A first registration locks the refundable deposit described above, sized by
+  the `viewingKeyDeposit` protocol parameter (see
+  [protocol parameters](#protocol-parameters)); superseding registrations carry it, and
+  deregistration refunds it.
 - **Deregistration is not key destruction.** The certificate is a **directory entry, not a
   key store**: deregistration stops the account from receiving new confidential outputs
   (validation rule 12) but affects nothing already received — existing confidential outputs
@@ -643,8 +675,9 @@ must never alter the behaviour of existing forms in place.
 3. **Attribution.** Which stake credential a confidential output belongs to remains publicly
    determinable from chain data.
 4. **Openings.** The owner of an **honestly constructed** confidential output recovers its
-   opening `(v, r)` from chain data and the account's `sk_view` alone, with no interaction
-   with the sender and no off-chain state. (An output failing the recipient's
+   opening `(v, r)` from chain data and the account's viewing secret for the **generation
+   active at the output's creation** alone, with no interaction with the sender and no
+   off-chain state. (An output failing the recipient's
    `C == v·H + r·G` check is not honestly constructed: it is unspendable, its amount unknown
    even to the recipient, and an auditor sees and flags it as malformed — see
    [amount transport](#amount-transport).)
@@ -661,9 +694,12 @@ balancing-proof construction.
 ### Auditing and selective disclosure
 
 Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
-single `sk_view` (one key for the whole account, i.e. the stake address — see [Keys](#keys)) gives the holder of
-that key a complete, human-readable history of the **entire account** across all its payment
-addresses — which counterparties, which assets, and how much. The two directions are
+viewing keys (one active key per account at a time, i.e. per stake address — see [Keys](#keys),
+with earlier **generations** covering earlier periods) gives the holder a complete,
+human-readable history of the account across all its payment addresses — which counterparties,
+which assets, and how much. Every output is read under the key that was **active when the
+output was created**; the generation timeline is resolved from the account's certificate
+history, already on chain and already indexed. The two directions are
 recovered by two distinct computations, both from chain data and the key alone:
 
 - **Incoming amounts (including change): direct decryption.** For every output addressed to
@@ -673,8 +709,8 @@ recovered by two distinct computations, both from chain data and the key alone:
   account's outputs (public, since the graph is public), the auditor re-derives the
   deterministic ephemeral scalar `e` of each output from `sk_view`, the attempt nonce
   stored in the output, and the transaction
-  context, confirms authorship by checking `E == e·G`, resolves each recipient's registered
-  `P_view` from the public registry, computes the same shared secret the sender used
+  context, confirms authorship by checking `E == e·G`, resolves each recipient's `P_view` **active
+  when the output was created** (from the certificate history in the public registry), computes the same shared secret the sender used
   (`s = e·P_view(recipient)`), and decrypts the amount sent — the auditor reconstructs
   exactly the sender's own view. This is possible **without any extra on-chain data**
   precisely because recipients and their registered keys are public; designs that hide
@@ -689,9 +725,12 @@ recovered by two distinct computations, both from chain data and the key alone:
   non-conforming wallet therefore weakens only the resolution of its own account's audit
   trail, never its correctness.
 
-This supports auditing and tax reporting: the account owner, of their own volition, hands the
-single `sk_view` to **one or more auditors of their choosing** — a tax authority, an accountant,
-or tax-reporting software. Disclosure is
+This supports auditing and tax reporting: the account owner, of their own volition, hands
+viewing keys to **one or more auditors of their choosing** — a tax authority, an accountant,
+or tax-reporting software — either the whole history or only the **generations covering the
+engagement**: rotating the key when an engagement ends closes that auditor's forward
+visibility (time-boxed disclosure), while the generations already disclosed remain readable
+to them, forever. Disclosure is
 verifiable (the disclosed key can be checked against the published `P_view`) and grants read access
 only. Whether disclosure is on request or mandatory in some contexts is a policy matter outside
 this specification.
@@ -892,10 +931,11 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   — an authorised auditor, or a thief — reads the account's complete history: incoming,
   change, **and** outgoing, past and future. This is exactly the audit capability the
   proposal promises, but it means a *compromised* viewing key exposes strictly more than a
-  design without sender-side derivation would (incoming and change only). The mitigation is
-  key hygiene today and key **rotation** as a companion proposal (the derivation path
-  already reserves successive key indices); rotation limits a compromise's damage to
-  history-up-to-rotation.
+  design without sender-side derivation would (incoming and change only). The mitigations
+  are key hygiene and **key rotation** (see
+  [viewing-key registration](#viewing-key-registration)): rotating on compromise limits the
+  damage to the generations the stolen key covered — the future is protected, the covered
+  past is not.
 - **Auditor-facing tooling does not exist yet.** As of this writing, no mainstream tax or
   accounting software supports viewing-key import for *any* chain; users of existing privacy
   systems instead export a transaction history (e.g. CSV) from their wallet and import that, and
@@ -949,7 +989,7 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   considered and rejected. **Embedding `P_view` in a new address format** solves discovery by
   construction, but a new address era is the heaviest ecosystem migration Cardano can
   undertake (every wallet, exchange, dApp, and hardware device must parse it), grows every
-  address by 32 bytes, and permanently fights future key rotation — addresses outlive keys on
+  address by 32 bytes, and permanently fights key rotation — addresses outlive keys on
   invoices. **Off-chain publication** (payment requests, directories) fails the auditing
   requirement that a disclosed key be verifiable against a consensus-published value, and a
   key substituted in transit would produce outputs the recipient cannot even spend (the
@@ -975,7 +1015,7 @@ change (see Path to Active).
 
 ### Future extensions and upgrade paths
 
-This proposal is deliberately narrow: amount confidentiality, one viewing key, and outputs
+This proposal is deliberately narrow: amount confidentiality, one active viewing key, and outputs
 at key-locked or native-script addresses only. This section records, for each anticipated extension, whether an upgrade path exists,
 whether the present design conflicts with it, and why it is descoped now. The goal is **not** to
 design these extensions, but to let the community judge — before ratifying — that today's small
@@ -1165,12 +1205,13 @@ questions below concern the v1 design itself.
   implementation effort and impact**; to the authors' knowledge none is foreclosed by this
   design (see [guarantees to future proposals](#guarantees-to-future-proposals)), so the
   question is not *whether* they can come later but *when it is cheapest for the ecosystem*.
-  (Confidential outputs at native-script addresses were exactly such a case, and this
-  proposal absorbed them for that reason: one relaxed rule, no new cryptography, serving its
-  own target audience.) Reviewers are explicitly asked to weigh whether the next
-  lowest-effort, highest-impact item — **viewing-key rotation** (both fences already in
-  place, no new cryptography) — should be merged into this proposal or scheduled for the
-  same hard fork. This is as much an ecosystem and business judgement as a technical one.
+  (Both original merge candidates have since been absorbed on exactly this reasoning:
+  **native-script outputs** — one relaxed rule, no new cryptography, serving the target
+  audience — and **viewing-key rotation**, after external review demonstrated both that
+  rotation was reachable through a deregister/re-register gap anyway and that auditor
+  replacement genuinely requires it.) Reviewers are asked to weigh whether any of the
+  remaining, higher-effort items justifies riding the same hard fork. This is as much an
+  ecosystem and business judgement as a technical one.
 - **Plutus script addresses.** Confidential outputs are permitted at key-locked and
   native-script addresses (see [confidential value representation](#confidential-value-representation));
   extending them to **Plutus**-locked outputs — including what a validator script may learn
