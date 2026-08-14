@@ -69,9 +69,14 @@ asset_ref  = 0 / [ policy_id, asset_name ]     ; 0 denotes ADA (lovelace)
 ; --- Certificates (viewing-key registration) ----------------------------------
 
 ; Registration: bind P_view to the account (stake credential).
-;   coin = the deposit paid; must equal viewingKeyDeposit at submission and is
-;   recorded with the registry entry so the eventual refund matches it.
-viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point)
+;   coin        = the deposit paid; must equal viewingKeyDeposit at submission and is
+;                 recorded with the registry entry so the eventual refund matches it.
+;   schnorr_sig = proof of possession of sk_view: (R, z) with
+;                 z*G == R + q*P_view, q = H("cardano/ct/pop/v0" || credential || P_view || R).
+;                 Separate from the certificate's ordinary witness: the witness proves
+;                 control of the account, the proof of possession proves knowledge of the
+;                 registered viewing secret (dead keys strand senders' payments).
+viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point, schnorr_sig)
 
 ; Deregistration: remove the binding and refund the deposit.
 ;   coin = the refund claimed; must equal the deposit recorded at registration.

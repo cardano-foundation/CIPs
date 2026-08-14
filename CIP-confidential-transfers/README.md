@@ -214,9 +214,12 @@ certificate authorised by the credential's own witness rules, carrying a refunda
 ; with the transaction CDDL, like all field indices in this proposal.
 
 ; Registration: bind P_view to the account (stake credential).
-viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point)
+; The final field is a proof of possession of sk_view: a Schnorr signature (R, z)
+; made with the viewing secret itself (see the rules below).
+viewing_key_reg_cert   = (T,   stake_credential, coin, ristretto_point, schnorr_sig)
 
 ; Deregistration: remove the binding and refund the deposit.
+; No proof of possession: nothing is being vouched for when an entry is removed.
 viewing_key_unreg_cert = (T+1, stake_credential, coin)
 
 ; Both extend the ledger's existing certificate union:
@@ -234,7 +237,9 @@ A **registration certificate** includes:
 - the **deposit** paid: the certificate is invalid unless it equals the current value of
   `viewingKeyDeposit`; the paid amount is recorded with the registry entry so that the
   eventual refund matches it even if the parameter changes later;
-- **`P_view`** — the account's confidential viewing public key, a ristretto255 point.
+- **`P_view`** — the account's confidential viewing public key, a ristretto255 point;
+- a **proof of possession** of the corresponding `sk_view`: a Schnorr signature `(R, z)`
+  made with the viewing secret itself (see the proof-of-possession rule below).
 
 A **deregistration certificate** includes:
 
@@ -251,11 +256,25 @@ credential registration deposits are returned.
   script-hash credentials register identically (the neutrality required in [Keys](#keys)).
 - **Well-formedness.** The registered `P_view` must be a canonical ristretto255 encoding and
   **must not be the identity element** — an identity key would make every shared secret
-  predictable, exposing all amounts sent to the account (cf. validation rule 1). No **proof
-  of possession** of the corresponding `sk_view` is required: viewing keys are never
-  aggregated, so no rogue-key issue arises, and registering a key one cannot use harms only
-  the registrant — confidential outputs sent to that account are simply unreadable (and
-  unspendable) by them.
+  predictable, exposing all amounts sent to the account (cf. validation rule 1).
+- **Proof of possession.** The certificate is invalid unless its Schnorr proof of possession
+  verifies: for `pop = (R, z)`, the registrant sampled a nonce `k`, set `R = k·G`, derived
+  the challenge `q = H(dst ‖ stake_credential ‖ P_view ‖ R)` under the dedicated tag
+  `cardano/ct/pop/v0`, and computed `z = k + q·sk_view`; validators check
+  `z·G == R + q·P_view`. Binding the credential into the challenge prevents replaying a
+  proof made for one registration under another credential (registering someone else's key
+  therefore requires that key holder's active cooperation — consensual delegation, not
+  theft). This proof is deliberately **separate from the certificate's ordinary witness**:
+  the witness proves control of the *account*; the proof of possession proves knowledge of
+  the *registered viewing secret*. It exists because senders rely on the registry — a
+  registered key that nobody can use does **not** harm only the registrant: validation
+  rule 12 steers confidential payments toward registered accounts, and a payment sent to a
+  dead key is stranded in an output neither party can open (recoverable only if a
+  conforming sender re-derives and discloses the opening out of band). Requiring 64 bytes
+  and one verification, once per account, removes that failure mode at its source. Proof of
+  possession is checked at registration time only; it cannot (and does not claim to)
+  protect against a key whose secret is *later* lost — that is ordinary key-management
+  risk, identical to losing spending keys.
 - **One live registration.** Registering a credential that already has a live registration is
   invalid: the viewing keypair is immutable at this protocol version. Key rotation is out of
   scope and deferred to a companion proposal — immutability is a validation rule, relaxable
