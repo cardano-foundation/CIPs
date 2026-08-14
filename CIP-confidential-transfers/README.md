@@ -408,7 +408,10 @@ Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciph
 4. The recipient recomputes `s` from `E` using `sk_view`, derives `r` and the keystream, recovers
    `v` from the stored masked amount, and **must verify `C == v·H + r·G`** before accepting the
    payment. If the check fails, the output was not honestly constructed for this recipient and
-   must be treated as unspendable.
+   must be treated as unspendable — a deliberate, bounded residual: only the sender's own
+   funds are burned, and nothing is credited (see
+   [Alternatives considered](#alternatives-considered) on why no consistency proof is
+   carried).
 
 Because the blinding is recomputable by whoever holds `sk_view`, the recipient can later spend
 the output (construct the balancing proof of [value conservation](#value-conservation)) **without any interaction** with the original
@@ -1057,6 +1060,30 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   verification to every confidential output — a recurring cost for a property that is
   already **detectable** for free and whose violation harms only the violator. The
   conditional-guarantee formulation with loud detectability was judged the better design.
+- **Per-output transport-consistency proofs.** A malicious sender can construct an output
+  whose range and balancing proofs all verify, yet whose stored masked amount was corrupted
+  (even by a single flipped bit): the recipient then derives the correct blinding but
+  recovers a wrong `v`, the `C == v·H + r·G` check fails, and the output is unspendable by
+  either party — the sender lacks the spending key, the recipient lacks a usable opening.
+  The consequences are deliberately bounded: the recipient **detects immediately and credits
+  nothing** (no goods change hands against a phantom payment), the recipient loses nothing
+  it had, and the sender has **burned its own funds** — the output's entire committed value,
+  which the minimum-ADA rule floors at a real cost per output — economically the same act as
+  sending to an unspendable address, an option every ledger already offers attackers at
+  their own expense. Eliminating the residual would require a zero-knowledge **consistency proof**
+  that the ephemeral key, masked amount, and commitment all describe the same `(v, r)`
+  under the specified derivation — but the KDF-and-XOR transport is deliberately
+  **non-algebraic**, so such a proof needs general-purpose circuits (against this
+  proposal's no-circuits design) or a transport redesign toward algebraically decryptable
+  ciphertexts (the Twisted-ElGamal handles rejected above, with their bounded amount space
+  and lookup tables). An interactive recipient acknowledgment before finalisation does not
+  fit a base-layer protocol. The verdict is a plain cost-benefit judgement: the only
+  remedies carry a **recurring cost on every confidential output** and would abandon this
+  proposal's deliberately small toolbox — sigma-protocol-class primitives, no
+  general-purpose zero-knowledge — to close a channel whose **only possible victim is the
+  attacker's own wallet**. The residual is therefore **accepted with reasons**: wallets
+  treat a failing output as never received, and a conforming sender retains the opening and
+  can prove out of band what was actually sent.
 - **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
   delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
   Diffie–Hellman transport keeps everything on chain and self-contained.
