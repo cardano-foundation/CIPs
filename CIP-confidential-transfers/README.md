@@ -492,7 +492,9 @@ computation without revealing information about itself. In this proposal, theref
 - **Unshielding restores participation.** Once ADA is returned to a transparent output, it
   counts toward stake, rewards, and voting power exactly as today.
 
-This is an explicit, accepted opportunity cost of confidentiality. Contributing hidden amounts
+This is an explicit, accepted opportunity cost of confidentiality — one with system-level
+incentive effects beyond the shielding holder, analysed under
+[Trade-offs](#trade-offs). Contributing hidden amounts
 to the stake distribution in zero knowledge is substantially more complex and is left as future
 work (see Open Questions).
 
@@ -966,11 +968,25 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   design; post-quantum confidentiality is left for future work.
 - **Asset type is public.** Only quantities are hidden; the presence and identity of assets in an
   output remain visible.
-- **Confidential ADA does not stake.** ADA in confidential outputs is excluded from stake,
-  rewards, and governance voting power — including DRep vote-delegation weight — while it remains
-  hidden (see [staking, rewards, and governance](#staking-rewards-and-governance)). This is an opportunity cost holders accept when shielding, and a deliberate point
-  for community discussion: whether and when hidden ADA should regain staking or governance
-  participation is addressed under Open Questions.
+- **Confidential ADA does not stake — and the exclusion is a system-level incentive choice,
+  not only a private cost.** ADA in confidential outputs is excluded from stake, rewards, and
+  governance voting power — including DRep vote-delegation weight — while it remains hidden
+  (see [staking, rewards, and governance](#staking-rewards-and-governance)). The shielder
+  bears the direct opportunity cost — but the effect does not stop there: removing shielded
+  ADA from the counted totals **shrinks the denominator**, so every holder who stays
+  transparent gains *relative* counted influence over staking and governance without taking
+  any action, and the set of ADA competing for rewards changes correspondingly. If the
+  holders most likely to value confidentiality differ systematically from other holders,
+  the exclusion can also shift the *composition* of who determines staking and governance
+  outcomes. No wording removes this — it is an arithmetic consequence of exclusion — so it
+  is treated the same way as the other measured questions in this proposal: the analysis
+  work preceding activation should include **adoption scenarios** reporting, for a range of
+  confidential-ADA shares, the effect on counted stake, DRep and SPO influence
+  concentration, and the return difference between transparent and confidential holdings.
+  Exclusion may well remain the safest v1 rule; the point is that its effects reach beyond
+  the user who shields, and the community should adopt it with that visible. Whether and
+  when hidden ADA should regain staking or governance participation is addressed under
+  Open Questions.
 - **Confidential value cannot interact with smart contracts while hidden.** Confidential
   outputs exist only at key-locked and native-script addresses — never at Plutus script
   addresses — and a transaction carrying confidential components does not execute Plutus
