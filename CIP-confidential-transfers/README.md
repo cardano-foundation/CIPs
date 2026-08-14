@@ -44,7 +44,8 @@ proposal is therefore **confidentiality from the general public, not from oversi
 are hidden from everyone *except* the parties the owner deliberately authorises.
 A user can, of their own will and choosing, designate **one or more auditors** — a tax
 authority, an accountant, or tax-reporting software — by sharing the account's viewing
-(decryption) key with them, giving those parties complete read access to the account's amounts
+(decryption) key with them, giving those parties read access to the account's amounts (the
+precise guarantee is stated under [Auditing](#auditing-and-selective-disclosure))
 while the rest of the world sees nothing. **Pure privacy or anonymity transfers are explicitly
 not the goal of this proposal**: designs that hide identities or break the transaction graph
 (mixers, shielded pools, and similar) address a different need and belong to other proposals or
@@ -726,9 +727,11 @@ balancing-proof construction.
 
 Because only *amounts* are hidden and the transaction graph is public, disclosing an account's
 viewing keys (one active key per account at a time, i.e. per stake address — see [Keys](#keys),
-with earlier **generations** covering earlier periods) gives the holder a complete,
-human-readable history of the account across all its payment addresses — which counterparties,
-which assets, and how much. Every output is read under the key that was **active when the
+with earlier **generations** covering earlier periods) gives the holder a human-readable
+history of the account across all its payment addresses — which counterparties, which
+assets, and how much; the exact guarantee, including which parts are unconditional and
+which depend on the sending wallet's conformance, is stated precisely at the end of this
+section. Every output is read under the key that was **active when the
 output was created**; the generation timeline is resolved from the account's certificate
 history, already on chain and already indexed. The two directions are
 recovered by two distinct computations, both from chain data and the key alone:
@@ -756,6 +759,29 @@ recovered by two distinct computations, both from chain data and the key alone:
   recipient this yields the exact amount; with several, the total but not the split. A
   non-conforming wallet therefore weakens only the resolution of its own account's audit
   trail, never its correctness.
+
+**The guarantee, stated precisely.** The audit capability decomposes into two tiers:
+
+- **Unconditional** — backed by consensus rules and the recipient's own checks, requiring
+  no trust in any wallet: every **incoming** amount and every **change** amount (direct
+  decryption); the fact that every confidential output has a **well-defined sending
+  account** (validation rule 13) which **provably possesses** a viewing key (the
+  registration proof of possession); **detection** of any deviation from the specified
+  derivation (the `E == e·G` check fails loudly, never silently); and per-asset **outgoing
+  totals** by balance reconstruction over the public graph — an exact amount whenever a
+  transaction has a single external confidential recipient.
+- **Conditional on the sending wallet following the specified derivation** — which
+  validators cannot verify, since it involves the sender's secret: exact **per-output**
+  outgoing amounts, and the **per-recipient split** when one transaction pays several
+  recipients.
+
+A non-conforming sending wallet therefore degrades only its **own** account's audit
+resolution — from exact per-output amounts to per-asset totals — detectably; it cannot
+damage any other account's trail, and it defeats its own account's compliance evidence,
+which for this proposal's audience is self-sabotage without payoff. Enforcing the
+derivation at consensus level was considered and rejected because every known enforcement
+weakens the confidentiality it audits — see
+[Alternatives considered](#alternatives-considered).
 
 This supports auditing and tax reporting: the account owner, of their own volition, hands
 viewing keys to **one or more auditors of their choosing** — a tax authority, an accountant,
@@ -1014,6 +1040,23 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   requires new ristretto255 Plutus builtins (see [extensions.md](extensions.md)), whereas
   BLS commitments could have reused CIP-0381's — an acceptable price for keeping base-layer
   validation on the smaller, canonical-encoding group.
+- **Enforcing the outgoing-audit derivation at consensus level.** The deterministic
+  ephemeral-scalar derivation (see [amount transport](#amount-transport)) cannot be checked
+  by validators, so the exact-amount tier of the audit guarantee is conditional on wallet
+  conformance (see [auditing](#auditing-and-selective-disclosure)). Two enforcement
+  mechanisms were considered and rejected. **(1) Publicly checkable derivation**, e.g.
+  `e = h(ctx)·sk_view(A)` so that validators verify `E == h(ctx)·P_view(A)`: elegant and
+  cheap, but the shared secret becomes `s = h(ctx)·(sk_view(A)·sk_view(B)·G)` — a public
+  factor times a **static pairwise Diffie–Hellman point**. A single compromised output's
+  shared secret then yields, after dividing out the public factor, the static point that
+  decrypts **every past and future payment between the two accounts**; the current
+  per-output derivation confines the same compromise to a single output. Buying
+  enforcement by demolishing compartmentalisation between outputs is the wrong trade for a
+  confidentiality protocol. **(2) A zero-knowledge proof that `E` was correctly derived**
+  from the registered sender key: avoids the static-secret problem but adds proof bytes and
+  verification to every confidential output — a recurring cost for a property that is
+  already **detectable** for free and whose violation harms only the violator. The
+  conditional-guarantee formulation with loud detectability was judged the better design.
 - **Reveal amounts to the recipient out of band, commitments only.** Viable, but pushes amount
   delivery to a side channel and precludes verifiable on-chain auditor disclosure; the
   Diffie–Hellman transport keeps everything on chain and self-contained.
