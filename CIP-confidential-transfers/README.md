@@ -327,8 +327,10 @@ Receiving confidential value is therefore **opt-in per account, enforced by cons
 registered `P_view` — the same class of query wallets already run for delegation state. If
 no live registration exists, a confidential output to that account cannot be constructed;
 wallets fall back to a transparent send with the user's consent. Because the account concept
-is keyed to the stake credential, outputs at **enterprise addresses** (which have no stake
-part) can never be confidential in this proposal.
+is keyed to the stake credential, outputs at addresses without a **direct** stake
+credential — enterprise, Byron/bootstrap, and deprecated pointer addresses — can never be
+confidential in this proposal (see
+[confidential value representation](#confidential-value-representation)).
 
 ### Confidential value representation
 
@@ -349,8 +351,10 @@ and at native-script addresses** — multisig and timelocks, which enforce witne
 conditions without ever inspecting amounts, and therefore need no new cryptography (this is
 what lets corporate multisig treasuries hold and pay confidential value). Outputs at
 **Plutus script addresses** cannot be confidential (see Open Questions). Every confidential
-output's address must carry a **stake credential** — already implied by validation rule 12,
-which requires that credential to hold a live viewing-key registration.
+output's address must carry a **direct stake credential** — a key hash or script hash in the
+address's delegation part; enterprise (CIP-19 types 6–7), Byron/bootstrap (type 8), and
+deprecated pointer addresses (types 4–5) are excluded, on both the receiving side (here and
+validation rule 12) and the funding side (validation rule 13).
 
 ### Amount transport
 
@@ -358,10 +362,12 @@ To spend a confidential output, its owner must know the hidden amount **and** it
 Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciphertext:
 
 1. The sender derives a per-output ephemeral scalar `e` **deterministically from its own
-   viewing secret**:
+   viewing secret** — precisely, from the **active-generation** viewing secret of the
+   transaction's **sending account**, the single stake credential that funds every input
+   (defined and enforced by validation rule 13):
 
    ```
-   e = KDF("cardano/ct/outgoing/v0", sk_view(sender),
+   e = KDF("cardano/ct/outgoing/v0", sk_view(sending account),
            outpoint of the transaction's first input, output index, attempt nonce)
    ```
 
@@ -454,7 +460,10 @@ one another.
 Confidential amounts must be backed one-to-one by real value. **Shielding** (making transparent
 value confidential) and **unshielding** (revealing confidential value back to transparent) are
 not special operations: they are ordinary transactions that mix transparent and confidential
-inputs and outputs. All transparent components are public, so the net public movement `Δ` of
+inputs and outputs. Like every confidential-output transaction, a shield is funded by a single
+**sending account** (validation rule 13) — value held at addresses without a direct stake
+credential (enterprise, Byron, pointer) takes one ordinary transparent hop to a base address
+before it can be shielded. All transparent components are public, so the net public movement `Δ` of
 each asset (see [value conservation](#value-conservation)) is computed directly from the transaction's public data — transparent inputs and
 outputs, the fee, and any mint or burn — and the per-asset balancing equation then enforces that
 the confidential side absorbed or released **exactly** that amount. No separate opening proofs
@@ -614,13 +623,35 @@ hold. These rules are what make the construction sound against value creation or
     `maxConfidentialCommitmentsPerBlock` — see [protocol parameters](#protocol-parameters) for
     why this bound is explicit rather than inherited from size limits.
 12. **Registered recipients only.** Every confidential output is addressed to a payment
-    address whose stake credential has a **live viewing-key registration** (see
+    address whose **direct** stake credential has a **live viewing-key registration** (see
     [viewing-key registration](#viewing-key-registration)); confidential outputs to
     unregistered credentials are invalid. Certificates in the same transaction take effect
     in order, before outputs are checked — so an account can be registered and receive its
     first confidential output in a single transaction, matching the existing
     register-and-delegate pattern. Note this applies to the sender's confidential change as
     well: a sender wanting confidential change must itself be registered.
+13. **One sending account.** A transaction that creates confidential outputs is valid only
+    if **(a)** every input's address carries the **same direct stake credential** — a key
+    hash or script hash in the address's delegation part; this credential is the
+    transaction's **sending account** — and **(b)** the sending account has a **live
+    viewing-key registration**. The ephemeral scalars of the transaction's confidential
+    outputs derive from the sending account's **active-generation** viewing secret (see
+    [amount transport](#amount-transport)). This rule is what makes "the sender" —
+    and therefore the outgoing-audit attribution of every confidential output —
+    **well-defined for every valid transaction**: without it, a jointly funded transaction
+    would leave the derivation key ambiguous (whose auditor can read the outputs?), and a
+    transaction funded from an address with no stake credential would reference a viewing
+    secret that does not exist. Consequently, **enterprise addresses (CIP-19 types 6–7),
+    Byron/bootstrap addresses (type 8), and deprecated pointer addresses (types 4–5)
+    cannot directly fund a confidential-output transaction**: value held there takes one
+    ordinary transparent hop to a base address first (wallets SHOULD automate the pair),
+    mirroring the receiving-side exclusion of such addresses under rule 12. Requiring the
+    sending account to be registered costs validators nothing new (the same registry lookup
+    as rule 12, which the sender's confidential change usually triggers anyway) and — via
+    the registration proof of possession — guarantees a derivable viewing key exists for
+    every confidential output ever created. Transactions funded jointly by **multiple
+    accounts** are deferred to the multi-party companion (see
+    [extensions.md](extensions.md)), which their balancing proofs already require.
 
 ### Protocol parameters
 
@@ -705,8 +736,9 @@ recovered by two distinct computations, both from chain data and the key alone:
 - **Incoming amounts (including change): direct decryption.** For every output addressed to
   the account, the auditor computes `s = sk_view·E` and decrypts as the recipient does (see
   [amount transport](#amount-transport)).
-- **Outgoing amounts: ephemeral-key recomputation.** For every transaction spending the
-  account's outputs (public, since the graph is public), the auditor re-derives the
+- **Outgoing amounts: ephemeral-key recomputation.** For every transaction in which the
+  account is the **sending account** (validation rule 13 — publicly determinable, since the
+  graph and input addresses are public), the auditor re-derives the
   deterministic ephemeral scalar `e` of each output from `sk_view`, the attempt nonce
   stored in the output, and the transaction
   context, confirms authorship by checking `E == e·G`, resolves each recipient's `P_view` **active

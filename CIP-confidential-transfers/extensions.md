@@ -38,10 +38,15 @@ extension preserves that model by construction; anything else is spelled out.
 blindings, so a transaction assembled by several independent parties (collaborative
 payments, batcher-style flows) would force them to reveal blindings — and thus amounts — to
 one builder.
-**What it adds.** Standardised partial balancing proofs. Because Schnorr excess signatures
-aggregate linearly, parties can already combine partial signatures off-chain under the
-existing witness form with **no ledger change**; a dedicated extension only standardises the
-format. Worth a capability note in the base proposal rather than merged machinery.
+**What it adds.** Standardised partial balancing proofs, and with them the lifting of the
+base proposal's **one-sending-account rule** (validation rule 13): jointly funded
+confidential transactions — several accounts contributing inputs to one confidential-output
+transaction — are deferred here wholesale, because they need this extension's machinery on
+two fronts at once: partial balancing proofs (no single builder holds all blindings) and
+per-contributor sender/audit attribution (which account's auditor may read which output).
+Because Schnorr excess signatures aggregate linearly, parties can already combine partial
+signatures off-chain under the existing witness form with **no ledger change**; a dedicated
+extension standardises the format and the attribution.
 **Crypto: none on-chain.** Schnorr's linearity is already in the base scheme; what is new
 is an off-chain nonce-coordination protocol (MuSig2-style, well-studied) and at most a
 standardised partial-signature format.
