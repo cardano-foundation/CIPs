@@ -330,19 +330,30 @@ Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciph
 
    ```
    e = KDF("cardano/ct/outgoing/v0", sk_view(sender),
-           outpoint of the transaction's first input, output index)
+           outpoint of the transaction's first input, output index, attempt nonce)
    ```
 
-   and includes the ephemeral public key `E = e·G` in the output. Conforming wallets MUST
-   derive `e` this way rather than sampling it at random: the derivation is what makes the
-   sender's **outgoing** payments auditable (see
-   [auditing](#auditing-and-selective-disclosure)), and — because a spent outpoint is unique
-   in the chain's history — it guarantees that no two outputs ever share an ephemeral
-   scalar, even across transactions, eliminating both keystream reuse and any dependence on
-   run-time randomness (in the spirit of deterministic nonces, RFC 6979). To everyone
-   without the sender's `sk_view`, a correctly derived `E` is indistinguishable from a
-   random one. `E` must not be the identity element — a predictable shared secret would
-   expose the amounts — and validators reject it (see
+   and includes the ephemeral public key `E = e·G` **and the 8-byte attempt nonce** in the
+   output. Conforming wallets MUST derive `e` this way rather than sampling it at random:
+   the derivation is what makes the sender's **outgoing** payments auditable (see
+   [auditing](#auditing-and-selective-disclosure)), and it removes any dependence on
+   run-time randomness from the hot path (in the spirit of deterministic nonces, RFC 6979).
+   The **attempt nonce** exists because a spent outpoint is unique only *on the chain*: a
+   wallet may build several **conflicting transactions** spending the same first input —
+   fee bumps, rebuilds after expiry — of which at most one confirms, while all are visible
+   to mempool observers. Without the nonce, two attempts paying the same recipient at the
+   same output index would repeat the entire derivation; if their amounts differed, the
+   repeated keystream and blinding would publish `v₁ ⊕ v₂` outright and leave the amounts'
+   difference in an unblinded commitment — a classic two-time pad. Wallets therefore MUST
+   use a nonce that **differs between attempts spending the same first input** (a simple
+   counter suffices; randomness is permitted but not required, deliberately avoiding a new
+   RNG dependence). With the nonce included, no two derivations ever coincide — within a
+   transaction, across transactions, or **across conflicting attempts** — and distinct
+   attempts are mutually unlinkable. Uniqueness is not (and cannot be) checked by
+   validators: like honest derivation of `e` itself, it protects only the sender's own
+   confidentiality. To everyone without the sender's `sk_view`, a correctly derived `E` is
+   indistinguishable from a random one. `E` must not be the identity element — a
+   predictable shared secret would expose the amounts — and validators reject it (see
    [validation rules](#validation-rules-edge-cases-and-soundness), rule 1). The derivation
    itself cannot be checked by validators (it involves the sender's secret); a
    non-conforming sender degrades only *its own* account's outgoing auditability, and
@@ -350,10 +361,10 @@ Both are conveyed with a Diffie–Hellman shared secret plus a small stored ciph
 2. The shared secret is `s = e·P_view` (computed by the sender) `= sk_view·E` (computed by the
    recipient) — the same group element.
 3. For each asset in the output, a key-derivation function — domain-separated by the **asset
-   identifier, the outpoint of the transaction's first input, and the output's position
-   within the transaction** (so that no two derivations ever coincide, within a transaction
-   or across transactions) — derives from `s` the blinding `r` and an amount-encryption
-   keystream. The amount itself cannot be *derived* from `s` (it is chosen freely by the
+   identifier, the outpoint of the transaction's first input, the output's position within
+   the transaction, and the attempt nonce** (so that no two derivations ever coincide:
+   within a transaction, across transactions, or across conflicting attempts) — derives
+   from `s` the blinding `r` and an amount-encryption keystream. The amount itself cannot be *derived* from `s` (it is chosen freely by the
    sender): it is stored in the output as an 8-byte **masked amount** `v ⊕ keystream`.
 4. The recipient recomputes `s` from `E` using `sk_view`, derives `r` and the keystream, recovers
    `v` from the stored masked amount, and **must verify `C == v·H + r·G`** before accepting the
@@ -476,7 +487,7 @@ confidential_value =
 
 ; A confidential output, as a map with numbered keys (cf. the Babbage output
 ; format): later proposals extend it by adding new optional keys, without
-; disturbing keys 0-2. `address` is the ledger's existing address type and is
+; disturbing keys 0-3. `address` is the ledger's existing address type and is
 ; deliberately unrestricted here — the no-Plutus-addresses rule (see
 ; Confidential value representation) is a validation rule, which a later
 ; proposal may relax, not a data-format restriction.
@@ -484,7 +495,8 @@ confidential_output =
   { 0 : address
   , 1 : confidential_value
   , 2 : ristretto_point        ; ephemeral key E = e·G (see Amount transport)
-  }
+  , 3 : bytes .size 8          ; attempt nonce: distinguishes conflicting attempts
+  }                            ; spending the same first input (see Amount transport)
 
 ; A Schnorr signature (R, s) proving knowledge of the per-asset excess (see Value conservation).
 schnorr_sig = [ ristretto_point, scalar32 ]
@@ -659,7 +671,8 @@ recovered by two distinct computations, both from chain data and the key alone:
   [amount transport](#amount-transport)).
 - **Outgoing amounts: ephemeral-key recomputation.** For every transaction spending the
   account's outputs (public, since the graph is public), the auditor re-derives the
-  deterministic ephemeral scalar `e` of each output from `sk_view` and the transaction
+  deterministic ephemeral scalar `e` of each output from `sk_view`, the attempt nonce
+  stored in the output, and the transaction
   context, confirms authorship by checking `E == e·G`, resolves each recipient's registered
   `P_view` from the public registry, computes the same shared secret the sender used
   (`s = e·P_view(recipient)`), and decrypts the amount sent — the auditor reconstructs
@@ -1236,7 +1249,8 @@ derives `r_send` and the keystream, recovers `v_send` from the stored masked amo
 **Auditor.** Given A's single account viewing key `sk_view(A)`, an auditor reads both
 directions of this transaction. **Incoming/change:** for the change output, compute
 `s₂ = sk_view(A)·E₂` and decrypt `v_change` exactly as A does. **Outgoing:** re-derive the
-deterministic ephemeral scalar `e₁` from `sk_view(A)` and the transaction context, confirm
+deterministic ephemeral scalar `e₁` from `sk_view(A)` and the transaction context (first-input
+outpoint, output index, and the attempt nonce stored in the output), confirm
 `E₁ == e₁·G`, look up B's registered `P_view(B)`, compute `s₁ = e₁·P_view(B)`, and decrypt
 `v_send` — the same computation the sender performed. (Had A's wallet deviated from the
 deterministic derivation, the `E₁` check would expose it, and `v_send` would still follow

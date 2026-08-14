@@ -44,7 +44,8 @@ confidential_output =
   { 0 : address
   , 1 : confidential_value
   , 2 : ristretto_point        ; ephemeral key E = e·G (amount transport)
-  }
+  , 3 : bytes .size 8          ; attempt nonce: distinguishes conflicting attempts
+  }                            ; spending the same first input (amount transport)
 
 ; --- Proofs (witness set) -----------------------------------------------------
 
