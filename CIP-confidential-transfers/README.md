@@ -1341,6 +1341,11 @@ questions below concern the v1 design itself.
 - [ ] Published **performance benchmarks** of verification cost — per transaction and per block,
       batched and unbatched, including full-sync replay impact — demonstrating that
       block-validation budgets are met (replacing the derived estimates in the Appendix).
+      The benchmarks must cover the **mempool admission path as well as block validation**,
+      including the cost of rejecting well-encoded but invalid proofs and the per-peer load
+      under adversarial submission, demonstrating that the networking-layer mitigations
+      described in the Appendix bound the exposure (or triggering the collateral-style
+      escalation described there).
 - [ ] Implementation present within block-producing nodes used by **80%+ of stake**, activated
       via the standard protocol-parameter/hard-fork governance process.
 
@@ -1441,9 +1446,30 @@ current block sizes) adds on the order of **0.1–0.2 s** of verification per bl
 about half that with batch verification — against a block-validation budget of well under the
 slot interval. Verification parallelises trivially across transactions. Two consequences
 follow: **initial sync/replay** time grows with the density of confidential history (strongly
-mitigated by large-batch verification during sync), and **mempool admission** must run cheap
-structural checks (sizes, encodings, fee coverage) before expensive proof verification to bound
-denial-of-service exposure.
+mitigated by large-batch verification during sync), and **mempool admission** needs explicit
+denial-of-service treatment, addressed next.
+
+**Mempool admission and invalid proofs.** Cheap structural pre-checks (sizes, encodings, fee
+coverage, commitment counts) filter malformed traffic, but they **cannot establish that a
+well-encoded proof is valid** — an aggregated range proof that fails only during
+cryptographic verification passes every structural test and costs milliseconds to reject.
+Because a rejected transaction is never included in a block, it **pays no fee**, and the
+per-block commitment limits never apply to it: an attacker holding a single unspent output
+can construct an endless stream of byte-varied transactions spending it, each with valid
+signatures and a deliberately invalid range proof, imposing verification work on every
+receiving node at no on-chain cost. This is the same class of exposure as signature
+flooding — phase-1 verification is free to fail on every chain — but at roughly 10–20× the
+per-unit cost, which is what makes it worth explicit treatment. The defence is layered and
+lives where such defences live today, in the **node and networking layer**: per-peer
+verification budgets and rate limits; verify-once caching keyed on the proof bytes
+themselves (defeating byte-variation of the surrounding transaction); and peer
+scoring/disconnection for delivering invalid proofs — the existing behaviour of dropping
+peers that relay invalid transactions, extended to price proof verification. These are
+deployment requirements, not ledger rules. Should measured admission-path benchmarks (a
+Path-to-Active criterion) show networking-layer mitigations insufficient, the designed
+escalation is an **economic prepayment in the style of Plutus collateral** — Cardano's
+existing answer to expensive, free-to-fail validation, claimed when evaluation fails — as a
+future protocol change adopted on benchmark evidence rather than speculation.
 
 **Memory.** Static verification tables are a few megabytes, one-time. The only usage-dependent
 term is the UTXO set: a confidential output stores roughly 100–160 bytes more than a transparent
@@ -1457,7 +1483,8 @@ transparent one, so the chain growth *rate* multiplies by roughly `1 + 3×(confi
 **Available tuning knobs**, all anticipated by this specification: cross-transaction batch
 verification with deterministically derived challenges (see [validation rules](#validation-rules-edge-cases-and-soundness)), the
 `maxConfidentialCommitmentsPerTx` and `maxConfidentialCommitmentsPerBlock` protocol
-parameters (see [protocol parameters](#protocol-parameters)), and mempool pre-checks.
+parameters (see [protocol parameters](#protocol-parameters)), and the layered mempool
+admission defences described above.
 
 ## References
 
