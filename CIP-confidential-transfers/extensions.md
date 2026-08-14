@@ -65,6 +65,25 @@ implementation and independent audit that dominate this item's cost.
 **Effort: medium** — the cryptography is known, but a new proof system needs its own
 implementation, benchmarks, and independent security audit; old transactions keep verifying
 under tag 0.
+**Deployment maturity (updated 2026-08) — and an open door into the base proposal.** A
+naming caution first: Bulletproofs, Bulletproofs+, and Bulletproofs++ are **three distinct
+constructions**. Monero's mainnet range proof has been Bulletproofs+ since 2022, and its
+planned "FCMP++" upgrade is a *membership-proof* change, not Bulletproofs++. Bulletproofs++
+itself ([ePrint 2022/510](https://eprint.iacr.org/2022/510)) — roughly **3–5× faster
+verification and ~38% smaller proofs** than the Bulletproofs this proposal specifies at
+tag 0 — now has real mainnet deployments: **Zano** (the earliest production adopter) and
+**Beldex** (Obscura hard fork, December 2025). This is genuine early production evidence,
+though on networks securing far less value, for far less time, than the seven-plus years of
+the Bulletproofs/Bulletproofs+ lineage; early external reviews of Bulletproofs++ drafts
+also surfaced issues that required revision — normal for a young system, and the reason the
+maturity bar exists. **No final decision has been fixed**: the choice remains
+evidence-gated at implementation time, with three outcomes open — stay at tag 0
+(Bulletproofs) with this upgrade later at tag 1; or, should the audit trail and deployment
+history mature sufficiently before this proposal reaches implementation, adopt
+Bulletproofs++ **as tag 0 in the base proposal itself**. Two extensions have already been
+absorbed into v1 on exactly this kind of evidence-driven reasoning (native-script outputs,
+key rotation); this entry is the natural third candidate if the evidence arrives. Its
+reciprocal set-membership machinery is also relevant to asset-type blinding (item 9).
 
 ## 3. Plutus ristretto255 builtins
 
