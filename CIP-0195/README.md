@@ -289,7 +289,7 @@ The encoding rules are:
 2. __Newtypes.__
    Newtypes are transparent: a newtype encodes the same as its underlying type.
 3. __Product types__.
-   Product types encode as `List [x1...xn]`, where `xi` is the encoding of the `i`-th field.
+   Product types encode as `List [x1, ..., xn]`, where `xi` is the encoding of the `i`-th field.
    This differs from V1-V3, which encodes product types using `Constr 0`.
 4. __Sum types.__
    Sum types encode as `Constr t [x1, ..., xn]`, where `t` is the constructor's 0-based index, and `xi` is the encoding of the `i`th constructor field.
