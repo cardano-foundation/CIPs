@@ -292,7 +292,7 @@ The encoding rules are:
    Product types encode as `List [x1...xn]`, where `xi` is the encoding of the `i`-th field.
    This differs from V1-V3, which encodes product types using `Constr 0`.
 4. __Sum types.__
-   Sum types encode as `Constr t [x1...xn]`, where `t` is the constructor's 0-based index, and `xi` is the encoding of the `i`th constructor field.
+   Sum types encode as `Constr t [x1, ..., xn]`, where `t` is the constructor's 0-based index, and `xi` is the encoding of the `i`th constructor field.
    Constructors are indexed in the order in which they appear in the above Haskell datatypes.
 
 ## Rationale: How does this CIP achieve its goals?
