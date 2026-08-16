@@ -44,12 +44,12 @@ We therefore propose to use `List`, not `Array`, to encode the Plutus V4 types.
 Here are the reasons.
 
 __Keeping the `Data` type simple__.
-Plutus V4 will introduce a new definition of `Data` with an additional constructor, `Value`, containing a builtin `Value` (CIP-0153).
-Correspondingly, `valueData` and `unValueData` built-ins will be added for wrapping and unwrapping.
 
-If the Plutus V4 types are encoded using lists, no further addition to `Data` will be required.
+If the Plutus V4 types are encoded using lists, no change to the `Data` datatype will be required.
 If they are encoded using arrays, then we'll need two additional constructors - `Array` and `ConstrArray` - together with four additional built-ins for wrapping and unwrapping.
-Adding more constructors to `Data` would also make the `chooseData` built-in more complex.
+Adding new constructors to `Data` would be a quite invasive change for the Plutus repository alone.
+It would also complicates other languages, compilers andy tooling, and requires substantial ledger integration work.
+The overall cost is significant, and it is a change best avoided.
 
 __Lists are usually faster than arrays for working with datatypes__:
 
@@ -109,20 +109,20 @@ As with sum types, this should be done selectively, especially if we use list-en
   For example, suppose type `A` contains a field of type `B`.
   If we flatten `B` into `A`, producing a flattened type `A'`, reconstructing `B` from `A'` becomes much more difficult and costly than extracting `B` directly from `A`.
 
-Considering these trade-offs, we identified only one case where flattening a nested product type is clearly worthwhile: the `Interval` type.
-It is currently defined as:
+Considering these trade-offs, we found only one clear case where flattening a nested product type is beneficial: the unnecessarily nested `Interval` type in Plutus V1-V3.
+
+Plutus V4, however, will no longer use `Interval`; it will use the following type instead:
 
 ```haskell
-data Interval a = Interval {ivFrom :: LowerBound a, ivTo :: UpperBound a}
-data LowerBound a = LowerBound (Extended a) Closure
-data UpperBound a = UpperBound (Extended a) Closure
+data POSIXTimeRange = POSIXTimeRange
+  { fromInclusive :: Maybe POSIXTime
+    -- ^ Nothing means negative infinity
+  , untilExclusive :: Maybe POSIXTime
+    -- ^ Nothing means positive infinity
+  }
 ```
 
-This is unnecessarily nested, so we propose to flatten it to:
-
-```haskell
-data Interval a = Interval (Extended a) Closure (Extended a) Closure
-```
+We do not believe any other nested product type in the Plutus V4 script context warrants flattening.
 
 ### Plutus V4 script context and encoding rules
 
