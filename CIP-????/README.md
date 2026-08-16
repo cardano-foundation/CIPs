@@ -237,8 +237,8 @@ The `"default"` strategy of each service may also be different. This could serve
 
 ### Acceptance Criteria
 
-- [ ] The interface is implemented by one or more services.
-- [ ] The interface is used by one or more dApps or wallets.
+- [ ] The interface is implemented by two or more services from distinct providers.
+- [ ] The interface is used by two or more dApps or wallets from distinct providers.
 - [ ] There exists one or more client libraries that wrap the HTTP API and expose easy to use functions.
 
 ### Implementation Plan
