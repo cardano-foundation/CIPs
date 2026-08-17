@@ -1,6 +1,6 @@
 ---
 CIP: 194
-Title: Plutus Core builtin function matchDataConstr
+Title: Plutus Core builtin `matchDataConstr`
 Category: Plutus
 Status: Proposed
 Authors:
