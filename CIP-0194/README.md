@@ -1,6 +1,6 @@
 ---
 CIP: 194
-Title: Builtin pattern matching in UPLC
+Title: Plutus Core builtin function matchDataConstr
 Category: Plutus
 Status: Proposed
 Authors:
@@ -9,822 +9,1011 @@ Implementors:
   - Seungheon Oh <seungheon.oh@iohk.io>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1236
-  - Implementation PR: https://github.com/IntersectMBO/plutus/pull/7852
+  - Recursive pattern-matching prototype PR: https://github.com/IntersectMBO/plutus/pull/7852
+  - matchDataConstr implementation branch: https://github.com/SeungheonOh/plutus/tree/type-pattern-matchdata
 Created: 2026-07-30
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-This proposal adds a `Match` term and a universe-specific builtin-pattern type to Untyped Plutus Core (UPLC). `Match` performs ordered, recursive pattern matching on builtin constants and can capture values from nested `Data`, integers, byte strings, lists, and pairs. Captured values are applied to the handler associated with the first successful pattern.
+This proposal adds the builtin function `matchDataConstr` to Plutus Core. The builtin combines
+`Data.Constr` tag selection, exact-arity checking, and selective field capture in one costed
+operation:
 
-The proposal addresses the limited expressiveness of builtin `Case`, especially when deconstructing known `Data` structures such as script contexts. It retains `Case` for inexpensive shallow dispatch while providing a more expressive operation for direct and nested matching. Matching work is charged incrementally according to the pattern operations, structural traversal, and failed alternatives performed at runtime.
+```text
+matchDataConstr
+  : forall S.
+    BuiltinRep matchDataConstr S
+    -> data
+    -> S
+```
 
-This proposal covers UPLC syntax and serialization, CEK evaluation, costing, and conformance tests. Typed Plutus Core (TPLC), Plutus IR (PIR), Plinth, PlutusTx libraries, and compiler optimizations that generate or transform `Match` are outside its initial scope.
+The first argument is an explicit, checked description of the accepted constructor tags, the
+required field count for each tag, and the fields to retain. A successful call returns an existing
+sum-of-products value. Its constructor is the compact position of the matched table entry, and its
+arguments are exactly the selected `Data` fields in source order. Ordinary `Case` performs the
+subsequent branch dispatch.
+
+The runtime description is a `ByteString`. It is passed explicitly and remains after
+type erasure. PLC adds a builtin-specific `BuiltinRep` type and checked `builtinrep` term so that
+the typechecker can validate the bytes and index them by the result SOP type. Erasure retains the
+same bytes as a UPLC constant.
 
 ## Motivation: Why is this CIP necessary?
 
-Builtin casing extended the `Case` term so that it can inspect builtin constants of type integer, list, boolean, and unit. Because a `Case` branch carries no pattern information, its meaning is fixed by its position. For integers, for example, the first branch matches `0`, the second matches `1`, and so on.
+Plutus contracts receive ledger inputs as `Data`. Known structures such as script contexts are
+commonly encoded as nested `Data.Constr` values. Deconstructing one such value traditionally
+requires calling `unConstrData`, inspecting the returned pair, comparing its constructor tag, and
+traversing the field list to retain the fields needed by the continuation. The program must also
+fail when the constructor or expected shape is wrong.
 
-This limited form of casing still provides significant performance improvements for integers, lists, and booleans because it avoids the overhead of calling builtin functions. Similar improvements are desirable for `Data`, the builtin type most often used to represent smart-contract inputs.
+That sequence repeats evaluator, builtin-application, pair, list, and tag-comparison overhead at
+each structural node. It also tends to serialize traversal code proportional to the number and
+location of the selected fields.
 
-### Prior approaches to matching `Data`
+Builtin `Case` does not solve this problem. `Case` can dispatch efficiently on an existing
+`Constr` value, but a `Data.Constr` is an opaque builtin constant. Its runtime tag and field list
+must first be decoded. Extending `Case` directly to all `Data` values would also leave a typed
+arity problem: PLC cannot derive a branch result shape from the type `Data` alone.
 
-An initial approach extended builtin casing directly to the five constructors of `Data`, effectively providing a more efficient `chooseData`. This offered limited practical value: contracts rarely use `chooseData` by itself, and known structures such as script contexts can already be deconstructed more efficiently with partial builtins such as `unConstrData`.
+`matchDataConstr` moves this operation behind one builtin boundary. It selects among explicitly
+listed `Data.Constr` tags, checks the exact immediate field count, and scans one selector bit per
+field. It retains the selected fields in a `VConstr`, which an existing `Case` term can dispatch.
 
-A more useful approach is to match `Data.Constr` directly when casing on `Data`. This can improve programs that inspect script contexts, but it introduces an arity problem in TPLC and PIR. `Data.Constr` is an untyped runtime value whose number of fields is not known by the type system. A handler with the wrong number of arguments may therefore partially apply instead of failing:
-
-```haskell
-case (Data.Constr 0 [Data.I 1])
-  (\x y -> x)
-
--- Evaluates to: \y -> Data.I 1
-```
-
-Atomic multi-lambda and multi-application were proposed to detect such length mismatches:
-
-```haskell
-(\[x y] -> x) [Data.I 1, Data.I 2] -- Evaluates
-(\[x y] -> x) [Data.I 1]           -- Fails due to arity mismatch
-```
-
-That design requires new AST terms and specialized CEK handling while still providing only limited matching on `Data.Constr`. A dedicated `Let` term has similar implementation costs and similarly limited semantics. Both designs also overlap with existing lambda/application behavior.
-
-Since these approaches require new syntax and non-trivial CEK changes, this proposal instead introduces one general pattern-matching term. It supports direct and nested matching across builtin values while keeping the CEK integration close to the existing implementation of builtin `Case`.
-
-### Use cases and stakeholders
-
-The primary use case is efficient deconstruction of known `Data` structures, particularly ledger script contexts. The same operation also supports selective matching and capture in builtin lists, pairs, integers, byte strings, booleans, and unit.
-
-The direct stakeholders are:
-
-- authors and users of UPLC-producing compilers;
-- implementors of Plutus Core evaluators, serializers, and analysis tools;
-- ledger and node implementors responsible for language-version and cost-model support; and
-- smart-contract developers whose scripts repeatedly inspect structured builtin values.
+The table determines the result SOP, so typed PLC must check the two together. `BuiltinRep`
+performs that check while leaving the table as a runtime term.
 
 ## Specification
 
 ### Status of this specification
 
-The pure matching rules in [Matching semantics](#matching-semantics) are normative. They define which alternative is selected, which values are captured, their order, and the resulting handler application.
+The builtin type, checked-representation rules, canonical table format, result construction,
+capture order, exact-arity behavior, failure behavior, and erasure rules below are normative.
 
-The cost coefficients described in [Costed operational refinement](#costed-operational-refinement) are pre-activation working values. They must be calibrated against representative benchmarks before they are used by the ledger.
+The numerical cost coefficients and benchmark results are pre-activation evidence. Final
+coefficients must be generated from the final implementation using the standard builtin-costing
+procedure and approved through the normal ledger cost-model process.
 
 ### Scope and type of change
 
-This proposal makes two related changes:
+This proposal appends `matchDataConstr` to `DefaultFun` and adds the PLC-only nominal type
+`BuiltinRep matchDataConstr S` together with a checked `builtinrep` term containing a literal
+builtin constant. It specifies the canonical `ByteString` representation, the UPLC runtime
+behavior and costing shape, and activation through the existing protocol-version and cost-model
+mechanisms.
 
-1. It adds a new UPLC language construct, `Match`, together with universe-specific pattern syntax. Under CIP-0035, adding a language construct is a backward-compatible minor Plutus Core language-version change.
-2. It adds CEK cost-model parameters for entering a match, processing a pattern step, traversing a structural edge, and proceeding to the next alternative.
+The checking interface is general, but this CIP registers only the
+`BuiltinRep matchDataConstr` family.
 
-This proposal specifies the default-universe patterns. It does not require all Plutus Core universes to use those patterns; pattern matching remains universe-specific.
+It does not add a PLC or UPLC `Match` term, a pattern AST, pattern-bound lexical variables,
+recursive patterns, a recoverable default branch, or a new UPLC value form. It also does not
+directly match `Data.List`, `Data.Map`, `Data.I`, or `Data.B`.
 
-### Abstract syntax
+A compiler expresses nested matching using successive `matchDataConstr` calls and existing `Case`
+terms. Existing builtins can inspect a selected field after `matchDataConstr` returns it.
 
-The UPLC term type gains a `Match` constructor. Its pattern type is supplied by the builtin universe:
+### PLC interface
+
+PLC assigns `matchDataConstr` the ordinary first-class polymorphic type:
+
+$$
+\mathsf{matchDataConstr}
+  :
+  \forall S:*.
+  \mathsf{BuiltinRep}(\mathsf{matchDataConstr},S)
+  \to \mathsf{data}
+  \to S.
+$$
+
+A bare `matchDataConstr` is a valid builtin term. Its type does not depend on recognizing a
+privileged application shape.
+
+PLC gains a nominal, builtin-specific representation type:
 
 ```haskell
--- module UntypedPlutusCore.Core.Type
-data Term name uni fun ann
-  = ...
-  | Match
-      !ann
-      !(Term name uni fun ann)
-      !(Vector (BuiltinPattern uni, Term name uni fun ann))
+TyBuiltinRep
+  ann
+  BuiltinRepName
+  (Type tyname uni ann)
 ```
 
-A `Match` contains:
-
-- a scrutinee term; and
-- an ordered vector of pattern/handler alternatives.
-
-The default universe defines the following field endings and builtin patterns:
-
-```haskell
--- module PlutusCore.Default.Universe
-data DefaultPatternFieldEnd
-  = DefaultPatternFieldsExact
-  | DefaultPatternFieldsPrefixWildcard
-  | DefaultPatternFieldsPrefixCapture
-
-data DefaultBuiltinPattern
-  = DefaultPatternWildcard
-  | DefaultPatternCapture
-  | DefaultPatternInteger !Int64
-  | DefaultPatternByteString !ByteString
-  | DefaultPatternBool !Bool
-  | DefaultPatternUnit
-  | DefaultPatternList
-      !DefaultPatternFieldEnd
-      !(Vector DefaultBuiltinPattern)
-  | DefaultPatternPair
-      !DefaultBuiltinPattern
-      !DefaultBuiltinPattern
-  | DefaultPatternDataConstr
-      !Word64
-      !DefaultPatternFieldEnd
-      !(Vector DefaultBuiltinPattern)
-  | DefaultPatternDataMap
-      !DefaultPatternFieldEnd
-      !(Vector DefaultBuiltinPattern)
-  | DefaultPatternDataList
-      !DefaultPatternFieldEnd
-      !(Vector DefaultBuiltinPattern)
-  | DefaultPatternDataI !DefaultBuiltinPattern
-  | DefaultPatternDataB !DefaultBuiltinPattern
-```
-
-`DefaultPatternWildcard` accepts the value at the current position without capturing it. `DefaultPatternCapture` accepts and records the current value. These correspond roughly to `_` and a variable binding in a Haskell pattern.
-
-The scalar patterns match the corresponding integer, byte string, boolean, or unit value. Pair, list, and `Data` patterns recursively match their contents. `DefaultPatternDataConstr` additionally matches the constructor tag.
-
-For builtin lists, `Data.Constr` fields, `Data.List`, and `Data.Map`, `DefaultPatternFieldEnd` distinguishes:
-
-- an exact match, in which the number of fields or elements must equal the number of child patterns; and
-- a prefix match, in which the child patterns match the beginning of the structure and the remaining suffix may be captured.
-
-### Concrete syntax
-
-In the textual form, `match` is followed by its scrutinee and an ordered list of `pattern` alternatives. Each alternative contains a pattern followed by its handler:
-
-```lisp
-(program 1.2.0
-  (match (con data (Constr 7 [I 1, B #aa, I 9]))
-    (pattern
-      ; Match Data.Constr 8 [<bind>, Data.List [_, _], ...]
-      ; The handler must accept one data capture.
-      (data-constr 8
-        (prefix
-          (bind)
-          (data-list (wildcard) (wildcard))
-          (wildcard)))
-      (error))
-    (pattern
-      ; Match Data.Constr 7 [Data.I <bind>, ...] and bind the suffix.
-      ; The handler must accept an integer and a list of data.
-      (data-constr 7
-        (prefix
-          (data-i (bind))
-          (bind)))
-      (lam integerCapture (lam rest rest)))
-    (pattern
-      ; Match [_, <bind>, _, <bind>, ...].
-      ; The handler must accept two values of the list element type.
-      (list
-        (prefix
-          (wildcard)
-          (bind)
-          (wildcard)
-          (bind)
-          (wildcard)))
-      (lam a (lam b a)))
-    (pattern
-      (wildcard)
-      (error))))
-```
-
-In Flat, `Match` uses term-constructor tag `10`, followed by its annotation, scrutinee, and a list of alternatives. Each alternative encodes its pattern followed by its handler term.
-
-Default builtin patterns use a four-bit tag:
-
-| Tag | Pattern | Following payload |
-|----:|---------|-------------------|
-| 0 | wildcard | none |
-| 1 | capture | none |
-| 2 | integer | `Int64` |
-| 3 | byte string | `ByteString` |
-| 4 | boolean | `Bool` |
-| 5 | unit | none |
-| 6 | exact builtin list | child-pattern list |
-| 7 | pair | left pattern, right pattern |
-| 8 | exact `Data.Constr` | `Word64` tag, child-pattern list |
-| 9 | exact `Data.Map` | child-pattern list |
-| 10 | exact `Data.List` | child-pattern list |
-| 11 | `Data.I` | child pattern |
-| 12 | `Data.B` | child pattern |
-| 13 | prefix | structural descriptor and one-bit rest tag |
-
-For prefix tag `13`, the structural descriptor is one of tags `6`, `8`, `9`, or `10`, with the same payload as its exact form. A final one-bit tag selects whether the unconsumed suffix is ignored (`0`) or captured (`1`). Other pattern tags, structural descriptors, and rest tags are invalid.
-
-### Matching semantics
-
-This section gives an extensional reduction rule for the UPLC `Match` node. It separates the language semantics—ordered pattern selection and positional capture—from the CEK implementation's explicit work stack and incremental budget accounting.
-
-#### Scope and notation
-
-Write a `Match` term as
+`BuiltinRepName` is a nominal identifier for a representation family. For every family $\rho$
+registered by the builtin interface, the general kinding rule is:
 
 $$
-\mathsf{match}\;M\;[(p_1,H_1),\ldots,(p_n,H_n)],
-$$
-
-where $M$ is the scrutinee, $p_i$ is a universe-specific builtin pattern, and $H_i$ is its handler. The alternatives are ordered.
-
-A builtin constant is written $C=\langle u,v\rangle$, pairing a universe tag $u$ with a value $v:\mathsf{El}(u)$. The UPLC constant term containing $C$ is written $\ulcorner C\urcorner$. A capture sequence is written $\overline C=[C_1,\ldots,C_k]$, and $\epsilon$ is the empty sequence. Sequence concatenation is $\mathbin{+\!+}$.
-
-Define left-associated application of a handler to its captures by
-
-$$
-\begin{aligned}
-\mathsf{apps}(H,\epsilon) &= H,\\
-\mathsf{apps}(H,C_0::\overline C)
-  &= \mathsf{apps}(H\;\ulcorner C_0\urcorner,\overline C).
-\end{aligned}
-$$
-
-Patterns do not introduce UPLC variables. A `bind` records a constant in $\overline C$; selection turns those captures into ordinary applications of the chosen handler.
-
-#### Universe-supplied matching judgment
-
-The core rule depends on a deterministic partial function supplied by the constant universe:
-
-$$
-\mu_{\mathcal U}(p,C)=\overline C.
-$$
-
-If the pattern does not match, $\mu_{\mathcal U}(p,C)$ is undefined, written $\mu_{\mathcal U}(p,C)\uparrow$.
-
-The alternative-selection function is
-
-$$
-\begin{aligned}
-\mathsf{select}_{\mathcal U}(C,[]) &= \mathsf{noMatch},\\
-\mathsf{select}_{\mathcal U}(C,(p,H)::A) &={}
-  \begin{cases}
-    (H,\overline C)
-      & \text{if }\mu_{\mathcal U}(p,C)=\overline C,\\
-    \mathsf{select}_{\mathcal U}(C,A) & \text{if }\mu_{\mathcal U}(p,C)\uparrow.
-  \end{cases}
-\end{aligned}
-$$
-
-This makes first-match-wins explicit. Captures from a failed alternative are discarded before the next alternative is tried.
-
-#### Typing in Typed Plutus Core
-
-The typed language uses a universe-supplied pattern typing judgment
-
-$$
-\mathcal U;A\vdash p\Rightarrow\overline A,
-$$
-
-Read this as: “In builtin universe $\mathcal U$, pattern $p$ inspects a value of builtin type $A$ and produces captures with types $\overline A$.” This judgment is defined only when $A$ is represented by $\mathcal U$. The universe does not pass a pattern to another pattern. It defines which builtin patterns and constant types are available and how those patterns are typed.
-
-Here, $A$ appears before the turnstile as the type inspected by $p$, while $\Rightarrow$ points to the capture types produced by the pattern. The sequence $\overline A=[A_1,\ldots,A_k]$ contains those capture types in handler-application order.
-
-Let $B$ be the result type of the whole `Match` expression and therefore the result type that every selected handler must eventually produce. Define the handler type for a capture sequence by
-
-$$
-\begin{aligned}
-\epsilon\Rightarrow B &= B,\\
-(A::\overline A)\Rightarrow B &= A\to(\overline A\Rightarrow B).
-\end{aligned}
-$$
-
-Thus a handler for no captures has type $B$. A handler whose first capture has type $A$ takes an $A$ argument, followed by the arguments required for the remaining capture types, and finally produces $B$.
-
-In the rule below, $\Gamma$ is the term-variable typing context; type well-formedness is implicit.
-
-The typing rule for matching is
-
-$$
-\mathrm{TY\_MATCH}\;
+\text{KIND-BUILTINREP}
 \frac{
-  \Gamma\vdash M:A
-  \qquad
-  \forall i.\;\mathcal U;A\vdash p_i\Rightarrow\overline{A_i}
-  \qquad
-  \forall i.\;\Gamma\vdash H_i:\overline{A_i}\Rightarrow B
+  \Gamma\vdash I::*
 }{
   \Gamma\vdash
-  \mathsf{match}\;M\;[(p_1,H_1),\ldots,(p_n,H_n)]:B
+    \mathsf{BuiltinRep}(\rho,I)
+    ::*
 }.
 $$
 
-For an empty alternative list, this rule is admissible only when the expected result type $B$ is known or the syntax carries an explicit result-type annotation.
+The nominal family defines the meaning of $I$. `matchDataConstr` uses its result SOP as the index;
+another family may index a larger static contract.
 
-For `DefaultUni`, the leaf-pattern clauses are
+A `BuiltinRepName` has no term-level constructor by itself. Terms of that type are introduced by
+the representation checker registered for the name. This CIP registers `matchDataConstr`.
 
-$$
-\begin{aligned}
-\mathcal U;A\vdash\mathsf{wildcard}
-  &\Rightarrow\epsilon,\\
-\mathcal U;A\vdash\mathsf{bind}
-  &\Rightarrow[A],\\
-\mathcal U;\mathsf{integer}\vdash\mathsf{integer}(k)
-  &\Rightarrow\epsilon,\\
-\mathcal U;\mathsf{bytestring}\vdash\mathsf{bytestring}(b)
-  &\Rightarrow\epsilon,\\
-\mathcal U;\mathsf{bool}\vdash\mathsf{bool}(q)
-  &\Rightarrow\epsilon,\\
-\mathcal U;\mathsf{unit}\vdash\mathsf{unit}
-  &\Rightarrow\epsilon.
-\end{aligned}
-$$
+`BuiltinRep matchDataConstr S` is not a member of `DefaultUni`. It cannot classify an ordinary PLC or
+UPLC constant, and it has no UPLC type counterpart. Keeping it outside `DefaultUni` prevents
+ordinary builtin-type operations from manufacturing or eliminating a checked witness.
 
-Pair captures are concatenated left-to-right:
+### Checked representation interface
 
-$$
-\frac{
-  \mathcal U;A_L\vdash p\Rightarrow\overline{A_p}
-  \qquad
-  \mathcal U;A_R\vdash q\Rightarrow\overline{A_q}
-}{
-  \mathcal U;\mathsf{pair}\;A_L\;A_R\vdash
-  \mathsf{pair}(p,q)\Rightarrow
-  \overline{A_p}\mathbin{+\!+}\overline{A_q}
-}.
-$$
+PLC gains one general term that associates a builtin with one literal universe constant:
 
-For a pattern sequence, capture types are concatenated from left to right:
-
-$$
-\mathcal U;A\vdash[]\Rightarrow\epsilon.
-$$
-
-$$
-\frac{
-  \mathcal U;A\vdash p\Rightarrow\overline{A_p}
-  \qquad
-  \mathcal U;A\vdash\bar p\Rightarrow\overline{A_{\bar p}}
-}{
-  \mathcal U;A\vdash(p::\bar p)\Rightarrow
-  \overline{A_p}\mathbin{+\!+}\overline{A_{\bar p}}
-}.
-$$
-
-The field-ending helper determines whether the remaining suffix contributes a capture type:
-
-$$
-\begin{aligned}
-\mathsf{endTypes}(\mathsf{exact},A,\overline{A_p})
-  &=\overline{A_p},\\
-\mathsf{endTypes}(\mathsf{prefixWildcard},A,\overline{A_p})
-  &=\overline{A_p},\\
-\mathsf{endTypes}(\mathsf{prefixCapture},A,\overline{A_p})
-  &=\overline{A_p}\mathbin{+\!+}[\mathsf{list}\;A].
-\end{aligned}
-$$
-
-Here $e$ ranges over $\mathsf{exact}$, $\mathsf{prefixWildcard}$, and $\mathsf{prefixCapture}$. The complete list rule is
-
-$$
-\frac{
-  \mathcal U;A\vdash\bar p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{list}\;A\vdash
-  \mathsf{list}_e(\bar p)\Rightarrow
-  \mathsf{endTypes}(e,A,\overline{A_p})
-}.
-$$
-
-Thus exact lists, prefix lists with an ignored suffix, and prefix lists with a captured suffix are all covered. Exact and prefix-wildcard patterns add only their child captures; prefix-capture patterns add one final list capture.
-
-The field-bearing `Data` patterns use the same helper:
-
-$$
-\frac{
-  \mathcal U;\mathsf{data}\vdash
-  \bar p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{data}\vdash
-  \mathsf{dataConstr}_{t,e}(\bar p)\Rightarrow
-  \mathsf{endTypes}(e,\mathsf{data},\overline{A_p})
-}.
-$$
-
-$$
-\frac{
-  \mathcal U;\mathsf{data}\vdash
-  \bar p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{data}\vdash
-  \mathsf{dataList}_e(\bar p)\Rightarrow
-  \mathsf{endTypes}(e,\mathsf{data},\overline{A_p})
-}.
-$$
-
-$$
-\frac{
-  \mathcal U;\mathsf{pair}\;\mathsf{data}\;\mathsf{data}
-  \vdash\bar p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{data}\vdash
-  \mathsf{dataMap}_e(\bar p)\Rightarrow
-  \mathsf{endTypes}
-  (e,\mathsf{pair}\;\mathsf{data}\;\mathsf{data},\overline{A_p})
-}.
-$$
-
-The scalar `Data` wrappers expose their enclosed builtin type to the child pattern:
-
-$$
-\frac{
-  \mathcal U;\mathsf{integer}\vdash p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{data}\vdash
-  \mathsf{dataI}(p)\Rightarrow\overline{A_p}
-}.
-$$
-
-$$
-\frac{
-  \mathcal U;\mathsf{bytestring}\vdash p\Rightarrow\overline{A_p}
-}{
-  \mathcal U;\mathsf{data}\vdash
-  \mathsf{dataB}(p)\Rightarrow\overline{A_p}
-}.
-$$
-
-Consequently, $\mathsf{dataI}(\mathsf{bind})$ captures an integer, while a plain $\mathsf{bind}$ at the same position captures `Data`. Likewise, $\mathsf{dataB}(\mathsf{bind})$ captures a byte string.
-
-#### Term reduction
-
-$$
-\mathrm{MATCH\_CONSTANT}\;
-\frac{
-  \mathsf{select}_{\mathcal U}(C,A)=(H,\overline C)
-}{
-  \mathsf{match}\;\ulcorner C\urcorner\;A
-  \longrightarrow\mathsf{apps}(H,\overline C)
-}.
-$$
-
-$$
-\mathrm{MATCH\_CONG}\;
-\frac{
-  M\longrightarrow M'
-}{
-  \mathsf{match}\;M\;A
-  \longrightarrow\mathsf{match}\;M'\;A
-}.
-$$
-
-$$
-\mathrm{MATCH\_EXHAUSTED}\;
-\frac{
-  C\text{ is a builtin constant}
-  \qquad
-  \mathsf{select}_{\mathcal U}(C,A)=\mathsf{noMatch}
-}{
-  \mathsf{match}\;\ulcorner C\urcorner\;A
-  \longrightarrow\mathsf{failure}_{\mathsf{match}}
-}.
-$$
-
-$$
-\mathrm{MATCH\_NONBUILTIN}\;
-\frac{
-  V\text{ is a value}
-  \qquad
-  V\text{ is not a builtin constant}
-}{
-  \mathsf{match}\;V\;A
-  \longrightarrow\mathsf{failure}_{\mathsf{match}}
-}.
-$$
-
-Here $\mathsf{failure}_{\mathsf{match}}$ is an evaluation failure raised by matching, not a UPLC `Error` term. Unselected handlers are not evaluation contexts. If there are $k$ captures, selection produces exactly $k$ ordinary applications and performs no handler-arity check.
-
-#### The `DefaultUni` instance
-
-Any combination not covered by an equation below is a mismatch.
-
-##### Leaf patterns
-
-For every builtin constant $C$:
-
-$$
-\begin{aligned}
-\mu(\mathsf{wildcard},C) &= \epsilon,\\
-\mu(\mathsf{bind},C) &= [C].
-\end{aligned}
-$$
-
-Literal patterns match only constants of the corresponding universe type:
-
-$$
-\begin{aligned}
-\mu(\mathsf{integer}(k),\langle\mathsf{integer},n\rangle)
-  &=\epsilon &&\text{if }n=k,\\
-\mu(\mathsf{bytestring}(b),\langle\mathsf{bytestring},b'\rangle)
-  &=\epsilon &&\text{if }b=b',\\
-\mu(\mathsf{bool}(q),\langle\mathsf{bool},q'\rangle)
-  &=\epsilon &&\text{if }q=q',\\
-\mu(\mathsf{unit},\langle\mathsf{unit},()\rangle)
-  &=\epsilon.
-\end{aligned}
-$$
-
-The `Int64` stored by `DefaultPatternInteger` is embedded into `Integer` before comparison.
-
-##### Pairs
-
-$$
-\frac{
-  \mu(p,\langle u,x\rangle)=\overline C_1
-  \qquad
-  \mu(q,\langle v,y\rangle)=\overline C_2
-}{
-  \mu(\mathsf{pair}(p,q),
-  \langle\mathsf{pair}\;u\;v,(x,y)\rangle)
-  =\overline C_1\mathbin{+\!+}\overline C_2
-}.
-$$
-
-##### Homogeneous fields
-
-Define
-
-$$
-\mathsf{prefix}_u([p_1,\ldots,p_k],[x_1,\ldots,x_m])
-=\overline C_1\mathbin{+\!+}\cdots\mathbin{+\!+}\overline C_k
-$$
-
-exactly when $k\le m$ and $\mu(p_i,\langle u,x_i\rangle)=\overline C_i$ for every $1\le i\le k$. Otherwise it is undefined. Then
-
-$$
-\begin{aligned}
-\mathsf{fields}_u(\mathsf{exact},\bar p,\bar x)
-  &=\mathsf{prefix}_u(\bar p,\bar x)
-  &&\text{only if }|\bar p|=|\bar x|,\\
-\mathsf{fields}_u(\mathsf{prefixWildcard},\bar p,\bar x)
-  &=\mathsf{prefix}_u(\bar p,\bar x),\\
-\mathsf{fields}_u(\mathsf{prefixCapture},\bar p,\bar x)
-  &=\mathsf{prefix}_u(\bar p,\bar x)
-  \mathbin{+\!+}
-  [\langle\mathsf{list}\;u,\mathsf{drop}_{|\bar p|}(\bar x)\rangle].
-\end{aligned}
-$$
-
-The two prefix equations are defined only when $|\bar p|\le|\bar x|$. A prefix capture adds one capture even when the suffix is empty, and it does not traverse the suffix.
-
-$$
-\mu(\mathsf{list}_{e}(\bar p),
-\langle\mathsf{list}\;u,\bar x\rangle)
-=\mathsf{fields}_u(e,\bar p,\bar x).
-$$
-
-##### `Data`
-
-$$
-\begin{aligned}
-\mu(\mathsf{dataConstr}_{t,e}(\bar p),
-  \langle\mathsf{data},\mathsf{Constr}\;t'\;\bar D\rangle)
-  &=\mathsf{fields}_{\mathsf{data}}(e,\bar p,\bar D)
-  &&\text{if }t=t',\\
-\mu(\mathsf{dataList}_{e}(\bar p),
-  \langle\mathsf{data},\mathsf{List}\;\bar D\rangle)
-  &=\mathsf{fields}_{\mathsf{data}}(e,\bar p,\bar D),\\
-\mu(\mathsf{dataMap}_{e}(\bar p),
-  \langle\mathsf{data},\mathsf{Map}\;\overline{(D,D')}\rangle)
-  &=\mathsf{fields}_{\mathsf{pair}\;\mathsf{data}\;\mathsf{data}}
-  (e,\bar p,\overline{(D,D')}),\\
-\mu(\mathsf{dataI}(p),
-  \langle\mathsf{data},\mathsf{I}\;n\rangle)
-  &=\mu(p,\langle\mathsf{integer},n\rangle),\\
-\mu(\mathsf{dataB}(p),
-  \langle\mathsf{data},\mathsf{B}\;b\rangle)
-  &=\mu(p,\langle\mathsf{bytestring},b\rangle).
-\end{aligned}
-$$
-
-The `Word64` stored by `DefaultPatternDataConstr` is embedded into `Integer` before comparison with the `Data.Constr` tag.
-
-#### Worked reductions
-
-For
-
-```lisp
-(match (con data (Constr 7 [I 1, B #aa, I 9]))
-  (pattern
-    (data-constr 7 (data-i (bind)) (bind) (wildcard))
-    handler)
-  (pattern (wildcard) fallback))
+```haskell
+BuiltinRep
+  ann
+  fun
+  (Some (ValueOf uni))
 ```
 
-the matching function returns
-
-$$
-[\langle\mathsf{integer},1\rangle,
- \langle\mathsf{data},\mathsf{B}\;\mathtt{\#aa}\rangle].
-$$
-
-The term reduces to
+Its general textual form is:
 
 ```lisp
-[[handler (con integer 1)] (con data (B #aa))]
+(builtinrep <builtin-function> <constant-type> <constant-value>)
 ```
 
-For
+For example:
 
 ```lisp
-(match (con (list integer) [1, 2, 3, 4])
-  (pattern
-    (list (prefix (integer 1) (bind) (bind)))
-    handler))
+(builtinrep matchDataConstr bytestring #...)
 ```
 
-the captures are the integer `2` and the list `[3, 4]`, so the selected term is
+The payload is a literal universe constant, not a PLC term; evaluation and substitution do not
+enter it. The builtin identity is part of the term, so two builtins cannot share a checked witness
+merely because they use the same universe constant type.
+
+#### Builtin registration
+
+The builtin-meaning interface gains optional checked-representation metadata. Schematically:
+
+```haskell
+newtype BuiltinRepresentation uni = BuiltinRepresentation
+  { brInferType
+      :: Some (ValueOf uni)
+      -> Either Text (Type TyName uni ())
+  }
+
+class ToBuiltinMeaning uni fun where
+  type CostingPart uni fun
+  data BuiltinSemanticsVariant fun
+
+  toBuiltinMeaning
+    :: BuiltinSemanticsVariant fun
+    -> fun
+    -> BuiltinMeaning val (CostingPart uni fun)
+
+  toBuiltinRepresentation
+    :: BuiltinSemanticsVariant fun
+    -> fun
+    -> Maybe (BuiltinRepresentation uni)
+
+  toBuiltinRepresentation _ _ = Nothing
+```
+
+`toBuiltinMeaning` remains the source of the builtin's runtime denotation, type scheme, and
+costing function. `toBuiltinRepresentation` is a separate optional hook used only while checking
+PLC `BuiltinRep` terms. A builtin that uses ordinary arguments keeps the default `Nothing`.
+
+The typechecking configuration constructs two tables indexed by the builtin enumeration:
+
+```haskell
+data BuiltinTypes uni fun = BuiltinTypes
+  { unBuiltinTypes
+      :: Array fun (BuiltinTypeInfo uni)
+  , builtinRepresentations
+      :: Array fun (Maybe (BuiltinRepresentation uni))
+  }
+```
+
+The checker builds both tables for the same `BuiltinSemanticsVariant fun`; a representation checker
+therefore cannot be selected independently of the runtime semantics that consume its output.
+
+Core PLC looks up the builtin's callback and passes it the literal constant. The callback either
+reports an error or returns a type to normalize. Constant decoding, result-index calculation, and
+runtime interpretation remain outside the core typechecker.
+
+#### Typing
+
+Let $\mathcal R_\nu(f)$ be the representation metadata registered for builtin $f$ under semantics
+variant $\nu$. The callback either rejects a literal constant $c$ or returns its complete PLC type.
+The general rule is:
+
+$$
+\text{TY-BUILTINREP}
+\frac{
+  \mathcal R_\nu(f)=r
+  \qquad
+  r(c)=\mathsf{Right}(T)
+  \qquad
+  \vdash T::*
+  \qquad
+  T\text{ is closed}
+}{
+  \Gamma\vdash
+  \mathsf{builtinrep}(f,c):T
+}.
+$$
+
+If $\mathcal R_\nu(f)=\mathsf{Nothing}$, the term is invalid even when $c$ is otherwise a valid
+universe constant. If the builtin tag is unknown, ordinary unknown-builtin rejection occurs before
+representation checking.
+
+This indexed typing discipline follows Crary, Weirich, and Morrisett's $\lambda_R$. Runtime type
+information in $\lambda_R$ is carried by terms rather than types. A term $v$ representing $\tau$
+has type $R(\tau)$, and $R(\tau)$ is a singleton. The type establishes which representation was
+passed, but erasure removes the type and retains $v$. Without a representation term, code cannot
+inspect the hidden type.
+
+For `matchDataConstr`, the checker assigns $b$ the type `BuiltinRep matchDataConstr S` only when
+decoding $b$ produces $S$. The builtin consumes that witness and returns $S$. Erasure removes the
+index and retains $b$ as the first UPLC argument.
+
+Unlike $R(\tau)$, `BuiltinRep matchDataConstr S` is not a singleton. Different tables can produce
+the same SOP type. The table represents a matching operation rather than the structure of $S$, and
+the nominal representation family has no generic typecase operation.
+
+A registered callback must satisfy these obligations:
+
+- **Determinism:** the same semantics variant, builtin, and literal constant returns the same type
+  or the same rejection.
+- **Total validation:** malformed constants produce `Left` rather than a host exception.
+- **Closed type:** the inferred type contains no free type variables and has kind $*$.
+- **Nominal ownership:** after any leading type quantifiers, the inferred type uses the
+  representation family assigned to that builtin, normally `BuiltinRep name I`. Another builtin
+  cannot return or consume that family unless a later proposal explicitly specifies shared
+  ownership.
+- **Canonicality:** if the represented format has multiple byte-level spellings, the callback
+  accepts only the normative canonical form.
+- **Runtime adequacy:** the runtime denotation consuming the erased constant either fails or
+  produces a value consistent with the static relation established by the callback.
+- **Cost coverage:** the builtin's UPLC costing function covers accepted and rejected raw
+  constants, because UPLC does not run this PLC callback.
+
+These conditions belong to the registration, not to builtin-specific branches in the core
+typechecker. A later builtin can register a different literal format and index without adding
+another PLC term constructor.
+
+#### Erasure
+
+Every successfully checked representation term erases identically:
+
+$$
+|\mathsf{builtinrep}(f,c)| = \mathsf{constant}(c).
+$$
+
+`brInferType` runs during PLC checking, not erasure. The eraser emits the retained constant without
+inspecting its nominal family or its eventual consumer.
+
+#### `matchDataConstr` registration
+
+`matchDataConstr` instantiates the general interface as follows:
+
+```haskell
+toBuiltinRepresentation _ MatchDataConstr =
+  Just (BuiltinRepresentation inferMatchDataConstrRepType)
+
+inferMatchDataConstrRepType constant = do
+  bytes    <- requireByteString constant
+  patterns <- decodeMatchDataConstrTable bytes
+  pure
+    (TyBuiltinRep
+      (BuiltinRepName "matchDataConstr")
+      (captureSOP patterns))
+```
+
+The callback accepts only a `ByteString`, validates the canonical table in the following section,
+and returns the complete `BuiltinRep matchDataConstr S` type. The runtime builtin independently
+receives the erased `ByteString` through its ordinary first argument.
+
+Write:
+
+- $\mathsf{Decode}(b)=P$ when bytes $b$ decode to the canonical pattern table $P$;
+- $\mathsf{Valid}(P)$ when all table invariants below hold; and
+- $\mathsf{Capt}(P)$ for the SOP result type determined by $P$.
+
+The introduction rule for `matchDataConstr` is:
+
+$$
+\text{TY-MATCHDATACONSTR-REP}
+\frac{
+  b:\mathsf{bytestring}
+  \qquad
+  \mathsf{Decode}(b)=P
+  \qquad
+  \mathsf{Valid}(P)
+  \qquad
+  S=\mathsf{Capt}(P)
+}{
+  \Gamma\vdash
+  \mathsf{builtinrep}(\mathsf{matchDataConstr},b)
+  :
+  \mathsf{BuiltinRep}(\mathsf{matchDataConstr},S)
+}.
+$$
+
+A builtin with no registered representation metadata cannot form a well-typed `builtinrep` term.
+A representation registered for one builtin cannot inhabit another builtin's nominal family.
+
+### Abstract pattern table
+
+A decoded table is a finite sequence:
+
+$$
+P =
+[(t_0,a_0,m_0),\ldots,(t_{n-1},a_{n-1},m_{n-1})],
+$$
+
+where:
+
+- $n>0$;
+- each $t_i$ is a `Word64` constructor tag;
+- tags are strictly increasing;
+- $a_i$ is the exact number of immediate fields required for tag $t_i$; and
+- $m_i$ contains exactly $a_i$ selector bits.
+
+Selector bit $j$ is:
+
+- $0$ to skip immediate field $j$; or
+- $1$ to retain immediate field $j$.
+
+Let $c_i$ be the number of set bits in $m_i$. Then:
+
+$$
+\mathsf{Capt}(P) =
+\mathsf{sop}\left(
+  [\underbrace{\mathsf{data},\ldots,\mathsf{data}}_{c_0}],
+  \ldots,
+  [\underbrace{\mathsf{data},\ldots,\mathsf{data}}_{c_{n-1}}]
+\right).
+$$
+
+Table order determines SOP branch order. Original constructor tags do not become SOP tags, so
+unused tags need neither table rows nor `Case` handlers.
+
+### Canonical ByteString encoding
+
+The runtime representation has the following concatenated format:
+
+```text
+entry-count,
+(
+  constructor-tag,
+  field-count,
+  packed-selector-bits
+)*
+```
+
+`entry-count`, every `constructor-tag`, and every `field-count` use canonical unsigned
+LEB128:
+
+- seven payload bits per byte;
+- bit 7 indicates another byte;
+- least-significant group first; and
+- the shortest possible encoding is required.
+
+Additional validity rules are:
+
+1. the representation is non-empty;
+2. `entry-count` is nonzero and equals the number of encoded rows;
+3. constructor tags fit in `Word64` and are strictly increasing;
+4. a row with field count $a$ contains exactly $\lceil a/8\rceil$ selector bytes;
+5. field $j$ is bit $j\bmod 8$ of byte $\lfloor j/8\rfloor$;
+6. unused high bits in the final selector byte are zero; and
+7. no trailing bytes are permitted.
+
+There is no in-band format-version byte. A semantically incompatible representation format
+requires a new builtin or language version, rather than making every call inspect a version field.
+
+For example:
+
+$$
+P =
+[
+  (7,3,[0,1,0]),
+  (42,2,[1,1])
+]
+$$
+
+is encoded as:
+
+```text
+#020703022a0203
+```
+
+and has type:
+
+```text
+BuiltinRep matchDataConstr (sop [data] [data data])
+```
+
+Here `02` gives the entry count. The first row, `07 03 02`, has tag 7, arity 3, and captures only
+field 1. The second, `2a 02 03`, has tag 42, arity 2, and captures both fields.
+
+The checker and runtime evaluator must use the same decoder or two implementations proven to
+accept exactly the same canonical language.
+
+### Application and result
+
+Schematically, typed PLC applies the builtin as:
 
 ```lisp
-[[handler (con integer 2)] (con (list integer) [3, 4])]
+[
+  [
+    {(builtin matchDataConstr) (sop [data] [data data])}
+    (builtinrep matchDataConstr bytestring #020703022a0203)
+  ]
+  value
+]
 ```
 
-#### Costed operational refinement
+If `value` is:
 
-NOTE: These costing step does not seem to well represent the cost of pattern works. I'm still testing different options. This section can be ignored for now.
+```text
+Constr 7 [x0, x1, x2]
+```
 
-The source-language reduction remains atomic. The CEK machine refines selection with an explicit work stack and an incrementally costed judgment:
+the result is:
+
+```text
+Constr 0 [x1]
+```
+
+If `value` is:
+
+```text
+Constr 42 [y0, y1]
+```
+
+the result is:
+
+```text
+Constr 1 [y0, y1]
+```
+
+The caller uses ordinary `Case` over the resulting SOP value. Captured fields remain `Data`;
+the builtin does not recursively inspect their payloads.
+
+### Runtime semantics
+
+Let $P$ be the successfully decoded table. Evaluation of
+$\mathsf{matchDataConstr}(b,d)$ proceeds as follows:
+
+1. Decode $b$ and reject a noncanonical or malformed table.
+2. Require $d$ to be `Data.Constr t fields`.
+3. Locate $t$ among the sorted table tags.
+4. Require the number of immediate fields to equal the selected row's field count.
+5. Scan the immediate fields from left to right.
+6. Retain a field exactly when its selector bit is set.
+7. Return `VConstr i captures`, where $i$ is the zero-based table position.
+
+The builtin fails when:
+
+- its first argument is not a `ByteString`;
+- the representation is malformed or noncanonical;
+- the second argument is not `Data.Constr`;
+- no row has the runtime constructor tag; or
+- the selected row's exact field count differs from the runtime field count.
+
+Mismatch is an ordinary builtin failure, not a recoverable branch. A caller that needs other
+root-`Data` behavior must discriminate before the call; several accepted `Data.Constr` tags belong
+in one table.
+
+The builtin binary-searches the sorted tags. It returns the compact table position, not the
+original `Data.Constr` tag.
+
+### Static soundness obligation
+
+Define:
 
 $$
-\mathsf{select}_{\mathcal U}(C,A)
-\Downarrow^{(n_P,n_S,n_N)}(H,\overline C),
+\mathsf{Valid}_{\mathsf{matchDataConstr}}(b,S)
+\quad\Longleftrightarrow\quad
+\exists P.
+  \mathsf{Decode}(b)=P
+  \land \mathsf{Valid}(P)
+  \land S=\mathsf{Capt}(P).
 $$
 
-or the corresponding $\mathsf{noMatch}$ result, where:
-
-- $n_P$ counts ordinary pattern-work units (`BPattern`): the initial alternative/root probe, including the empty-alternative check; prefix endpoints; equal-length byte-string precharge units; and two units for every reached capture. Nested child dispatch is covered by the preceding `BStructural` event, while a later alternative's root probe is bundled into `BMatchNext`.
-- $n_S$ counts reached structural child or field edges (`BStructural`), including child dispatch and bounded exact-arity probing.
-- $n_N$ counts transitions after a known mismatch (`BMatchNext`), including abandoning the failed attempt and probing the next alternative, or discovering exhaustion after the final mismatch.
-
-If the three cost-model entries are $c_P,c_S,c_N$, the match-selection component is
+The checked representation rule establishes this relation. Runtime adequacy requires:
 
 $$
-n_Pc_P+n_Sc_S+n_Nc_N.
+\frac{
+  \mathsf{Valid}_{\mathsf{matchDataConstr}}(b,S)
+  \qquad
+  d\in\llbracket\mathsf{data}\rrbracket
+}{
+  \mathsf{matchDataConstrRuntime}(b,d)
+  \in\llbracket S\rrbracket
+  \quad\text{or evaluation fails}
+}.
 $$
 
-Entering the AST node separately incurs `cekMatchCost`. Evaluating the scrutinee and selected handler retains the usual CEK costs. Applications introduced by `Match` do not create syntactic `Apply` nodes and do not incur `BApply`; the second `BPattern` unit for each reached capture prepays its implicit handler application. These charges are not refunded if the alternative later fails.
+On success, the returned constructor position, capture count, capture order, and field types must
+agree with $S$. The checked witness and runtime use the same canonical table, and row $i$
+determines branch $i$ in both $\mathsf{Capt}(P)$ and the runtime result. Every selected input field
+has builtin type `Data`; scanning the selector bits from left to right fixes the number and order of
+those fields.
 
-For equal-length byte strings, equality prepays
+This guarantee applies to checked PLC. Raw UPLC may supply arbitrary bytes, so the runtime decoder
+must reject malformed inputs safely and the cost model must cover both successful and rejected
+calls.
+
+### Erasure
+
+The representation type has no UPLC counterpart:
 
 $$
-\max\left(1,\left\lceil\frac{|b|}{8}\right\rceil\right)
+|\mathsf{BuiltinRep}(\rho,S)|
+  = \mathsf{erased}.
 $$
 
-`BPattern` units before native equality. Unequal lengths fail from length metadata without that per-word precharge. An ignored or captured prefix suffix is not walked.
-
-The costed judgment must erase to the pure result:
+Together with the generic term rule above, the instance needs only the standard erasure of its
+type application:
 
 $$
-\mathsf{select}_{\mathcal U}(C,A)\Downarrow^w R
-\quad\Longrightarrow\quad
-\mathsf{select}_{\mathcal U}(C,A)=R.
+|\mathsf{matchDataConstr}[S]|
+  = \mathsf{force}(\mathsf{matchDataConstr}).
 $$
 
-The event placement is normative. The coefficients $c_P,c_S,c_N$ are pre-activation working values and require calibration before ledger activation.
+Therefore:
 
-### Versioning
+```text
+PLC:
+  matchDataConstr
+    @S
+    (builtinrep matchDataConstr bytestring b)
+    d
 
-`Match` is introduced in Plutus Core language version 1.2.0 and is invalid in earlier language versions. Existing language versions and existing `Case` terms retain their current syntax and behavior.
+UPLC:
+  force matchDataConstr b |d|
+```
 
-The specification version of this feature is therefore Plutus Core language version 1.2.0. Any incompatible change to the syntax, serialization, or evaluation behavior specified here requires a subsequent language version. Compatible clarifications to this document may follow the normal CIP revision process.
+Erasure is syntax-directed: it retains $b$ without decoding it or consulting builtin semantics.
+
+The UPLC builtin has one force and two term arguments. No `BuiltinRep` type or
+representation-specific universe type survives into UPLC.
+
+### Costing
+
+`matchDataConstr` uses the standard two-argument builtin-costing pipeline. Let $x$ be the ordinary
+execution-memory measure of the first `ByteString` argument in eight-byte words and $y$ the
+ordinary measure of the `Data` argument.
+
+The intended model shapes are:
+
+$$
+\begin{aligned}
+\mathsf{cpu}(x,y) &= a+b x,\\
+\mathsf{memory}(x,y) &= c+d x.
+\end{aligned}
+$$
+
+There is no term in $y$. Table decoding and tag lookup are bounded by the encoded bytes. Every
+declared field contributes one selector bit, so one eight-byte word describes at most 64 field
+visits and at most 64 retained references. Nested payloads are not traversed.
+
+The constructor tag and exact field count are also encoded in the first argument, so $x$ covers
+their decoding. The selector-bit format ensures that a small encoding cannot direct an unbounded
+field traversal.
+
+Final coefficients are not normative in this draft. They must be fitted with the repository's
+canonical builtin benchmark against a same-build two-argument no-op baseline. The calibration data
+must vary table and tag size, arity, capture density, successful and missing tags, malformed
+representations, and selector-saturated traversal. Varying nested payload size independently must
+confirm the absence of a $y$ term. The standard R pipeline must then produce the affected protocol
+cost models and pass the repository's safety and Haskell-versus-R consistency checks.
+
+### Serialization
+
+`matchDataConstr` is appended to the existing builtin-function enumeration. Existing builtin tags do
+not change.
+
+PLC assigns type-constructor tag 8 to `TyBuiltinRep` and term-constructor tag 12 to the checked
+`BuiltinRep` term.
+
+The current typed PLC/PIR prototype widens type tags from three bits to four bits because the
+previous type-tag space was full. This changes typed PLC/PIR serialization and therefore requires
+an explicit typed-language/serialization version decision before release.
+
+It does not change the serialization of existing submitted UPLC terms: `TyBuiltinRep` is erased,
+and a checked representation becomes an ordinary `ByteString` constant. Existing UPLC scripts do
+not contain the new builtin tag and retain their previous meaning.
 
 ## Rationale: How does this CIP achieve its goals?
 
-### Direct and recursive deconstruction
+### Builtin rather than `Match`
 
-`Match` attaches explicit patterns to alternatives, allowing a program to select a handler based on the value and shape of a builtin constant. Recursive patterns allow a program to reach a needed field without constructing and evaluating a chain of partial destructors and guards. Captures expose only the values needed by the selected handler.
+As a builtin, `matchDataConstr` uses the existing application and CEK builtin paths, returns a
+`VConstr` for `Case`, and erases its checked table to an ordinary `ByteString`. It requires no new
+UPLC term, binder, evaluator frame, or value form.
 
-This is particularly useful for known `Data` structures. A script can match a constructor tag, check nested structure, and capture selected fields in a single evaluator operation.
+A native `Match` term avoids some builtin application and dispatch overhead, and the prototype is
+cheaper on many of the tested shapes. Supporting it would also require new core and Flat syntax,
+scoping rules, evaluator frames, optimizer cases, conformance rules, and machine costs.
 
-### Relationship to `Case`
+The costing models also differ. Native matching charges as it processes alternatives, pattern
+nodes, edges, and captures. `matchDataConstr` is charged once per call through the standard
+two-argument builtin interface, and only the size of its `ByteString` argument varies in the model.
+This avoids match-specific costing inside the traversal. The coefficients in the tables below came
+from earlier sparse-table and gap-program prototypes. They are not final costs for the selector-bit
+encoding.
 
-`Match` is functionally more expressive than builtin-value `Case`. For example:
+### Checked representation and SOP result
 
-```lisp
-(case 4
-  (error)
-  (con integer 10)
-  (error)
-  (error)
-  (con integer 20))
-```
+The result type depends on the runtime table, so accepting unchecked bytes in PLC would let a
+caller claim an arbitrary result SOP. Keeping the representation only in a type would avoid that
+problem, but would make erasure inspect a builtin-specific type and synthesize runtime bytes. An
+ordinary universe type is also unsuitable: its usual constructors or eliminators could forge a
+value whose claimed result index disagrees with its runtime meaning.
 
-can be written as:
+`BuiltinRep matchDataConstr S` and `builtinrep matchDataConstr b` instead establish the
+relationship once in the typechecker, while the same bytes pass to UPLC unchanged.
 
-```lisp
-(match 4
-  (pattern (integer 1) (con integer 10))
-  (pattern (integer 4) (con integer 20)))
-```
+The result uses existing `VConstr` and `Case` machinery. Each table row becomes one SOP branch,
+whose type records the number and order of captured fields. Branch tags are compact table
+positions, so a source tag such as 42 does not require 42 empty branches.
 
-This can reduce script size because `Match` names the integer values of interest instead of requiring all preceding branches to be present.
+### Reuse and phase separation
 
-This proposal does not deprecate builtin-value `Case`. For shallow operations such as unconsing a list or matching a boolean, `Case` should remain faster because it avoids initializing and traversing the general matcher.
+`BuiltinRepresentation` is not specific to `matchDataConstr`. Another builtin can register a
+literal format and a callback that returns its indexed PLC type. For example, later proposals
+could use the same mechanism for builtin lists and `Data.List`. Their checked literals could
+describe exact or prefix length and selected positions, and their runtime builtins could return
+`VConstr` for dispatch by `Case`.
 
-### Incremental costing
+A `Data.List` matcher has the fixed element type `Data` and can use the result SOP as its index. A
+polymorphic builtin-list matcher must also relate its element type to the captured fields in the
+result; otherwise a witness for `list B` could be applied to `list A`. The exact type and encoding
+belong in the proposal for that builtin.
 
-Pattern size alone does not determine runtime work: an early mismatch may inspect only a prefix, while a successful nested pattern may traverse many fields. Incremental charging follows the work actually performed and ensures that arbitrary patterns remain bounded by the script budget.
+Most of the language change remains in PLC. PLC validates the literal, computes its static index,
+and ties that index to a nominal builtin family. UPLC receives the erased literal and the value to
+inspect. The runtime builtin still rejects malformed raw UPLC input, but UPLC needs no pattern AST,
+binders, scoping rules, or new value form. Evaluation and charging use the existing builtin path.
 
-An alternative design computed each pattern's size before matching. It reduced evaluator overhead but required either:
+The eraser remains syntax-directed. The runtime representation is already a term before erasure;
+it is not reconstructed from an erased type. The generic erasure rule copies the literal unchanged
+and does not call the registration callback. Adding `matchList`, `matchDataList`, or another
+checked builtin therefore adds no builtin-specific erasure rule and does not make PLC types
+computationally relevant.
 
-- the Flat decoder to inject the encoded pattern size into the AST, making decoding part of the trusted costing path; or
-- an uncosted look-ahead traversal before matching.
+### Table format
 
-Neither requirement was justified by the measured performance benefit, so this proposal uses incremental costing.
+The builtin is limited to `Data.Constr`, the form used to encode known records and sum
+alternatives. Matching sites normally accept a small set of possibly non-dense tags, so the table
+stores only those tags in strictly increasing order. This keeps the result SOP compact, enables
+binary search, and rules out duplicate entries. Each row gives the exact immediate arity; accepting
+only a prefix could let malformed or version-mismatched data pass as the expected source type.
+
+One selector bit per field keeps dense and sparse captures compact and also bounds runtime work:
+each encoded bit authorizes at most one immediate field visit and one capture.
+
+Earlier prototypes used one-byte masks or byte-coded skip distances. Gap coding reduced some
+scripts, but a single byte could direct traversal of up to 255 fields, forcing a very conservative
+CPU slope when costing only by ordinary `ByteString` size. The bitset makes the relationship
+between encoded size and runtime work direct.
+
+The table represents the successful result SOP. A default of an unrelated shape would either
+complicate that index or require handler terms in the representation, so mismatch remains a
+builtin failure. Other `Data` forms already have suitable operations: `Data.I` and `Data.B` can be
+decoded after capture, while `Data.List` and `Data.Map` have no constructor-tag table.
+
+### Performance evidence
+
+The prototype benchmark suite contains 22 explicitly defined `Data.Constr` workloads covering
+depth 1 to 100, width 1 to 1,000, one to 32 captures, spines, root forks, full trees, and
+alternatives sharing a prefix.
+
+Every implementation receives the same closed `Data` argument, captures the same integer fields,
+performs the same final arithmetic, and is checked against the same exact result before
+measurement. The comparison covers native shallow `Match` lowered one structural layer at a time,
+native deep `Match` represented by one recursive pattern, traditional `unConstrData`
+deconstruction, and sparse-tag `matchDataConstr` followed by ordinary `Case`.
+
+`matchDataConstr` was not uniformly cheaper than traditional matching in CPU. It lost on the
+minimal D=1/W=1/C=1 constructor and the D=64 and D=100 width-2 spines. The minimal case does too
+little work to amortize builtin setup. The two spines call `matchDataConstr` at every node while
+saving little field traversal. Its memory budget remained lower than traditional matching in all
+three cases.
+
+#### Complete CEK wall-time comparison
+
+The table reports Criterion means in microseconds. Each benchmark process selected one case;
+argument and matcher generation, full forcing, application construction, and exact-result checking
+happened before timing. The measured action was `whnf runCEK appliedTerm`. Runs used GHC 9.6.7,
+Criterion 1.6.5.0, Cabal `-O1`, one GHC capability, and an AMD Ryzen 9 7950X pinned to one CPU.
+
+The three baseline prototypes and sparse-tag `matchDataConstr` were measured at their recorded
+historical revisions; `matchDataConstr` was run in a separate session. Wall time is host-specific
+and is not used for ledger costing. The execution-budget tables provide that comparison.
+
+| # | Case | Shallow `Match` (µs) | Deep `Match` (µs) | Traditional (µs) | `matchDataConstr` (µs) |
+|---:|---|---:|---:|---:|---:|
+| 1 | `constr_flat_d1_w1_c1` | 0.357901 | 0.377854 | 0.667046 | 0.541754 |
+| 2 | `constr_flat_d1_w16_c4` | 1.031776 | 1.067766 | 1.606495 | 1.204469 |
+| 3 | `constr_flat_d1_w1000_c1` | 3.893735 | 7.142544 | 1.917121 | 1.637811 |
+| 4 | `constr_flat_d1_w1000_c16` | 6.698639 | 9.939033 | 5.745813 | 4.448110 |
+| 5 | `constr_spine_front_d4_w16_c8` | 2.034489 | 2.224007 | 3.835260 | 2.528054 |
+| 6 | `constr_spine_middle_d4_w16_c8` | 2.045473 | 2.235749 | 4.025645 | 2.535028 |
+| 7 | `constr_spine_last_d4_w16_c8` | 2.059960 | 2.137027 | 3.817799 | 2.506234 |
+| 8 | `constr_spine_irregular_d4_w16_c8` | 2.073076 | 2.210344 | 3.935280 | 2.546669 |
+| 9 | `constr_spine_irregular_d8_w8_c8` | 2.404038 | 2.371215 | 5.718656 | 3.156149 |
+| 10 | `constr_spine_front_d64_w2_c8` | 5.498050 | 4.415301 | 17.525628 | 12.089634 |
+| 11 | `constr_spine_zigzag_d100_w2_c10` | 8.022903 | 5.985006 | 28.262511 | 18.299033 |
+| 12 | `constr_binary_d3_w16_c8` | 2.445819 | 2.607416 | 4.674805 | 3.050840 |
+| 13 | `constr_ternary_d3_w8_c10` | 3.139957 | 3.067398 | 7.350378 | 4.377922 |
+| 14 | `constr_quaternary_d3_w8_c17` | 5.151877 | 4.783671 | 11.630594 | 7.197313 |
+| 15 | `constr_rootfork2_d6_w12_c8` | 2.563802 | 2.638462 | 5.520768 | 3.353414 |
+| 16 | `constr_rootfork3_d5_w10_c9` | 2.814644 | 2.762332 | 6.258073 | 3.682175 |
+| 17 | `constr_rootfork4_d4_w8_c8` | 2.278199 | 2.308060 | 4.947085 | 3.201121 |
+| 18 | `constr_spine_stress_d10_w100_c20` | 8.296058 | 10.892651 | 11.166538 | 7.349628 |
+| 19 | `constr_binary_stress_d8_w8_c32` | 28.182496 | 27.443982 | 116.878475 | 51.198701 |
+| 20 | `constr_alt_spine_d16_w8_c8` | 3.067825 | 4.632294 | 8.327314 | 4.526635 |
+| 21 | `constr_alt_rootfork3_d5_w10_c9` | 2.844845 | 4.093085 | 6.540113 | 3.856224 |
+| 22 | `constr_alt_binary_d8_w8_c32` | 28.255839 | 50.902547 | 114.013661 | 51.392019 |
+
+#### Complete execution CPU comparison
+
+| # | Case | Shallow `Match` | Deep `Match` | Traditional | `matchDataConstr` |
+|---:|---|---:|---:|---:|---:|
+| 1 | `constr_flat_d1_w1_c1` | 251,720 | 339,976 | 481,765 | 646,072 |
+| 2 | `constr_flat_d1_w16_c4` | 1,388,354 | 1,387,462 | 2,005,238 | 1,473,928 |
+| 3 | `constr_flat_d1_w1000_c1` | 17,544,410 | 13,383,928 | 2,982,974 | 1,691,272 |
+| 4 | `constr_flat_d1_w1000_c16` | 21,929,330 | 17,589,406 | 9,640,109 | 5,554,312 |
+| 5 | `constr_spine_front_d4_w16_c8` | 3,618,046 | 3,746,106 | 6,082,994 | 4,127,420 |
+| 6 | `constr_spine_middle_d4_w16_c8` | 3,618,046 | 3,746,106 | 6,598,823 | 4,127,420 |
+| 7 | `constr_spine_last_d4_w16_c8` | 3,618,046 | 3,575,250 | 5,854,164 | 4,127,420 |
+| 8 | `constr_spine_irregular_d4_w16_c8` | 3,618,046 | 3,746,106 | 6,151,999 | 4,127,420 |
+| 9 | `constr_spine_irregular_d8_w8_c8` | 3,924,046 | 4,410,546 | 10,189,609 | 6,240,172 |
+| 10 | `constr_spine_front_d64_w2_c8` | 9,315,886 | 14,943,370 | 29,303,115 | 35,885,260 |
+| 11 | `constr_spine_zigzag_d100_w2_c10` | 13,900,862 | 20,320,430 | 47,413,347 | 55,484,412 |
+| 12 | `constr_binary_d3_w16_c8` | 4,678,426 | 4,683,342 | 7,979,231 | 5,761,904 |
+| 13 | `constr_ternary_d3_w8_c10` | 5,583,602 | 6,115,850 | 13,173,734 | 9,432,216 |
+| 14 | `constr_quaternary_d3_w8_c17` | 9,349,738 | 10,379,768 | 20,190,093 | 14,966,744 |
+| 15 | `constr_rootfork2_d6_w12_c8` | 4,762,186 | 5,105,942 | 9,408,724 | 6,814,120 |
+| 16 | `constr_rootfork3_d5_w10_c9` | 4,992,534 | 5,466,452 | 11,034,419 | 7,588,740 |
+| 17 | `constr_rootfork4_d4_w8_c8` | 3,924,046 | 4,296,642 | 8,336,134 | 6,240,172 |
+| 18 | `constr_spine_stress_d10_w100_c20` | 23,787,142 | 20,349,186 | 18,625,485 | 11,327,012 |
+| 19 | `constr_binary_stress_d8_w8_c32` | 64,039,978 | 76,680,422 | 193,778,602 | 131,892,496 |
+| 20 | `constr_alt_spine_d16_w8_c8` | 5,695,816 | 11,368,843 | 15,748,590 | 10,866,611 |
+| 21 | `constr_alt_rootfork3_d5_w10_c9` | 5,044,464 | 9,205,495 | 11,152,344 | 7,787,915 |
+| 22 | `constr_alt_binary_d8_w8_c32` | 64,091,908 | 147,351,747 | 193,009,841 | 132,091,671 |
+
+#### Complete execution memory comparison
+
+| # | Case | Shallow `Match` | Deep `Match` | Traditional | `matchDataConstr` |
+|---:|---|---:|---:|---:|---:|
+| 1 | `constr_flat_d1_w1_c1` | 1,700 | 1,236 | 2,565 | 1,606 |
+| 2 | `constr_flat_d1_w16_c4` | 6,806 | 4,440 | 7,579 | 4,183 |
+| 3 | `constr_flat_d1_w1000_c1` | 101,600 | 61,182 | 4,333 | 2,611 |
+| 4 | `constr_flat_d1_w1000_c16` | 119,630 | 72,696 | 25,239 | 14,215 |
+| 5 | `constr_spine_front_d4_w16_c8` | 17,914 | 10,455 | 22,710 | 9,866 |
+| 6 | `constr_spine_middle_d4_w16_c8` | 17,914 | 10,455 | 23,810 | 9,866 |
+| 7 | `constr_spine_last_d4_w16_c8` | 17,914 | 10,437 | 21,450 | 9,866 |
+| 8 | `constr_spine_irregular_d4_w16_c8` | 17,914 | 10,455 | 22,882 | 9,866 |
+| 9 | `constr_spine_irregular_d8_w8_c8` | 19,914 | 10,525 | 36,054 | 13,358 |
+| 10 | `constr_spine_front_d64_w2_c8` | 54,314 | 15,387 | 148,914 | 62,310 |
+| 11 | `constr_spine_zigzag_d100_w2_c10` | 81,918 | 21,651 | 223,478 | 95,318 |
+| 12 | `constr_binary_d3_w16_c8` | 24,214 | 13,368 | 29,649 | 12,533 |
+| 13 | `constr_ternary_d3_w8_c10` | 28,818 | 14,526 | 48,791 | 19,271 |
+| 14 | `constr_quaternary_d3_w8_c17` | 47,632 | 23,894 | 77,245 | 31,077 |
+| 15 | `constr_rootfork2_d6_w12_c8` | 24,814 | 13,178 | 35,791 | 14,275 |
+| 16 | `constr_rootfork3_d5_w10_c9` | 25,716 | 13,485 | 40,974 | 15,894 |
+| 17 | `constr_rootfork4_d4_w8_c8` | 19,914 | 10,513 | 32,006 | 13,358 |
+| 18 | `constr_spine_stress_d10_w100_c20` | 128,938 | 75,939 | 59,076 | 25,088 |
+| 19 | `constr_binary_stress_d8_w8_c32` | 369,862 | 151,706 | 736,289 | 236,581 |
+| 20 | `constr_alt_spine_d16_w8_c8` | 30,614 | 24,401 | 58,082 | 21,938 |
+| 21 | `constr_alt_rootfork3_d5_w10_c9` | 26,016 | 21,883 | 41,814 | 17,296 |
+| 22 | `constr_alt_binary_d8_w8_c32` | 370,162 | 286,767 | 735,045 | 237,983 |
+
+#### Complete script-size comparison
+
+| # | Case | Shallow `Match` | Deep `Match` | Traditional | `matchDataConstr` |
+|---:|---|---:|---:|---:|---:|
+| 1 | `constr_flat_d1_w1_c1` | 15 | 12 | 29 | 24 |
+| 2 | `constr_flat_d1_w16_c4` | 43 | 37 | 76 | 50 |
+| 3 | `constr_flat_d1_w1000_c1` | 266 | 638 | 45 | 28 |
+| 4 | `constr_flat_d1_w1000_c16` | 383 | 712 | 256 | 138 |
+| 5 | `constr_spine_front_d4_w16_c8` | 99 | 90 | 221 | 128 |
+| 6 | `constr_spine_middle_d4_w16_c8` | 99 | 90 | 232 | 128 |
+| 7 | `constr_spine_last_d4_w16_c8` | 99 | 90 | 212 | 128 |
+| 8 | `constr_spine_irregular_d4_w16_c8` | 99 | 90 | 224 | 128 |
+| 9 | `constr_spine_irregular_d8_w8_c8` | 116 | 94 | 348 | 189 |
+| 10 | `constr_spine_front_d64_w2_c8` | 378 | 197 | 1,663 | 1,094 |
+| 11 | `constr_spine_zigzag_d100_w2_c10` | 569 | 294 | 2,600 | 1,724 |
+| 12 | `constr_binary_d3_w16_c8` | 124 | 123 | 305 | 176 |
+| 13 | `constr_ternary_d3_w8_c10` | 164 | 135 | 488 | 288 |
+| 14 | `constr_quaternary_d3_w8_c17` | 270 | 218 | 808 | 467 |
+| 15 | `constr_rootfork2_d6_w12_c8` | 132 | 123 | 362 | 206 |
+| 16 | `constr_rootfork3_d5_w10_c9` | 142 | 124 | 409 | 229 |
+| 17 | `constr_rootfork4_d4_w8_c8` | 116 | 94 | 320 | 191 |
+| 18 | `constr_spine_stress_d10_w100_c20` | 453 | 741 | 605 | 314 |
+| 19 | `constr_binary_stress_d8_w8_c32` | 2,025 | 1,853 | 8,879 | 4,484 |
+| 20 | `constr_alt_spine_d16_w8_c8` | 197 | 280 | 584 | 333 |
+| 21 | `constr_alt_rootfork3_d5_w10_c9` | 175 | 240 | 419 | 245 |
+| 22 | `constr_alt_binary_d8_w8_c32` | 2,167 | 3,697 | 8,861 | 4,500 |
+
+The native prototypes are faster on many narrow or highly branching cases. Traditional
+deconstruction is the direct baseline for `matchDataConstr`; the native results quantify the
+performance tradeoff of using a builtin instead of adding a `Match` term.
+
+All 22 `matchDataConstr` cases returned the expected value and passed the benchmark runner's
+script-size, CPU, and memory limits. The recorded data is retained in the
+[sparse-tag validation CSV](https://github.com/SeungheonOh/plutus/blob/5f08b9cd1/plutus-benchmark/matching-cpu-runtime/results/2026-08-17-matchdata-sparse-tags-validation.csv),
+the [baseline validation CSV](https://github.com/SeungheonOh/plutus/blob/5f08b9cd1/plutus-benchmark/matching-cpu-runtime/results/2026-08-06-preflight-validation.csv),
+the [baseline wall-time CSV](https://github.com/SeungheonOh/plutus/blob/5f08b9cd1/plutus-benchmark/matching-cpu-runtime/results/2026-08-06-criterion-wall-time.csv),
+and the [sparse-tag wall-time CSV](https://github.com/SeungheonOh/plutus/blob/5f08b9cd1/plutus-benchmark/matching-cpu-runtime/results/2026-08-17-matchdata-sparse-tags-criterion-wall-time.csv).
+Those historical revisions and artifact filenames retain the builtin's former `matchData`
+spelling; this CIP renames the proposed builtin to `matchDataConstr`.
 
 ### Alternatives considered
 
-#### Direct `Data` casing
+#### Native shallow `Match`
 
-Assigning the five `Data` constructors to fixed `Case` branches is simple but mainly accelerates `chooseData`. It does not efficiently deconstruct known nested structures, which is the common script-context use case.
+The shallow design added one `Match` term whose alternatives inspected one structural layer. Its
+most developed form recognized `Data.Constr tag fields`, `Data.List fields`, and
+`Data.Map entries` at the root.
 
-#### Multi-lambda and multi-application
+Each immediate position was either `skip` or `bind x`, followed by either exact-arity or
+minimum-arity-with-ignored-rest behavior. Patterns could not contain child patterns. A compiler
+lowered a nested source pattern to successive `Match` terms, with the outer node binding a child
+`Data` value and its selected body performing the next shallow match.
 
-Atomic application of multiple arguments can detect constructor-field arity mismatches, but it requires two new language terms and specialized CEK behavior. It also raises a distinction between ordinary nested lambdas and multi-lambdas while providing only limited matching functionality.
+Two branch interfaces were explored:
 
-#### A dedicated `Let` term
+1. **Handler application.** The matcher collected captures and applied them to a handler lambda.
+   This reused lambda/application semantics but made branch arity indirect and paid closure,
+   `Apply`, and `LamAbs` costs.
+2. **Direct lexical binding.** Binder names lived at selected field positions and the CEK entered
+   the selected body under an environment extended by the captured values. An isolated
+   1,024-capture experiment measured 19.897 microseconds for direct entry versus 23.247
+   microseconds for handler application.
 
-A `Let` term could bind a row of values but still requires CEK support for that row and overlaps with lambda/application as a binding mechanism. Like multi-lambda, it does not provide general nested matching.
+Because shallow lowering expresses each level as a separate term, alternatives can share the
+successful prefix already traversed by their enclosing terms. It performs well on flat and wide
+values and on alternatives that diverge near a leaf. It used less CPU than `matchDataConstr` in 19
+of the 22 budget cases.
 
-The proposed `Match` term concentrates these use cases into one ordered pattern-matching operation and integrates with the CEK in a manner similar to `Case`.
+Implementing shallow `Match` touches PLC and UPLC syntax, Flat tags, branch-local scope, de Bruijn
+conversion, renaming, substitution, discharge, hashing, typing, optimizer traversals, and all CEK
+variants. Defaults, arity mismatch, captures, and unselected branch bodies also need machine costs
+and conformance rules.
 
-### Backward compatibility
+Each shallow match site carries AST field descriptors and branch bodies, which is expensive for
+wide sparse records. `matchDataConstr` is smaller on both width-1,000 cases and the width-100 stress
+case; shallow `Match` is smaller on most narrow cases.
 
-The change is backward-compatible at the Plutus Core language level because `Match` is guarded by a new minor language version. Scripts using earlier versions continue to parse and evaluate with unchanged semantics.
+This CIP does not add shallow `Match`. Its lower CPU budget on many cases comes with a new core
+term and the associated binding, evaluation, costing, serialization, and conformance rules.
 
-Nodes and tools that do not support the new language version cannot accept scripts using `Match`; activation therefore requires a hard fork that introduces the language version and its cost-model parameters. No existing script is rewritten, and `Case` remains available.
+#### Native deep/recursive `Match`
 
-### Performance
+The deep design added a `Match` term with ordered alternatives whose patterns recursively mirrored
+builtin values. Its pattern language covered wildcards, captures, integer and byte-string
+literals, booleans, unit, builtin lists and pairs, structural `Data.Constr`, `Data.List`, and
+`Data.Map` patterns, and `Data.I` and `Data.B` wrappers.
 
-The following local benchmarks compare `Match` with existing deconstruction using partial builtins, optionally guarded by `chooseData`, or builtin `Case`. They measure CEK wall-clock time rather than calibrated on-chain execution units.
+Exact and prefix structural endings controlled whether an unconsumed suffix caused mismatch,
+was ignored, or was captured. A successful recursive walk accumulated captures in left-to-right
+depth-first order and applied them to the first successful handler. A single pattern could
+therefore describe an entire nested script-context shape without entering another AST match node
+at each depth.
 
-#### Capturing one deeply positioned value
+The evaluator required an explicit work stack containing pending child patterns, values, captured
+values, remaining alternatives, and suffix policy. Costing was incremental rather than a single
+up-front charge, with distinct events for entering a match, processing a pattern node, traversing
+a structural edge, and abandoning a failed alternative.
 
-| Input and target                  | Traditional baseline      | Traditional CEK | `Match` CEK | Traditional / `Match` |
-|-----------------------------------|---------------------------|----------------:|------------:|----------------------:|
-| `Data.Constr`, field 1,024        | direct `UnConstrData`     |       33.628 us |    5.119 us |                 6.50x |
-|                                   | guarded with `ChooseData` |       33.479 us |    5.230 us |                 6.38x |
-| `Data.List`, field 1,024          | direct `UnListData`       |       33.775 us |    5.283 us |                 6.42x |
-|                                   | guarded with `ChooseData` |       33.525 us |    5.150 us |                 6.56x |
-| Builtin list, element 1,024       | builtin `Case`            |       33.675 us |    5.131 us |                 6.51x |
-| 64 nested `Data.Constr` layers    | direct destructors        |       21.719 us |    2.240 us |                 9.70x |
-|                                   | guarded with `ChooseData` |       31.068 us |    2.297 us |                13.74x |
-| 64 nested `Data.List` layers      | direct destructors        |       13.108 us |    1.969 us |                 6.67x |
-|                                   | guarded with `ChooseData` |       21.523 us |    2.001 us |                10.67x |
-| 64 alternating Constr/List layers | direct destructors        |       17.998 us |    2.127 us |                 8.46x |
-|                                   | guarded with `ChooseData` |       26.110 us |    2.158 us |                12.10x |
+Deep matching performs well on successful narrow paths. Its CPU budget is 14,943,370 on the
+D=64/W=2 spine, compared with 35,885,260 for `matchDataConstr`; on the full binary D=8 tree the
+figures are 76,680,422 and 131,892,496.
 
-Each benchmark captures the innermost value. For a wide list, this is the last element; for nested structures, this is the innermost value. In these cases, `Match` is at least six times faster in the measured CEK runtime.
+A failed deep alternative restarts from the root. Shallow lowering and `matchDataConstr` instead
+share the successful prefix through their enclosing program structure, so `matchDataConstr` uses
+less CPU in all three alternative cases in the table above.
 
-#### Capturing multiple values
+Deep matching also needs recursive typing judgments, nested mismatch propagation, capture-order
+proofs, recursive Flat validation, and costing for literals and failed alternatives. Its pattern
+can grow with every nested field even when most fields are wildcards. `matchDataConstr` does not
+need this machinery because it only deconstructs one `Data.Constr` layer per call.
 
-| Input and target                                | Traditional baseline      | Traditional CEK | `Match` CEK | Traditional / `Match` |
-|-------------------------------------------------|---------------------------|----------------:|------------:|----------------------:|
-| `Data.Constr`, all 1,024 fields captured        | direct `UnConstrData`     |       35.523 us |   20.502 us |                 1.75x |
-|                                                 | guarded with `ChooseData` |       35.257 us |   20.674 us |                 1.67x |
-| `Data.List`, all 1,024 fields captured          | direct `UnListData`       |       34.978 us |   20.359 us |                 1.72x |
-|                                                 | guarded with `ChooseData` |       35.297 us |   20.712 us |                 1.72x |
-| Builtin list, all 1,024 elements captured       | builtin `Case`            |       34.369 us |   20.443 us |                 1.68x |
-| 64 nested `Data.Constr` layers, 192 captures    | direct destructors        |       21.252 us |    4.929 us |                 4.29x |
-|                                                 | guarded with `ChooseData` |       31.078 us |    5.091 us |                 6.10x |
-| 64 nested `Data.List` layers, 192 captures      | direct destructors        |       12.887 us |    4.943 us |                 2.59x |
-|                                                 | guarded with `ChooseData` |       21.461 us |    4.935 us |                 4.30x |
-| 64 alternating Constr/List layers, 192 captures | direct destructors        |       17.663 us |    5.075 us |                 3.48x |
-|                                                 | guarded with `ChooseData` |       26.182 us |    5.041 us |                 5.21x |
+#### Extending `Case` over `Data`
 
-Capturing values is more expensive because each captured value must be stored and later applied to the handler. The performance gap therefore narrows when every field is captured, but all measured cases remain faster with `Match`.
+Direct root discrimination would provide a more efficient `chooseData`, but it would not express
+exact constructor arity or selective field capture. Adding field masks and result-shape metadata to
+`Case` would effectively create a second pattern language while changing an established term.
 
-The cost parameters used for these measurements are not fully calibrated. Preliminary CPU and memory budgets improved by between 10% and 90%, depending on the amount of capture work. Typical script-context use is expected to capture only a few fields; with the initial conservative parameters, the observed budget improvement in those cases was approximately 40% to 60%.
+#### Traditional deconstruction
+
+`unConstrData`, integer comparison, list traversal, and `unIData` remain sufficient for
+expressiveness and form the compatibility baseline measured above.
+
+#### Atomic multi-lambda or multi-application
+
+Atomic application could detect handler arity mismatches, but requires new terms and CEK behavior
+while still passing every selected value through an application interface. It does not perform tag
+selection or field traversal.
+
+#### Type-directed erasure
+
+An earlier design encoded a pattern in a PLC type argument and taught erasure to reify that type
+into a UPLC constant. That makes erasure builtin-aware and makes an erased type computationally
+relevant. Explicit checked representations retain the same information as an ordinary term and
+keep erasure structural.
+
+#### Array of `(integer, bytestring)` pairs
+
+The sparse-pair prototype encoded tags explicitly, but generic array and pair overhead inflated
+scripts. A canonical `ByteString` keeps the runtime directives in one costed argument and has one
+canonical encoding.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The `plutus` repository contains an updated Plutus Core specification defining:
-  - [ ] the `Match` term and default-universe pattern syntax;
-  - [ ] textual and Flat serialization;
-  - [ ] ordered matching, capture application, mismatch, and failure semantics; and
-  - [ ] Plutus Core language version 1.2.0 as the version that introduces the feature.
-- [ ] The `plutus` repository contains:
-  - [ ] a production implementation of syntax, serialization, and CEK evaluation;
-  - [ ] conformance tests covering scalar, structural, nested, prefix, exact, capture, fallback, and failure behavior;
-  - [ ] calibrated costs for `BMatch`, `BPattern`, `BStructural`, and `BMatchNext`; and
-  - [ ] benchmarks showing the effect on representative and adversarial inputs.
-- [ ] External implementations or independent test implementations are available.
-- [ ] The ledger supports the new Plutus Core language version and all required cost-model parameters.
-- [ ] The feature is released in a Cardano node version.
-- [ ] The released implementation is present in block-producing nodes representing at least 80% of active stake.
+- [ ] The PLC specification and implementation define checked builtin representations as a
+      general, semantics-variant-indexed interface, with `matchDataConstr` registered through that
+      interface rather than special-cased in the core typechecker.
+- [ ] The specified table format, typing rule, runtime behavior, failures, and structural erasure
+      are covered by conformance tests, including malformed encodings and agreement between the
+      inferred SOP type and returned `VConstr`.
+- [ ] The final CPU and memory models are produced by the standard builtin-costing pipeline, cover
+      successful and rejected inputs, pass the repository's safety and model-consistency checks,
+      and are propagated to every affected protocol cost model.
+- [ ] Reproducible benchmarks run every compared implementation on one production evaluator,
+      check exact results, and report CEK wall time, execution CPU, execution memory, and script
+      size, including cases where `matchDataConstr` is more expensive.
+- [ ] The typed PLC/PIR serialization change has an approved versioning plan, and an independent
+      implementation or independently reproduced test vectors confirm interoperability.
+- [ ] A protocol release enables the builtin with its approved cost parameters, and supporting
+      block-producing nodes represent at least 80% of active stake.
 
 ### Implementation Plan
 
-The reference implementation adds `Match` to UPLC and its Flat encoding, implements universe-specific matching in the CEK machine, and provides costing, benchmarks, and conformance tests in the `plutus` repository.
+The reference implementation adds the general checked-representation type, term, registration
+hook, and typechecking path throughout PLC and PIR. Parser, Flat, traversal, and erasure support
+must treat the new type and term generically.
 
-The main matching rules are implemented in `plutus-core/plutus-core/src/PlutusCore/Default/Universe.hs`. CEK evaluation and incremental costing are implemented in `plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs`.
+The `matchDataConstr` implementation provides the canonical table codec, runtime behavior, and
+compiler lowering to `matchDataConstr` followed by `Case`. Conformance tests cover the registration
+interface, table format, result construction, failure behavior, serialization, and erasure.
 
-The change requires Plutus Core language version 1.2.0 and new cost-model parameters. Under CIP-0035, these are introduced through a hard fork. Ledger integration must gate the new language version and supply the calibrated parameters. Activation should occur only after specification review, cost calibration, conformance testing, independent implementation or test implementation, and release in the node.
+Before activation, the final implementation must be benchmarked and recosted. The comparison must
+use one evaluator revision and report wall time, execution budgets, and script size. Ledger and
+node releases then add the builtin with the approved cost parameters.
 
 ## References
 
 - [CIP-0001: CIP Process](https://cips.cardano.org/cip/CIP-0001)
 - [CIP-0035: Plutus Core Evolution](https://cips.cardano.org/cip/CIP-0035)
 - [CIP-0085: Sums-of-products in Plutus Core](https://cips.cardano.org/cip/CIP-0085)
+- [CIP-0194 discussion](https://github.com/cardano-foundation/CIPs/pull/1236)
+- [Crary, Weirich, and Morrisett: *Intensional Polymorphism in Type-Erasure Semantics*](https://doi.org/10.1017/S0956796801004282)
+- [Recursive `Match` implementation experiment](https://github.com/IntersectMBO/plutus/pull/7852)
+- [matchDataConstr implementation branch](https://github.com/SeungheonOh/plutus/tree/type-pattern-matchdata)
 - [IntersectMBO/plutus issue #5777](https://github.com/IntersectMBO/plutus/issues/5777)
 - [IntersectMBO/plutus issue #6225](https://github.com/IntersectMBO/plutus/issues/6225)
 - [IntersectMBO/plutus issue #6602](https://github.com/IntersectMBO/plutus/issues/6602)
 - [IntersectMBO/plutus pull request #7209](https://github.com/IntersectMBO/plutus/pull/7209)
+
+### Prototypes
+
+| Implementation or artifact | Revision |
+|---|---|
+| Native shallow `Match` implementation | [`d118a596`](https://github.com/SeungheonOh/plutus/commit/d118a596556784d599bf6e9a80c9fcffa01d2cf0) |
+| Native recursive `Match` implementation | [`20d7f06e`](https://github.com/SeungheonOh/plutus/commit/20d7f06ed4dc5f29439b5b0d4b1ab8a62627f3b3) |
+| Traditional deconstruction baseline | [`b9d726d7`](https://github.com/SeungheonOh/plutus/commit/b9d726d7cc957fa154c6ba9f01959952887f1246) |
+| Gap-only `matchDataConstr` encoding | [`25baa821`](https://github.com/SeungheonOh/plutus/commit/25baa82102b5e684e5a5478a345519c3252a674a) |
+| Fitted sparse `matchDataConstr` costing | [`140c5e6e`](https://github.com/SeungheonOh/plutus/commit/140c5e6ef) |
+| Sparse-tag `matchDataConstr` validation | [`5f08b9cd`](https://github.com/SeungheonOh/plutus/commit/5f08b9cd1) |
+| Explicit checked representations | [`e6aba017`](https://github.com/SeungheonOh/plutus/commit/e6aba0171) |
 
 ## Copyright
 
