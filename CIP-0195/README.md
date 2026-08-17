@@ -271,15 +271,14 @@ data TxOut = TxOut
 
 newtype AccountId = AccountId V2.Credential
 
--- flattened from the `Interval` in V1-V3
-data Interval a = Interval
-  { ivFrom        :: Extended a
-  , ivFromClosure :: Closure
-  , ivTo          :: Extended a
-  , ivToClosure   :: Closure
-  }
+type Interval = POSIXTimeRange
 
-type POSIXTimeRange = Interval POSIXTime
+data POSIXTimeRange = POSIXTimeRange
+  { fromInclusive :: Maybe POSIXTime
+    -- ^ Nothing means negative infinity
+  , untilExclusive :: Maybe POSIXTime
+    -- ^ Nothing means positive infinity
+  }
 ```
 
 The encoding rules are:
