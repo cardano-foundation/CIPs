@@ -503,7 +503,7 @@ transactions.
 
 ## Rationale: How does this CIP achieve its goals?
 
-### Registry Governance
+### Registry Process
 
 The registry follows the governance model established
 by CIP-0010. CIP editors review pull requests adding
