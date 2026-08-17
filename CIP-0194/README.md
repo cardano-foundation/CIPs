@@ -521,16 +521,17 @@ $$
   \land S=\mathsf{Capt}(P).
 $$
 
-The checked representation rule establishes this relation. Runtime adequacy requires:
+The checked representation rule establishes this relation. Let $\mathsf{Val}(T)$ denote the
+runtime values interpreting type $T$. Runtime adequacy requires:
 
 $$
 \frac{
   \mathsf{Valid}_{\mathsf{matchDataConstr}}(b,S)
   \qquad
-  d\in\llbracket\mathsf{data}\rrbracket
+  d\in\mathsf{Val}(\mathsf{data})
 }{
   \mathsf{matchDataConstrRuntime}(b,d)
-  \in\llbracket S\rrbracket
+  \in\mathsf{Val}(S)
   \quad\text{or evaluation fails}
 }.
 $$
