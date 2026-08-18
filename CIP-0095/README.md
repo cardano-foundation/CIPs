@@ -123,6 +123,15 @@ extending the API (as a plain integer, without padding). For example:
 
 #### CIP-95 Data Types
 
+##### DRepID
+
+```ts
+type DRepID = string;
+```
+
+A hex-encoded string representing a Blake2b-224 hash digest of a 32 byte
+Ed25519 public DRep key.
+
 ##### PubDRepKey
 
 ```ts
@@ -131,16 +140,6 @@ type PubDRepKey = string;
 
 A hex-encoded string representing 32 byte Ed25519 DRep public key, as described
 in [CIP-0105 | Conway Era Key Chains for HD Wallets](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0105/README.md).
-
-#### DRepID
-
-```ts
-type DRepID = string;
-```
-
-A hex-encoded string representing a registered DRep's ID which is a Blake2b-224
-hash digest of the above mentioned 32 byte Ed25519 public key, as described in
-[CIP-1694 Registered DReps](https://github.com/cardano-foundation/CIPs/blob/430f64d3e86dd67903a6bf1e611c06e5343072f3/CIP-1694/README.md#registered-dreps).
 
 ##### PubStakeKey
 
@@ -436,67 +435,9 @@ sign a payload conforming to said spec.
 
 ##### Supported Credentials
 
-Here we define how each key is identified by an `Address` in relation to
-[CIP-0019 | Cardano Addresses](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/README.md),
-these are all Shelley key-hash-based addresses.
-
 We allow for `DRepID` to be passed in the `addr` field to signal signature using the associated DRep key.
 
-To construct an address for DRep Key, the client application should construct a
-[type 6 address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C8-L7C93).
-Using an appropriate
-[Network Tag](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L13)
-and a hash of a public DRep Key.
-
-<!-- prettier-ignore-start -->
-| Key         | Identifying `addr` |
-| ----------- | ------------------ |
-| Payment Key | Address types: [0](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L1), [2](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L3), [4](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L5), [6](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L7C27-L7C72). |
-| Stake Key   | Address type: [14](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0019/CIP-0019-cardano-addresses.abnf#L10). |
-| DRep Key | [`DRepID`](#drepid) |
-<!-- prettier-ignore-end -->
-
-These keys will be used to sign the `COSE_Sign1`'s `Sig_structure` with the
-following headers set:
-
-- `alg` (1) - must be set to `EdDSA` (-8)
-- `kid` (4) - Optional, if present must be set to the same value as in the
-  `COSE_key` specified below. It is recommended to be set to the same value as
-  in the `"address"` header.
-- `"address"` - must be set to the raw binary bytes of the address as per the
-  binary spec, without the CBOR binary wrapper tag
-
-The payload is not hashed and no `external_aad` is used.
-
-##### Returns
-
-The return shall be a `DataSignature` with `signature` set to the hex-encoded
-CBOR bytes of the `COSE_Sign1` object specified above and `key` shall be the
-hex-encoded CBOR bytes of a `COSE_Key` structure with the following headers set:
-
-- `kty` (1) - must be set to `OKP` (1).
-- `kid` (2) - Optional, if present must be set to the same value as in the
-  `COSE_Sign1` specified above.
-- `alg` (3) - must be set to `EdDSA` (-8).
-- `crv` (-1) - must be set to `Ed25519` (6).
-- `x` (-2) - must be set to the public key bytes of the key used to sign the
-  `Sig_structure`.
-
-##### Errors
-
-<!-- prettier-ignore-start -->
-
-| Error Type      | Error Code        | Return Condition                                                                                                               |
-| --------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `APIError`      | `InvalidRequest`  | Returned if a input parameter is passed.                                                                                       |
-| `APIError`      | `InternalError`   | Returned if there is a generic internal error occurred during execution of this API call.                                      |
-| `APIError`      | `Refused`         | Returned if there is a refusal, could be wallet disconnection or extension is revoked.                                         |
-| `APIError`      | `AccountChange`   | Returned if wallet has changed account, meaning connection should be reestablished.                                            |
-| `DataSignError` | `ProofGeneration` | Returned if user has accepted to sign, but wallet could not sign the data; because the wallet does not have the required keys. |
-| `DataSignError` | `AddressNotPK`    | Returned if Address was not a P2PK address and thus had no SK associated with it.                                              |
-| `DataSignError` | `UserDeclined`    | Returned if the user declined to sign the data.                                                                                |
-
-<!-- prettier-ignore-stop -->
+The DRep hash [CIP-5](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0005/README.md#hashes) should be used in the `"address"` field of `COSE_Sign1`'s `Sig_structure` header.
 
 ### Versioning
 
