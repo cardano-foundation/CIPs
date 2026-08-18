@@ -45,7 +45,7 @@ This CIP presents a motivational example, discusses related benchmarks,
 and considers different ways of evolving Plutus 
 toward efficient implementation of scalars for BLS12-381 curve.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Example use case: multiplying binomials
 
