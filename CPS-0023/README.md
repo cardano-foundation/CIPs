@@ -23,7 +23,7 @@ Cardano’s on-chain treasury currently holds funds in ada (lovelace) only. Howe
 
 The Cardano treasury's exclusive holding of ada (lovelace) creates financial instability for both the treasury and funding proposers. Proposers must denominate their requests in ada, yet their real-world costs are in fiat. This forces them to gamble on a fixed exchange rate in their budgets. Consequently, proposers bear all the financial risk: a drop in ada's price can render their project underfunded and unviable, while a sharp price increase results in an inefficient over-allocation of community funds. This volatility makes sustainable, long-term budgeting impossible for proposers and complicates the treasury's own capital management, creating a high-risk environment that can deter high-quality, long-term ecosystem development.
 
-## Use cases
+## Use Cases
 
 Enabling the Cardano treasury to hold Cardano Native Tokens (CNTs) (including stablecoins) unlocks a range of possibilities beyond just ada funding:
 
