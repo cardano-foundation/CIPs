@@ -109,12 +109,12 @@ of the older Plutus scripts.
 ## Path to Active
 
 ### Acceptance Criteria
-
-- Fully implemented in Cardano node
+- [ ] Fully implemented in Cardano node
 
 ### Implementation Plan
-
-- TODO
+- [ ] Update the formal Ledger specification with "changes to the Ledger logic" above
+- [ ] Implement the outlined changes in the Cardano node
+- [ ] Complete a hard fork enabling support for the changes outlined here
 
 ## Copyright
 
