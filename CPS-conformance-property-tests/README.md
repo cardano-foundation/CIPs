@@ -1,5 +1,5 @@
 ---
-CPS: "?"
+CPS: 34
 Title: Extending Plutus Core conformance testing 
 Category: Plutus
 Status: Open
