@@ -1,12 +1,13 @@
 ---
 CIP: 172
 Title: Self-Usable Transaction Outputs
-Status: Proposed
 Category: Ledger
+Status: Proposed
 Authors:
     - Carlos Tomé Cortiñas <carlos.tome-cortinas@iohk.io>
 Implementors: []
 Discussions:
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1135
 Created: 2026-01-15
 License: CC-BY-4.0
 ---
