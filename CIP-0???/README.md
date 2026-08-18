@@ -1,5 +1,5 @@
 ---
-CIP: TBD
+CIP: 196
 Title: Handle Provider Registry & Resolver
 Category: Tools
 Status: Proposed
