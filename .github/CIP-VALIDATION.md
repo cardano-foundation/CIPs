@@ -16,6 +16,8 @@ These attempt to codify the guidance described within [CIP-0001 | CIP Process](.
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | Header line whitespace | Frontmatter lines must not have trailing whitespace |
 | No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CIP: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CIP: "?"` (or a word placeholder like `unassigned` / `pending` / `TBD`, which needs no quotes) until a number is assigned. |
+| No duplicate keys | No header key may be defined twice (e.g. two `Status:` lines, or a repeated label inside a `Discussions` entry). YAML keeps only the last occurrence and silently discards the earlier one(s). |
+| No duplicate entries | List fields (`Authors`, `Implementors`, `Discussions`, `Solution To`) must not repeat the same entry. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations

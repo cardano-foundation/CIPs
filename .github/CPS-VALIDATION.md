@@ -15,6 +15,8 @@ These attempt to codify the guidance described within [CIP-9999 | Cardano Proble
 | Line endings | Must use UNIX line endings (LF), not Windows (CRLF) or old Mac (CR) |
 | Frontmatter | Must have valid YAML frontmatter between `---` delimiters |
 | No unquoted `?` values | Header fields must not have a bare `?` value (e.g. `CPS: ?`); it is invalid YAML and breaks GitHub's frontmatter rendering. Use a quoted `CPS: "?"` (or a word placeholder like `unassigned` / `pending` / `TBD`, which needs no quotes) until a number is assigned. |
+| No duplicate keys | No header key may be defined twice (e.g. two `Status:` lines, or a repeated label inside a `Discussions` entry). YAML keeps only the last occurrence and silently discards the earlier one(s). |
+| No duplicate entries | List fields (`Authors`, `Proposed Solutions`, `Discussions`) must not repeat the same entry. |
 | No H1 headings | H1 (`#`) headings are not allowed in the document body |
 
 ## Header Field Validations
