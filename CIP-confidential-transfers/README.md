@@ -1059,6 +1059,47 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   requires new ristretto255 Plutus builtins (see [extensions.md](extensions.md)), whereas
   BLS commitments could have reused CIP-0381's — an acceptable price for keeping base-layer
   validation on the smaller, canonical-encoding group.
+- **The raw Edwards25519 group with hand-written cofactor rules.** Cardano's entire signature
+  stack is Ed25519, so the most familiar-looking choice would be to place the commitments and
+  proofs directly on the raw Edwards25519 group — cofactor 8 and all — and neutralize the
+  cofactor with explicit validation rules, as Monero has done in production since 2014.
+  Workable, but rejected on five grounds. (1) The fix is not one rule but a **scatter of
+  rules** that every node, wallet, and library must implement identically forever:
+  torsion-freeness checks on every deserialized point, canonical-encoding acceptance rules,
+  and cofactor-aware verification equations — with inflation bugs and consensus splits as the
+  failure mode. The precedents are not hypothetical: Monero's 2017 double-spend vulnerability
+  was a missed torsion check on key images, and acceptance criteria for Ed25519 points differ
+  across mainstream libraries badly enough that Zcash needed a dedicated consensus rule
+  (ZIP-215) just to make signature validity unambiguous — the same hazard this proposal's
+  transcript hashing cannot tolerate. (2) It is **not even cheaper**: a torsion-freeness
+  check costs on the order of a scalar multiplication per point, more than a ristretto255
+  decode, which is comparable to ordinary point decompression and yields a guaranteed
+  prime-order element in one step. (3) A torsioned ephemeral key `E` accepted into the
+  [amount transport](#amount-transport) would leak `sk_view mod 8` through the DH computation
+  (a small-subgroup leak) and muddy the exact `E == e·G` conformance check the outgoing-audit
+  tier relies on. (4) The apparent counterexample — "Ed25519 lives with cofactor 8 on Cardano
+  today, unfixed" — does not carry over, because today's ledger *sidesteps* the cofactor with
+  three defences this scheme structurally cannot use. (a) Every Ed25519 secret scalar is
+  **clamped** to a multiple of 8, which annihilates any torsion component in `s·P` — but
+  clamped scalars are not closed under addition, and this scheme *is* scalar addition
+  (homomorphic sums, `excess = Σr_in − Σr_out`, KDF-derived blindings ranging over the full
+  scalar field); a blinding cannot be clamped. (b) Signature-acceptance ambiguity is
+  neutralized today by an implementation **monoculture** (every node validates with the same
+  crypto backend) — a guarantee that weakens in a multi-implementation node era exactly when
+  this proposal would rely on it hardest, since here point bytes feed transcript hashes that
+  decide validity, turning acceptance disagreement into a chain split rather than cosmetic
+  signature malleability. (c) Today's protocol performs **no algebra on attacker-supplied
+  points** beyond verifying a signature against a fixed message, so torsion at worst yields a
+  benign second encoding of an already-valid signature; this scheme is *nothing but* algebra
+  on attacker-supplied points — commitments are summed across transactions, hashed into
+  Fiat–Shamir transcripts, and equated against `excess·G` to decide whether value was
+  conserved. (5) Finally, the premise of the objection is inverted: **ristretto255 is not a
+  different curve** — it is the same Edwards25519 arithmetic (same field, same formulas, the
+  same code lineage nodes already run for Ed25519 and VRF) behind a standardized encoding
+  layer ([RFC 9496][rfc9496]) that performs exactly those cofactor fixes once, at decode
+  time, by construction. The choice is therefore not "standard curve versus exotic group" but
+  "cofactor rules scattered through the ledger specification versus the same rules packaged
+  in one audited, standardized decode step".
 - **Enforcing the outgoing-audit derivation at consensus level.** The deterministic
   ephemeral-scalar derivation (see [amount transport](#amount-transport)) cannot be checked
   by validators, so the exact-amount tier of the audit guarantee is conditional on wallet
