@@ -9,9 +9,8 @@ Authors:
   - Nicolas Cerny - Cardano Foundation <nicolas.cerny@cardanofoundation.org>
 Proposed Solutions: []
 Discussions:
-  - https://forum.cardano.org/t/cardano-multi-asset-treasury-cmat/149984
-  - https://github.com/cardano-foundation/CIPs/pull/1061#issuecomment-3109728207
-  - https://github.com/cardano-foundation/CIPs/pull/1103
+  - Forum discussion: https://forum.cardano.org/t/cardano-multi-asset-treasury-cmat/149984
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1103
 Created: 2025-10-26
 License: CC-BY-4.0
 ---
