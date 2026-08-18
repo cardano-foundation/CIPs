@@ -7,7 +7,7 @@ Authors:
   - fallen-icarus <modern.daidalos@gmail.com>
 Implementors: []
 Discussions:
- - https://github.com/cardano-foundation/CIPs/pull/1178
+ - Original PR: https://github.com/cardano-foundation/CIPs/pull/1178
 Created: 2026-04-09
 License: CC-BY-4.0
 ---
