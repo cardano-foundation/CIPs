@@ -5,7 +5,7 @@ Status: Proposed
 Category: Ledger
 Authors:
     - Carlos Tomé Cortiñas <carlos.tome-cortinas@iohk.io>
-Implementors:
+Implementors: []
 Discussions:
 Created: 2026-01-15
 License: CC-BY-4.0
