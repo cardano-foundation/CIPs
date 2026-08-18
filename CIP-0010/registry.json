@@ -180,6 +180,14 @@
     "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
   },
   {
+    "transaction_metadatum_label": 37326,
+    "description": "Eternl Pro - license metadata"
+  },
+  {
+    "transaction_metadatum_label": 49314,
+    "description": "Open CryptoPay - payment identification and reconciliation metadata"
+  },
+  {
     "transaction_metadatum_label": 61284,
     "description": "CIP-0015 - Catalyst registration"
   },
