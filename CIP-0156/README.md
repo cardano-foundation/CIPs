@@ -10,7 +10,8 @@ Implementors:
     - IOG Plutus Team <https://iohk.io>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1050
-    - CIP-0156 | array-first argument order for multiIndexArray: https://github.com/cardano-foundation/CIPs/pull/1234
+    - CIP-0156 | Array-first argument order for multiIndexArray: https://github.com/cardano-foundation/CIPs/pull/1234
+    - CIP-0156 | Specify the index count limit for multiIndexArray: https://github.com/cardano-foundation/CIPs/pull/1245
 Created: 2025-07-07
 License: CC-BY-4.0
 ---
