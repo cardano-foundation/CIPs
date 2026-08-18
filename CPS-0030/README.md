@@ -31,7 +31,16 @@ discussion. That does not mean that this is not at risk against a QC adversary!
 Quite the contrary, as described in
 [this pull request](https://github.com/cardano-foundation/CIPs/pull/1144).
 Moreover, the impact of some of the design constraints in this CPS also
-constrains the Plutus context. But given that the security of Plutus breaks if
+constrains the Plutus context. Note that the two are somewhat intertwined:
+Plutus scripts can reference the witnesses in the transaction witness set
+(e.g., via `txInfoSignatories`), even though these signatures are validated
+in phase 1. A change of signature scheme thus does not significantly impact
+phase 2 run time, but the public keys referenced from the script context will
+increase in size. Besides this, Plutus also offers builtins that verify
+signatures in phase 2 (ECDSA over secp256k1 and its Schnorr variant), which
+face the same quantum threat. Addressing this would require a new Plutus
+variant that is quantum secure, as the existing versions are not. But given
+that the security of Plutus breaks if
 consensus is attacked, the priority of this broad discussion should focus on
 that first.
 
