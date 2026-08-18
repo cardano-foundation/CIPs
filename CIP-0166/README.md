@@ -402,7 +402,7 @@ TDB: Introduction of this type potentially allows simplifying cost models for so
 Currently, scalars have to be reduced modulo the order of the group before being passed to the `blst` 
 functions, see [cardano-base](https://github.com/IntersectMBO/cardano-base/blob/6f9c20abdd3010e5a25356580cc968ba430101ad/cardano-crypto-class/src/Cardano/Crypto/EllipticCurve/BLS12_381/Internal.hs#L521).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The availability of built-in functions in the Plutus language will provide a
 more efficient way to perform this important type of computation,
