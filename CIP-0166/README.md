@@ -1,8 +1,8 @@
 ---
 CIP: 166
 Title: Efficient scalars for BLS12-381
-Status: Proposed
 Category: Plutus
+Status: Proposed
 Authors:
     - Ilia Rodionov <hey@euony.me>
 Implementors: []
