@@ -27,6 +27,8 @@ from validation_common import (
     validate_number_field,
     validate_leading_zero_lines,
     validate_unquoted_question_marks,
+    validate_no_duplicate_keys,
+    validate_no_duplicate_entries,
     validate_authors_field,
     validate_created_field,
     validate_license_field,
@@ -189,6 +191,9 @@ def validate_header(frontmatter: Dict) -> List[str]:
         errors.append(f"Schema error: {e.message}")
 
     # Friendly per-field value checks (schema enforces only type/structure for these)
+    errors.extend(validate_no_duplicate_entries(
+        frontmatter, ['Authors', 'Proposed Solutions', 'Discussions']
+    ))
     errors.extend(validate_number_field(frontmatter, 'CPS'))
     errors.extend(_validate_title_field(frontmatter))
     errors.extend(_validate_status_field(frontmatter))
@@ -350,6 +355,7 @@ def validate_file(file_path: Path) -> Tuple[bool, List[str]]:
 
     if raw_lines:
         errors.extend(validate_unquoted_question_marks(raw_lines, 'CPS'))
+        errors.extend(validate_no_duplicate_keys(raw_lines))
 
     # Validate the directory name matches the assigned CPS number
     dir_errors = validate_directory_name(frontmatter, file_path, 'CPS')

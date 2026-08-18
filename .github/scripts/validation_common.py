@@ -7,6 +7,7 @@ respective validate-cip.py / validate-cps.py scripts.
 """
 
 import re
+from collections.abc import Hashable
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
@@ -34,6 +35,23 @@ def number_guidance(field_name: str) -> str:
         f"'{field_name}' must be a positive integer (e.g., 30), or \"?\" (quoted), "
         f"{_WORD_PLACEHOLDERS_TEXT} if not yet assigned."
     )
+
+
+def _quote_placeholder_values(lines: List[str]) -> List[str]:
+    """Quote standalone '?' values so PyYAML can load the header.
+
+    An unquoted '?' is YAML's explicit key indicator, so ``CIP: ?`` would
+    otherwise fail to load. The bare-'?' usage is still reported to the author
+    by validate_unquoted_question_marks; quoting here only lets the remaining
+    header checks run.
+    """
+    processed = []
+    for line in lines:
+        # Match lines like "CIP: ?" or "Category: ?" and quote the ?
+        if re.match(r'^[A-Za-z][A-Za-z -]*:\s+\?+\s*$', line):
+            line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
+        processed.append(line)
+    return processed
 
 
 def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Optional[List[str]], Optional[str]]:
@@ -68,15 +86,7 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], Optional[str], Opti
     # Extract frontmatter (lines between the two --- markers)
     frontmatter_lines = lines[1:end_idx]
 
-    # Preprocess: quote standalone '?' values (YAML interprets '?' as explicit key indicator)
-    processed_lines = []
-    for line in frontmatter_lines:
-        # Match lines like "CIP: ?" or "Category: ?" and quote the ?
-        if re.match(r'^[A-Za-z][A-Za-z -]*:\s+\?+\s*$', line):
-            line = re.sub(r':\s+(\?+)\s*$', r': "\1"', line)
-        processed_lines.append(line)
-
-    frontmatter_text = '\n'.join(processed_lines)
+    frontmatter_text = '\n'.join(_quote_placeholder_values(frontmatter_lines))
 
     # Extract remaining content (everything after the closing ---)
     remaining_lines = lines[end_idx + 1:]
@@ -395,6 +405,113 @@ def validate_unquoted_question_marks(raw_lines: List[str], number_field: str) ->
                 f"GitHub's frontmatter rendering (header table / clickable Discussions links). "
                 f"{fix_hint}"
             )
+    return errors
+
+
+class _DuplicateKeyLoader(yaml.SafeLoader):
+    """SafeLoader that records duplicate mapping keys instead of ignoring them.
+
+    PyYAML accepts duplicate keys and silently keeps the last one, so a header
+    with two ``Status:`` lines parses cleanly while the author's first value is
+    dropped. This loader collects every repeated key (with its line number) so
+    the validator can report it.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.duplicate_keys: List[Tuple[str, int]] = []
+
+    def construct_mapping(self, node, deep=False):
+        seen = set()
+        for key_node, _ in node.value:
+            try:
+                key = self.construct_object(key_node, deep=deep)
+            except yaml.YAMLError:
+                continue
+            if not isinstance(key, Hashable):
+                key = str(key)
+            if key in seen:
+                # start_mark.line is 0-based within the frontmatter body, which
+                # itself starts on file line 2 (line 1 is the opening '---').
+                self.duplicate_keys.append((str(key), key_node.start_mark.line + 2))
+            seen.add(key)
+        return super().construct_mapping(node, deep)
+
+
+def find_duplicate_keys(raw_lines: Optional[List[str]]) -> List[Tuple[str, int]]:
+    """Return (key, file_line_number) for every duplicated key in the header.
+
+    Covers nested mappings too (e.g. a repeated label inside a Discussions
+    entry). Returns an empty list when the header cannot be loaded — those
+    failures are reported by parse_frontmatter.
+    """
+    if not raw_lines:
+        return []
+    text = '\n'.join(_quote_placeholder_values(raw_lines))
+    loader = _DuplicateKeyLoader(text)
+    try:
+        loader.get_single_data()
+        return list(loader.duplicate_keys)
+    except (yaml.YAMLError, ValueError):
+        return list(loader.duplicate_keys)
+    finally:
+        loader.dispose()
+
+
+def validate_no_duplicate_keys(raw_lines: Optional[List[str]]) -> List[str]:
+    """Validate that no key is defined twice in the YAML frontmatter.
+
+    YAML has no duplicate-key error: the last occurrence wins and the earlier
+    one is discarded without warning, so an author can e.g. list ``Status``
+    twice and have the value they meant silently ignored. Each duplicate is
+    reported once, at the line of its repeat occurrence.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for key, line_number in find_duplicate_keys(raw_lines):
+        errors.append(
+            f"Duplicate header key '{key}' on line {line_number}: it is defined more than once. "
+            f"YAML keeps only the last occurrence and silently discards the earlier one(s); "
+            f"remove the duplicate so a single value applies."
+        )
+    return errors
+
+
+def validate_no_duplicate_entries(frontmatter: Dict, field_names: List[str]) -> List[str]:
+    """Validate that list-valued header fields have no repeated entries.
+
+    Unlike duplicate keys, duplicate list entries survive parsing and render as
+    a repeated row in GitHub's header table. Entries are compared in their
+    normalized ``'Label: URL'`` form so that the string and single-key-dict
+    spellings of the same entry count as duplicates of each other.
+
+    Returns:
+        List of error messages (empty if valid)
+    """
+    errors = []
+    for field_name in field_names:
+        entries = frontmatter.get(field_name)
+        if not isinstance(entries, list):
+            continue
+        seen = {}
+        for i, entry in enumerate(entries):
+            if isinstance(entry, dict) and len(entry) == 1:
+                label, url = next(iter(entry.items()))
+                normalized = f"{label}: {url}"
+            elif isinstance(entry, str):
+                normalized = entry
+            else:
+                normalized = repr(entry)
+            normalized = ' '.join(normalized.split())
+            if normalized in seen:
+                errors.append(
+                    f"'{field_name}' entry {i+1} duplicates entry {seen[normalized]}: "
+                    f"{normalized!r}. Remove the repeated entry."
+                )
+            else:
+                seen[normalized] = i + 1
     return errors
 
 
