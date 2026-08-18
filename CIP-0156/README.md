@@ -81,7 +81,7 @@ Failing on first error mirrors `indexArray` and keeps the API simple.
 
 1. Add `multiIndexArray` to Plutus Core spec and runtime.
 2. Define preliminary cost model (linear in index list length for both CPU usage and memory usage).
-3. Write conformance tests covering valid and out-of-bounds cases.
+3. Write conformance tests covering valid, out-of-bounds, and over-the-index-count-limit cases, including the 1024-index boundary.
 4. Extend an E2E test suite to include `multiIndexArray` scenarios.
 5. Benchmark against manual `indexArray` loops to refine costing.
 6. Update formal documentation (`plutus-metatheory`, spec PDF).
