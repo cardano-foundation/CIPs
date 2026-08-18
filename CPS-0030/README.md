@@ -264,7 +264,6 @@ constraint by other design principles and timings.
 
 ## Open Questions
 
-<!-- A set of questions to which any proposed solution should find an answer. Questions should help guide solutions design by highlighting some foreseen vulnerabilities or design flaws. Solutions in the form of CIP should thereby include these questions as part of their 'Rationale' section and provide an argued answer to each. -->
 
 Below a non-exhaustive list of open questions that come at this stage:
 
