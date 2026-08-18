@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 197
 Title: Post-Quantum ZK Signatures for HD Wallets
 Category: Wallets
 Status: Proposed
