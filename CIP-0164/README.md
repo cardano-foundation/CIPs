@@ -492,6 +492,7 @@ availability:
 | Ranking block max size                                         |  $S_\text{RB}$   |    bytes     | Maximum size of a ranking block                                                           | Limits RB size to ensure timely diffusion                                                                                                                                                      |
 | Endorser-block referenceable transaction size                  | $S_\text{EB-tx}$ |    bytes     | Maximum total size of transactions that can be referenced by an endorser block            | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                |
 | Endorser block max size                                        |  $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                  | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                        |
+| Endorser-block max reference script size                       | $S_\text{EB-ref}$ |    bytes     | Maximum total size of reference scripts used by the transactions referenced by an endorser block | The EB analogue of the Praos per-block `maxRefScriptSizePerBlock`: bounds the script bytes that must be loaded from the UTxO and evaluated per EB, which the EB's own size does not account for. |
 | Committee size                                                 |      $N_c$       |    seats     | Number of top-stake pools seated on the epoch's voting committee                           | Directly bounds votes per EB and certificate size. Governed from the stake distribution so that covered stake $\sigma(N_c)$ exceeds $\tau$ with headroom; see [feasible values](#table-7).      |
 | Quorum stake threshold                                         |      $\tau$      |   fraction   | Minimum fraction of total active stake that must be represented by votes in a certificate | Safety-critical. Must satisfy $0.5 < \tau < \sigma(N_c)$, and leave a sizable $\tau - \sigma_a$ of honest stake for the $\Delta_\text{EB}^{\text{W}}$ assumption; see [choosing the quorum threshold](#choosing-quorum-threshold). |
 | Maximum Plutus steps per endorser block                        |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block         | Limits computational resources per EB to ensure timely validation                                                                                                                              |
@@ -625,13 +626,16 @@ includes their certificate needs processing.
 
 #### Size parameters
 
-Two separate parameters control EB sizes:
+Three separate parameters control EB sizes:
 
 - $S_\text{EB}$ limits the size of the EB data structure itself, preventing
   issues when many small transactions create large numbers of transaction
   references (32 bytes each)
 - $S_\text{EB-tx}$ limits the total size of transactions that can be referenced,
   controlling the actual transaction payload
+- $S_\text{EB-ref}$ limits the total size of reference scripts those transactions
+  use, controlling script bytes that are loaded from the UTxO rather than carried
+  by the EB
 
 Note that $S_\text{EB-tx}$ does not change the maximum size of individual
 transactions. The existing `maxTxSize` parameter remains unchanged and continues
@@ -639,6 +643,13 @@ to limit individual transaction sizes. The purpose of $S_\text{EB-tx}$ is to
 limit the total computational work required for validation and ledger state
 updates when processing an EB, since the EB size itself does not account for the
 full size of all referenced transaction data that must be validated.
+
+$S_\text{EB-ref}$ stands in the same relation to `maxRefScriptSizePerBlock` as
+$S_\text{EB-tx}$ does to `maxBlockBodySize`: reference scripts live in the UTxO
+and so are counted by neither $S_\text{EB}$ nor $S_\text{EB-tx}$, yet they must be
+loaded and evaluated to validate an EB. The per-transaction
+`maxRefScriptSizePerTx` likewise remains unchanged, and the Praos per-block limit
+continues to apply to RBs.
 
 For example, an EB referencing 10,000 transactions of 100 bytes each would have
 $S_\text{EB-tx} = 1$ MB but the EB itself would be at least 320 KB for the
@@ -2445,6 +2456,7 @@ consideration of tradeoffs.
 | Diffusion period length                       | $L_\text{diff}$  |      7 slots       | Per [diffusion period](#diffusion-period): minimum calculated as 4 slots with typical network values, use 7 for safety margin.                                                                                                                                 |
 | Endorser-block referenceable transaction size | $S_\text{EB-tx}$ |       12 MB        | Simulations indicate that 200 kB/s throughput is feasible at this block size.                                                                                                                                                                                  |
 | Endorser block max size                       |  $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                                                                                                     |
+| Endorser-block max reference script size      | $S_\text{EB-ref}$ |       12 MB        | ~11× mainnet's 1 MiB `maxRefScriptSizePerBlock` in absolute terms, but capped at $S_\text{EB-tx}$ rather than the ~11.6× of payload Praos permits, since EB validation must finish within $L_\text{vote}$. Needs the same simulation grounding as the Plutus budgets below. | | Maximum Plutus steps per endorser block       |        -         |  2000G step units  | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                                                                                                |
 | Maximum Plutus steps per endorser block       |        -         |  2000G step units  | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                                                                                                |
 | Maximum Plutus memory per endorser block      |        -         | 7000M memory units | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                                                                                                |
 | Ranking block max size                        |  $S_\text{RB}$   |    90,112 bytes    | This is the current value on the Cardano mainnet.                                                                                                                                                                                                              |
