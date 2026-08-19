@@ -7,7 +7,7 @@ Authors:
     - Kenneth MacKenzie <kenneth.mackenzie@iohk.io>
 Proposed Solutions: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1244
 Created: 2026-08-06
 License: Apache-2.0
 ---
