@@ -1046,11 +1046,22 @@ orders-of-magnitude higher cost, is neither needed nor practical on-chain (see
   in the system (in a native design the verifier is every node at every block, not a
   prover-side concern). (2) **+50% on every element** (48- versus 32-byte encodings) — every
   commitment, ephemeral key, and proof element, on top of an already 3–5× transaction-size
-  trade-off. (3) **Cofactor**: G1 sits on a curve with a large cofactor (≈2¹²⁵), so every
-  deserialized point requires an explicit subgroup-membership check — cheap with
-  endomorphism techniques but per-point and a classic implementation hazard — whereas
-  ristretto255 decoding yields canonical prime-order elements by construction, which is what
-  makes validation rule 1 trivially sound and transcript hashing unambiguous. (4) The
+  trade-off. (3) **Cofactor** — and here the comparison is instructive for readers weighing
+  "standard curve" intuitions. A curve's *cofactor* is how many times more points the full
+  curve carries than the prime-order subgroup the cryptography actually wants: only `1/cofactor`
+  of the curve's points are "good" ones, and an attacker is free to hand a verifier any of the
+  others unless every deserialized point is explicitly checked for subgroup membership.
+  Curve25519's cofactor is **8** — seven bad points for every good one, already enough to
+  motivate this proposal's use of ristretto255. The curve underlying BLS12-381 G1 has a
+  cofactor of **≈2¹²⁵** — astronomically more non-subgroup points than subgroup points, making
+  the check load-bearing on every single point that crosses the wire. The check itself is
+  cheap with endomorphism techniques, but it is per-point, easy to forget in exactly one code
+  path, and a classic implementation hazard. So the "avoid the exotic ristretto, use an
+  established curve" instinct, followed to BLS12-381, would buy a strictly *worse* version of
+  the very problem ristretto255 exists to remove (see also the raw-Edwards25519 alternative
+  below): ristretto255 decoding yields canonical prime-order elements by construction —
+  there are no bad points *representable at all* — which is what makes validation rule 1
+  trivially sound and transcript hashing unambiguous. (4) The
   hardened **Bulletproofs ecosystem is ristretto-native** (the dalek lineage, in production
   in Monero since 2018); Bulletproofs over G1 would be a bespoke implementation without that
   audit history. (5) **Field reuse with Ed25519**: ristretto255 shares its field with the
