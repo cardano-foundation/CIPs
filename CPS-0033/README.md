@@ -139,9 +139,6 @@ Any proposed CIP responding to this CPS should address the following:
 - [DRep Voting Power Saturation Research, Project Catalyst Fund 14](https://projectcatalyst.io/funds/14/cardano-open-ecosystem/drep-voting-power-saturation-research)
 
 - [Cardano State of Governance Report 2026 (Beyond MVG project deliverable)](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view)
-- [^5]: [Beyond MVG on-chain measurements, epochs 537–609, DRep Gini and Nakamoto coefficient datasets (M3-2-1, M3-2-2)](https://github.com/input-output-hk/Beyond_MVG/tree/main/data/On-chain-visuals-epoch-537-609/DRep-metrics); [analyzed in the *Cardano State of Governance Report 2026*](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view).
-
-[^6]: [*Intersect Weekly Update #114* (June 5, 2026), highlighting the observed decline in the DRep Nakamoto coefficient trend.](https://intersectmbo.org/news/intersect-weekly-update-114-june-5-2026)
 
 ### Related CPS / CIP Discussions
 
@@ -153,6 +150,10 @@ Any proposed CIP responding to this CPS should address the following:
 
 - [Uniswap Delegate Reward Working Group](https://gov.uniswap.org/t/temp-check-uniswap-delegate-reward-3-months-cycle-1/23837)
 
+## Copyright
+
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
 [^1]: ["Concave is the New Linear: The Impossibility of Anti-Plutocratic DAO Governance"](https://arxiv.org/html/2605.18990v1)
 
 [^2]: [Empirical study of DAO voting power and concentration (arXiv)](https://arxiv.org/pdf/2204.01176)
@@ -161,6 +162,6 @@ Any proposed CIP responding to this CPS should address the following:
 
 [^4]: ["Fairness in Token Delegation: Mitigating Voting Power Concentration in DAOs"](https://arxiv.org/html/2510.05830v2)
 
-## Copyright
+[^5]: [Beyond MVG on-chain measurements, epochs 537–609, DRep Gini and Nakamoto coefficient datasets (M3-2-1, M3-2-2)](https://github.com/input-output-hk/Beyond_MVG/tree/main/data/On-chain-visuals-epoch-537-609/DRep-metrics); [analyzed in the *Cardano State of Governance Report 2026*](https://drive.google.com/file/d/1INAVHFd8MSvitdQ6oKzxqdyLqx-jhGGu/view).
 
-This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+[^6]: [*Intersect Weekly Update #114* (June 5, 2026), highlighting the observed decline in the DRep Nakamoto coefficient trend.](https://intersectmbo.org/news/intersect-weekly-update-114-june-5-2026)
