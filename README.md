@@ -153,15 +153,18 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0164 | [Ouroboros Linear Leios - Greater transaction throughput](./CIP-0164) | Proposed |
 | 0165 | [Canonical Ledger State](./CIP-0165) | Proposed |
 | 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
+| 0168 | [More BuiltinValue Functions](./CIP-0168) | Proposed |
 | 0169 | [Governance Metadata - On-Chain Binding](./CIP-0169) | Proposed |
 | 0170 | [KERI-backed metadata attestations](./CIP-0170) | Proposed |
 | 0171 | [On-chain Smart Contract Bytecode Verification](./CIP-0171) | Proposed |
+| 0172 | [Self-Usable Transaction Outputs](./CIP-0172) | Proposed |
 | 0173 | [Net Change Limit Parameter](./CIP-0173) | Proposed |
 | 0175 | [Stake Pool Hot Credentials](./CIP-0175) | Proposed |
 | 0176 | [Non-segregated Block Body Serialization](./CIP-0176) | Proposed |
 | 0177 | [Ouroboros Tachys - Faster Cardano partner chains](./CIP-0177) | Proposed |
 | 0179 | [On-Chain Surveys and Polls](./CIP-0179) | Proposed |
 | 0181 | [Remove DRep Requirement for Reward Withdrawals](./CIP-0181) | Proposed |
+| 0183 | [Conflict-Based Fee Priority in Mempool](./CIP-0183) | Proposed |
 | 0186 | [Cardano Wallet Deep-Link Signing](./CIP-0186) | Proposed |
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
 | 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
@@ -173,7 +176,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-08-04</i></p>
+<p align="right"><i>Last updated on 2026-08-18</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
@@ -207,11 +210,13 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0025 | [Small pool disadvantage in VRF tiebreakers](./CPS-0025) | Open |
 | 0026 | [Approaches to Fully Homomorphic Encryption](./CPS-0026) | Open |
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
+| 0028 | [Approaches to non-strict UPLC evaluation](./CPS-0028) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
+| 0030 | [Quantum-secure settlement layer](./CPS-0030) | Open |
 | 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
 | 0033 | [DRep Voting Power Concentration](./CPS-0033) | Open |
 
-<p align="right"><i>Last updated on 2026-08-06</i></p>
+<p align="right"><i>Last updated on 2026-08-19</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
