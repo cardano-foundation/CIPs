@@ -210,7 +210,7 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0025 | [Small pool disadvantage in VRF tiebreakers](./CPS-0025) | Open |
 | 0026 | [Approaches to Fully Homomorphic Encryption](./CPS-0026) | Open |
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
-| 0028 | [Approaches to call-by-need in UPLC](./CPS-0028) | Open |
+| 0028 | [Approaches to non-strict UPLC evaluation](./CPS-0028) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
 | 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
 | 0033 | [DRep Voting Power Concentration](./CPS-0033) | Open |
