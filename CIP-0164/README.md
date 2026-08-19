@@ -483,18 +483,20 @@ availability:
 <div align="center">
 <a name="table-3" id="table-3"></a>
 
-| Parameter                                                      |      Symbol      |    Units     | Description                                                                               | Rationale                                                                                                                                                                                      |
-|----------------------------------------------------------------|:----------------:|:------------:|-------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$  |     slot     | Duration for RB headers to propagate network-wide                                         | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                         |
-| <a id="l-vote" href="#l-vote"></a>Voting period length         | $L_\text{vote}$  |     slot     | Duration during which committee members can vote on endorser blocks                       | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                           |
-| <a id="l-diff" href="#l-diff"></a>Diffusion period length      | $L_\text{diff}$  |     slot     | Additional period after voting to ensure network-wide EB availability                     | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time |
-| Ranking block max size                                         |  $S_\text{RB}$   |    bytes     | Maximum size of a ranking block                                                           | Limits RB size to ensure timely diffusion                                                                                                                                                      |
-| Endorser-block referenceable transaction size                  | $S_\text{EB-tx}$ |    bytes     | Maximum total size of transactions that can be referenced by an endorser block            | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                |
-| Endorser block max size                                        |  $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                  | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                        |
-| Committee stake coverage                                       |    $\sigma_c$    |   fraction   | Cumulative active stake covered by the truncated committee                                | Sets how much active stake the committee represents; realized committee size varies with the stake distribution.                                                                               |
-| Quorum stake threshold                                         |      $\tau$      |   fraction   | Minimum fraction of total active stake that must be represented by votes in a certificate | Ensures certified EBs are attested by sufficient honest stake. Must satisfy $\tau < \sigma_c$.                                                                                                 |
-| Maximum Plutus steps per endorser block                        |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block         | Limits computational resources per EB to ensure timely validation                                                                                                                              |
-| Maximum Plutus memory per endorser block                       |        -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                      | Limits memory resources per EB to ensure timely validation                                                                                                                                     |
+| Parameter                                                      |      Symbol      |    Units     | Description                                                                                  | Rationale                                                                                                                                                                                      |
+|----------------------------------------------------------------|:----------------:|:------------:|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$  |     slot     | Duration for RB headers to propagate network-wide                                            | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                         |
+| <a id="l-vote" href="#l-vote"></a>Voting period length         | $L_\text{vote}$  |     slot     | Duration during which committee members can vote on endorser blocks                          | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                           |
+| <a id="l-diff" href="#l-diff"></a>Diffusion period length      | $L_\text{diff}$  |     slot     | Additional period after voting to ensure network-wide EB availability                        | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time |
+| Ranking block max size                                         |  $S_\text{RB}$   |    bytes     | Maximum size of a ranking block                                                              | Limits RB size to ensure timely diffusion                                                                                                                                                      |
+| Endorser-block referenceable transaction size                  | $S_\text{EB-tx}$ |    bytes     | Maximum total size of transactions that can be referenced by an endorser block               | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                |
+| Endorser block max size                                        |  $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                     | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                        |
+| Committee stake coverage                                       |    $\sigma_c$    |   fraction   | Cumulative active stake covered by the truncated committee                                   | Sets how much active stake the committee represents; realized committee size varies with the stake distribution.                                                                               |
+| Quorum stake threshold                                         |      $\tau$      |   fraction   | Minimum fraction of total active stake that must be represented by votes in a certificate    | Ensures certified EBs are attested by sufficient honest stake. Must satisfy $\tau < \sigma_c$.                                                                                                 |
+| Maximum Plutus steps per endorser block                        |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block            | Limits computational resources per EB to ensure timely validation                                                                                                                              |
+| Maximum Plutus memory per endorser block                       |        -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                         | Limits memory resources per EB to ensure timely validation                                                                                                                                     |
+| Maximum _additional_ Plutus steps per tx in endorser block     |        -         |  step units  | Additional computational steps allowed for Plutus scripts on transactions in endorser blocks | Expands the limit on computational resources per tx in an EB                                                                                                                                   |
+| Maximum _additional_ Plutus memory per tx in endorser block    |        -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                         | Expands the limit on memory resources per tx in an EB                                                                                                                                          |
 
 <em>Table 3: Protocol Parameters</em>
 
@@ -502,20 +504,16 @@ availability:
 
 > [!NOTE]
 >
-> While per-transaction limits _could_ be increased based on the
-> [evidence](#resource-requirements), the choice was made to deliberately **only
-> introduce per-endorser-block limits** to avoid escalation of a threat:
-> throughput-lowering attacks on certification would violate liveness of high
-> plutus budget transactions.
+> The per-transaction limits per EB are purely additive, but make applications
+> that rely on it prone to **threat escalation from mere impact in
+> high-throughput to general liveness**: any throughput-lowering attack on
+> certification would prevent inclusion (liveness) of high plutus budget
+> transactions.
 >
 > For example, a 26% stake attacker can trivially attack leios throughput with a
 > 75% certification threshold. If an application would rely on higher (than what
 > is available in praos) plutus demand transactions, those would not get
 > included at all during such an attack.
->
-> Despite, an application can work around this by splitting intense plutus work
-> into multiple transactions and chaining them into, potentially, the same
-> endorser block.
 
 #### Timing parameters
 
