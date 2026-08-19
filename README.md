@@ -212,10 +212,11 @@ The following link lists "candidate" CIPs still under discussion with the commun
 | 0027 | [Approaches to Post-Quantum Signatures](./CPS-0027) | Open |
 | 0028 | [Approaches to non-strict UPLC evaluation](./CPS-0028) | Open |
 | 0029 | [Approaches to Higher-Order Costing](./CPS-0029) | Open |
+| 0030 | [Quantum-secure settlement layer](./CPS-0030) | Open |
 | 0032 | [Handle Provider Interoperability](./CPS-0032) | Open |
 | 0033 | [DRep Voting Power Concentration](./CPS-0033) | Open |
 
-<p align="right"><i>Last updated on 2026-08-18</i></p>
+<p align="right"><i>Last updated on 2026-08-19</i></p>
 
 > [!NOTE]
 > For more details about CPS statuses, see [CIP-9999 > Statuses](./CIP-9999/README.md#statuses).
