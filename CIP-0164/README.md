@@ -903,8 +903,9 @@ following before accepting the block:
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
 
-5. **EB Consistency**: Certificate references the correct EB hash announced in
-   the preceding RB
+5. **Announcement Consistency**: The certificate verifies against the hash of the
+   announcing RB header, which is determined from the certifying RB's chain
+   context rather than carried in the certificate
 
 Formal pen-and-paper algorithms for the voting and certificate scheme are
 given in the [ARC voting crypto review][arc-voting-review] (the scheme in
@@ -3362,21 +3363,21 @@ Certificates**</a>
 
 ```cddl
 leios_certificate =
-  [ slot_no
-  , endorser_block_hash
-  , signers               : bytes          ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
+  [ signers               : bytes          ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
   , aggregated_signature  : leios_bls_signature
   ]
 
 leios_vote =
-  [ slot_no
-  , endorser_block_hash
-  , voter_id             : uint           ; index into the epoch's stake-based committee
-  , vote_signature       : leios_bls_signature
+  [ announcing_rb_hash    : hash32         ; the signed message; hash of the RB header announcing the EB
+  , voter_id              : uint           ; index into the epoch's stake-based committee
+  , vote_signature        : leios_bls_signature
   ]
-  
-endorser_block_hash = hash32
 ```
+
+Neither structure repeats the announcing RB's slot or the EB hash. A vote is
+verified against the `announcing_rb_hash` it carries, and a certificate is
+verified against the announcing RB determined from the certifying RB's own chain
+context, so both are redundant on the wire.
 
 The `signers` bitfield is `⌈N/8⌉` bytes where `N` is the committee size for the
 epoch in which the announcing RB was produced: the `committeeSize` protocol
