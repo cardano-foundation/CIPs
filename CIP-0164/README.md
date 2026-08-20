@@ -829,11 +829,17 @@ pool's active stake.
 
 Because each seat carries its own pool's stake and the quorum $\tau$ is a
 predicate on stake, a seat count cannot mis-weight or under-represent any pool. It
-only decides how much active stake is *eligible* to vote. What it does leave to
-governance is *coverage*: the share of active stake held by the top $N_c$ pools,
-written $\sigma(N_c)$, drifts as stake moves between pools, and liveness requires
-it to stay above $\tau$ with headroom for members that are offline,
-[keyless](#key-registration), or too slow to vote within $L_\text{vote}$.
+only decides how much active stake is *eligible* to vote, and that is the whole of
+what setting it wrong can do: if $N_c$ is too low, the seated pools together hold
+less than $\tau$ of active stake, and then no certificate can meet the threshold
+even when every single committee member votes in favour of the same EB
+announcement.
+
+What $N_c$ does leave to governance is *coverage*: the share of active stake held
+by the top $N_c$ pools, written $\sigma(N_c)$, drifts as stake moves between
+pools, and liveness requires it to stay above $\tau$ with headroom for members
+that are offline, [keyless](#key-registration), or too slow to vote within
+$L_\text{vote}$.
 
 $N_c$ is accordingly a **liveness** parameter, not a safety-critical one: it
 decides which pools may vote, never whether a certificate is valid. The quorum
