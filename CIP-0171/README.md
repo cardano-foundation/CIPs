@@ -9,7 +9,7 @@ Implementors: []
 Discussions:
     - Forum Discussion: https://forum.cardano.org/t/cip-idea-smart-contract-source-code-verification-metadata/152403
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1136
-    - Amendment PR: <url-pending>
+    - Amendment PR: https://github.com/cardano-foundation/CIPs/pull/1252
 Created: 2026-01-19
 License: CC-BY-4.0
 ---
