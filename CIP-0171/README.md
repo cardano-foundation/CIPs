@@ -115,8 +115,10 @@ to constructor 0 and to this revision only, granted on three grounds:
    it is the reference implementation named in the Implementation Plan.
 3. **The prior records were replaced, not stranded.** Every record that existed
    on mainnet under the previous Aiken layout has been re-published by its
-   author in the revised layout. No consumer is left holding a record that this
-   document no longer describes.
+   author in the revised layout, with one exception: a duplicate submission for
+   a repository and commit already covered by a re-published record, which
+   carried no parameters and never completed verification. No consumer is left
+   holding a record that this document no longer describes.
 
 Consumers MUST parse constructor 0 as a fixed six-element list per this
 document. Records under any constructor that do not decode to that
