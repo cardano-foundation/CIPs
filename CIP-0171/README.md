@@ -109,11 +109,9 @@ departs from the two rules stated immediately above:
 Both rules remain in force. This revision is a **one-time exception**, narrowed
 to constructor 0 and to this revision only, granted on three grounds:
 
-1. **Status.** This CIP is `Proposed`, not `Active`. Proposed standards are
-   explicitly revisable.
-2. **Single implementation.** Constructor 0 has one known implementation, and
+1. **Single implementation.** Constructor 0 has one known implementation, and
    it is the reference implementation named in the Implementation Plan.
-3. **The prior records were replaced, not stranded.** Every record that existed
+2. **The prior records were replaced, not stranded.** Every record that existed
    on mainnet under the previous Aiken layout has been re-published by its
    author in the revised layout, with one exception: a duplicate submission for
    a repository and commit already covered by a re-published record, which
