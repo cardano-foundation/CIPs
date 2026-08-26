@@ -148,6 +148,8 @@ What `d` refers to depends on whether the transaction carries application metada
 
 The digest is computed with the algorithm identified by the CESR derivation code (Blake3-256, code `E`, RECOMMENDED), encoded as a CESR primitive in qb64 form, placed in `d` and anchored as the seal of the signer's KEL event. Because `d` covers only the attested data and not label `170` itself, there is no circularity: the payload is serialised and digested first, then the `170` entry is added.
 
+Because the KEL anchor is created before the transaction exists and cannot be retracted once written, implementations SHOULD extract the encoded metadatum bytes from the built transaction and confirm they digest to `d` before submitting. If they differ, the attestation is not verifiable and can only be corrected by anchoring a new event and publishing a new transaction.
+
 > [!WARNING]
 > Verifiers MUST NOT recompute `d` from a JSON representation of the metadata. JSON is not a faithful representation of the on-chain bytes: common indexers normalise map key order at write time (for example `cardano-db-sync` stores `tx_metadata.json` as PostgreSQL `jsonb`, which does not preserve key order), so the information needed to recompute the digest is destroyed before any JSON API returns it. Verifiers MUST obtain the raw metadatum bytes, for example from the transaction CBOR itself (a local node, Koios `/tx_cbor`), from `cardano-db-sync` `tx_metadata.bytes`, or from Blockfrost `/txs/{hash}/metadata/cbor`.
 
