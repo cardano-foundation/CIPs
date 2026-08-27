@@ -348,7 +348,7 @@ Minimal validation includes basic structural and cryptographic integrity checks
 #### Step 3: Committee Validation
 
 After the [equivocation detection period](#equivocation-detection) of
-$3 L_\text{hdr}$ slots, a voting committee of stake pools validates the EB and
+$3 L_\text{hdr}$, a voting committee of stake pools validates the EB and
 votes within a [voting period](#voting-period) $L_\text{vote}$. Committee
 members are [determined by stake-based truncation](#committee-structure) at the
 epoch boundary. A committee member votes for an EB only if:
@@ -363,8 +363,9 @@ epoch boundary. A committee member votes for an EB only if:
    in the [formal specification][leios-formal-spec-empty-eb].
 
 where $L_\text{hdr}$ and $L_\text{vote}$ are
-<a href="#protocol-parameters">protocol parameters</a> represented by a number
-of slots.
+<a href="#protocol-parameters">protocol parameters</a> expressed as wall-clock
+durations. Voting is a node-local timer rather than a chain rule, so these two
+are used as durations directly, with no conversion to slots.
 
 #### Step 4: Certification
 
@@ -401,15 +402,23 @@ has elapsed. See also Figure 4. Concretely, the inclusion rules are:
    [Certificate Validation](#certificate-validation).
 
 3. A certificate may only be included if `RB'` is at least
-   $3 \times
-   L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after `RB`.
+
+   $$\left\lceil \frac{3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}}{\texttt{slotLength}} \right\rceil$$
+
+   slots after `RB`.
 
 4. Regardless of whether `RB'` includes a certificate, it may optionally
    announce its own EB for future certification.
 
 where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
-<a href="#protocol-parameters">protocol parameters</a> represented by a number
-of slots.
+<a href="#protocol-parameters">protocol parameters</a> expressed as wall-clock
+durations. Because the decision compares the slots of two blocks, that total is
+converted to a whole number of slots using the genesis `slotLength`, **rounded
+up**: rounding down would admit a certificate before the durations the
+[security argument](#protocol-security) relies on have actually elapsed. The
+rounding is the only place slot granularity enters the timing rules, and at
+mainnet's `slotLength` the division is exact for the values in
+[Table 7](#table-7).
 
 The certificate inclusion delay ensures certified EBs have sufficient time to
 diffuse throughout the network and do not impact
@@ -489,9 +498,9 @@ availability:
 |----------------------------------------------------------------|:-----------------:|:------------:|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Committee size                                                 |       $N_c$       |    seats     | Number of top-stake pools seated on the epoch's voting committee                                 | Directly bounds votes per EB and certificate size. Governed from the stake distribution so that covered stake $\sigma(N_c)$ exceeds $\tau$ with headroom; see [feasible values](#table-7).                                         |
 | Quorum stake threshold                                         |      $\tau$       |   fraction   | Minimum fraction of total active stake that must be represented by votes in a certificate        | Safety-critical. Must satisfy $0.5 < \tau < \sigma(N_c)$, and leave a sizable $\tau - \sigma_a$ of honest stake for the $\Delta_\text{EB}^{\text{W}}$ assumption; see [choosing the quorum threshold](#choosing-quorum-threshold). |
-| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$   |     slot     | Duration for RB headers to propagate network-wide                                                | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                                             |
-| <a id="l-vote" href="#l-vote"></a>Voting period length         |  $L_\text{vote}$  |     slot     | Duration during which committee members can vote on endorser blocks                              | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                                               |
-| <a id="l-diff" href="#l-diff"></a>Diffusion period length      |  $L_\text{diff}$  |     slot     | Additional period after voting to ensure network-wide EB availability                            | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                                     |
+| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$   |   seconds    | Duration for RB headers to propagate network-wide                                                | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                                             |
+| <a id="l-vote" href="#l-vote"></a>Voting period length         |  $L_\text{vote}$  |   seconds    | Duration during which committee members can vote on endorser blocks                              | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                                               |
+| <a id="l-diff" href="#l-diff"></a>Diffusion period length      |  $L_\text{diff}$  |   seconds    | Additional period after voting to ensure network-wide EB availability                            | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                                     |
 | Maximum endorser block size                                    |   $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                         | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                                                            |
 | Maximum total transaction size per endorser block              | $S_\text{EB-tx}$  |    bytes     | Maximum total size of transactions that can be endorsed by an endorser block                     | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                                                    |
 | Maximum reference script size per endorser block               | $S_\text{EB-ref}$ |    bytes     | Maximum total size of reference scripts used by the transactions endorsed by an endorser block   | The EB analogue of the Praos per-block `maxRefScriptSizePerBlock`: bounds the script bytes that must be loaded from the UTxO and evaluated per EB, which the EB's own size does not account for.                                   |
@@ -524,6 +533,14 @@ availability:
 There are three key parameters related to time, which are important for
 [protocol security](#protocol-security). All relevant quantities are depicted in
 [Figure 4](#figure-4).
+
+These three are **wall-clock durations in seconds**, not slot counts, specified
+the way the genesis `slotLength` is (see [CIP-0009][cip-9]). Each is derived from
+a network propagation time from [Table 1](#table-1), which is a wall-clock
+quantity, so expressing them in slots would couple Leios timing to `slotLength`
+and silently retune the protocol whenever that changed. At mainnet's
+`slotLength` of one second the two readings coincide, which is why the values in
+[Table 7](#table-7) are unchanged from earlier slot-denominated drafts.
 
 <a id="equivocation-detection"></a>
 
@@ -565,7 +582,7 @@ reliable detection before voting begins. This constraint is derived from the
 network model where headers must propagate within $L_\text{hdr}$ to maintain
 Praos security assumptions.
 
-**Security Guarantee**: By waiting $3 L_\text{hdr}$ slots before voting begins,
+**Security Guarantee**: By waiting $3 L_\text{hdr}$ before voting begins,
 the protocol ensures that if any equivocation occurred soon enough to matter,
 all honest nodes will have detected it and will refuse to vote for any EB from
 an RB slot where equivocation was detected. This prevents adversaries from
@@ -686,7 +703,7 @@ The argument proceeds as follows: (i) The certified EB that the RB references
 will be received within $\Delta_\text{RB} - \Delta_\text{applyTxs}$ from the
 initial diffusion time of the RB. This follows directly from [Constraint
 2](#certified-eb-transmission-constraint) and the fact that the RB was generated
-at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after the
+at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ after the
 EB was generated. (ii) The RB will be processed within $\Delta_\text{RB}$ slots,
 due to the fact that it is received within $\Delta_\text{RB} -
 \Delta_\text{applyTxs}$ from its initial diffusion time, and processing in the
@@ -1085,10 +1102,12 @@ proof that the EB has received sufficient committee approval.
 
 <a id="certificate-inclusion" href="#certificate-inclusion"></a>**Certificate
 Inclusion**: Block producers creating new RBs include certificates for EBs where
-at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots have
-elapsed since the slot of the RB that announced the EB (step 12). This timing
-constraint ensures the certified EB has had sufficient time to diffuse
-throughout the network. See the protocol flow section for detailed
+at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ have elapsed
+since the slot of the RB that announced the EB (step 12), rounded up to a whole
+number of slots as specified in
+[Chain Inclusion](#step-5-chain-inclusion). This timing constraint ensures the
+certified EB has had sufficient time to diffuse throughout the network. See the
+protocol flow section for detailed
 [block production and inclusion rules](#step-5-chain-inclusion).
 
 #### Ledger Management
@@ -2009,8 +2028,8 @@ with a set of protocol parameters suitable for running Leios at 200 kB/s of
 transactions, which corresponds to approximately 150 tx/s of transactions of
 sizes typical on the Cardano mainnet. The maximum size of transactions
 referenced by an EB is 12 MB and the stage lengths are
-$3 \times L_\text{hdr} = 3 \text{ slots}$, $L_\text{vote} = 4$, and
-$L_\text{diff} = 7 \text{ slots}$. In order to illustrate the minimal
+$3 \times L_\text{hdr} = 3 \text{ s}$, $L_\text{vote} = 4 \text{ s}$, and
+$L_\text{diff} = 7 \text{ s}$. In order to illustrate the minimal
 infrastructure resources used by Leios at these throughputs, we have limited
 nodes to 4 virtual CPUs each and limited inter-node bandwidth to 10 Mb/s. We
 vary the throughput to illustrate the protocol's behavior in light vs congested
@@ -2061,7 +2080,7 @@ The variability arises from the randomness of the RB production scheduled.
 First, a transaction may has to wait for an RB to be forged; second, a
 transaction referenced by an EB has to wait for the following RB to be forged.
 The EB is discarded, however, if the second RB is produced in fewer than
-$3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after the first
+$3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ after the first
 RB. Thus, both the time to the next RB and the RB following that introduce
 unpredictability in a transaction reaching the ledger under even lightly loaded
 conditions. When the sortition happens to produce RBs too close together,
@@ -2427,18 +2446,19 @@ Based on the [network timing measurements](#network-characteristics):
 
 **Timing Parameter Calibration:**
 
-- $L_\text{hdr} = 1$ slot: Header diffusion period, where equivocation detection
-  period is $3 \times L_\text{hdr} = 3$ slots (per
+- $L_\text{hdr} = 1$ second: Header diffusion period, where equivocation
+  detection period is $3 \times L_\text{hdr} = 3$ seconds (per
   [equivocation detection](#equivocation-detection))
-- $L_\text{vote} = 4$ slots: Since voting begins after $3 \times L_\text{hdr}$,
-  and EB propagation can occur during equivocation detection, nodes only need 4
-  additional slots after $3 \times L_\text{hdr}$ for validation plus margin (per
+- $L_\text{vote} = 4$ seconds: Since voting begins after
+  $3 \times L_\text{hdr}$, and EB propagation can occur during equivocation
+  detection, nodes only need 4 additional seconds after $3 \times L_\text{hdr}$
+  for validation plus margin (per
   [voting period](#voting-period))
-- $L_\text{diff} = 7$ slots: Using the [diffusion period](#diffusion-period)
-  constraint with typical values gives minimum of 4 slots, we use 7 for safety
+- $L_\text{diff} = 7$ seconds: Using the [diffusion period](#diffusion-period)
+  constraint with typical values gives minimum of 4 seconds, we use 7 for safety
   margin
 - **Total certificate inclusion delay:**
-  $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} = 3 + 4 + 7 = 14$ slots
+  $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} = 3 + 4 + 7 = 14$ seconds
 
 **Simulation-Tested Parameters**
 
@@ -2454,9 +2474,9 @@ consideration of tradeoffs.
 |---------------------------------------------------|:-----------------:|:------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Committee size                                    |       $N_c$       |     900 seats      | Covers ~99% of mainnet active stake (890 pools reach 99% at epoch 649), with a 113 B certificate bitfield and a vote count inside the simulated range. See [choosing the committee size](#choosing-committee-size).                                                                                                                                  |
 | Quorum stake threshold                            |      $\tau$       |        0.75        | Votes representing ≥75% of total active stake must sign, so $\tau - \sigma_a = 25\\%$ of honest stake holds every certified EB even at 50% adversarial stake — the seed coverage $\Delta_\text{EB}^{\text{W}}$ and $L_\text{diff}$ assume. Must satisfy $0.5 < \tau < \sigma(N_c)$; see [choosing the quorum threshold](#choosing-quorum-threshold). |
-| Header diffusion period length                    |  $L_\text{hdr}$   |       1 slot       | Per [equivocation detection](#equivocation-detection): accommodates header propagation for equivocation detection. Equivocation detection period is $3 \times L_\text{hdr}$.                                                                                                                                                                         |
-| Voting period length                              |  $L_\text{vote}$  |      4 slots       | Per [voting period](#voting-period): accommodates EB propagation and validation time, with equivocation detection handled separately by $3 \times L_\text{hdr}$.                                                                                                                                                                                     |
-| Diffusion period length                           |  $L_\text{diff}$  |      7 slots       | Per [diffusion period](#diffusion-period): minimum calculated as 4 slots with typical network values, use 7 for safety margin.                                                                                                                                                                                                                       |
+| Header diffusion period length                    |  $L_\text{hdr}$   |      1 second      | Per [equivocation detection](#equivocation-detection): accommodates header propagation for equivocation detection. Equivocation detection period is $3 \times L_\text{hdr}$.                                                                                                                                                                         |
+| Voting period length                              |  $L_\text{vote}$  |     4 seconds      | Per [voting period](#voting-period): accommodates EB propagation and validation time, with equivocation detection handled separately by $3 \times L_\text{hdr}$.                                                                                                                                                                                     |
+| Diffusion period length                           |  $L_\text{diff}$  |     7 seconds      | Per [diffusion period](#diffusion-period): minimum calculated as 4 seconds with typical network values, use 7 for safety margin.                                                                                                                                                                                                                       |
 | Maximum endorser block size                       |   $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                                                                                                                                                                                           |
 | Maximum total transaction size per endorser block | $S_\text{EB-tx}$  |       12 MB        | Simulations indicate that 200 kB/s throughput is feasible at this block size.                                                                                                                                                                                                                                                                        |
 | Maximum reference script size per endorser block  | $S_\text{EB-ref}$ |       12 MB        | ~11× mainnet's 1 MiB `maxRefScriptSizePerBlock` in absolute terms, but capped at $S_\text{EB-tx}$ rather than the ~11.6× of payload Praos permits, since EB validation must finish within $L_\text{vote}$. Needs the same simulation grounding as the Plutus budgets below.                                                                          |
@@ -2468,10 +2488,10 @@ consideration of tradeoffs.
 </div>
 
 This design trades a slightly longer total certification time (typically 13-15
-slots) for significant protocol simplification by eliminating complex correction
+seconds) for significant protocol simplification by eliminating complex correction
 mechanisms and ensuring all RB transactions are always valid.
 
-Simulations on mainnet-like topologies indicate that seven slots is more than
+Simulations on mainnet-like topologies indicate that seven seconds is more than
 sufficient to diffuse the transactions, blocks, and votes required by Leios.
 Most nodes receive these in one second or less and even the tardiest nodes
 receive them in under two seconds. The additional diffusion period provides
@@ -3117,6 +3137,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [cps-18]:
   https://github.com/cardano-foundation/CIPs/blob/master/CPS-0018/README.md
   "CPS-18: Greater transaction throughput"
+[cip-9]:
+  https://github.com/cardano-foundation/CIPs/blob/master/CIP-0009/README.md
+  "CIP-9: Protocol Parameters"
 [leios-paper]:
   https://eprint.iacr.org/2025/1115.pdf
   "Ouroboros Leios: Design Goals and Concepts"
