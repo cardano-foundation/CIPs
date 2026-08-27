@@ -353,19 +353,35 @@ server.
 
 ### Proving Backend Options
 
-The proving backend is an implementation choice with **several viable options**; this CIP
-does not mandate one. The only hard constraint is a **post-quantum prover** — pairing- and
-discrete-log-based schemes (KZG, standard Nova, out-of-the-box Halo2) are excluded, since
-Shor's algorithm breaks them. Within that constraint, the backend is chosen by
-benchmarking the same relations, comparing proving time, peak memory, proof size, and
-audit cost:
+The proving backend is an implementation choice, but the practical reality is stark:
+**only one option (STARKs) is proven post-quantum today, and its proof size (~219 KB)
+precludes on-chain settlement.** All other candidates are either not quantum-safe
+(Nova), require substantial re-engineering to become quantum-safe (Halo2, Plonky3), or
+are research prototypes lacking production maturity (Lova). **NovaSlim is the sole
+exception:** it is classical (not PQ), but it is the only system with a working
+on-chain verifier and sub-kilobyte proofs, making it the pragmatic path for building
+Phase 2 infrastructure now while the PQ cryptography matures.
+
+| | PQ? | On-chain viable? | Status |
+|---|---|---|---|
+| RISC Zero STARK | ✅ Proven | ❌ No (~219 KB) | Production-ready |
+| Halo2 + FRI | 🔜 Requires re-audit | ❌ No (~50–100 KB) | Substantial work needed |
+| Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
+| Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
+| Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
+| **NovaSlim** | ❌ Classical | ✅ **Yes** (~0.4–2.5 KiB) | **Production-ready** |
+
+The options below are presented in full for completeness, but the reader should
+understand that **NovaSlim is the only backend that satisfies the CIP's Phase 2
+infrastructure requirements today.**
 
 1. **RISC Zero zkVM — the [ZKPoSP] paper's backend; the default baseline.** Proof relations are
    written in ordinary Rust, reusing audited primitives (`curve25519-dalek`, `hmac`,
    `sha2`). Lowest engineering risk (no hand-built constraints), but the zkVM's own
    arithmetization, prover, and commitment scheme still require audit. Reference figures
    (paper §9, AMD Ryzen 9 9950X3D): signing proof ~12.5 s, derivation proof ~156 s,
-   verification ~9–10 ms, proof ~219 KB.
+   verification ~9–10 ms, proof ~219 KB. **The proof size is the blocking issue for
+   Phase 2.**
 2. **Halo2/midnight-zk with a FRI polynomial commitment scheme.** A heavily optimized
    circuit for this relation already exists (≈114k rows @ k=17). The default KZG PCS is
    pairing-based and therefore *not* quantum-safe; swapping it for FRI is real work — it
