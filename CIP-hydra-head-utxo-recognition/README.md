@@ -1,13 +1,13 @@
 ---
-CIP: 0198
+CIP: "?"
 Title: Hydra Head UTxO Recognition
 Category: Wallets
 Status: Proposed
 Authors:
-    - Sharan Konerira
+    - Sharan Konerira <skoniog@users.noreply.github.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-scaling/hydra/issues/2818
+    - Requirements (Hydra issue 2818): https://github.com/cardano-scaling/hydra/issues/2818
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1254
 Created: 2026-08-29
 License: CC-BY-4.0
@@ -37,7 +37,7 @@ The Hydra protocol already produces exactly the artifact a wallet needs. Every c
 
 - **Users** of head-based applications, who currently cannot see or trust their own committed funds.
 - **Wallet implementors** (Lace, Eternl, Typhon, VESPR, …), who need a deployment-independent validation rule instead of bespoke per-application logic.
-- **Head operators and application developers** (in particular those running the [delegated head topology](https://hydra.family/head-protocol/topologies/delegated-head/), where operator nodes hold the Hydra snapshot keys and serve many light clients), who need a standard way to make their heads recognizable.
+- **Head operators and application developers** (in particular those running the [delegated head topology](https://hydra.family/head-protocol/topologies/delegated-head), where operator nodes hold the Hydra snapshot keys and serve many light clients), who need a standard way to make their heads recognizable.
 - **The Hydra project**, for which wallet recognition converts "support Hydra" from a per-vendor favor into a conformance checkbox.
 
 This proposal responds to the requirements gathered in [cardano-scaling/hydra#2818](https://github.com/cardano-scaling/hydra/issues/2818).
@@ -330,7 +330,7 @@ This CIP defines new wallet behavior only; it changes no on-chain or node behavi
 
 - Requirements: [cardano-scaling/hydra#2818 — Hydra UTxO Wallet support](https://github.com/cardano-scaling/hydra/issues/2818)
 - [Hydra Head protocol documentation](https://hydra.family/head-protocol/) and formal specification (machine-checked, in-repo under `spec/`)
-- [Delegated head topology](https://hydra.family/head-protocol/topologies/delegated-head/)
+- [Delegated head topology](https://hydra.family/head-protocol/topologies/delegated-head)
 - Hydra ADR-33 (directly open heads, deposits replace commits) and ADR-34 (binary CBOR client API)
 - [CIP-30 — Cardano dApp-Wallet Web Bridge](https://cips.cardano.org/cip/CIP-0030)
 - [CPS-0010 — Wallet Connectors](https://cips.cardano.org/cps/CPS-0010)
