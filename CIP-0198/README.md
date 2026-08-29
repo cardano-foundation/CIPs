@@ -8,7 +8,7 @@ Authors:
 Implementors: []
 Discussions:
     - https://github.com/cardano-scaling/hydra/issues/2818
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1254
 Created: 2026-08-29
 License: CC-BY-4.0
 ---
