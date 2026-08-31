@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: "?"
 Title: Babel Fee Offers — Off-Chain Transmission and Service Layer for Nested Transactions
 Category: Network
 Status: Proposed
@@ -10,64 +10,14 @@ Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/779   # CPS-0015 "Intents for Cardano"
-    - https://github.com/cardano-foundation/CIPs/pull/880   # CIP-0131 "Transaction swaps"
-    - https://github.com/cardano-foundation/CIPs/pull/466   # CIP-0089 beacon tokens
+    - CPS-0015 Intents for Cardano: https://github.com/cardano-foundation/CIPs/pull/779
+    - CIP-0131 Transaction swaps: https://github.com/cardano-foundation/CIPs/pull/880
+    - CIP-0089 beacon tokens: https://github.com/cardano-foundation/CIPs/pull/466
     # TODO before submission: this proposal's own PR, and the CIP-118 thread it
     # follows from.
 Created: 2026-08-14
 License: CC-BY-4.0
 ---
-
-## Table of contents
-
-- [Abstract](#abstract)
-- [Motivation: Why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
-- [Specification](#specification)
-  - [Architecture](#architecture)
-  - [Terminology](#terminology)
-    - [Imported from CIP-118, not redefined by this CIP](#imported-from-cip-118-not-redefined-by-this-cip)
-    - [Defined by this CIP](#defined-by-this-cip)
-  - [Offer envelope](#offer-envelope)
-  - [Network topology and roles](#network-topology-and-roles)
-  - [Transport bindings](#transport-bindings)
-    - [Binding A — HTTPS](#binding-a--https)
-    - [Binding B — libp2p gossipsub](#binding-b--libp2p-gossipsub)
-    - [Further bindings](#further-bindings)
-  - [Validation](#validation)
-    - [Transport-binding checks — imposed by the binding](#transport-binding-checks--imposed-by-the-binding)
-    - [Stateless checks — performed by publishers, relays, services](#stateless-checks--performed-by-publishers-relays-services)
-    - [Chain-state checks — performed by publishers, services](#chain-state-checks--performed-by-publishers-services)
-    - [Pre-inclusion checks — performed by services](#pre-inclusion-checks--performed-by-services)
-  - [Routing and filtering](#routing-and-filtering)
-    - [Forwarding](#forwarding)
-    - [Filter-key kinds](#filter-key-kinds)
-    - [Routing keys](#routing-keys)
-  - [Constraint language](#constraint-language)
-  - [Protocol constants](#protocol-constants)
-  - [Offer lifecycle](#offer-lifecycle)
-  - [Batch construction](#batch-construction)
-  - [Liquidity strategy](#liquidity-strategy)
-  - [On-chain registration of relays and services](#on-chain-registration-of-relays-and-services)
-  - [Service profile](#service-profile)
-  - [Price hints](#price-hints)
-  - [Security considerations](#security-considerations)
-- [Rationale: How does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
-  - [Components built](#components-built)
-  - [What this makes possible](#what-this-makes-possible)
-  - [Work blocked on prerequisites](#work-blocked-on-prerequisites)
-  - [Alternatives, prior art and compatibility](#alternatives-prior-art-and-compatibility)
-- [Path to Active](#path-to-active)
-  - [Acceptance Criteria](#acceptance-criteria)
-  - [Implementation Plan](#implementation-plan)
-- [Versioning](#versioning)
-- [References](#references)
-  - [Cardano Improvement Proposals and Problem Statements](#cardano-improvement-proposals-and-problem-statements)
-  - [External standards](#external-standards)
-  - [Academic and cryptographic references](#academic-and-cryptographic-references)
-  - [Prior art and related implementations](#prior-art-and-related-implementations)
-  - [Internal documents](#internal-documents)
-- [Copyright](#copyright)
 
 ## Abstract
 
