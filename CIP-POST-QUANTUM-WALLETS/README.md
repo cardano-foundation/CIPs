@@ -250,7 +250,8 @@ only if the previous one is closed for some reason:
    form the full receipt.
 3. **NovaSlim for Phase 2 now.** If neither STARK option fits, use NovaSlim's
    sub-kilobyte proofs with the existing Aiken verifier. This is the only backend
-   that already works end-to-end on Cardano today.
+   that already works end-to-end on Cardano today, although it remains experimental
+   and unaudited.
 4. **Out-of-band proofs + node-side cache.** If none of the above, proofs travel
    out-of-band; nodes keep a cache of proofs and only adopt blocks of signatures for
    which they have seen the corresponding zk proof. This needs additional handling of
@@ -324,8 +325,9 @@ server.
 
 - Proof size (~219 KB STARK) vs `maxTxSize` (16,384 B): Phase 1 is feasible today;
   Phase 2 for STARKs is gated on reducing proofs to a few KB. **NovaSlim already
-  achieves sub-kilobyte proofs (~0.4–2.5 KiB) and a working Aiken verifier, making
-  Phase 2 infrastructure deployable today; the open question is the PQ hardening of
+  achieves sub-kilobyte proofs (~0.4–2.5 KiB) and a working Aiken verifier,
+  demonstrating that Phase 2 infrastructure is technically feasible today; the open
+  question is the PQ hardening of
   its folding scheme.**
 - Native STARK verifier feasibility in the ledger: Plutus budgets are orders of
   magnitude too small; only a native (non-Plutus) primitive is credible. NovaSlim's
@@ -359,8 +361,8 @@ precludes on-chain settlement.** All other candidates are either not quantum-saf
 (Nova), require substantial re-engineering to become quantum-safe (Halo2, Plonky3), or
 are research prototypes lacking production maturity (Lova). **NovaSlim is the sole
 exception:** it is classical (not PQ), but it is the only system with a working
-on-chain verifier and sub-kilobyte proofs, making it the pragmatic path for building
-Phase 2 infrastructure now while the PQ cryptography matures.
+on-chain verifier and sub-kilobyte proofs, making it the pragmatic path for
+prototyping Phase 2 infrastructure now while the PQ cryptography matures.
 
 | | PQ? | On-chain viable? | Status |
 |---|---|---|---|
@@ -369,7 +371,7 @@ Phase 2 infrastructure now while the PQ cryptography matures.
 | Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
 | Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
 | Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
-| **NovaSlim** | ❌ Classical | ✅ **Yes** (~0.4–2.5 KiB) | **Production-ready** |
+| **NovaSlim** | ❌ Classical | ✅ **Yes** (~0.4–2.5 KiB) | **Implemented (experimental, unaudited)** |
 
 The options below are presented in full for completeness, but the reader should
 understand that **NovaSlim is the only backend that satisfies the CIP's Phase 2
@@ -425,7 +427,8 @@ infrastructure requirements today.**
 
    Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
    compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB. With SIS commitment
-   (m=128): fold ~5× faster than Pedersen, proof size unchanged.
+   (m=128): fold is faster than Pedersen (matrix–vector products replace MSMs)
+   and the slim proof size stays ~0.4 KiB.
 
 ### Implementation Plan
 
@@ -440,7 +443,8 @@ Options](#proving-backend-options) above; nothing here is final.
   the Phase 1 off-chain verification story on the worst-case environment.
 - Evaluation of proof-size reduction (ZK-friendly hashing, smaller FRI
   configurations) to unlock Phase 2 with the STARK backend.
-- NovaSlim proof-of-concept: end-to-end BIP32-Ed25519 derivation folding + slim
+- NovaSlim proof-of-concept: end-to-end pipeline validation (VRF stand-in
+  circuit; the BIP32-Ed25519 circuit is still under construction) + slim
   proof generation + Aiken on-chain verification, to validate the Phase 2
   infrastructure path.
 - CDDL specification of the witness format for a future native STARK-verifier
