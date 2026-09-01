@@ -117,7 +117,7 @@ To create a persistent signature over data with KERI, signers can anchor a diges
  The relevant data recorded for each event includes:
 - **t** — A transaction type of `ATTEST` is to create a verifiable record.
 - **i** — The identifier of the signer in the CESR qb64 variant.
-- **d** — The digest of the data being signed in the CESR qb64 variant.
+- **d** — The digest of the attested data in the CESR qb64 variant. If the transaction carries application metadata under another label, the digest MUST be computed over the CBOR encoding of the metadatum value at that label, byte-identical to the bytes in the transaction's auxiliary data — see [Digest computation](#digest-computation). The digest algorithm is identified by the CESR derivation code; implementations MUST support Blake3-256 (code `E`) and SHOULD use it when creating attestations. The value of `d` MUST be identical to the seal anchored in the KEL event at sequence number `s`.
 - **s** — The sequence number of the KERI event, encoded as a hex string.
 - **v** - Version of the CIP. KERI and ACDC version isn't needed here.
 If the KEL of identifier `i` contains an event at sequence number `s` which has a seal value of `{ d: "{{digest}}" }`, it serves as cryptographically verifiable proof that the data was effectively signed by the controller.
@@ -138,6 +138,48 @@ A reference to this event in a metadata transaction is structured as follows:
 }
 ```
 Such transactions are only considered valid if the digest value is correct, and can be found anchored in the KEL of the controller at the given sequence number.
+
+#### Digest computation
+
+What `d` refers to depends on whether the transaction carries application metadata:
+
+- **If the transaction contains application metadata under another label** (the *attested label*, `YYYY` above), `d` MUST be the digest of the CBOR encoding of the metadatum **value** at that label, byte-identical to the bytes present in the transaction's auxiliary data. It is computed over the value only — not the label/value pair, not the whole metadata map, and not any JSON or other re-serialised representation. Implementations SHOULD digest the bytes that will be (or were) submitted rather than an independent re-serialisation: CBOR allows several encodings of the same structure (map key order, integer widths, indefinite-length items) and only the on-chain bytes are authoritative. If a use case places application metadata under more than one label, the use case MUST define which label is attested; a single application label per `ATTEST` transaction is RECOMMENDED.
+- **If the transaction contains no application metadata**, the data referred to by `d` is defined by the use case (for example an off-chain document or a data set published elsewhere). The use case MUST specify how a verifier obtains that data and which encoding is digested.
+
+The digest is computed with the algorithm identified by the CESR derivation code (Blake3-256, code `E`, RECOMMENDED), encoded as a CESR primitive in qb64 form, placed in `d` and anchored as the seal of the signer's KEL event. Because `d` covers only the attested data and not label `170` itself, there is no circularity: the payload is serialised and digested first, then the `170` entry is added.
+
+Because the KEL anchor is created before the transaction exists and cannot be retracted once written, implementations SHOULD extract the encoded metadatum bytes from the built transaction and confirm they digest to `d` before submitting. If they differ, the attestation is not verifiable and can only be corrected by anchoring a new event and publishing a new transaction.
+
+> [!WARNING]
+> Verifiers MUST NOT recompute `d` from a JSON representation of the metadata. JSON is not a faithful representation of the on-chain bytes: common indexers normalise map key order at write time (for example `cardano-db-sync` stores `tx_metadata.json` as PostgreSQL `jsonb`, which does not preserve key order), so the information needed to recompute the digest is destroyed before any JSON API returns it. Verifiers MUST obtain the raw metadatum bytes, for example from the transaction CBOR itself (a local node, Koios `/tx_cbor`), from `cardano-db-sync` `tx_metadata.bytes`, or from Blockfrost `/txs/{hash}/metadata/cbor`.
+
+##### Test vector
+
+Metadatum value at label `1447`, in construction order (deliberately not canonical):
+
+```JSON
+{ "credentialType": "membership", "schemaVersion": 1, "issuedAt": "2026-08-20T08:00:00Z" }
+```
+
+CBOR encoding as present on chain (hex):
+
+```
+a36e63726564656e7469616c547970656a6d656d626572736869706d736368656d6156657273696f6e0168697373756564417474323032362d30382d32305430383a30303a30305a
+```
+
+Blake3-256 of these bytes is `ea4c2099806a23f87198260e483cad5b65f1853874361ffe0c6b2b6b0d75f391`, giving
+
+```
+"d": "EOpMIJmAaiP4cZgmDkg8rVtl8YU4dDYf_gxrK2sNdfOR"
+```
+
+The same value with its keys re-ordered by length and then bytewise — as a `jsonb`-backed API would return it — encodes to
+
+```
+a368697373756564417474323032362d30382d32305430383a30303a30305a6d736368656d6156657273696f6e016e63726564656e7469616c547970656a6d656d62657273686970
+```
+
+and digests to `EIswjSN1u14y36RGf6TKm-z65R0rMMLjQHnjXofImTmZ`. A verifier that arrives at this value has read a representation other than the on-chain bytes.
 
 ### Revoking of signing authority
 Signing authority may be removed after a period of time by revoking the relevant credential and publishing this revocation on-chain. As such, the validity of transactions associated with that credential chain are for all valid `ATTEST` transactions between issuance (`AUTH_BEGIN`) and revocation (`AUTH_END`).
@@ -266,7 +308,7 @@ The following is an attestation transaction for metadata label `1447`.
 
 Validation steps:
 1. `EKtQ1lymrnrh3qv5S18PBzQ7ukHGFJ7EXkH7B22XEMIL` currently has signing authority over label 1447.
-2. The CESR digest of the data at label 1447 is `ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux`.
+2. The CESR Blake3-256 digest of the CBOR bytes of the metadatum value at label 1447, as present in the transaction, is `ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux` (see [Digest computation](#digest-computation)).
 3. The event in the controller’s KEL at sequence number `1a` (26th event) is `{ d: “ELC5L3iBVD77d_MYbYGGCUQgqQBju1o4x1Ud-z2sL-ux” }`.
 
 ### Revoking signing authority
@@ -347,6 +389,8 @@ The metadata-based approach was chosen for its simplicity and flexibility:
 - Straightforward implementation for wallets and transaction builders
 - Flexible credential schemas without protocol changes
 - Full backward compatibility with existing infrastructure
+
+**Why `d` digests the on-chain CBOR bytes rather than a canonical JSON form:** an attestation is a claim about what is on chain, and the on-chain artefact is CBOR. Digesting the bytes as stored makes verification independent of the tooling used to read them and avoids this CIP having to define and maintain its own canonicalisation. The cost is that verifiers need access to raw metadata bytes rather than a JSON view, which all major indexers expose.
 
 **Limitations:**
 - Validation must occur off-chain through indexers (smart contracts cannot enforce credential checks) - This limitation can be solved by writing another CIP or extending this
