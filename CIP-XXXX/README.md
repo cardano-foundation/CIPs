@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 198
 Title: Nested Transactions - Service Layer
 Category: Network
 Status: Proposed
