@@ -94,7 +94,7 @@ infrastructure:
 
 ### Architecture
 
-Boxes are machines. What shares a box is expected to share a host. A service
+Outer boxes are machines. What shares a box is expected to share a host. A service
 must run beside a full
 node and talks to it locally. Nothing else needs a node: a relay is required to
 hold no chain state, and a wallet publisher may be light.
