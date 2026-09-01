@@ -425,21 +425,20 @@ Existing editors or the community may nominate new editors, provided they have p
 
 The missions of an editor include, but aren't exclusively limited to, any of the tasks listed above. Active members that seek to become listed editors may also come forth and let it be known. Any application will take the form of a pull request updating this document with a justification as the pull request's description.
 
-Current editors are listed here below:
+| Current editors  |                                              |
+|:-----------------|:---------------------------------------------|
+| Robert Phair     | [@rphair](https://github.com/rphair)         |
+| Ryan Williams    | [@Ryun1](https://github.com/Ryun1)           |
+| Thomas Vellekoop | [@perturbing](https://github.com/perturbing) |
+| Sebastian Nagel  | [@ch1bo](https://github.com/ch1bo)           |
 
-| Robert Phair <br/> [@rphair][] | Ryan Williams <br/> [@Ryun1][] | Thomas Vellekoop <br/> [@perturbing][] |
-| ---                            | ---                            | ---                                    |
-
-[@rphair]: https://github.com/rphair
-[@Ryun1]: https://github.com/Ryun1
-[@perturbing]: https://github.com/perturbing
-
-Emeritus editors:
-- Frederic Johnson - [@crptmppt](https://github.com/crptmppt)
-- Sebastien Guillemot - [@SebastienGllmt](https://github.com/SebastienGllmt)
-- Matthias Benkort - [@KtorZ](https://github.com/KtorZ)
-- Duncan Coutts - [@dcoutts](https://github.com/dcoutts)
-- Adam Dean - [@Crypto2099](https://github.com/Crypto2099)
+| Emeritus editors    |                                                      |
+|:--------------------|:-----------------------------------------------------|
+| Frederic Johnson    | [@crptmppt](https://github.com/crptmppt)             |
+| Sebastien Guillemot | [@SebastienGllmt](https://github.com/SebastienGllmt) |
+| Matthias Benkort    | [@KtorZ](https://github.com/KtorZ)                   |
+| Duncan Coutts       | [@dcoutts](https://github.com/dcoutts)               |
+| Adam Dean           | [@Crypto2099](https://github.com/Crypto2099)         |
 
 ## Rationale: How does this CIP achieve its goals?
 
