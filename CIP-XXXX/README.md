@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Babel Fee Offers — Off-Chain Transmission and Service Layer for Nested Transactions
+Title: Nested Transactions - Service Layer
 Category: Network
 Status: Proposed
 Authors:
