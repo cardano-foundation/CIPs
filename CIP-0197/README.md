@@ -180,8 +180,60 @@ Two numbers shape the design. The ~219 KB proof is far too large to post on-chai
 today, which is why the recommended deployment (Phase 1) verifies proofs
 off-chain — see [On-chain constraints](#on-chain-constraints). And verification is
 fast and constant, so wallets, exchanges, and indexers can afford to check every
-transaction. The one-time derivation proof can be generated lazily or delegated to a
-proving server, so it does not slow down or complicate everyday signing.
+   transaction. The one-time derivation proof can be generated lazily or delegated to a
+   proving server, so it does not slow down or complicate everyday signing.
+
+### Proving backend options
+
+The proving system can be instantiated in several ways, each serving a different
+part of the specification — the Phase 1 off-chain path, the Phase 2 on-chain path, or
+a post-quantum guarantee. The [ZKPoSP] relations are backend-agnostic (any change to
+the backend re-opens the security argument), so the options below are the candidate
+instantiations under consideration; the reference implementation uses the RISC Zero
+zkVM. The comparison and selection of these options is discussed in
+[Backend selection](#backend-selection).
+
+1. **RISC Zero zkVM — the [ZKPoSP] paper's backend; the default baseline.** Proof relations are
+   written in ordinary Rust, reusing audited primitives (`curve25519-dalek`, `hmac`,
+   `sha2`). Lowest engineering risk (no hand-built constraints), but the zkVM's own
+   arithmetization, prover, and commitment scheme still require audit. Reference figures
+   (paper §9, AMD Ryzen 9 9950X3D): signing proof ~12.5 s, derivation proof ~156 s,
+   verification ~9–10 ms, proof ~219 KB. **The proof size is the blocking issue for
+   Phase 2.**
+2. **Halo2/midnight-zk with a FRI polynomial commitment scheme.** A heavily optimized
+   circuit for this relation already exists (≈114k rows @ k=17). The default KZG PCS is
+   pairing-based and therefore *not* quantum-safe; swapping it for FRI is real work — it
+   changes the commitment scheme, the FRI domain/blow-up, proof size, and soundness
+   parameters — and the security argument must be re-opened and re-audited. This is not
+   hypothetical: the Tachyon zkVM [TACHYON] already implements Halo2 with a FRI PCS, and
+   Zcash's own quantum-readiness roadmap plans hash-based or STARK-style hardening of its
+   Halo2 proofs [ZCASH-QR], a staged posture that mirrors this CIP's Phase 1 → 2.
+3. **Plonky3-style native FRI-STARK circuits.** The [ZKPoSP] paper's own forward plan for
+   proof-size reduction; removes the zkVM's fixed per-segment overhead, but requires an
+   audited circuit implementation that is at an earlier stage of maturity. The Tachyon
+   backend also tracks Plonky3 [TACHYON].
+4. **Nova / groth16-prover [NOVA] — efficiency comparison only.** Efficient and readily
+   available, but not quantum-proof and requires a trusted setup; useful as a performance
+   bound and for a possible hybrid, not as the primary mechanism.
+5. **Lova [LOVA] — lattice-based IVC.** A recursive-SNARK descendant of Nova that
+   replaces its pairing-based assumptions with a lattice-based construction, making it
+   quantum-proof. Its incrementally verifiable computation gives linear prover time and
+   constant verification, which fits the Phase 1 off-chain story; the caveat is early
+   maturity — a first-of-its-kind Nova implementation, unproven at Cardano scale — so it
+   is a candidate for Phase 1 evaluation alongside the STARK route, not the default
+   baseline.
+6. **NovaSlim [NOVASLIM] — practical Phase 2 stepping stone.** A Nova-family IVC
+   system that produces **sub-kilobyte transparent proofs** (~0.4–2.5 KiB, independent
+   of commitment scheme) with **sub-millisecond verification** (~0.2 ms) and **no
+   trusted setup**. It is implemented in Rust with support for six curves (including
+   BLS12-381, Cardano's native curve) and three commitment schemes (Pedersen, SIS,
+   Hash). Critically, it already has a **working Aiken eUTXO verifier** running in
+   Plutus V3 on BLS12-381 scalar arithmetic. Its protocol design, security proofs, and
+   benchmark analysis are specified in the NovaSlim whitepaper [NOVASLIM-WP].
+   Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
+   compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB. With SIS commitment
+   (m=128): fold is faster than Pedersen (matrix–vector products replace MSMs)
+   and the slim proof size stays ~0.4 KiB.
 
 ### Deployment: two phases
 
@@ -231,7 +283,7 @@ primary deployment (Conway-era limits; updatable via governance):
 **However, NovaSlim [NOVASLIM] already bypasses these constraints:** its slim proofs
 are **~0.4–2.5 KiB** (well under `maxTxSize`) and its Aiken verifier runs in **Plutus
 V3** on BLS12-381 scalar arithmetic. This makes NovaSlim the only backend with a
-working Phase 2 path today; see [Proof of Concept](#proof-of-concept-novaslim--aiken-on-chain-verifier).
+working Phase 2 path today; see [Proving backend options](#proving-backend-options).
 
 Raising `maxTxSize` alone would not suffice for STARKs (the receipt also exceeds
 `maxBlockBodySize`), and the post-Q-day variant does not reduce proof size — it only
@@ -318,8 +370,37 @@ server.
 - **Transition is non-intrusive and reversible:** nothing is forced on anyone;
   activation is local to a signer (one one-time proof per `account'`), no network
   upgrade for Phase 1, and adoption can be rolled back without impact. Because all
-  credential types share the derivation, the transition covers payment, staking, DRep,
-  CC, and CIP-1854 cosigners together.
+   credential types share the derivation, the transition covers payment, staking, DRep,
+   CC, and CIP-1854 cosigners together.
+
+### Backend selection
+
+The proving backend options are specified in
+[Proving backend options](#proving-backend-options). Here we motivate the choice.
+The practical reality is stark: **only one option (STARKs) is proven post-quantum today,
+and its proof size (~219 KB) precludes on-chain settlement.** All other candidates are
+either not quantum-safe (Nova), require substantial re-engineering to become quantum-safe
+(Halo2, Plonky3), or are research prototypes lacking production maturity (Lova). This
+comparison ultimately serves a small number of decisions, and the CIP leans on NovaSlim
+for the Phase 2 infrastructure path; the reasoning is below.
+
+| | PQ? | On-chain viable? | Status |
+|---|---|---|---|
+| RISC Zero STARK | ✅ Proven | ❌ No (~219 KB) | Production-ready |
+| Halo2 + FRI | 🔜 Requires re-audit | ❌ No (~50–100 KB) | Substantial work needed |
+| Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
+| Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
+| Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
+| **NovaSlim** | ❌ Classical | ✅ **Yes** (~0.4–2.5 KiB) | **Implemented (experimental, unaudited)** |
+
+Why NovaSlim is the backend we lean on: it is **not** a post-quantum backend in its
+current form — its security proof is classical — but it solves the exact infrastructure
+problem that blocks every other option: proof size, verification cost, and on-chain
+verifier availability. The recommended posture is to deploy NovaSlim **now** for Phase 2
+infrastructure (wallet integration, witness format, on-chain verifier, transport), and
+upgrade the proving backend to a lattice-hardened variant (Lova-style) when that
+cryptography matures, keeping the same proof format and Aiken verifier. This mirrors the
+CIP's Phase 1→2 philosophy: build the road before the car is finished.
 
 ### Open Questions
 
@@ -353,88 +434,12 @@ server.
 - At least one wallet adopting Phase 1 (off-chain witness).
 - A documented proposal for the post-Q-day rule as a protocol parameter.
 
-### Proving Backend Options
-
-The proving backend is an implementation choice, but the practical reality is stark:
-**only one option (STARKs) is proven post-quantum today, and its proof size (~219 KB)
-precludes on-chain settlement.** All other candidates are either not quantum-safe
-(Nova), require substantial re-engineering to become quantum-safe (Halo2, Plonky3), or
-are research prototypes lacking production maturity (Lova). **NovaSlim is the sole
-exception:** it is classical (not PQ), but it is the only system with a working
-on-chain verifier and sub-kilobyte proofs, making it the pragmatic path for
-prototyping Phase 2 infrastructure now while the PQ cryptography matures.
-
-| | PQ? | On-chain viable? | Status |
-|---|---|---|---|
-| RISC Zero STARK | ✅ Proven | ❌ No (~219 KB) | Production-ready |
-| Halo2 + FRI | 🔜 Requires re-audit | ❌ No (~50–100 KB) | Substantial work needed |
-| Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
-| Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
-| Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
-| **NovaSlim** | ❌ Classical | ✅ **Yes** (~0.4–2.5 KiB) | **Implemented (experimental, unaudited)** |
-
-The options below are presented in full for completeness, but the reader should
-understand that **NovaSlim is the only backend that satisfies the CIP's Phase 2
-infrastructure requirements today.**
-
-1. **RISC Zero zkVM — the [ZKPoSP] paper's backend; the default baseline.** Proof relations are
-   written in ordinary Rust, reusing audited primitives (`curve25519-dalek`, `hmac`,
-   `sha2`). Lowest engineering risk (no hand-built constraints), but the zkVM's own
-   arithmetization, prover, and commitment scheme still require audit. Reference figures
-   (paper §9, AMD Ryzen 9 9950X3D): signing proof ~12.5 s, derivation proof ~156 s,
-   verification ~9–10 ms, proof ~219 KB. **The proof size is the blocking issue for
-   Phase 2.**
-2. **Halo2/midnight-zk with a FRI polynomial commitment scheme.** A heavily optimized
-   circuit for this relation already exists (≈114k rows @ k=17). The default KZG PCS is
-   pairing-based and therefore *not* quantum-safe; swapping it for FRI is real work — it
-   changes the commitment scheme, the FRI domain/blow-up, proof size, and soundness
-   parameters — and the security argument must be re-opened and re-audited. This is not
-   hypothetical: the Tachyon zkVM [TACHYON] already implements Halo2 with a FRI PCS, and
-   Zcash's own quantum-readiness roadmap plans hash-based or STARK-style hardening of its
-   Halo2 proofs [ZCASH-QR], a staged posture that mirrors this CIP's Phase 1 → 2.
-3. **Plonky3-style native FRI-STARK circuits.** The [ZKPoSP] paper's own forward plan for
-   proof-size reduction; removes the zkVM's fixed per-segment overhead, but requires an
-   audited circuit implementation that is at an earlier stage of maturity. The Tachyon
-   backend also tracks Plonky3 [TACHYON].
-4. **Nova / groth16-prover [NOVA] — efficiency comparison only.** Efficient and readily
-   available, but not quantum-proof and requires a trusted setup; useful as a performance
-   bound and for a possible hybrid, not as the primary mechanism.
-5. **Lova [LOVA] — lattice-based IVC.** A recursive-SNARK descendant of Nova that
-   replaces its pairing-based assumptions with a lattice-based construction, making it
-   quantum-proof. Its incrementally verifiable computation gives linear prover time and
-   constant verification, which fits the Phase 1 off-chain story; the caveat is early
-   maturity — a first-of-its-kind Nova implementation, unproven at Cardano scale — so it
-   is a candidate for Phase 1 evaluation alongside the STARK route, not the default
-   baseline.
-6. **NovaSlim [NOVASLIM] — practical Phase 2 stepping stone.** A Nova-family IVC
-   system that produces **sub-kilobyte transparent proofs** (~0.4–2.5 KiB, independent
-   of commitment scheme) with **sub-millisecond verification** (~0.2 ms) and **no
-   trusted setup**. It is implemented in Rust with support for six curves (including
-   BLS12-381, Cardano's native curve) and three commitment schemes (Pedersen, SIS,
-   Hash). Critically, it already has a **working Aiken eUTXO verifier** running in
-   Plutus V3 on BLS12-381 scalar arithmetic. This makes it the only backend in this
-   list with a deployable Phase 2 path today.
-
-   **Why NovaSlim is listed here:** it is **not** a post-quantum backend in its
-   current form — its security proof is classical — but it solves the exact
-   infrastructure problem that blocks every other option: proof size, verification
-   cost, and on-chain verifier availability. The recommended posture is to deploy
-   NovaSlim **now** for Phase 2 infrastructure (wallet integration, witness format,
-   on-chain verifier, transport), and upgrade the proving backend to a
-   lattice-hardened variant (Lova-style) when that cryptography matures, keeping
-   the same proof format and Aiken verifier. This mirrors the CIP's Phase 1→2
-   philosophy: build the road before the car is finished.
-
-   Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
-   compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB. With SIS commitment
-   (m=128): fold is faster than Pedersen (matrix–vector products replace MSMs)
-   and the slim proof size stays ~0.4 KiB.
-
 ### Implementation Plan
 
 The plan below is **tentative** — it is a menu of options to pursue, not a settled
-commitment. The backend is chosen by benchmarking the [Proving Backend
-Options](#proving-backend-options) above; nothing here is final.
+commitment. The backend is chosen by benchmarking the [Proving backend
+options](#proving-backend-options) in the Specification (see [Backend
+selection](#backend-selection) for the motivation); nothing here is final.
 
 - Integration with an existing Cardano wallet library (cardano-addresses) to emit
   `tau` and `sigma` out-of-band (Phase 1).
@@ -472,6 +477,8 @@ Options](#proving-backend-options) above; nothing here is final.
   https://github.com/cardano-foundation/bls/tree/main/nova-prover
 - [NOVASLIM] NovaSlim — sub-kilobyte transparent proofs with commitment modularity.
   https://github.com/paweljakubas/nova-slim
+- [NOVASLIM-WP] NovaSlim technical whitepaper: protocol design, security proofs, and
+  benchmark analysis. https://github.com/paweljakubas/nova-slim/raw/master/whitepaper.pdf
 - [LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
   Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
   https://eprint.iacr.org/2024/1964
@@ -493,5 +500,6 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [TACHYON]: https://github.com/kroma-network/tachyon
 [NOVA]: https://github.com/cardano-foundation/bls/tree/main/groth16-prover
 [NOVASLIM]: https://github.com/paweljakubas/nova-slim
+[NOVASLIM-WP]: https://github.com/paweljakubas/nova-slim/raw/master/whitepaper.pdf
 [LOVA]: https://eprint.iacr.org/2024/1964
 [ZCASH-QR]: https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
