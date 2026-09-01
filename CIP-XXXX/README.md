@@ -10,11 +10,11 @@ Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
 Discussions:
-    - CPS-0015 Intents for Cardano: https://github.com/cardano-foundation/CIPs/pull/779
-    - CIP-0131 Transaction swaps: https://github.com/cardano-foundation/CIPs/pull/880
-    - CIP-0089 beacon tokens: https://github.com/cardano-foundation/CIPs/pull/466
-    # TODO before submission: this proposal's own PR, and the CIP-118 thread it
-    # follows from.
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1257  
+    - CPS-0015 | Intents for Cardano (closed): https://github.com/cardano-foundation/CIPs/pull/779
+    - CIP-0089 | Beacon Tokens: https://github.com/cardano-foundation/CIPs/pull/466
+    - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
+    - CIP-0131 | Transaction swaps (closed): https://github.com/cardano-foundation/CIPs/pull/880
 Created: 2026-08-14
 License: CC-BY-4.0
 ---
