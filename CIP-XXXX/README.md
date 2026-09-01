@@ -10,7 +10,7 @@ Authors:
     - Nicolas Henin <nicolas.henin@iohk.io>
 Implementors: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1257  
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1257
     - CPS-0015 | Intents for Cardano (closed): https://github.com/cardano-foundation/CIPs/pull/779
     - CIP-0089 | Beacon Tokens: https://github.com/cardano-foundation/CIPs/pull/466
     - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
