@@ -33,6 +33,7 @@ that does not balance cannot be posted as-is, so the feature does nothing
 until some other party finds it, judges it worth completing, and builds the
 top-level transaction that carries it. That party, and the means of reaching it, are
 entirely off-chain, and no such mechanism exists.
+
 This CIP specifies such a mechanism, including all the relevant on-chain 
 infrastructure: the offer- and interest-communication protocol, service discovery and customization, 
 and batch construction.
