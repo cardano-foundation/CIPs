@@ -168,8 +168,14 @@ batch fails, none of the transactions in the batch are applied, only the collate
 4. Transactions using new features are not allowed to run scripts of PlutusV3 or earlier.
 
 5. All scripts are shared across all transactions within a single batch, so attaching one script to either a sub- or a top-level-transaction
-allows other transactions to run it without also including it in its own scripts. This includes: (1) reference scripts that are sourced from the
-outputs to which reference inputs point in the UTxO, (2) scripts in transaction witnesses, and (3) scripts in transaction outputs (see [CIP-0172](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0172)). In contrast, datums are not shared within a single batch.
+allows other transactions to run it without also including it in its own scripts. This includes:
+    1. reference scripts that are sourced from the outputs to which reference
+    inputs point in the UTxO,
+    2. scripts in transaction witnesses, and
+    3. scripts in transaction outputs (see
+    [CIP-0172](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0172)).
+
+    In contrast, datums are not shared within a single batch.
 
 6. All inputs of all transactions in a single batch must be contained in the UTxO set before any of the
 batch transactions are applied. This ensures that operation of scripts is not disrupted, for example, by
