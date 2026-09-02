@@ -3,7 +3,6 @@ CIP: 198
 Title: Nested Transactions - Service Layer
 Category: Network
 Status: Proposed
-Solution To: CPS-0015
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - William Wolff <william.wolff@iohk.io>
@@ -16,6 +15,8 @@ Discussions:
     - CIP-0089 | Beacon Tokens: https://github.com/cardano-foundation/CIPs/pull/466
     - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
     - CIP-0131 | Transaction swaps (closed): https://github.com/cardano-foundation/CIPs/pull/880
+Solution To:
+    - CPS-0015
 Created: 2026-08-14
 License: CC-BY-4.0
 ---
