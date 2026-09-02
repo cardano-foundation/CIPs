@@ -84,7 +84,7 @@ The internal state is a vector of $t = r + c$ field elements:
 - $r$ (the *rate*): how many field elements of input are absorbed per step, and how many are squeezed out per step (this is where the word **sponge** comes from).
 - $c$ (the *capacity*): reserved elements that are never touched directly by input/output; they carry the security of the construction.
 
-Starting from an **initial state** $I = 0^r \Vert 0^c$ of $t = r + c$ field elements — a fixed public constant of all zeros, where a domain-separation tag may take the place of the zeros in the capacity part — hashing proceeds in two phases:
+Starting from an **initial state** $I = 0^r \Vert 0^c$ of $t = r + c$ field elements — a fixed public constant of all zeros, where a protocol-defined tag (a domain-separation or input-length tag) may take the place of the zeros in the capacity part — hashing proceeds in two phases:
 
 1. **Absorb**: the input (padded to a multiple of $r$) is split into chunks $m_1, m_2, \dots$ of $r$ field elements each.
    Each chunk $m_i$ is added into the first $r$ elements of the state, then the whole state is run through the Poseidon **permutation** $P$.
@@ -100,18 +100,30 @@ This is a consequence of how zk circuits work: a circuit is fixed at compile/set
 A circuit thus cannot branch on the length of its input; "hash however many chunks arrive" is simply not expressible.
 Variable-length hashing can only be emulated by building the circuit for a maximum length and padding shorter inputs up to it, paying the worst-case constraint cost on every proof.
 Consequently, protocols are designed around hashes of a fixed, known arity — which is also what their typical uses need: a Merkle node always hashes exactly two children, a commitment always binds the same number of field elements.
-The most common instance has width $t = 3$ ($r = 2$, $c = 1$) and acts as a 2-to-1 compression function, e.g. hashing the two children of a Merkle tree node together with a domain-separation tag (DST).
-Concretely, the sponge then runs as follows:
+The most common instance has width $t = 3$ ($r = 2$, $c = 1$) and acts as a 2-to-1 compression function, e.g. hashing the two children of a Merkle tree node.
 
-1. start from the initial state $(0, 0, 0)$;
-2. absorb the chunk (left, right), giving the state $(\text{left}, \text{right}, 0)$, and apply the permutation to obtain $(x, y, z)$;
-3. absorb the DST as the next (zero-padded) chunk, giving $(x + \text{dst},\ y,\ z)$, and apply the permutation again to obtain $(x', y', z')$;
-4. read the output $x'$ from the rate part.
+##### Framing conventions
 
-This costs two applications of $P$ — one per absorbed chunk — and, as the diagram shows, the output is read *immediately after* the final permutation: squeezing begins with a read, not with another application of $P$.
+While the permutation of an instance is fully determined by its parameters, the way a fixed-arity hash is *framed* on top of $P$ is not.
+Which state element plays the role of the capacity, what value the capacity is initialized with, in which order the inputs are laid into the rate, and which element of the final state is read off as the digest are all conventions layered on top of the permutation — and none of them is canonical.
+Real-world implementations disagree on every one of these choices.
+Two deployed examples over the BLS12-381 scalar field, both cross-validated against the reference implementation accompanying this proposal:
 
-Some implementations use a shortcut convention instead: the DST is not absorbed as message but placed directly in the capacity element of the initial state, so both inputs fit in a single chunk and one application of $P$ suffices (this is the convention of e.g. `circomlib`, with the capacity element fixed to zero).
-The two conventions produce different digests for the same inputs, so the exact convention — like all other parameters — must be fixed unambiguously for each registered instance.
+- **circomlib-style** (`circomlib` [5] over BN254, and its BLS12-381 port `jmagan/poseidon-bls12381-circom`): an $n$-input hash uses width $t = n + 1$; the capacity element is the *first* state element and is initialized to zero; the whole hash is a *single* application of $P$ to $(0, \text{in}_1, \dots, \text{in}_n)$; the digest is the *first* element of the output state — i.e. it is read from the position the capacity occupied, not from the rate.
+  There is no domain-separation or length tag.
+  (circomlib's `PoseidonEx` template does allow a caller to initialize the capacity element to an arbitrary value, which is how a domain-separation tag *can* be injected in that ecosystem, but the plain `Poseidon` template used in practice fixes it to zero.)
+- **midnight-zk fixed-arity hash**: the capacity element is the *last* state element and is initialized to the *number of inputs* (a length tag); inputs are absorbed in rate-sized chunks with one application of $P$ per chunk; the digest is the *first* element of the output state.
+  Concretely, the 3-input hash on the width-3 instance runs:
+
+  1. start from the initial state $(0, 0, 3)$ — the capacity element (last) holds the length tag;
+  2. absorb the chunk $(\text{in}_1, \text{in}_2)$, giving $(\text{in}_1, \text{in}_2, 3)$, and apply $P$ to obtain $(x, y, z)$;
+  3. absorb $\text{in}_3$ as the next (partial) chunk, giving $(x + \text{in}_3,\ y,\ z)$, and apply $P$ to obtain $(x', y', z')$;
+  4. read the digest $x'$ from the rate part — as the diagram shows, squeezing begins with a read, not with another application of $P$.
+
+  The *same codebase's* variable-length transcript mode uses yet a third convention: the capacity is initialized to $2^{64}$ and a queue-length padding element is absorbed alongside the message.
+
+All of these framings invoke the same kind of permutation, yet they produce mutually incompatible digests for the same inputs.
+Because no framing is canonical — a single ecosystem may even use several — this proposal deliberately standardizes only the permutation and leaves the framing to the calling script; the framing used by each registered instance's ecosystem is documented alongside the instance, non-normatively, so that script authors can reproduce it exactly.
 
 #### The permutation (HADES design)
 
@@ -142,15 +154,26 @@ The exact round counts $(R_F, R_P)$ are derived from $p$, $t$, and $\alpha$ to g
 
 #### Parameters
 
-A concrete Poseidon instance is fully specified by:
+A concrete Poseidon instance is fully specified by the *numeric* parameters:
 
 - the field $p$;
 - the state size $t$ (and hence rate $r$ and capacity $c$);
 - the S-box exponent $\alpha$;
 - the round numbers $(R_F, R_P)$;
-- the round constants $c_i$ and the MDS matrix $M$ (generated deterministically, e.g. from a Grain LFSR seeded by the other parameters).
+- the round constants $c_i$ and the MDS matrix $M$, together with the exact procedure that generated them (typically a Grain-LFSR-based script; the precise script *and its arguments* differ between ecosystems and must be pinned per instance);
 
-Because these must match exactly on both the prover and verifier side, each instance in the built-in's append-only set must be specified by a single, unambiguous parameter set.
+**and** by structural choices that the Poseidon paper leaves open and that implementations in the wild resolve differently:
+
+- the order of operations within a round — this document defines a round as ARC → S-box → Mix, as above; implementations may internally reorder or pre-compose constants (e.g. the common "shifted" schedule that applies an initial ARC and then folds each round's constants into the end of the previous round) provided the result is observationally identical to the definition;
+- which state element the partial-round S-box applies to (e.g. `circomlib`-lineage code uses the *first* element; midnight-zk and the reference implementation backing this proposal use the *last*);
+- the orientation of the MDS multiplication: row-major $\text{state}'_i = \sum_j M_{ij} \cdot \text{state}_j$, versus multiplying by the transpose;
+- the consumption order of the round-constant list (which constant goes to which round and lane).
+
+These structural choices are not cosmetic.
+For example, the circom BLS12-381 instance and the reference implementation differ *only* in the partial-round S-box position, and importing the circom constants requires an exact state-reversal conjugation — $M'_{ij} = M_{(t-1-i)(t-1-j)}$ with each round's constant chunk reversed, inputs fed in reverse order and the digest read from the mirrored lane.
+Applied blindly, the same numeric constants produce entirely different digests.
+
+Because all of the above must match exactly on both the prover and verifier side, each instance in the built-in's append-only set must be specified by a single, unambiguous parameter set covering the numeric *and* the structural choices.
 
 #### Concrete parameters
 
