@@ -222,18 +222,21 @@ zkVM. The comparison and selection of these options is discussed in
    maturity — a first-of-its-kind Nova implementation, unproven at Cardano scale — so it
    is a candidate for Phase 1 evaluation alongside the STARK route, not the default
    baseline.
-6. **NovaSlim [NOVASLIM] — practical Phase 2 stepping stone.** A Nova-family IVC
-   system that produces **sub-kilobyte transparent proofs** (~0.4–2.5 KiB, independent
-   of commitment scheme) with **sub-millisecond verification** (~0.2 ms) and **no
-   trusted setup**. It is implemented in Rust with support for six curves (including
-   BLS12-381, Cardano's native curve) and three commitment schemes (Pedersen, SIS,
-   Hash) — of which **SIS** and **Hash** are post-quantum (conjectured). Critically, it already has a **working Aiken eUTXO verifier** running in
-   Plutus V3 on BLS12-381 scalar arithmetic. Its protocol design, security proofs, and
-   benchmark analysis are specified in the NovaSlim whitepaper [NOVASLIM-WP].
-   Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
-   compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB. With SIS commitment
-   (m=128): fold is faster than Pedersen (matrix–vector products replace MSMs)
-   and the slim proof size stays ~0.4 KiB.
+6. **NovaSlim [NOVASLIM] — experimental Phase 2 stepping stone.** A Nova-family IVC
+    system that produces **sub-kilobyte transparent proofs** (~0.4–2.5 KiB, independent
+    of commitment scheme) with **sub-millisecond verification** (~0.2 ms) and **no
+    trusted setup**. It is implemented in Rust with support for six curves (including
+    BLS12-381, Cardano's native curve) and three commitment schemes (Pedersen, SIS,
+    Hash).  **Hash is operationally SIS/Ajtai in disguise** (Blake2b-derived matrix
+    entries), so the same norm-enforcement caveat applies to both; neither gives a
+    proven post-quantum guarantee without additional range proofs.  Critically, it
+    already has a **working Aiken eUTXO verifier** running in Plutus V3 on BLS12-381
+    scalar arithmetic. Its protocol design, security proofs, and benchmark analysis are
+    specified in the NovaSlim whitepaper [NOVASLIM-WP].
+    Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
+    compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB.  **Honest sizing:**
+    a fully sound system would be ~5–12 KiB (classical) and ~30–100+ KiB
+    (post-quantum) once PCS openings, fold verification, and norm proofs are included.
 
 ### Deployment: two phases
 
@@ -280,10 +283,14 @@ primary deployment (Conway-era limits; updatable via governance):
 | Plutus `maxTxExecutionUnits` | 14M memory / 10G steps per tx | No STARK verifier exists in Plutus; verification is orders of magnitude beyond this budget |
 | Native scripts (V1–V3) | threshold multisig only | Cannot express arbitrary NIZK verification |
 
-**However, NovaSlim [NOVASLIM] already bypasses these constraints:** its slim proofs
-are **~0.4–2.5 KiB** (well under `maxTxSize`) and its Aiken verifier runs in **Plutus
-V3** on BLS12-381 scalar arithmetic. This makes NovaSlim the only backend with a
-working Phase 2 path today; see [Proving backend options](#proving-backend-options).
+**However, NovaSlim [NOVASLIM] already bypasses the size constraints:** its slim
+proofs are **~0.4–2.5 KiB** (well under `maxTxSize`) and its Aiken verifier runs in
+**Plutus V3** on BLS12-381 scalar arithmetic. This makes NovaSlim the only backend
+with a working Phase 2 *infrastructure* path today — the verifier checks
+sumcheck consistency and algebraic correctness, but does not yet evaluate the
+circuit MLEs or open commitments, so it is suitable for **fund-recovery**
+(trusted prover) rather than day-to-day untrusted signing; see [Proving backend
+options](#proving-backend-options).
 
 Raising `maxTxSize` alone would not suffice for STARKs (the receipt also exceeds
 `maxBlockBodySize`), and the post-Q-day variant does not reduce proof size — it only
@@ -300,10 +307,13 @@ only if the previous one is closed for some reason:
 2. **One proof across several txs.** If no single tx can hold the receipt, split it
    over multiple mutually-referencing transactions, so the fragment proofs together
    form the full receipt.
-3. **NovaSlim for Phase 2 now.** If neither STARK option fits, use NovaSlim's
-   sub-kilobyte proofs with the existing Aiken verifier. This is the only backend
-   that already works end-to-end on Cardano today, although it remains experimental
-   and unaudited.
+3. **NovaSlim for Phase 2 infrastructure now.** If neither STARK option fits, use
+    NovaSlim's sub-kilobyte proofs with the existing Aiken verifier for the
+    **fund-recovery** use case (trusted prover, verifier checks algebraic
+    consistency). This is the only backend that already works end-to-end on
+    Cardano today, although it remains experimental and unaudited and its
+    verifier does not yet establish full knowledge soundness under an untrusted
+    prover.
 4. **Out-of-band proofs + node-side cache.** If none of the above, proofs travel
    out-of-band; nodes keep a cache of proofs and only adopt blocks of signatures for
    which they have seen the corresponding zk proof. This needs additional handling of
@@ -390,7 +400,9 @@ is a research prototype lacking production maturity (Lova):
 | Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
 | Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
 | Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
-| **NovaSlim** | ✅/🔜 Conjectured (SIS & Hash) | ✅ **Yes** (~0.4–2.5 KiB) | **Implemented (experimental, unaudited)** |
+| **NovaSlim** | ✅/🔜 Conjectured (SIS & Hash) | ✅ **Yes** (~0.4–2.5 KiB slim) | **Implemented (experimental, unaudited)** |
+
+Hash is operationally SIS/Ajtai in disguise; neither gives a proven PQ guarantee without norm enforcement. NovaSlim's honest sound size is ~5–12 KiB (classical) / ~30–100+ KiB (PQ).
 
 That narrows the field to **two usable ways forward**, which is why the comparison
 serves only a small number of decisions:
@@ -401,25 +413,27 @@ serves only a small number of decisions:
   `maxTxSize` budget), so it is confined to the Phase 1 off-chain path until a
   proof-size-reduction programme (ZK-friendly hashing, smaller FRI configurations)
   brings it within budget. It is the low-risk default for Phase 1.
-- **Way 2 — NovaSlim, the experimental backend, demonstrated to work.** Initially
-  designed as a classical Nova-family IVC, its **SIS** and **Hash** commitments are
-  post-quantum (conjectured), giving a PQ path today, and it is the *only* option with
-  sub-kilobyte proofs (~0.4–2.5 KiB), sub-millisecond verification, **and** a working
-  on-chain Aiken verifier (Plutus V3). The author has demonstrated the end-to-end
-  pipeline — step-circuit folding, slim-proof generation, and on-chain verification —
-  at `cardano/cip197` [NOVASLIM-CIP197]. Its caveats are that it is experimental and
-  unaudited, and that its post-quantum guarantee is as strong as the hash/SIS
-  parameters, not as strong as Lova's lattice construction (the underlying sumcheck
-  folding is classical, random-oracle / Fiat–Shamir based).
+- **Way 2 — NovaSlim, the experimental backend, demonstrated to work.** Its
+  **SIS** and **Hash** commitments are post-quantum (conjectured), giving a PQ path
+  today, and it is the *only* option with sub-kilobyte proofs (~0.4–2.5 KiB),
+  sub-millisecond verification, **and** a working on-chain Aiken verifier (Plutus V3).
+  The author has demonstrated the end-to-end pipeline — step-circuit folding,
+  slim-proof generation, and on-chain verification — at `cardano/cip197`
+  [NOVASLIM-CIP197].  Its caveats are that (a) it is experimental and unaudited,
+  (b) its verifier does not yet evaluate circuit MLEs or open commitments, so
+  acceptance attests honest execution rather than knowledge of a valid witness,
+  (c) Hash is operationally SIS/Ajtai in disguise and inherits the same
+  missing-norm-enforcement caveat, and (d) the underlying sumcheck folding is
+  classical (random-oracle / Fiat–Shamir based), not lattice-hardened like Lova.
 
 The CIP leans on **Way 2 (NovaSlim)** for the Phase 2 infrastructure path, because it
 solves the exact problem that blocks every other option: proof size, verification cost,
-and on-chain verifier availability — and it is already shown working. The recommended
-posture is to deploy NovaSlim **now** for Phase 2 infrastructure (wallet integration,
-witness format, on-chain verifier, transport) with a PQ commitment, and to upgrade the
-proving backend to a lattice-hardened variant (Lova-style) when that cryptography
-matures, keeping the same proof format and Aiken verifier. This mirrors the CIP's
-Phase 1→2 philosophy: build the road before the car is finished.
+and on-chain verifier availability — and it is already shown working.  The recommended
+posture is to treat NovaSlim as a **fund-recovery mechanism** (verified by a Plutus
+contract once classical signatures are disabled) rather than a day-to-day signing
+scheme, and to upgrade the proving backend to a lattice-hardened variant (Lova-style)
+when that cryptography matures, keeping the same proof format and Aiken verifier.
+This mirrors the CIP's Phase 1→2 philosophy: build the road before the car is finished.
 
 ### Open Questions
 
@@ -427,8 +441,8 @@ Phase 1→2 philosophy: build the road before the car is finished.
   Phase 2 for STARKs is gated on reducing proofs to a few KB. **NovaSlim already
   achieves sub-kilobyte proofs (~0.4–2.5 KiB) and a working Aiken verifier,
   demonstrating that Phase 2 infrastructure is technically feasible today; the open
-  question is the PQ hardening of
-  its folding scheme.**
+  questions are (a) closing the verifier soundness gap (MLE evaluation, commitment
+  opening, fold verification) and (b) PQ hardening of its folding scheme.**
 - Native STARK verifier feasibility in the ledger: Plutus budgets are orders of
   magnitude too small; only a native (non-Plutus) primitive is credible. NovaSlim's
   Plutus V3 verifier sidesteps this by using BLS12-381 scalar arithmetic directly.
