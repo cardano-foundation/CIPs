@@ -7,7 +7,7 @@ Authors:
   - Alex Moser <alexander.moser@cardanofoundation.org>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1164
+  - PR Discussion: https://github.com/cardano-foundation/CIPs/pull/1164
 Created: 2026-03-18
 License: CC-BY-4.0
 ---
@@ -232,17 +232,20 @@ Further, one or more CC members could adopt scripts for enforcing Optimistic Con
 
 ## Path to Active
 
-### Acceptance Criteria On-chain
+### Acceptance Criteria 
+(On-chain)
 
-[ ] 0. A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
-[ ] 1. The formal Conway ledger specification (`cardano-ledger`) is updated to reflect the modified `RATIFY` rule as described in this CIP.
-[ ] 2. The implementation is deployed on the `preview` testnet and exercised with both challenged and unchallenged governance actions.
-[ ] 3. The implementation is deployed on the `preprod` testnet with a functioning Constitutional Committee.
-[ ] 4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
-[ ] 5. The local-state-query protocol exposes challenge status for governance actions.
+[ ] - 0. A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
+[ ] - 1. The formal Conway ledger specification (`cardano-ledger`) is updated to reflect the modified `RATIFY` rule as described in this CIP.
+[ ] - 2. The implementation is deployed on the `preview` testnet and exercised with both challenged and unchallenged governance actions.
+[ ] - 3. The implementation is deployed on the `preprod` testnet with a functioning Constitutional Committee.
+[ ] - 4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
+[ ] - 5. The local-state-query protocol exposes challenge status for governance actions.
 
-### Acceptance Criteria Off-chain
-[ ] 1. one or more CC members adopt the model of Optimistic Constitutionality on their own terms, enforced by either promise, or smart contracts. 
+### Acceptance Criteria 
+(Off-chain)
+
+[ ] - 1. one or more CC members adopt the model of Optimistic Constitutionality on their own terms, enforced by either promise, or smart contracts. 
 
 ### Implementation Plan
 
