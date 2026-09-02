@@ -109,10 +109,10 @@ Which state element plays the role of the capacity, what value the capacity is i
 Real-world implementations disagree on every one of these choices.
 Two deployed examples over the BLS12-381 scalar field, both cross-validated against the reference implementation accompanying this proposal:
 
-- **circomlib-style** (`circomlib` [5] over BN254, and its BLS12-381 port `jmagan/poseidon-bls12381-circom`): an $n$-input hash uses width $t = n + 1$; the capacity element is the *first* state element and is initialized to zero; the whole hash is a *single* application of $P$ to $(0, \text{in}_1, \dots, \text{in}_n)$; the digest is the *first* element of the output state — i.e. it is read from the position the capacity occupied, not from the rate.
+- **circom-style** ([`jmagan/poseidon-bls12381-circom`](https://github.com/jmagan/poseidon-bls12381-circom) [7], following the framing of the widely used `circomlib` library [5]): an $n$-input hash uses width $t = n + 1$; the capacity element is the *first* state element and is initialized to zero; the whole hash is a *single* application of $P$ to $(0, \text{in}_1, \dots, \text{in}_n)$; the digest is the *first* element of the output state — i.e. it is read from the position the capacity occupied, not from the rate.
   There is no domain-separation or length tag.
-  (circomlib's `PoseidonEx` template does allow a caller to initialize the capacity element to an arbitrary value, which is how a domain-separation tag *can* be injected in that ecosystem, but the plain `Poseidon` template used in practice fixes it to zero.)
-- **midnight-zk fixed-arity hash**: the capacity element is the *last* state element and is initialized to the *number of inputs* (a length tag); inputs are absorbed in rate-sized chunks with one application of $P$ per chunk; the digest is the *first* element of the output state.
+  (This lineage's extended `PoseidonEx` template does allow a caller to initialize the capacity element to an arbitrary value, which is how a domain-separation tag *can* be injected in that ecosystem, but the plain `Poseidon` template used in practice fixes it to zero.)
+- **[midnight-zk](https://github.com/midnightntwrk/midnight-zk) fixed-arity hash** [6]: the capacity element is the *last* state element and is initialized to the *number of inputs* (a length tag); inputs are absorbed in rate-sized chunks with one application of $P$ per chunk; the digest is the *first* element of the output state.
   Concretely, the 3-input hash on the width-3 instance runs:
 
   1. start from the initial state $(0, 0, 3)$ — the capacity element (last) holds the length tag;
@@ -165,7 +165,7 @@ A concrete Poseidon instance is fully specified by the *numeric* parameters:
 **and** by structural choices that the Poseidon paper leaves open and that implementations in the wild resolve differently:
 
 - the order of operations within a round — this document defines a round as ARC → S-box → Mix, as above; implementations may internally reorder or pre-compose constants (e.g. the common "shifted" schedule that applies an initial ARC and then folds each round's constants into the end of the previous round) provided the result is observationally identical to the definition;
-- which state element the partial-round S-box applies to (e.g. `circomlib`-lineage code uses the *first* element; midnight-zk and the reference implementation backing this proposal use the *last*);
+- which state element the partial-round S-box applies to (e.g. the circom implementations use the *first* element; midnight-zk and the reference implementation backing this proposal use the *last*);
 - the orientation of the MDS multiplication: row-major $\text{state}'_i = \sum_j M_{ij} \cdot \text{state}_j$, versus multiplying by the transpose;
 - the consumption order of the round-constant list (which constant goes to which round and lane).
 
@@ -177,26 +177,28 @@ Because all of the above must match exactly on both the prover and verifier side
 
 #### Concrete parameters
 
-The parameter sets below are the de-facto values used across the Ethereum/ZK ecosystem (the `circomlib` reference implementation [5]), targeting **128-bit security** with S-box exponent **$\alpha = 5$**.
-They are instantiated over the **BLS12-381** scalar field introduced above, the only pairing curve exposed by Plutus built-ins.
+Round counts are not universal constants: they are derived from the field $p$, the state size $t$, the S-box exponent $\alpha$, and a chosen security margin, so they are meaningful only relative to a fixed field.
 
-For $\alpha = 5$, the number of full rounds is fixed at **$R_F = 8$** (split as 4 rounds before and 4 after the partial rounds), while the number of partial rounds $R_P$ grows with the state size $t$:
+One property is **normative** for every instance of this built-in, present and future: it is instantiated over the **BLS12-381 scalar field** introduced above, the only pairing curve exposed by Plutus built-ins and the field the reference implementation's arithmetic is built on.
 
-| Use case | $t$ (rate $r$ / capacity $c$) | $\alpha$ | $R_F$ | $R_P$ |
-| --- | --- | --- | --- | --- |
-| 2 → 1 (e.g. Merkle node) | 3 ($r=2$, $c=1$) | 5 | 8 | 57 |
-| 4 → 1 | 5 ($r=4$, $c=1$) | 5 | 8 | 60 |
+The other agreements between the instances below are **descriptive, not normative**: each happens to target **128-bit security** with S-box exponent **$\alpha = 5$** and **$R_F = 8$** full rounds (split as 4 before and 4 after the partial rounds).
+The recurrence of $\alpha = 5$ is no coincidence: $\alpha$ is conventionally chosen as the *smallest* integer such that $\gcd(\alpha, r - 1) = 1$, which is what makes $x \mapsto x^\alpha$ a bijection.
+For the BLS12-381 scalar field this smallest choice is $5$ — the candidate $3$ is ruled out because $3$ divides $r - 1$, so $x^3$ is not a bijection over this field.
+Nevertheless, none of these values is fixed forever.
+Instead, a future instance must satisfy the registry's admission criteria: $\gcd(\alpha, r - 1) = 1$, a declared security level of at least 128 bits, and round counts meeting the Poseidon paper's minima (plus its recommended margin) for the declared $(t, \alpha)$ at that level.
+The deployed BLS12-381 instances that have been cross-validated against the reference implementation backing this proposal are:
 
-The full `circomlib` table of partial-round counts, indexed by $t - 2$, is:
+| Origin | $t$ (rate $r$ / capacity $c$) | $\alpha$ | $R_F$ | $R_P$ | Constant generation |
+| --- | --- | --- | --- | --- | --- |
+| [midnight-zk](https://github.com/midnightntwrk/midnight-zk) [6] | 3 ($r=2$, $c=1$) | 5 | 8 | 60 | `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (pasta-hadeshash) |
+| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom) [7] | 3 ($r=2$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (hadeshash) |
+| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom) [7] | 4 ($r=3$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 4 5 128 <r>` (hadeshash) |
 
-```text
-R_P[t] = [56, 57, 56, 60, 60, 63, 64, 63, 60, 66, 60, 65, 70, 60, 64, 68]
-         (t = 2, 3, 4, 5, ...)
-```
+Note that two of these share the same $(p, t, \alpha)$ yet use different partial-round counts, 60 versus 56: both include a security margin over the paper's minima, but the margin and the derivation script differ.
+The Poseidon paper's own `calc_round_numbers.py` can likewise produce slightly different counts depending on the margin and attack assumptions chosen.
+Neither instance is "wrong" — but they are different hash functions, and their digests are incompatible.
 
-> **Caveat:** these `R_F`/`R_P` values include a security margin and are the *deployed* de-facto standard, not necessarily the theoretical minima.
-> The Poseidon paper's own `calc_round_numbers.py` can produce slightly different counts depending on the margin and attack assumptions chosen.
-> This specification must therefore fix, for each registered instance, the exact generator script and its inputs (not merely the table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
+> **Caveat:** for exactly this reason, this specification fixes for each registered instance the exact generator script and its inputs (not merely a round-count table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
 > **Note:** *Poseidon2* [3] is a newer successor that keeps the same round structure but uses a cheaper linear layer and constant schedule.
 > It is explicitly **out of scope** for this CIP: this specification standardizes the original, battle-tested Poseidon, which has seen years of deployment and cryptanalysis across the ZK ecosystem.
 
@@ -216,7 +218,7 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 ### Implementation Plan
 
 - [ ] Agree on the parameter sets with the Plutus Core team.
-- [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with cross-checked test vectors against `circomlib` and the reference implementations.
+- [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
 - [ ] Benchmark and propose costing parameters.
 
 ## References
@@ -225,7 +227,9 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 2. L. Grassi, R. Lüftenegger, C. Rechberger, D. Rotaru, M. Schofnegger. *On a Generalization of Substitution-Permutation Networks: The HADES Design Strategy.* EUROCRYPT 2020. IACR ePrint [2019/1107](https://eprint.iacr.org/2019/1107).
 3. L. Grassi, D. Khovratovich, M. Schofnegger. *Poseidon2: A Faster Version of the Poseidon Hash Function.* AFRICACRYPT 2023. IACR ePrint [2023/323](https://eprint.iacr.org/2023/323). Reference parameters: [HorizenLabs/poseidon2](https://github.com/HorizenLabs/poseidon2/blob/main/poseidon2_rust_params.sage).
 4. G. Bertoni, J. Daemen, M. Peeters, G. Van Assche. *Cryptographic Sponge Functions* / *On the Indifferentiability of the Sponge Construction*, EUROCRYPT 2008. [keccak.team/sponge_duplex.html](https://keccak.team/sponge_duplex.html).
-5. iden3. *circomlib*. Reference Poseidon circuit and round-number table: [circuits/poseidon.circom](https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom).
+5. iden3. *circomlib*. Reference Poseidon circuit: [circuits/poseidon.circom](https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom).
+6. Midnight Network. *midnight-zk*, the zero-knowledge library of the Midnight blockchain; Poseidon instance and constants under [`circuits/src/hash/poseidon`](https://github.com/midnightntwrk/midnight-zk/tree/main/circuits/src/hash/poseidon). [github.com/midnightntwrk/midnight-zk](https://github.com/midnightntwrk/midnight-zk).
+7. J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
 
 ## Copyright
 
