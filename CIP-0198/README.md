@@ -3,6 +3,7 @@ CIP: 198
 Title: Nested Transactions - Service Layer
 Category: Network
 Status: Proposed
+Solution-To: CPS-0015
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - William Wolff <william.wolff@iohk.io>
@@ -21,7 +22,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-[CIP-118][] lets a user author a sub-transaction 
+[CIP-0118][] lets a user author a sub-transaction 
 that does not balance on its own, e.g.
 having more of a user-defined token in the inputs than the outputs, and vice-versa
 for ADA (such type of sub-transaction is called a *babel fee offer*). 
@@ -45,7 +46,7 @@ anonymous publishers of sub-transactions (wallets), services
 
 ## Motivation: Why is this CIP necessary?
 
-[CIP-118][] defines ledger changes needed to support a specific kind of 
+[CIP-0118][] defines ledger changes needed to support a specific kind of 
 transaction batching. 
 Incomplete transactions (e.g. unable to pay fees in ADA) are not propagated 
 across the Cardano network. 
@@ -96,35 +97,33 @@ infrastructure:
 ### Architecture
 
 Outer boxes are machines. What shares a box is expected to share a host. A service
-must run beside a full
-node and talks to it locally. Nothing else needs a node: a relay is required to
-hold no chain state, and a wallet publisher may be light.
+must run beside a full node and talks to it locally. Nothing else needs a node:
+a relay never follows the chain, and a wallet publisher may be light.
 
 ```text
   ┌─ USER'S MACHINE ─────────┐        ┌─ RELAY HOST ──────────────┐
-  │                          │        │  no chain state, beside   │
-  │  wallet / publisher      │        │  nothing                  │
-  │  builds and signs one    │        │                           │
-  │  sub-transaction         │        │  relay                    │
-  │                          │        │  stateless checks, dedup, │
-  │                          │        │  rate limit, forward      │
+  │                          │        │                           │
+  │  wallet / publisher      │        │  relay                    │
+  │  builds and signs one    │        │  stateless checks, dedup, │
+  │  sub-transaction         │        │  rate limit, forward      │
+  │                          │        │                           │
   └────┬──────────────┬──────┘        └──┬─────────────────┬──────┘
        │              │                  │                 │
        │              └── gossipsub ─────┤                 └─► other relays,
        │                 topic = a       │                     drawn from the
   HTTPS│                 routing key     │ gossipsub           registry each
   POST /offers                           │                     epoch
-  GET  /offers/{id}                      │
-       │            ┌────────────────────┘
-       ▼            ▼
-  ┌─ SERVICE OPERATOR'S MACHINE ────────────────────────┐
+  GET  /offers/{id}                      ▲
+       │            ┌────────────────────┤  gossipsub, once an epoch:
+       ▼            ▼                    │  the signed registry statement
+  ┌─ SERVICE OPERATOR'S MACHINE ─────────┴──────────────┐
   │                                                     │
-  │  babel fee service                                  │── HTTPS GET /offers/stream ─► other services
+  │  babel fee service                                  │
   │  verifies, selects, builds the batch, submits it    │
   │           │                     ▲                   │
-  │           │ resolve inputs,     │ blocks, rollbacks,│
-  │           │ protocol params,    │ the registry      │
-  │           ▼ submit              │                   │
+  │           │ submit              │ blocks, rollbacks,│
+  │           │                     │ the registry,     │
+  │           ▼                     │ UTxOs, params     │
   │      ┌────┴─────────────────────┴────┐              │
   │      │  cardano-node (full)          │              │
   │      │  local socket, or cardano-cli │              │
@@ -138,14 +137,13 @@ hold no chain state, and a wallet publisher may be light.
 ```
 
 A publisher reaches a service directly over HTTPS, or reaches services it has
-never heard of by publishing to the mesh. Relays carry offers and nothing else:
-they never build batches, never hold chain state, and never decide what any
-service wants. Services also source from each other over HTTPS, which is a pull
+never heard of by publishing to the mesh. Relays forward offers and receive
+registry updates. Services also source from each other over HTTPS, which is a pull
 path a silently-dropping relay cannot cut.
 
 ### Terminology
 
-#### Imported from CIP-118, not redefined by this CIP
+#### Imported from CIP-0118, not redefined by this CIP
 
 *sub-transaction*, *top-level transaction*, *batch*, *guard*, *required top-level
 guards*, *isolation mode*. 
@@ -290,7 +288,7 @@ distinguish them.
 | Role | Must |
 |---|---|
 | Publisher | Construct offers that pass the [offer checks](#stateless-checks--performed-by-publishers-relays-services), and derive their own keys, which needs chain state a wallet has anyway. No identity, no registration, nothing ongoing. |
-| Relay | Every [stateless check](#stateless-checks--performed-by-publishers-relays-services), deduplication by transport dedup key, and per-peer rate limits. Forward what passes; drop peers on the grounds below. Never required to hold chain state. |
+| Relay | Every [stateless check](#stateless-checks--performed-by-publishers-relays-services), deduplication by transport dedup key, and per-peer rate limits. Forward what passes; drop peers on the grounds below. Never required to follow the chain |
 | Service | Every relay obligation, including peer drops, plus the [chain-state](#chain-state-checks--performed-by-publishers-services) and [pre-inclusion](#pre-inclusion-checks--performed-by-services) checks, and honouring its own [advertised interest](#routing-and-filtering). |
 
 A relay may also drop an offer that reached it on a topic the offer does not
@@ -328,6 +326,34 @@ likely that a non-malicious relay will forward the relevant offers:
 to *k* (see [Protocol constants]) others, drawn uniformly from the registry using on-chain
 randomness, so that anyone can recompute the draw and nobody can steer it. 
 
+A relay therefore reads the chain without following it. The draw needs the
+registry, fixed for the epoch, so one snapshot an epoch suffices — against a
+service, which needs the current UTxO set for every offer it verifies.
+
+**Relay access to registry statements.** We propose a consensus-like 
+registry dissemination algorithm among relays. It is weaker than 
+full blockchain consensus, which we address in [security considerations](#security-considerations)
+
+1. At each epoch boundary a service reads the registry and
+publishes a signed *registry statement*: the epoch, the hash of the registry it
+is replacing, and the registry itself. Only services publish these — a relay
+follows no chain and so has nothing of its own to say.
+
+2. For each incoming statement, a relay verifies the signature against the
+public keys in the registry it already holds, and checks that the predecessor
+hash is the registry it holds. A statement failing either is invalid.
+
+3. For the amount of time specified in
+[`REGISTRY_WAIT`](#protocol-constants), it counts valid statements per version,
+each from a distinct signer. If one version reaches
+[`REGISTRY_AGREEMENT`](#protocol-constants) of the *registered services* in the
+registry it holds, the relay adopts it once the wait is up; if none does, it
+keeps the registry it has and raises the shortfall.
+
+4. A relay, upon receiving an invalid or outvoted registry from one of the peers 
+it connects to, drops the *signing service* from its peers (if it was in its peer set).
+
+
 **Dropping a peer.** Dropping peers is a component of our protocol that is 
 orthogonal to dropping offers they send. Peers are dropped for the 
 following reasons:
@@ -338,16 +364,12 @@ following reasons:
 - sending on a topic the recipient never subscribed to, or altering the topic
   an offer arrived on.
 
-A dropped peer is not replaced. The peer set, which is local to whoever drew
-it, runs short until the next epoch's draw refills it. Drops are temporary
-rather than permanent. Replacing a peer on demand would be a way to steer the
-peer set composition. The value *k* must be chosen with
-this in mind. There is no globally shared peer blacklist or reputation record.
+Peers can additionally be [blacklisted locally](#local-blacklists)
 
-Dropping a peer does not identify a publisher. On a mesh a publisher is a peer
-like any other and may be dropped like any other, but what is dropped is a
-transport link rather than an identity, and nothing is learned about who was
-behind it.
+**Peers set by hand.** An operator may pin peers, which are kept alongside the
+drawn set rather than replacing it. This functionality is required to 
+initialize or re-configure a (possibly wrong) registry, 
+see [security considerations](#security-considerations).
 
 **Fairness.** Two things have to hold. No offer may be systematically starved,
 and the network must not hand any service a systematic first look at them. The
@@ -372,6 +394,32 @@ starts small.
 
 This decision is unresolved.
 
+#### Local blacklists
+
+A party may keep a list of subjects whose messages it will not take. 
+The blacklist functionality we provide is :
+
+- Local, never shared. There is no network-wide list and no reputation
+record.
+- Temporary. A publisher is anonymous and a key costs
+nothing to make, so a permanent list grows without bound and buys nothing. How
+long a listing lasts, how long a strike counts toward one, and how much weight
+lists a subject are all the operator's individual protocol constants, as
+[`BLACKLIST_LISTING`, `BLACKLIST_STRIKE_MEMORY` and
+`BLACKLIST_THRESHOLD`](#protocol-constants).
+- Optional. Keeping one is not among a relay's obligations: dropping a peer on
+the grounds under [Dropping a peer](#network-topology-and-roles) is required,
+and remembering subjects across arrivals is the refinement on top.
+
+The grounds and who answers for each:
+
+| Ground | Subject | Why that subject |
+|---|---|---|
+| Spam  | the peer | the rate is per link |
+| A malformed envelope | the peer | a message that does not parse has no author to name |
+| An offer arriving on a topic its own content does not derive | the peer | a relay should not forward off-topic |
+| An invalid or outvoted [registry statement](#network-topology-and-roles) | the signer | a statement carries its signer who chose to sign a bad registry |
+
 
 ### Transport bindings
 
@@ -385,7 +433,7 @@ only authentication the protocol can potentially access.
 A service running this binding is an HTTPS server. Each row below is one request
 it answers, named by an *endpoint*: an HTTP method and a path.
 
-| Endpoint | |
+| Endpoint | What it answers |
 |---|---|
 | `POST /offers` | Submit one envelope. `202` once accepted for verification, which is asynchronous — acceptance is not a promise to batch. A resubmission of a known offer is also `202`; replay is idempotent. |
 | `GET /offers/{offer_id}` | The offer's state. |
@@ -418,7 +466,7 @@ it runs.
 This mesh binding allows an offer reach
 services its publisher does not choose, possibly via intermediate relays.
 
-| | |
+| Setting | Value |
 |---|---|
 | Topic | A routing key |
 | Message payload | Envelope bytes |
@@ -607,7 +655,7 @@ sent as. Three separate things do that work (see details below)
 
 What each role does with each:
 
-| | Publisher | Relay | Service |
+| Activity | Publisher | Relay | Service |
 |---|---|---|---|
 | Declare a filter key | never | never | never |
 | Derive body-only keys | its own | may | yes |
@@ -628,7 +676,7 @@ to its neighbours over the gossip protocol.
 
 What is relayed across what type of network:
 
-| | HTTPS | Gossip mesh | Unfiltered stream | On-chain |
+| What travels | HTTPS | Gossip mesh | Unfiltered stream | On-chain |
 |---|---|---|---|---|
 | Filter key | never | never | never | never |
 | Routing key | as the advertised accept side | as the message topic | never — no topics | in a registered profile, as advertisement only |
@@ -740,6 +788,7 @@ kind        = "offered/" policy-id
             / "exunits/" band
             / "feature/direct-deposits"
             / "feature/balance-intervals"
+            / "registry"                  ; registry statements, not offers
 
 band        = "none" / "low" / "medium" / "high"
 policy-id   = 56lc-hex
@@ -894,13 +943,6 @@ Values are in [Protocol constants].
 What a guard costs to run is not a function of the constraint alone. 
 It is a function of the full transaction which contains it (including its sub-txs).
 For this reason, shape caps cannot directly be translated to ExUnits caps.
-
-**Misbehaviour**
-A server that does not drop offers that do not satisfy its interest filters is
-considered to be 
-misbehaving, which could be grounds for (local) blacklisting by other parties
-that implement blacklists.
-
 
 **Evolution**
 The constraint language's version is its interpreter's script hash. 
@@ -1066,6 +1108,7 @@ runs the revision it registered.
 | `PEER_OFFERS_PER_MINUTE` | Number of offers a peer may send per minute | Limits what one sender costs a recipient | Not announced | By the recipient |
 | `SERVICE_OFFERS_PER_MINUTE` | Number of offers a service may send another per minute | The same limit, between services | Not announced | By the recipient |
 | `MAX_LIVE_OFFERS_PER_UTXO` | Number of live offers allowed per UTxO | Only one can ever land, so a higher cap only allows re-pricing | Not announced; the refusal says when to try again | By the recipient |
+| `BLACKLIST_THRESHOLD`, `BLACKLIST_LISTING`, `BLACKLIST_STRIKE_MEMORY` | Weight that lists a subject, how long a listing lasts, and how long a strike counts toward one | A listing that outlives the abuse punishes a key an author has already replaced; one that expires too soon buys nothing. All zero, or every ground weighted zero, keeps no list at all | Not announced; a subject meets a listing as a refusal | By the party that keeps it, on itself |
 | `POOL_MAX_OFFERS`, `POOL_MAX_BYTES` | Number of offers a pool may hold, and their total size in bytes | When the pool starts evicting | Not announced | By the holder |
 | `RELAY_REANNOUNCE_INTERVAL` | Amount of time between repeats of an offer by a relay | Lets a service that joined late still see it | Released with the specification revision | Not enforced |
 | `MAX_REGISTRATION_BYTES` | Size in bytes of the largest registration datum | Two parties with different ceilings enumerate different registries and draw different peers | Released with the specification revision | By every reader |
@@ -1074,6 +1117,8 @@ runs the revision it registered.
 | `MAX_CONCURRENT_BATCHES` | Number of batches a service may have in flight | Each holds offers and wallet inputs out of circulation | Not announced | By the service |
 | `PEER_FAN_OUT` | Number of backbone peers a service pulls from | Must outrun the share of the registry an attacker can afford to own | Released with the specification revision, in force once most of the registry has upgraded | Not enforced |
 | `PEER_SET_EPOCHS` | Number of epochs a drawn peer set lasts | One epoch unless raised. Bounds how long an unlucky draw can isolate a service | Released with the specification revision | Not enforced |
+| `REGISTRY_WAIT` | How long a party waits for registry statements after an epoch boundary before giving up on the new registry | Long enough for statements to arrive over a mesh nobody guarantees delivery on; short enough that the draw is not stale for a useful part of the epoch |  Released with the specification revision | Not enforced |
+| `REGISTRY_AGREEMENT` | Share of the registered services in the held registry that must agree on a successor before a party adopts it | Too low and a minority rewrites what a relay believes; too high and one epoch's absentees stall every relay | Released with the specification revision | By each relay on itself |
 | `REGISTRATION_DEPOSIT` | Amount of ADA a service or relay deposits to register | Registration deposit amount | Released with the specification revision | On chain, by the minting policy |
 | `HINT_TTL` | Amount of time before a price hint expires | After this, a quote is not worth using. | Released with the specification revision | By the wallet, which treats an older hint as absent. A service cannot extend it |
 | `STATUS_RETENTION` | Amount of time a service answers about a finished offer | Until this, status is still available | Not announced | Not enforced; a 404 in response to an offer query mean "forgotten" rather than "never seen" |
@@ -1302,7 +1347,7 @@ build_batch(candidates, tip, protocol_parameters):
 **Dijkstra dependencies**
 The exact (field-23) encoding, compositional minimum-fee calculation, collateral
 accounting, script context, execution-unit accounting, and final ledger
-validation call are blocked on the final CIP-118/Dijkstra ledger interface.
+validation call are blocked on the final CIP-0118/Dijkstra ledger interface.
 
 
 ### Liquidity strategy
@@ -1498,7 +1543,7 @@ some of its offers.
 [protocol revision](#versioning) its holder runs, an endpoint, and which of the
 two things it is. The service profile fields are as follows:
 
-| Code name | Field | |
+| Code name | Field | What it says |
 |---|---|---|
 | `accept` | accept side | What the service will take: a set of [filter keys](#filter-key-kinds), or the marker meaning everything. Keys rather than assets, since six of the nine kinds are not assets: a service taking only scriptless offers, or only offers guarded by one DApp. |
 | `rejected_keys` | rejected keys | Exclusions, which win over the accept side however it is set. |
@@ -1560,8 +1605,11 @@ stateless check-failing envelopes are dropped, along with those not meeting
 the parties' interest filters. The bad-faith offers still not dropped after
 those checks cannot accumulate indefinitely, as they are either eventually evicted by 
 incoming offers (pool size is bounded) or expire (because all offers must satisfy
-TTL requirement). Finally, we impose limits on the frequency of peer-peer 
-envelope transmission, and allow dropping peers at-will.
+TTL requirement). 
+
+Finally, we impose limits on the frequency of peer-peer 
+envelope transmission, and allow dropping peers at-will, and parties may keep a
+[local blacklist](#local-blacklists).
 
 **Collateral griefing.** A sub-transaction whose scripts
 fail at phase 2 validation wastes the service's resources. We address this with
@@ -1637,21 +1685,24 @@ so such offers are dropped.
 resolve to "does not fit" rather than wrapping into a small number that does.
 The reference implementation saturates everywhere.
 
-**Possible extensions.** 
-
-1. A service could
-keep a configurable temporary local blacklist of offer signing keys, on whatever grounds
-it finds useful, e.g. repeated bad signatures, or several envelopes carrying one
-offer identity. 
-
-2. Offers
-could be required to carry a signature over the whole envelope by the same
-keys that signed the body, which would make a mutated copy invalid. However, 
-choosing the smaller valid version of the two envelopes appears to be a better approach.
-
 **Censorship.** We address systematic censorship of certain kinds of transactions by 
 certain parties, and censorship of parties by other parties via our peer selection 
 process. We propose selecting a fresh set of peers every epoch. 
+
+**A relay believing the wrong registry.** A relay does not read the chain, so
+services and other relays may be able to trick the relay into 
+accepting an incorrect [registry statement](#network-topology-and-roles), 
+e.g. via a supermajority of bad actors.
+This is guarded against by ensuring a gossipsub-network-wide exchange of 
+registry state readings once per epoch, signed and including a hash 
+of the previous registry. 
+
+However, we propose the following safeguard based on the assumption that a 
+relay is usually run by a node operator (who else would do that for fun?):
+the node operator performing relay maintenance is an out-of-band anchor
+allowing the relay to receive a current registry copy from a trusted source.
+That source is a [pinned peer](#network-topology-and-roles) that is kept alongside the
+draw, never replaced. Scheduling of this maintenance is out of scope.
 
 **Eclipse and partition attacks.** Registry-based peer selection does not prove
 that a selected endpoint is independent, reachable, or forwarding. A service
@@ -1702,7 +1753,7 @@ and still be valid. A dedicated cap in the future may be a way to address this.
 The [Specification](#specification) requires four main components for 
 an off-chain mechanism to support, and we discuss here how each turned out.
 
-#### Components built
+#### Components specified
 
 **Off-chain network protocol for offer and interest communication** 
 We discussed the possible [transport bindings](#transport-bindings) for the 
@@ -1869,7 +1920,7 @@ the cryptographic complexity of the resulting protocol is significantly reduced.
 
 - Batch construction beyond selection: the field-23 encoding, compositional
       minimum fee, collateral accounting, script context and execution-unit
-      accounting all wait on the final CIP-118/Dijkstra ledger interface.
+      accounting all wait on the final CIP-0118/Dijkstra ledger interface.
 - Test vectors for that interface 
 - Whether a guard requirement may name a script credential
 - The [cost-model cliff](#chain-state-checks--performed-by-publishers-services)
@@ -1902,7 +1953,7 @@ deployed behaviour to preserve.
 
 ### Acceptance Criteria
 
-- [ ] CIP-118 is Active and the Dijkstra CDDL is final on a public network.
+- [ ] CIP-0118 is Active and the Dijkstra CDDL is final on a public network.
 - [ ] Two implementations built independently interoperate: an offer built by
       one wallet, published to a service from the other implementation, is
       batched and lands on-chain.
@@ -1971,11 +2022,12 @@ Some additional notes on versioning :
 
 - [CIP-0001][] — CIP process and document structure; this proposal follows its
   format requirements.
-- [CIP-118][] "Nested Transactions" (Ledger, Proposed) — the ledger feature this
+- [CIP-0118][] "Nested Transactions" (Ledger, Proposed) — the ledger feature this
   proposal supplies an off-chain layer for; source of sub-transactions, guards,
   and fields 23/24.
-- [CPS-0015][] "Intents for Cardano" (unmerged, PR #779) — problem framing:
-  price discovery, fulfilment status, spam and MEV concerns.
+- [CPS-0015][] "Intents for Cardano" (unmerged, PR #779) — the problem statement
+  this proposal is a solution to: price discovery, fulfilment status, spam and
+  MEV concerns.
 - CIP-0131 "Transaction swaps" (PR #880) — sibling design; source of the
   construction-time-computable offer identity argument.
 - [CIP-0137][] "Decentralized Message Queue" — candidate future transport
@@ -2037,7 +2089,7 @@ Some additional notes on versioning :
 - Ecosystem interviews — anonymised; participants not named.
 
 [CIP-0001]: https://cips.cardano.org/cip/CIP-0001
-[CIP-118]: https://cips.cardano.org/cip/CIP-0118
+[CIP-0118]: https://cips.cardano.org/cip/CIP-0118
 [CPS-0015]: https://github.com/cardano-foundation/CIPs/pull/779
 [CIP-0137]: https://cips.cardano.org/cip/CIP-0137
 [RFC 8949]: https://www.rfc-editor.org/rfc/rfc8949
