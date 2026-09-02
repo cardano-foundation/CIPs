@@ -3,7 +3,7 @@ CIP: 198
 Title: Nested Transactions - Service Layer
 Category: Network
 Status: Proposed
-Solution-To: CPS-0015
+Solution To: CPS-0015
 Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
     - William Wolff <william.wolff@iohk.io>
