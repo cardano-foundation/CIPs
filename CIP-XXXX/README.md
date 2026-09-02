@@ -21,9 +21,15 @@ This CIP introduces a new built-in to Plutus, the Poseidon hash function.
 ## Motivation: Why is this CIP necessary?
 
 Many zk applications require the same hash function to be evaluated both in-circuit and onchain.
-An example of such a use case is a Merkle tree whose root is committed onchain while membership proofs are verified inside a circuit.
-Traditional hash functions are not designed to be cheap in-circuit, leading to long proving times.
-This gap is filled by zk-friendly hash functions, of which Poseidon is the most established.
+An example of such a use case is a Merkle tree whose root is committed onchain while membership proofs are verified inside a circuit (or vice versa).
+
+Traditional hash functions like SHA-256 or Blake2b are ill-suited for this: they are designed for CPUs, operating on 32- or 64-bit registers with bitwise operations (XOR, AND, rotations) and additions that wrap around at the register size.
+A zk circuit, however, natively expresses only additions and multiplications in a prime field.
+To evaluate a bit-oriented hash in-circuit, every register must be emulated: each word is decomposed into individual bits (one field element per bit, each with its own constraint forcing it to be 0 or 1), every bitwise operation costs constraints per bit, and every register addition needs extra constraints to reproduce the 32/64-bit overflow behaviour, since field arithmetic wraps around at the field prime instead.
+This emulation inflates a single hash evaluation to tens of thousands of constraints, and the constraint count directly determines circuit size and proving time.
+
+This gap is filled by zk-friendly hash functions, which are built from native field additions and multiplications so no bit decomposition or overflow emulation is needed.
+Of these, Poseidon is the most established.
 
 ## Specification
 
@@ -31,43 +37,81 @@ This gap is filled by zk-friendly hash functions, of which Poseidon is the most 
 
 Poseidon is a cryptographic hash function designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.).
 Unlike "traditional" hashes such as SHA-256 or Blake2b, which operate on bits and are
-cheap on a CPU but extremely expensive to prove in a circuit, Poseidon operates directly over the elements of a large prime field $\mathbb{F}_p$, where $p$ is usually the scalar field of the elliptic curve underlying the proof system.
-Because its operations are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation is orders of magnitude smaller than for a bit-oriented hash.
+cheap on a CPU but extremely expensive to prove in a circuit, Poseidon operates directly over the elements of a large prime field $\mathbb{F}_p$, where $p$ is usually the scalar field prime of the elliptic curve underlying the proof system.
+Because the operations of which the Poseidon hash function is comprised of are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation in-circuit is orders of magnitude smaller than for a bit-oriented hash.
 This is what makes it "arithmetization-friendly".
 
 #### Prime fields
 
 A **prime field** $\mathbb{F}_p$ is the set of integers $\{0, 1, \dots, p-1\}$ for a prime modulus $p$, with addition and multiplication performed modulo $p$.
 Because $p$ is prime, every non-zero element has a multiplicative inverse, so $\mathbb{F}_p$ supports the four basic arithmetic operations: it behaves like ordinary arithmetic that wraps around at $p$.
-An element of such a field is a single number in $\{0, \dots, p-1\}$; this is the basic unit of data Poseidon operates on, in contrast to the bits and bytes of traditional hash functions.
+An element of such a field is a single number in $\{0, \dots, p-1\}$; this is the basic unit of data Poseidon operates on.
 
 Elliptic-curve-based proof systems come with two prime fields: the *base field*, over which the curve's point coordinates are defined, and the **scalar field**, whose modulus is the (prime) order of the cryptographic subgroup of the curve.
 The arithmetic of a circuit — and hence the values a prover commits to — lives in the scalar field, so a hash function that is cheap to prove must operate natively on scalar-field elements.
 
 Plutus exposes exactly one pairing curve via built-ins, **BLS12-381**, whose scalar field has the 255-bit prime modulus
 
-```
+```text
 p = 52435875175126190479447740508185965837690552500527637822603658699938581184513
 ```
 
 All Poseidon parameters in this document are instantiated over this field.
 
+#### Overview of the construction
+
+Like SHA-3, Poseidon is built in two independent layers:
+
+1. An inner **permutation** $P$: a fixed, invertible function $\mathbb{F}_p^t \to \mathbb{F}_p^t$ that supplies all of the cryptographic mixing.
+   It is not a hash function by itself — it takes no variable-length input and, being invertible, hides nothing on its own.
+   It is constructed by iterating a simple *round function* (add constants, apply a non-linear S-box, multiply by a mixing matrix) a fixed number of times.
+2. An outer **mode of operation**, the *sponge construction*: a thin wrapper that repeatedly invokes $P$ to obtain the interface of a hash function — variable-length input, fixed-length output, one-wayness.
+   The mode contains no cryptographic hardness of its own; its security reduces to that of the permutation it wraps.
+
+Importantly, there is no canonical, unique "*the* Poseidon hash function": Poseidon is a *family* of hash functions.
+Both layers are parameterized — the permutation by the field, the state width, the S-box exponent, the round counts, and the round constants; the mode by conventions such as how inputs and domain-separation tags are placed into the state — and every combination of choices yields a different function, producing digests incompatible with all others.
+Two implementations agree only if every single one of these choices matches.
+For this reason the built-in proposed here does not fix a single canonical instance: it is an interface that is *modular over instances*, backed by a set of known instances that is **append-only** — new instances can be added over time, but once added, an instance can never be removed.
+
+The two subsections that follow describe these layers top-down: first the sponge, treating $P$ as a black box, then the internal round structure of $P$ itself.
+
 #### The sponge construction
 
-Poseidon hashes arbitrary-length input using the same **sponge** construction as Keccak/SHA-3.
+Recall from the overview that the permutation $P$ maps exactly $t$ field elements to $t$ field elements, and that accepting input of any other length is the job of the mode wrapped around it.
+This subsection describes that mode: the same **sponge** construction as used by Keccak/SHA-3, which feeds the message into the state in fixed-size chunks, invoking $P$ in between.
 The internal state is a vector of $t = r + c$ field elements:
 
-- $r$ (the *rate*): how many field elements of input are absorbed per step, and how many are squeezed out per step.
-- $c$ (the *capacity*): reserved elements that are never touched directly by input/output; they carry the security of the construction (roughly $c \cdot \log_2(p)/2$ bits).
+- $r$ (the *rate*): how many field elements of input are absorbed per step, and how many are squeezed out per step (this is where the word **sponge** comes from).
+- $c$ (the *capacity*): reserved elements that are never touched directly by input/output; they carry the security of the construction.
 
-Hashing proceeds in two phases:
+Starting from an **initial state** $I = 0^r \Vert 0^c$ of $t = r + c$ field elements — a fixed public constant of all zeros, where a domain-separation tag may take the place of the zeros in the capacity part — hashing proceeds in two phases:
 
-1. **Absorb**: the input (padded to a multiple of $r$) is split into chunks of $r$ field elements.
-   Each chunk is added into the first $r$ elements of the state, then the whole state is run through the Poseidon **permutation** $P$.
-2. **Squeeze**: after all input is absorbed, the first $r$ elements of the state are read off as output.
-   If more output is needed, $P$ is applied again and more elements are read.
+1. **Absorb**: the input (padded to a multiple of $r$) is split into chunks $m_1, m_2, \dots$ of $r$ field elements each.
+   Each chunk $m_i$ is added into the first $r$ elements of the state, then the whole state is run through the Poseidon **permutation** $P$.
+2. **Squeeze**: after all input is absorbed, the first $r$ elements of the state are read off as the output $z_1$.
+   If more output is needed, $P$ is applied again and further outputs $z_2, \dots$ are read.
 
-For the common fixed-arity case (e.g. hashing two field elements into one, as in a Merkle tree) this reduces to a single application of the permutation.
+![The sponge construction](./sponge.svg)
+
+*Message chunks $m_i$ are added into the rate part of the state, interleaved with applications of the permutation $P$; once all input is absorbed, output elements $z_i$ are read from the rate part.*
+
+In practice, however, most deployments of Poseidon do not hash arbitrary-length data but use a **fixed-arity** instance.
+This is a consequence of how zk circuits work: a circuit is fixed at compile/setup time, meaning its entire structure — every wire, every constraint, and therefore the number of permutation calls — must be known before any input exists.
+A circuit thus cannot branch on the length of its input; "hash however many chunks arrive" is simply not expressible.
+Variable-length hashing can only be emulated by building the circuit for a maximum length and padding shorter inputs up to it, paying the worst-case constraint cost on every proof.
+Consequently, protocols are designed around hashes of a fixed, known arity — which is also what their typical uses need: a Merkle node always hashes exactly two children, a commitment always binds the same number of field elements.
+The most common instance has width $t = 3$ ($r = 2$, $c = 1$) and acts as a 2-to-1 compression function, e.g. hashing the two children of a Merkle tree node together with a domain-separation tag (DST).
+Concretely, the sponge then runs as follows:
+
+1. start from the initial state $(0, 0, 0)$;
+2. absorb the chunk (left, right), giving the state $(\text{left}, \text{right}, 0)$, and apply the permutation to obtain $(x, y, z)$;
+3. absorb the DST as the next (zero-padded) chunk, giving $(x + \text{dst},\ y,\ z)$, and apply the permutation again to obtain $(x', y', z')$;
+4. read the output $x'$ from the rate part.
+
+This costs two applications of $P$ — one per absorbed chunk — and, as the diagram shows, the output is read *immediately after* the final permutation: squeezing begins with a read, not with another application of $P$.
+
+Some implementations use a shortcut convention instead: the DST is not absorbed as message but placed directly in the capacity element of the initial state, so both inputs fit in a single chunk and one application of $P$ suffices (this is the convention of e.g. `circomlib`, with the capacity element fixed to zero).
+The two conventions produce different digests for the same inputs, so the exact convention — like all other parameters — must be fixed unambiguously for each registered instance.
 
 #### The permutation (HADES design)
 
@@ -106,7 +150,7 @@ A concrete Poseidon instance is fully specified by:
 - the round numbers $(R_F, R_P)$;
 - the round constants $c_i$ and the MDS matrix $M$ (generated deterministically, e.g. from a Grain LFSR seeded by the other parameters).
 
-Because these must match exactly on both the prover and verifier side, any use of Poseidon on Cardano needs a single, unambiguous parameter set fixed by the specification.
+Because these must match exactly on both the prover and verifier side, each instance in the built-in's append-only set must be specified by a single, unambiguous parameter set.
 
 #### Concrete parameters
 
@@ -122,14 +166,14 @@ For $\alpha = 5$, the number of full rounds is fixed at **$R_F = 8$** (split as 
 
 The full `circomlib` table of partial-round counts, indexed by $t - 2$, is:
 
-```Rust
+```text
 R_P[t] = [56, 57, 56, 60, 60, 63, 64, 63, 60, 66, 60, 65, 70, 60, 64, 68]
          (t = 2, 3, 4, 5, ...)
 ```
 
 > **Caveat:** these `R_F`/`R_P` values include a security margin and are the *deployed* de-facto standard, not necessarily the theoretical minima.
 > The Poseidon paper's own `calc_round_numbers.py` can produce slightly different counts depending on the margin and attack assumptions chosen.
-> This specification must therefore fix the exact generator script and its inputs (not merely the table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
+> This specification must therefore fix, for each registered instance, the exact generator script and its inputs (not merely the table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
 > **Note:** *Poseidon2* [3] is a newer successor that keeps the same round structure but uses a cheaper linear layer and constant schedule.
 > It is explicitly **out of scope** for this CIP: this specification standardizes the original, battle-tested Poseidon, which has seen years of deployment and cryptanalysis across the ZK ecosystem.
 
