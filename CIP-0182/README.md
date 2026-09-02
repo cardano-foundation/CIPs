@@ -40,10 +40,10 @@ Under CIP-1694, the CC must reach its approval threshold for every governance ac
 
 ### Overview
 
-The core change is to the ratification logic in the Conway ledger rules. `TODO: Describe the changes required for the extenstion of the live epochs for CCs to react.`
+The core change is to the ratification logic in the Conway ledger rules. 
 After CIP-1694, and simplified, ignoring the different Action types, a governance action is ratified when all these 3 conditions are met:
 
-#### After CIP-1694
+#### Under CIP-1694, the logic scheme for GA ratificaton is:
 ```math
 $$\text{RATIFIED} \iff \left(\frac{V_{\text{CC}}^{\text{yes}}}{|CC|} \geq T_{\text{CC}}\right) \wedge \left(\frac{S_{\text{DRep}}^{\text{yes}}}{S_{\text{DRep}}^{\text{active}}} \geq T_{\text{DRep}}\right) \wedge \left(\frac{S_{\text{SPO}}^{\text{yes}}}{S_{\text{SPO}}^{\text{delegated}}} \geq T_{\text{SPO}}\right)$$
 ```
@@ -57,6 +57,15 @@ $$\text{RATIFIED} \iff \left(V_{\text{CC}}^{\text{no}} = 0 \;\lor\; \frac{V_{\te
 `RATIFIED = (zero CC no votes exist **OR** (CC Yes votes ≥ CC threshold)) **AND** (DRep Yes stake ≥ DRep threshold) **AND** (SPO Yes stake ≥ SPO threshold)`
 
 Note that a CC 'yes' vote has no effect. Every CC member can voluntarily provide a yes vote, or abstain, to e.g. provide commentary. 
+
+This mechanism by itself would allow a handful of powerful DReps, the "Nakamoto majority", to collude and push any GovAction through right after submission, such as towards the end of an epoch, which would not give other Governance Actors, or the CC, the time to react to such an "attack". 
+Thus, ratification of GAs within its first epoch should become disallowed, which creates a minimum life time for all Governance Actions of 2 epochs. 
+
+Further, every CC can single-handedly block and drop Governance Actions just before ratification of a DREP-,and SPO-approved Governance Action by voting `No` at the last moment, voiding the effort of the ecosystem to get to an approved state. 
+Thus, a CC `No` Vote of an GovAction that achieved its threshold and would transition at the epoch boundary from approved to `in ratification`, should stay in its state to allow for the other CC members to confirm/overwrite the No vote that put the GA in status `challenged` at the last moment.
+
+An alternative, easier mitigation for such power abuse would be to just acknowledge this power abuse risk and solely rely on submitting a state of no confidence, as the CCs block could be seen a malicious action, of which the voters could be the judge.
+
 
 ### Definitions
 
@@ -106,9 +115,11 @@ The guardrails script (proposal policy) continues to apply to Protocol Parameter
 
 ### Ledger Rule Changes
 
-The changes are localized to the `RATIFY` transition rule in the Conway ledger specification.
+The changes are:
+- To the `RATIFY` transition rule in the Conway ledger specification.
+- disallowing in-epoch submission and approval, creating a minimum life time for all Governance Actions of 2 epoch (or more - recommendation for a new parameter `minEpochsLiveGA :: Int`)
+- extending Governance Action lifetime of approved (votes > threshold) Actions that get a CC challenge (a `No` vote) 
 
-TODO: Describe the changes required for the extenstion of the live epochs for CCs to react. 
 
 #### Current `ccApproved` Predicate (Simplified)
 
@@ -137,6 +148,7 @@ ccApproved action st =
       else ccYes % ccSize >= thresh     -- Challenged: standard threshold applies
 ```
 
+
 #### State Query Extensions
 
 The local-state-query protocol should be extended to expose:
@@ -160,7 +172,6 @@ This CIP proposes a new governance protocol parameter:
 - `minEpochsLiveGA :: Int` — Controls how many epochs must pass at mininum before a Governance Action is approved, irregardless of voting thresholds. 
  
 This parameter directly addresses the risk "Collusion" in the Remaining Risk chapter below, and provides mitigation for a collusion attack, where a proposer and the Top x DReps submit a malicious Governance Action last minute, which could fully drain the treasury within a single epoch, or introduce contentious parameters (within guardrails).
-
 
 
 ### Interaction with CC Expiry and No-Confidence
@@ -212,27 +223,16 @@ Governance actions submitted before the activation epoch follow the pre-existing
 All existing CC credentials, hot/cold key infrastructure (CIP-0105), governance metadata standards (CIP-0100, CIP-0108, CIP-0136), and wallet integrations (CIP-0030, CIP-0095) remain compatible. The change is entirely within the ledger's `RATIFY` rule and does not affect transaction formats, certificate types, or on-chain data structures.
 
 
-#### Optional: Off-Chain Convention (Pre-Hard-Fork)
+### Off-Chain Convention (Pre-Hard-Fork)
 
-Before the hard fork, the current CC could voluntarily adopt an "optimistic convention", where CC members agree (via off-chain coordination or an Info Action) to vote `Yes` on all governance actions unless they intend to challenge constitutionality. CC members who identify a constitutional concern vote `No` and publish a rationale (per CIP-0136 metadata). 
-This convention achieves the behavioral outcome of Optimistic Constitutionality without ledger changes, serving as a live experiment to validate the model.
+Instead of a ledger rule change, Optimistic Constitutionality could just as well be introduced socially, by one or more CC members, by way of enforcing the convention and achieving the same behavioural outcomes of Optimistic Constitutionality without ledger changes. This social convention could also serve as validation of the model before a hard fork - as live experiment. 
+Possible path: The current CC could voluntarily adopt an "optimistic convention", where CC members agree (via off-chain coordination or an Info Action) to vote `Yes` on all governance actions unless they intend to challenge constitutionality. CC members who identify a constitutional concern vote `No` and publish a rationale (per CIP-0136 metadata). 
 
-Other suggestions were made by community members to use scripts for enforcing this "social convention", where CC members who run a cold-hot key model could migrate one of their CC hot keys to a smart contract to enforces the yes vote. Overwriting the yes with a no would be manually handled by the remaining hot keys to reach the required quorum of a single CC's vote. 
-
-
-### Remaining Risks
-
-### Power Abuse
-
-Under Optimistic Constitutionality, CC members could single-handedly block all DRep- and SPO-approved, near-ratified Governance Actions by voting No up until the last block of an epoch, which would leave no time for the remaining CC to overrule the Constitutional Challenge. This risk is real, and currently known possible mitigations for it, such as introducing approval window extensions upon the first CC no vote are only increasing complexity, introduce new more complicated issues and are practically infeasible.
-At the moment, the best mitigation for such power abuse would be to acknowledge this risk and rely on the possibilty to call out a state of no confidence - after a Governance Action got maliciously CC-blocked last minute.
-
-### Collusion
-Someone could submit a Governance Action in the final slots of an epoch and collude with the top 10 DReps to vote "yes." If no CC member catches this mischievous behavior in time, the action could meet the ratification threshold without the CC being able to stop it. This risk is real, and mitigations could include a new parameter for `minimal-epochs-govaction-live`, where at least x epochs are required to pass before a Governance Action could be ratified.
+Further, one or more CC members could adopt scripts for enforcing Optimistic Constitutionality, where e.g. CC members run a cold-hot key model with a 1/2 threshold, and set up one of the CC hot keys to be a smart contract that enforces the `Yes` vote, which anyone could submit. Overwriting this `Implicit Yes` with a `No` would be manually handled by the remaining hot key of the CC, while invalidating further txs from the smart contract hot key. 
 
 ## Path to Active
 
-### Acceptance Criteria
+### Acceptance Criteria On-chain
 
 [ ] 0. A community vote is most likely beneficial or even required for such a change, as it cannot individually be voted on within the hardfork GA, with which it would get activated. 
 [ ] 1. The formal Conway ledger specification (`cardano-ledger`) is updated to reflect the modified `RATIFY` rule as described in this CIP.
@@ -241,6 +241,8 @@ Someone could submit a Governance Action in the final slots of an epoch and coll
 [ ] 4. A hard fork governance action activating the new ledger era is ratified and enacted on Cardano mainnet.
 [ ] 5. The local-state-query protocol exposes challenge status for governance actions.
 
+### Acceptance Criteria Off-chain
+[ ] 1. one or more CC members adopt the model of Optimistic Constitutionality on their own terms, enforced by either promise, or smart contracts. 
 
 ### Implementation Plan
 
