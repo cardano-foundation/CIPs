@@ -1,0 +1,87 @@
+{
+    "@context": {
+        "@language": "en-us",
+        "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+        "CIP185": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#",
+        "GovernanceActionUpdate": "CIP185:GovernanceActionUpdate",
+        "hashAlgorithm": "CIP100:hashAlgorithm",
+        "body": {
+            "@id": "CIP185:body",
+            "@context": {
+                "governanceActionId": "CIP185:governanceActionId",
+                "updateType": "CIP185:updateType",
+                "sequenceNumber": "CIP185:sequenceNumber",
+                "supersedes": "CIP185:supersedes",
+                "updateContext": "CIP185:updateContext",
+                "bindingStatements": {
+                    "@id": "CIP185:bindingStatements",
+                    "@container": "@set",
+                    "@context": {
+                        "field": "CIP185:bindingStatement-field",
+                        "originalText": "CIP185:bindingStatement-originalText",
+                        "revisedText": "CIP185:bindingStatement-revisedText",
+                        "rationale": "CIP185:bindingStatement-rationale"
+                    }
+                },
+                "references": {
+                    "@id": "CIP185:references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                        "Other": "CIP100:OtherReference",
+                        "label": "CIP100:reference-label",
+                        "uri": "CIP100:reference-uri"
+                    }
+                }
+            }
+        },
+        "authors": {
+            "@id": "CIP100:authors",
+            "@container": "@set",
+            "@context": {
+                "name": "http://xmlns.com/foaf/0.1/name",
+                "witness": {
+                    "@id": "CIP100:witness",
+                    "@context": {
+                        "witnessAlgorithm": "CIP100:witnessAlgorithm",
+                        "publicKey": "CIP100:publicKey",
+                        "signature": "CIP100:signature"
+                    }
+                }
+            }
+        }
+    },
+    "@type": "GovernanceActionUpdate",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "governanceActionId": "4547c1a52ef27d3cb784c3f3a0bf0aa15600ee85969369ba0945bcd84e0fd1f3#0",
+        "updateType": "Clarification",
+        "sequenceNumber": 1,
+        "updateContext": "Following the community town hall on April 15th, we are clarifying the budget breakdown for milestone 2. The figure stated in the proposal covers audit costs only; engineering costs for milestone 2 are covered by the milestone 1 disbursement, as several DReps asked.",
+        "bindingStatements": [
+            {
+                "field": "milestones[2].budget",
+                "originalText": "Milestone 2: 150,000 ada",
+                "revisedText": "Milestone 2: 150,000 ada, covering third-party audit costs only; engineering costs are covered under milestone 1.",
+                "rationale": "Two defensible readings existed; this fixes the intended one without changing any amount."
+            }
+        ],
+        "references": [
+            {
+                "@type": "Other",
+                "label": "Town Hall Recording",
+                "uri": "https://example.com/town-hall-2026-04-15"
+            }
+        ]
+    },
+    "authors": [
+        {
+            "name": "Proposer Name",
+            "witness": {
+                "witnessAlgorithm": "ed25519",
+                "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
+                "signature": "a476985b4cc0d457f247797611799a6f6a80fc8cb7ec9dcb5a8223888d0618e30de165f3d869c4a0d9107d8a5b612ad7c5e42441907f5b91796f0d7187d64a01"
+            }
+        }
+    ]
+}
