@@ -48,7 +48,7 @@ __Keeping the `Data` type simple__.
 If the Plutus V4 types are encoded using lists, no change to the `Data` datatype will be required.
 If they are encoded using arrays, then we'll need two additional constructors - `Array` and `ConstrArray` - together with four additional built-ins for wrapping and unwrapping.
 Adding new constructors to `Data` would be a quite invasive change for the Plutus repository alone.
-It would also complicates other languages, compilers andy tooling, and requires substantial ledger integration work.
+It would also complicates other languages, compilers and tooling, and requires substantial ledger integration work.
 The overall cost is significant, and it is a change best avoided.
 
 __Lists are usually faster than arrays for working with datatypes__:
