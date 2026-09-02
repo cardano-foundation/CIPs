@@ -16,7 +16,7 @@ Discussions:
     - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
     - CIP-0131 | Transaction swaps (closed): https://github.com/cardano-foundation/CIPs/pull/880
 Solution To:
-    - CPS-0015
+    - CPS-0015 | Intents for Cardano: https://github.com/cardano-foundation/CIPs/pull/779
 Created: 2026-08-14
 License: CC-BY-4.0
 ---
