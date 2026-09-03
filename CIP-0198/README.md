@@ -324,12 +324,18 @@ likely that a non-malicious relay will forward the relevant offers:
    ones it wants;
 
 **Peer selection.** Each backbone member — service or relay — maintains links
-to *k* (see [Protocol constants]) others, drawn uniformly from the registry using on-chain
-randomness, so that anyone can recompute the draw and nobody can steer it. 
+to *k* (see [Protocol constants]) others, drawn from the registry using on-chain
+randomness, so that anyone can recompute the draw and nobody can steer it. The
+draw takes *k* distinct registrations, each with probability proportional to the
+deposit it holds.
 
-A relay therefore reads the chain without following it. The draw needs the
-registry, fixed for the epoch, so one snapshot an epoch suffices — against a
-service, which needs the current UTxO set for every offer it verifies.
+Weighting by deposit rather than counting entries makes the draw indifferent to
+how a party splits itself: one registration of *D* and ten of *D/10* carry the
+same weight in total, so buying draw share costs the same however it is
+arranged. A uniform draw prices share by entry count instead, which makes the
+cheapest way to buy it a large number of minimum-sized registrations. It also
+removes the need for a floor, since a small operator registers a small deposit
+and is drawn in proportion rather than being priced out. 
 
 **Relay access to registry statements.** We propose a consensus-like 
 registry dissemination algorithm among relays. It is weaker than 
@@ -345,11 +351,19 @@ public keys in the registry it already holds, and checks that the predecessor
 hash is the registry it holds. A statement failing either is invalid.
 
 3. For the amount of time specified in
-[`REGISTRY_WAIT`](#protocol-constants), it counts valid statements per version,
-each from a distinct signer. If one version reaches
-[`REGISTRY_AGREEMENT`](#protocol-constants) of the *registered services* in the
-registry it holds, the relay adopts it once the wait is up; if none does, it
-keeps the registry it has and raises the shortfall.
+[`REGISTRY_WAIT`](#protocol-constants), it tallies valid statements per version,
+each signer counted once and weighted by the deposit its registration holds. If
+one version reaches [`REGISTRY_AGREEMENT`](#protocol-constants) of the deposit
+held by all *registered services* in the registry the relay holds, it adopts
+that version once the wait is up; if none does, it keeps the registry it has and
+raises the shortfall.
+
+Weighted for the same reason the [draw](#network-topology-and-roles) is: counting
+signers makes a registration the unit of voice, so a party splitting its deposit
+across several buys several. Under deposit the split is free of consequence, and
+what an attacker must acquire to rewrite a relay's registry is a share of
+everything staked. A service whose registration holds nothing carries no
+weight.
 
 4. A relay, upon receiving an invalid or outvoted registry from one of the peers 
 it connects to, drops the *signing service* from its peers (if it was in its peer set).
@@ -1085,12 +1099,17 @@ stateless checks.
 
 **Diffusion, pool and service.** 
 
-`MAX_GOSSIP_MESSAGE_BYTES`, `RELAY_REANNOUNCE_INTERVAL`, `HINT_TTL`,
-`PEER_FAN_OUT`, `PEER_SET_EPOCHS` and `REGISTRATION_DEPOSIT` must be agreed
-network-wide: the first three because a party applying a different one refuses
-what others accept, the last three because they define one shared draw and are
-meaningless held separately. The rest are internal to the party that sets them
-(the two rate limits, `MAX_LIVE_OFFERS_PER_UTXO`, the pool ceilings,
+`MAX_GOSSIP_MESSAGE_BYTES`, `RELAY_REANNOUNCE_INTERVAL` and `HINT_TTL` must be
+agreed network-wide, because a party applying a different one refuses what
+others accept. `MAX_REGISTRATION_BYTES` and `REGISTRATION_DEPOSIT` must 
+be too. Nobody enforces either on chain, so two parties applying
+different ones compile different registries — and a registry's hash is what
+every relay's agreement is taken over. `PEER_FAN_OUT` and `PEER_SET_EPOCHS`
+define one shared draw and are meaningless held separately. `REGISTRY_WAIT` and
+`REGISTRY_AGREEMENT` ship with the revision so that parties start aligned, but a
+relay choosing its own affects only when that relay adopts. The rest are
+internal to the party that sets them (the two rate limits,
+`MAX_LIVE_OFFERS_PER_UTXO`, the three blacklist constants, the pool ceilings,
 `MAX_CONCURRENT_BATCHES`, `MAX_CATCH_UP_WINDOW` and `STATUS_RETENTION`),
 bounding either what a party spends on itself or what it
 will accept from others.
@@ -1119,8 +1138,8 @@ runs the revision it registered.
 | `PEER_FAN_OUT` | Number of backbone peers a service pulls from | Must outrun the share of the registry an attacker can afford to own | Released with the specification revision, in force once most of the registry has upgraded | Not enforced |
 | `PEER_SET_EPOCHS` | Number of epochs a drawn peer set lasts | One epoch unless raised. Bounds how long an unlucky draw can isolate a service | Released with the specification revision | Not enforced |
 | `REGISTRY_WAIT` | How long a party waits for registry statements after an epoch boundary before giving up on the new registry | Long enough for statements to arrive over a mesh nobody guarantees delivery on; short enough that the draw is not stale for a useful part of the epoch |  Released with the specification revision | Not enforced |
-| `REGISTRY_AGREEMENT` | Share of the registered services in the held registry that must agree on a successor before a party adopts it | Too low and a minority rewrites what a relay believes; too high and one epoch's absentees stall every relay | Released with the specification revision | By each relay on itself |
-| `REGISTRATION_DEPOSIT` | Amount of ADA a service or relay deposits to register | Registration deposit amount | Released with the specification revision | On chain, by the minting policy |
+| `REGISTRY_AGREEMENT` | Share of the deposit held by registered services in the held registry that must agree on a successor before a party adopts it | Too low and a minority rewrites what a relay believes; too high and one epoch's absentees stall every relay | Released with the specification revision | By each relay on itself |
+| `REGISTRATION_DEPOSIT` | Smallest deposit a registration may hold | A registration's draw weight is its deposit, so this bounds registry bloat rather than the draw | Released with the specification revision | By each service for itself (when compiling valid registration entries) |
 | `HINT_TTL` | Amount of time before a price hint expires | After this, a quote is not worth using. | Released with the specification revision | By the wallet, which treats an older hint as absent. A service cannot extend it |
 | `STATUS_RETENTION` | Amount of time a service answers about a finished offer | Until this, status is still available | Not announced | Not enforced; a 404 in response to an offer query mean "forgotten" rather than "never seen" |
 
@@ -1416,15 +1435,36 @@ for their discovery.
 **What a registration is.** One UTxO, holding one NFT, carrying the record as
 its datum. The NFT is retained across updates to the `registration`. 
 
-An NFT that correctly identifies a party is minted under a 
+**Registration address**. The registration NFT enforces (via its minting policy)
+that it must go to a specific address, a script hash 
+that is the same for all valid registration entries. 
+This script address requires that, when 
+spent, 
+1. the NFT either goes to a new UTxO with the same address, or is burned
+2. the registration key signs the transaction (key looked up in the datum)
+3. new datum has same role and key
+
+**The asset name is a commitment.** It is Blake2b-224 over three things that
+must not change for the registration's life: 
+1. the **role** (service or relay),
+2. the **key hash** that signs for it, and
+3. a hash of the **`TxIn`** spent, to ensure uniqueness
+
+Hashed rather than laid out in the clear because an asset name is capped at
+32 bytes and the three are 57. The full pre-image of this asset name must be the redeemer.
+
+Updating a registration spends that
+UTxO and creates a new one holding the same NFT, at the same address, likely 
+with a new datum (if there are changes to the registration) or a larger deposit. 
+
+An NFT that correctly identifies a party is minted under a
 **single shared policy**, which requires:
-- a record of the unique UTxO entry spent to forge it (`TxIn`), which is what makes the name unmintable twice
-- the role of the party (service vs relay), which prefixes that name and so is fixed for the registration's life
-- the hash of the public key of the party that must sign it at the time of minting and burning (full PK can be obtained from monitoring the chain)
-- enforcement of deposit (the ADA held in the same output must be at least the deposit)
-- the datum (see below) is present and decodes as expected
-- the address credential is the same public key hash as the one that signs the minting, and
-is the only address at which this NFT can be placed upon being spent
+- the asset name contains 1-3 above
+- the minting redeemer carries the asset name hash's preimage, and the asset name is its hash
+- the key named in the preimage signs, at minting and at burning 
+- the datum (see below) is present, decodes as expected, and restates the role, and party's public key
+- the address credential is the script described above
+- the NFT must be put at the registration script address described above
 
 **The datum.**
 
@@ -1434,8 +1474,14 @@ registration =
          , protocol_revision : uint
          , accepts           : accepted_versions
          , endpoint          : text
+         , commitment
          , standing
          ])
+
+; What the asset name hashes, restated so a reader can check it. The role is
+; the constructor, since it is what the two spellings differ by.
+commitment   = #6.121([key : hash28, seed : hash28])   ; service
+             / #6.122([key : hash28, seed : hash28])   ; relay
 
 ; Whether the holder is in the draw, and its profile if it is a service
 standing     = #6.121([maybe<service_profile>])   ; in the draw
@@ -1504,25 +1550,18 @@ with the transaction that created it, so that anyone following the chain has it
 without asking anyone. 
 
 **Updating a registration.** Spend the UTxO holding the NFT and re-create it
-with the new datum. That one mechanism covers every change a registration
-admits: a new profile, stepping out of the draw, and coming back. The role is
-not among them — it is in the asset name, and changing it would mean minting a
-different registration.
+with the new datum. Changing the role or the key means minting a new
+registration NFT.
 
-**The deposit is TBD.** Specifying a reasonable deposit affects peer selection,
-and is one of the [Security considerations](#security-considerations) we discuss.
-Peer selection draws only from registrations carrying a sufficient deposit.
+**The deposit.** Because the draw weights by deposit rather than admitting on a
+floor, the deposit is not the parameter the draw's security rests on, and no
+figure has to be calibrated against *k*: an entry's influence is already
+proportional to what it holds. What remains is a minimum large enough to deter
+registry bloat, which is a size question rather than a security one, and which
+can therefore be raised in a later revision without stranding anyone.
 
-*A fixed deposit amount needs a better way to change in future versions.* Currently it is 
-released with a software update, which requires on- and off-chain coordination.
-Every operator below the new figure must top up by a deadline nothing on chain 
-enforces, and whoever is not watching leaves the draw without being told. 
-We propose instead deriving the floor from the deposits of valid registrations. 
-The alternatives are a 
-floor each service sets for itself, a floor announced through a new protocol 
-constant, or an on-chain vote. 
-
-Note that *voting on updates* (either via an off-chain mechanism 
+**Possible extension** 
+Note that *voting on updates* to the min-deposit (either via an off-chain mechanism 
 processing the registry, or on-chain directly) requires a thorough design that is out of scope.
 
 **An unregistered party** is a normal party. It is reachable by anyone who knows
@@ -1666,13 +1705,18 @@ key, `Priority`, is what gets such offers sent to it.
 at the ledger level.
 
 **Sybil attacks on the registry.**
-Peers are drawn uniformly from the registry, so an attacker's chance of
-surrounding a given service is its share of registry entries (i.e. on-chain 
-registration tokens). 
-Too high a deposit excludes the small operators
-that make the market competitive. Too low allows the attack to happen.
-The required deposit and the number of peers drawn are dependent variables in this
-calculation, and neither means anything chosen alone.
+Peers are drawn with probability proportional to deposit, so an attacker's
+expected share of any peer set is its share of the registry's total deposit,
+however many registrations it spreads that deposit over. Surrounding a party
+still means holding most of its *k* links, which costs a corresponding share of
+everything staked. What the weighting removes is the cheaper route: buying links
+by entry count under a uniform draw, at whatever the floor happened to be.
+
+**Subsidised filling.** A party with capital can price below its own cost to
+take offers others decline. Users gain in the short run and the market
+concentrates, since nobody without that capital can match the price. Nothing
+here prevents it, and a service's [hints](#price-hints) are what make it
+visible.
 
 **Replay.** Replay is possible and indistinguishable from normal operation 
 of parties. The dedup keys allow parties to refuse offers they already 
@@ -1781,9 +1825,9 @@ We also discuss tracking the offer across the various stages of its
 **Service registration for discovery**
 Service and relay registration is tracked via optional
 [on-chain registration](#on-chain-registration-of-relays-and-services). 
-The registration requires posting a UTxO containing an NFT with a specific policy,
-uniquely identifying (in the registry) the holder of the key it specifies, the party's 
-role (service vs. relay), and an optional datum.
+The registration requires posting a UTxO containing an NFT under a single shared
+policy, whose asset name commits to the party's role, its signing key, and the
+input spent to forge it.
 
 **Batch construction** 
 Tx selection and
@@ -1916,6 +1960,28 @@ in a way that allows it to ever be placed into a valid top-level transaction. Fo
 it may be unable to correctly modify the sub-transaction without access to the resolved 
 inputs. If this is the case, 
 the cryptographic complexity of the resulting protocol is significantly reduced.
+
+#### Fit with economic research
+
+This CIP fixes an interface and leaves the economics to the operator, so market
+design lands in the pluggable parts rather than in the protocol. A service's
+pricing theory is what it publishes as a [price hint](#price-hints), which 
+can be derived from an oracle, from off-chain sources, or from other users' price hints,
+service, and interest profiles. 
+These contain the rate plus
+fee-coverage terms, with [`rate_source`](#service-profile) already separating a
+self-quoted rate from a named feed. Its theory of which offers are worth taking
+is a [`ValueFunction`](#batch-construction). 
+Its theory of how to fund them is a [liquidity
+strategy](#liquidity-strategy). None of the three is announced, so an operator
+may act on a model it does not publish, and choosing the best-fit model 
+for each service requires further research.
+
+**A price aggregator** is the service this suggests and this CIP does not
+define. It reads the hints, tells a wallet what to sign at, and publishes to the
+matching topics: one price for the user, and no position in the flow. Several
+can compete without fragmenting anything, because they route nothing and hold
+nothing. 
 
 #### Work blocked on prerequisites
 
