@@ -123,7 +123,8 @@ Two deployed examples over the BLS12-381 scalar field, both cross-validated agai
   The *same codebase's* variable-length transcript mode uses yet a third convention: the capacity is initialized to $2^{64}$ and a queue-length padding element is absorbed alongside the message.
 
 All of these framings invoke the same kind of permutation, yet they produce mutually incompatible digests for the same inputs.
-Because no framing is canonical — a single ecosystem may even use several — this proposal deliberately standardizes only the permutation and leaves the framing to the calling script; the framing used by each registered instance's ecosystem is documented alongside the instance, non-normatively, so that script authors can reproduce it exactly.
+Because no framing is canonical — a single ecosystem may even use several, over the same constants — this proposal deliberately standardizes only the permutation and leaves the framing to the calling script (see *The built-in* for the full argument).
+The framing of each registered instance's ecosystem is documented alongside the instance — machine-readably, in its constants file — together with known-answer vectors, so that script authors can reproduce it exactly.
 
 #### The permutation (HADES design)
 
@@ -173,6 +174,8 @@ These structural choices are not cosmetic.
 For example, the circom BLS12-381 instance and the reference implementation differ *only* in the partial-round S-box position, and importing the circom constants requires an exact state-reversal conjugation — $M'_{ij} = M_{(t-1-i)(t-1-j)}$ with each round's constant chunk reversed, inputs fed in reverse order and the digest read from the mirrored lane.
 Applied blindly, the same numeric constants produce entirely different digests.
 
+(A concrete *hash*, finally, additionally requires a **framing** on top of the permutation — see *Framing conventions*; the built-in exposes the permutation only, so framings are documented per instance rather than baked into its semantics.)
+
 Because all of the above must match exactly on both the prover and verifier side, each instance in the built-in's append-only set must be specified by a single, unambiguous parameter set covering the numeric *and* the structural choices.
 
 #### Concrete parameters
@@ -201,6 +204,108 @@ Neither instance is "wrong" — but they are different hash functions, and their
 > **Caveat:** for exactly this reason, this specification fixes for each registered instance the exact generator script and its inputs (not merely a round-count table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
 > **Note:** *Poseidon2* [3] is a newer successor that keeps the same round structure but uses a cheaper linear layer and constant schedule.
 > It is explicitly **out of scope** for this CIP: this specification standardizes the original, battle-tested Poseidon, which has seen years of deployment and cryptanalysis across the ZK ecosystem.
+
+### The built-in
+
+This CIP adds a single built-in function exposing the Poseidon *permutation* — deliberately not a hash — over the BLS12-381 scalar field:
+
+```text
+bls12_381_poseidonPermutation : integer -> list integer -> list integer
+```
+
+(The name carries `bls12_381` following the existing family of BLS12-381 built-ins; the final spelling is to be agreed with the Plutus Core team.)
+
+Its semantics:
+
+1. The first argument is the **variant index**, selecting one instance from the append-only instance registry (next section).
+   An index with no registered instance makes evaluation fail.
+2. The second argument is the **full input state**: a list of exactly $t$ integers, where $t$ is the selected instance's width.
+   A list of any other length makes evaluation fail — the input is **never padded** (see below).
+3. Each input integer is **reduced modulo $r$** into a field element, with exactly the semantics the existing BLS12-381 built-ins use when converting an integer to a scalar: the representative is $n \bmod r$, so inputs $\geq r$ wrap around and negative inputs land in $[0, r)$ (e.g. $-1$ becomes $r - 1$).
+   The reduction is total; callers for whom an out-of-range input is an error must check the range themselves before calling.
+4. The instance's permutation $P$ is applied to the state, and the **full output state** — $t$ integers, each a canonical representative in $[0, r)$ — is returned.
+
+For a fixed variant index the function is a pure, constant-cost map from $t$ field elements to $t$ field elements; it has no other failure modes and no dependence on chain state.
+One call computes one *complete* permutation — all $R_F + R_P$ rounds run inside the implementation; the caller never iterates rounds.
+
+#### Why the permutation and not a hash
+
+As the *Framing conventions* section shows, deployed Poseidon hashes disagree on everything above the permutation: capacity position and initialization, input order, chunking, tags and digest lane.
+The permutation is the layer where implementations actually agree — and the layer that carries all of the cryptographic cost.
+A script reproduces any framing with a handful of cheap operations around the built-in: list construction, integer additions, and reading elements of the result.
+
+A hash-level alternative was seriously considered: a built-in taking the raw message and an index that pins the constants *and* a framing, absorbing internally.
+It has real merits — a script author cannot misapply a framing, an index alone identifies a complete hash function, it mirrors the hash-level interface circuit libraries expose (in midnight-zk a circuit calls `std_lib.poseidon(layouter, &message)` and never touches $P$), and it saves per-built-in-call overhead on multi-chunk hashes.
+It was nevertheless rejected, because built-in interfaces are permanent and the hash-level semantics does not stay uniform across entries: each entry would carry its own accepted arities, absorption schedule and cost shape (the midnight framing hashes three inputs with *two* internal permutations, the circom framing with *one*), and every future mode — midnight's variable-length transcript framing, a duplex construction, a framing not yet invented — would require a new registry entry to become expressible at all.
+The permutation-level built-in has one uniform signature, one constant cost per index, and leaves *every* present and future framing expressible in script today.
+The misuse concern is addressed instead by documentation and data: each registry entry ships its ecosystem's framing in machine-readable form together with known-answer vectors (see `test-vectors.json`), from which audited script-level wrappers can be built and checked.
+
+#### Why no implicit padding
+
+Zero-padding an under-length input inside the built-in would not be injective: the states $(a, 0, 0)$ obtained from input $[a]$ and from input $[a, 0]$ would be identical, making the two inputs collide by construction — the same ambiguity class exploited by known second-preimage attacks on Merkle trees.
+Padding and domain separation are security-relevant decisions that must remain the script author's explicit, auditable choice.
+
+#### Why the rate/capacity split is not an argument
+
+The signature contains $t$ but says nothing about the split $t = r + c$, and deliberately so: the split is not a property of the permutation.
+$P$ is a bijection on $\mathbb{F}_r^t$ with no distinguished lanes — the reference C context accordingly stores only the width, round counts and constants.
+"Rate" and "capacity" only come into existence in a *mode*: the rate is the set of lanes a mode chooses to add message into, and the capacity is the set of lanes it promises never to touch.
+Since the built-in never absorbs, there is nothing for it to be ambiguous about: how an arity-6 hash splits its inputs — three chunks of two on a width-3 instance, or a single chunk on a width-7 instance — is written out explicitly in the calling script, one permutation call per chunk, and different splits are simply different (individually well-defined) hash functions.
+The split does matter for *security*: the sponge indifferentiability argument [4] applies only to scripts that leave the instance's $c$ designated capacity lanes untouched by input and output.
+Each registry entry therefore documents its ecosystem's rate/capacity split and lane positions — as the contract a script must follow to inherit the instance's security analysis, not as behaviour the built-in enforces.
+
+#### Why the full state is returned
+
+Returning the full output state is maximally general: callers can build sponges, fixed-arity compression functions, or duplex-style constructions, and can squeeze whichever elements their framing designates.
+Note that the sponge security arguments cover squeezing only the *rate* portion of the state; which elements those are is part of the framing a script chooses, and at least one deployed framing (circom-style) reads the lane that held the capacity.
+This generality has sharp edges, spelled out next.
+
+#### Misuse warnings: what the built-in does *not* provide
+
+> [!WARNING]
+> **The permutation is invertible — a call to this built-in is *not* a hash.**
+> $P$ is a public bijection: anyone can compute $P^{-1}$ just as cheaply as $P$.
+> Every hash-like property a script obtains — one-wayness, compression, binding — comes exclusively from the *framing* it builds around the built-in, never from the built-in itself.
+> A script that deviates from a documented, analyzed framing forfeits that framing's security argument, usually silently: the digests still look random.
+
+In particular:
+
+- **The full output state is never a commitment.**
+  Given all $t$ output elements, the entire input state is recoverable exactly by running $P$ backwards.
+  More generally, *revealing* (or absorbing into) all $t$ lanes leaves no hidden state: an attacker who learns the full state after any permutation call can run the sponge backwards to recover everything absorbed and forwards to compute digests of arbitrary extensions.
+  Preimage resistance exists only because the $c$ capacity lanes of the final state are withheld — a digest must be a *truncation* of the output (the sponge construction bounds security by $c \cdot \log_2(r) / 2$ bits [4], about 127 bits for a width-3, $c = 1$ instance).
+  Consequently: publish only the framing's designated digest lane(s); never absorb message elements into the capacity lane; never build keyed constructions (MAC-like uses) that expose more of the state than the framing's digest.
+
+- **Prefix and extension attacks on home-made framings.**
+  A framing without a length tag, padding rule, or fixed arity does not fix message boundaries, and distinct messages then collide or extend each other by construction:
+  zero-extension collisions — $[a]$ and $[a, 0]$ absorb to identical states (as in *Why no implicit padding*), and in general any message collides with itself extended by zeros up to the next chunk boundary, at every chunk boundary; and length-extension-style forgeries whenever intermediate states leak.
+  Tree constructions need *domain separation* on top: a Merkle tree whose leaves and internal nodes are hashed identically admits second preimages by reinterpreting an internal node as a leaf — the classic Merkle-tree second-preimage attack, which standard designs prevent by tagging leaves and internal nodes differently (as in RFC 6962's `0x00`/`0x01` prefixes).
+  The deployed framings avoid these pitfalls by construction — midnight's capacity length tag pins the arity, circom's fixed width pins it structurally — which is precisely why scripts should reproduce a documented framing (its machine-readable description and known-answer vectors ship with each instance) rather than invent one.
+
+- **The integer reduction is not injective.**
+  Inputs $n$ and $n + r$ are the same field element and produce identical outputs.
+  A script hashing data that can numerically exceed $[0, r)$ (e.g. values parsed from 32-byte strings, which range up to $2^{256} > r$) must range-check before calling, or two distinct pieces of data collide trivially.
+
+#### Non-normative examples
+
+The two framings documented in *Framing conventions*, exactly as their ecosystems compute them (each reproducible against `test-vectors.json`):
+
+**midnight-zk's 3-input hash** (variant 0).
+The width-3 instance has rate 2, so three inputs are absorbed in two chunks — one permutation call per chunk, as in the sponge diagram above — with the capacity lane (last) initialized to the input count:
+
+```text
+hash3 in1 in2 in3 =
+  let [x, y, z]    = bls12_381_poseidonPermutation 0 [in1, in2, 3]   -- absorb the first chunk (rate = 2 elements)
+      [x', y', z'] = bls12_381_poseidonPermutation 0 [x + in3, y, z] -- absorb the second chunk
+  in x'                                                              -- digest = first lane
+```
+
+**The circom BLS12-381 port's 2-input hash** (should that instance be registered at some index $i$).
+This framing sizes the width to the arity — an $n$-input hash uses a width-$(n{+}1)$ instance, so all inputs fit into the rate of a single chunk and one call suffices, with the capacity lane (first) fixed to zero:
+
+```text
+hash2 in1 in2 = head (bls12_381_poseidonPermutation i [0, in1, in2]) -- digest = first lane
+```
 
 ## Rationale: How does this CIP achieve its goals?
 
