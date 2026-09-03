@@ -124,7 +124,7 @@ Two deployed examples over the BLS12-381 scalar field, both cross-validated agai
 
 All of these framings invoke the same kind of permutation, yet they produce mutually incompatible digests for the same inputs.
 Because no framing is canonical — a single ecosystem may even use several, over the same constants — this proposal deliberately standardizes only the permutation and leaves the framing to the calling script (see *The built-in* for the full argument).
-The framing of each registered instance's ecosystem is documented alongside the instance — machine-readably, in its constants file — together with known-answer vectors, so that script authors can reproduce it exactly.
+The framing used by the ecosystem each registered instance originates from is documented alongside the instance — machine-readably, in its constants file — together with known-answer vectors, so that script authors targeting that ecosystem can reproduce it exactly; it is documentation of one use, not a property of the instance.
 
 #### The permutation (HADES design)
 
@@ -228,11 +228,25 @@ Its semantics:
 For a fixed variant index the function is a pure, constant-cost map from $t$ field elements to $t$ field elements; it has no other failure modes and no dependence on chain state.
 One call computes one *complete* permutation — all $R_F + R_P$ rounds run inside the implementation; the caller never iterates rounds.
 
+> [!IMPORTANT]
+> **Terminology, used normatively throughout this document.**
+> The **permutation** is what this built-in computes: a public bijection on $\mathbb{F}_r^t$ with *no security properties of its own*.
+> A **hash** is a construction: a specific framing of permutation calls (initial capacity value, absorption schedule, digest lane), chosen by the calling script — never by the registry, which identifies permutations only.
+> "Poseidon hash" in this document always means *permutation plus framing*, never a bare built-in call — and the output of a single built-in call is a **state**, never a digest.
+> Conflating the two is the root of every attack in *Misuse warnings* below.
+
 #### Why the permutation and not a hash
 
 As the *Framing conventions* section shows, deployed Poseidon hashes disagree on everything above the permutation: capacity position and initialization, input order, chunking, tags and digest lane.
 The permutation is the layer where implementations actually agree — and the layer that carries all of the cryptographic cost.
 A script reproduces any framing with a handful of cheap operations around the built-in: list construction, integer additions, and reading elements of the result.
+
+The deeper reason is that the two layers evolve on different timescales.
+The permutation is the *unchangeable core* of every Poseidon deployment: once its constants are fixed, it never changes — which is exactly the shape of commitment a permanent built-in interface can safely make.
+How the permutation is *operated*, by contrast, is never fixed and cannot be predicted: what value the capacity is initialized with, in which order inputs are absorbed, how message boundaries are encoded — and, on the output side, how much is read.
+The framings deployed today happen to squeeze a single element, but the sponge naturally produces more: a future application may squeeze the full rate per call, or squeeze repeatedly (with interleaved permutations, $z_1, z_2, \dots$ as in the sponge diagram) to derive several field elements from one absorbed message — multi-element commitments, transcript randomness, key derivation, duplex-style authenticated constructions.
+None of these need anything from the chain that the permutation built-in does not already provide — and, because an index identifies a *permutation* and not a way of operating it, none of them needs a new registry entry either: the same index serves every framing over its constants.
+A hash-shaped built-in, by fixing "absorb everything, squeeze one designated lane" into protocol law, would make each of them wait for a protocol upgrade instead.
 
 A hash-level alternative was seriously considered: a built-in taking the raw message and an index that pins the constants *and* a framing, absorbing internally.
 It has real merits — a script author cannot misapply a framing, an index alone identifies a complete hash function, it mirrors the hash-level interface circuit libraries expose (in midnight-zk a circuit calls `std_lib.poseidon(layouter, &message)` and never touches $P$), and it saves per-built-in-call overhead on multi-chunk hashes.
@@ -300,12 +314,115 @@ hash3 in1 in2 in3 =
   in x'                                                              -- digest = first lane
 ```
 
-**The circom BLS12-381 port's 2-input hash** (should that instance be registered at some index $i$).
+**The circom BLS12-381 port's 2-input hash** (variant 1).
 This framing sizes the width to the arity — an $n$-input hash uses a width-$(n{+}1)$ instance, so all inputs fit into the rate of a single chunk and one call suffices, with the capacity lane (first) fixed to zero:
 
 ```text
-hash2 in1 in2 = head (bls12_381_poseidonPermutation i [0, in1, in2]) -- digest = first lane
+hash2 in1 in2 = head (bls12_381_poseidonPermutation 1 [0, in1, in2]) -- digest = first lane
 ```
+
+### Instance registry
+
+The built-in's first argument selects an instance from the registry specified here.
+The registry contract:
+
+- indices are **append-only**: new instances can be added, none can ever be removed;
+- the meaning of an index, once assigned, is **never changed or reused** — onchain scripts depend on it;
+- a faster but observably identical implementation of an existing index is **not** a new instance;
+- an index identifies a **permutation, never a hash**: framings are not part of an entry, and operating an existing index with a different framing — a different capacity tag, another absorption order, squeezing more output elements — never requires (and never receives) a new index.
+
+#### What a registry entry specifies
+
+Each entry must pin, bit-for-bit, everything the *Parameters* section identifies — numerically and structurally:
+
+| Field | Meaning |
+| --- | --- |
+| width $t$, $\alpha$, $(R_F, R_P)$ | the shape of the permutation (the field is always the BLS12-381 scalar field — the one normative constant of this built-in) |
+| MDS matrix, round constants | full values, in a machine-readable constants file; MDS orientation and constant consumption order declared in the same file |
+| partial-round S-box lane | the state element the partial rounds apply the S-box to |
+| round-operation order | ARC → S-box → Mix, as defined in *The permutation*; equivalent schedules permitted if observationally identical |
+| provenance | the exact generation procedure: script, version and arguments |
+| test vectors | at least one normative permutation vector (input state → full output state) in `test-vectors.json` |
+
+Alongside the normative fields, each entry's constants file also records — **non-normatively, as provenance documentation** — the framing used by the ecosystem the constants originate from (rate/capacity split and lane positions, capacity initialization, absorption schedule, accepted arities, digest lane), together with secondary hash vectors, so that script authors targeting that ecosystem can reproduce its hash exactly instead of inventing a framing (see *Misuse warnings*).
+This documentation describes one *use* of the entry, not a property of it: the entry is the permutation alone, and any framing may operate it.
+
+#### Registered instances
+
+| Index | Instance | $t$ | $\alpha$ | $R_F$ | $R_P$ | Partial S-box lane | Constants |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | midnight-zk [6] | 3 | 5 | 8 | 60 | last | [`midnight-poseidon-constants.json`](./midnight-poseidon-constants.json) |
+| 1 | circom BLS12-381 port [7], 2-input | 3 | 5 | 8 | 56 | first | [`circom-bls-t3-poseidon-constants.json`](./circom-bls-t3-poseidon-constants.json) |
+
+**Index 0 — midnight-zk.**
+The instance behind midnight-zk's Poseidon chip: width 3, $R_F = 8$, $R_P = 60$, S-box $x^5$, partial-round S-box on the last lane, row-major MDS ($\text{state}'_i = \sum_j M_{ij}\,\text{state}_j$), constants consumed in ARC → S-box → Mix order.
+Provenance: `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (the pasta-hadeshash generator); source of truth `circuits/src/hash/poseidon/constants/blstrs.rs` in [6] (`Fq::from_raw` little-endian limbs, canonical form), converted to the decimal integers in the constants file and cross-validated against midnight's own Rust implementation.
+The ecosystem it originates from operates it as: capacity lane last, initialized to the input count; digest = first lane (an example use, documented non-normatively in the constants file and demonstrated in *Non-normative examples*).
+
+**Index 1 — circom BLS12-381 port, 2-input (R1CS ecosystem).**
+The width-3 instance of the circom port [7], serving the circomlib-style R1CS ecosystem: width 3, $R_F = 8$, $R_P = 56$, S-box $x^5$, partial-round S-box on the **first** lane, row-major MDS, constants consumed in ARC → S-box → Mix order.
+Provenance: `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (the hadeshash generator); source of truth `circuits/poseidon255_constants.circom` in [7], cross-validated against the circom tooling on the compiled circuit.
+The entry is *defined* by this upstream form; an implementation whose permutation core fixes the S-box on the last lane may realize it through the exact state-reversal conjugation shipped as `conjugated_form` in the constants file — observationally identical, hence not a distinct variant under the registry contract.
+The ecosystem it originates from operates it as: a single permutation of $(0, \text{in}_1, \text{in}_2)$ — capacity lane first, fixed to zero, exactly two inputs; digest = first lane (an example use, documented non-normatively in the constants file).
+
+#### Candidate instances
+
+The following instance is fully validated against its upstream implementation and its constants, framing and vectors ship with this CIP, but it is **not registered**: it will be assigned an index by amendment once a user demonstrates a need for it.
+
+| Instance | $t$ | $\alpha$ | $R_F$ | $R_P$ | Partial S-box lane | Constants |
+| --- | --- | --- | --- | --- | --- | --- |
+| circom BLS12-381 port [7], 3-input | 4 | 5 | 8 | 56 | first | [`circom-bls-t4-poseidon-constants.json`](./circom-bls-t4-poseidon-constants.json) |
+
+Provenance: `generate_params_poseidon.sage 1 0 255 4 5 128 <r>` (the hadeshash generator); the same first-lane S-box and conjugation remarks as index 1 apply.
+
+#### Admission criteria for future instances
+
+A proposed instance is added by amending this CIP with a complete registry entry.
+Beyond completeness, the entry must satisfy:
+
+1. **Field**: the BLS12-381 scalar field — this built-in never hosts another field.
+2. **S-box**: $\gcd(\alpha, r - 1) = 1$, so $x \mapsto x^\alpha$ is a bijection.
+3. **Security level**: a declared level of at least 128 bits, with $(R_F, R_P)$ meeting the Poseidon paper's minima plus its recommended margin for the declared $(t, \alpha)$ [1].
+4. **Constant properties**: all constants canonical in $[0, r)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $\{x : x_{\text{S-box lane}} = 0\}$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
+   (The stronger condition that no power $M^i$ has *any* eigenvalue in $\mathbb{F}_r$ is sufficient but **not necessary** — the registered midnight instance and the circom candidates have such eigenvalues yet satisfy the criterion above.)
+5. **Cross-validation**: test vectors reproduced against the upstream implementation the instance claims compatibility with, plus the normative permutation vector.
+6. **Demonstrated demand**: a concrete user or protocol that needs this instance.
+
+Criteria 2 and 4 (and the re-derivation of every shipped vector) are mechanically checkable: [`check-constants.py`](./check-constants.py) in this CIP's directory implements them for all shipped constants with a dependency-free `python3 check-constants.py`, and must pass for any amended entry.
+
+#### Known-answer test vectors
+
+[`test-vectors.json`](./test-vectors.json) accompanies this CIP.
+For each instance it contains a **normative permutation vector** — one call of the built-in, input state to full output state — which is what conformance means for `bls12_381_poseidonPermutation`; for index 0:
+
+```text
+bls12_381_poseidonPermutation 0 [1, 2, 3] =
+  [ 0x5e7d844fc6e217cb53a21928cdd831c73fe626f0b62fe012e9e3883a05b88b1a
+  , 0x6727d5f45b85a106452257dab75c34fab4edec2544ba49a4c7b73edef7a7f5da
+  , 0x339d99829dc3bb8b18fcc17a2dc7cda7628f2fcdc6c7f71f83c3f5e5466e2c4a ]
+
+bls12_381_poseidonPermutation 1 [0, 1, 2] =
+  [ 0x3fb8310b0e962b75bffec5f9cfcbf3f965a7b1d2dcac8d95ccb13d434e08e5fa
+  , 0x43fe5dfa886bfae59d015ed8b2a8c9328230f299203c89b9c78d8b40ccdc7dda
+  , 0x05153d5d7d0f9122550ecc902c0f5248d8ddcacfa1b911699c982099efc48aa7 ]
+```
+
+and, per instance, **secondary hash vectors** that demonstrate the *correct* construction of the origin ecosystem's hash out of permutation calls — each vector carries the full trace (every permutation call's input and output state, following the framing documented in the instance's constants file) ending in the digest, so a script-level hash implementation can be checked call by call, not just against the final digest.
+These are worked examples of one use, not registered modes: a script operating the same index with a different framing — a different tag, or squeezing more elements — is equally legitimate (subject to *Misuse warnings*) and needs no new registry entry.
+For index 0:
+
+```text
+midnight_poseidon_hash [1, 2]    -- one call:  P([1, 2, 2]); note the capacity tag is the arity, 2
+  = 0x4ad818f39d91567d105c5bea1ec4b5ac201dc45b784e39a2beef781790bf5177
+midnight_poseidon_hash [1, 2, 3] -- two calls: P([1, 2, 3]), then P over the updated state
+  = 0x2416a898714a84833f3690e09279c3b175418c956399a8c8928b8d1d4150ab7b
+```
+
+The pair illustrates the terminology split above and the role of the length tag: `hash [1, 2]` is *not* any element of the `permutation [1, 2, 3]` vector — the 2-input hash absorbs into initial state $(0, 0, \mathbf{2})$, while $P([1,2,3])$ is merely the first *call* inside `hash [1, 2, 3]` (capacity tag $3$), whose output state is an intermediate value, not a digest.
+For index 1, the circom 2-input hash of $[1, 2]$ is a single call and its digest is the first element of the permutation vector above — the upstream repository's own shipped test vector.
+
+Digest provenance: the midnight 3-input hash, the midnight permutation vector, and both circom digests were produced by the upstream implementations themselves (midnight-zk's Rust; the circom tooling on the compiled circuits); the midnight 2-input hash vector is derived from the framing exactly as upstream's fixed-length code path computes it (`init(Some(2))`, no padding).
+All vectors are independently re-derived from the shipped constants files by `check-constants.py`.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -324,6 +441,7 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 
 - [ ] Agree on the parameter sets with the Plutus Core team.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
+- [ ] Align the `cardano-base` variant registry with the table in this CIP: the preliminary implementation registers a different width-3 instance at index 0; index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`; and its constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
 - [ ] Benchmark and propose costing parameters.
 
 ## References
@@ -335,6 +453,7 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 5. iden3. *circomlib*. Reference Poseidon circuit: [circuits/poseidon.circom](https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom).
 6. Midnight Network. *midnight-zk*, the zero-knowledge library of the Midnight blockchain; Poseidon instance and constants under [`circuits/src/hash/poseidon`](https://github.com/midnightntwrk/midnight-zk/tree/main/circuits/src/hash/poseidon). [github.com/midnightntwrk/midnight-zk](https://github.com/midnightntwrk/midnight-zk).
 7. J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
+8. L. Grassi, C. Rechberger, M. Schofnegger. *Proving Resistance Against Infinitely Long Subspace Trails: How to Choose the Linear Layer.* IACR ToSC 2021(2). IACR ePrint [2020/500](https://eprint.iacr.org/2020/500).
 
 ## Copyright
 
