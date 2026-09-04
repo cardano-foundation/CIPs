@@ -6,9 +6,12 @@ Status: Proposed
 Authors:
     - Yura Lazaryev <yuriy.lazaryev@iohk.io>
     - Philip DiSarro <info@anastasialabs.com>
-Implementors: []
+Implementors:
+    - IOG Plutus Team <https://iohk.io>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1050
+    - CIP-0156 | Array-first argument order for multiIndexArray: https://github.com/cardano-foundation/CIPs/pull/1234
+    - CIP-0156 | Specify the index count limit for multiIndexArray: https://github.com/cardano-foundation/CIPs/pull/1245
 Created: 2025-07-07
 License: CC-BY-4.0
 ---
@@ -39,8 +42,12 @@ multiIndexArray :: forall a. Array a -> List Integer -> List a
   1. An `Array a` to index.
   2. A `List Integer` of zero-based indices, in the order elements should be retrieved.
 - **Output**: A `List a` containing the elements at the specified indices, in the same order. In case of repeated indices, the same element is returned multiple times.
-- **Error handling**: If any index is out of bounds (< 0 or ≥ lengthOfArray), the entire call fails with the same error semantics as `indexArray`.
-- **Cost**: Time and memory usage are linear in the length of the index list.
+- **Error handling**: The entire call fails, with the same error semantics as `indexArray`, if either:
+  1. any index is out of bounds (< 0 or ≥ lengthOfArray), or
+  2. the index list contains more than 1024 indices.
+
+  Both conditions are checked while the index list is traversed, so a call that violates both fails on whichever the traversal reaches first.
+- **Cost**: CPU usage is quadratic in the length of the index list. Memory usage is linear in it.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -49,6 +56,8 @@ By batching multiple lookups into one builtin, `multiIndexArray`:
 - Eliminates repetitive script code for loops or folds over `indexArray`.
 - Reduces execution budget and size overhead of repeated builtins.
 - Guarantees elements are returned in caller-specified order, enabling efficient streaming or traversal.
+
+The index list is capped at 1024 entries because the cost model can only observe how many indices a call passes, and how long walking a list of indices takes is not determined by that count alone once the list grows large. The cap bounds the builtin to a domain over which a single cost curve follows the measurements closely, so a call is charged near what it actually costs; 1024 is also well above realistic use, which reads tens of elements rather than thousands. Raising the cap later would require a second variant of the builtin, so that scripts already on chain keep their current behaviour.
 
 ### Alternatives considered
 
@@ -64,7 +73,7 @@ Failing on first error mirrors `indexArray` and keeps the API simple.
 
 ### Acceptance Criteria
 
-- [ ] Merge implementation into the Plutus Core repo.
+- [x] Merge implementation into the Plutus Core repo.
 - [ ] Update `cardano-ledger` costing parameters for `multiIndexArray`.
 - [ ] Integrate into `cardano-node` and schedule for a protocol upgrade.
 
@@ -72,7 +81,7 @@ Failing on first error mirrors `indexArray` and keeps the API simple.
 
 1. Add `multiIndexArray` to Plutus Core spec and runtime.
 2. Define preliminary cost model (linear in index list length for both CPU usage and memory usage).
-3. Write conformance tests covering valid and out-of-bounds cases.
+3. Write conformance tests covering valid, out-of-bounds, and over-the-index-count-limit cases, including the 1024-index boundary.
 4. Extend an E2E test suite to include `multiIndexArray` scenarios.
 5. Benchmark against manual `indexArray` loops to refine costing.
 6. Update formal documentation (`plutus-metatheory`, spec PDF).
