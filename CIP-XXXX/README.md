@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Poseidon Built-in for Plutus
+Title: Poseidon Permutation Built-in for Plutus
 Category: Plutus
 Status: Proposed
 Authors:
@@ -16,7 +16,9 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP introduces a new built-in to Plutus, the Poseidon hash function.
+This CIP introduces a single new Plutus built-in, `bls12_381_poseidonPermutation`: the Poseidon *permutation* over the BLS12-381 scalar field, with an append-only registry of parameter instances (initially two, serving the circom-style R1CS ecosystem and the plonkish/halo2 ecosystem).
+The built-in deliberately exposes the permutation rather than a hash function: deployed Poseidon implementations agree only at the permutation layer, while the framings that turn permutation calls into a hash — capacity placement and initialization, absorption order, padding and tags, how much output is squeezed — vary across (and even within) ecosystems and keep evolving.
+A script reconstructs any framing with a few cheap operations around the built-in; in exchange, hash-level security properties are the calling script's responsibility, a trade-off this document makes explicit with normative terminology, misuse warnings, and per-instance framing documentation with test vectors.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -30,6 +32,10 @@ This emulation inflates a single hash evaluation to tens of thousands of constra
 
 This gap is filled by zk-friendly hash functions, which are built from native field additions and multiplications so no bit decomposition or overflow emulation is needed.
 Of these, Poseidon is the most established.
+
+Poseidon, however, is a *family* of functions, and deployed ecosystems differ both in their parameters and in the conventions layered on top of the shared core (see *Framing conventions*); the conventions moreover keep evolving, while the core — the permutation — is fixed forever once its constants are chosen.
+This CIP therefore proposes a built-in for the Poseidon **permutation** rather than for any single hash: every deployed or future hash framing then remains expressible as a handful of cheap script-level operations around the built-in, at the price that hash-level security becomes the calling script's explicit responsibility (see *Misuse warnings*).
+The initial instance registry contains two entries, chosen to serve the two dominant proving-stack lineages over the BLS12-381 scalar field: the circomlib-style R1CS ecosystem and the plonkish/halo2 ecosystem (midnight-zk).
 
 ## Specification
 
@@ -57,6 +63,9 @@ p = 5243587517512619047944774050818596583769055250052763782260365869993858118451
 ```
 
 All Poseidon parameters in this document are instantiated over this field.
+
+> **Notation:** the cryptographic literature — and the parameter-generator invocations quoted later, whose final argument `<r>` is this modulus — often call this prime $r$, being the order of the curve's cryptographic subgroup.
+> This document writes $p$ for the modulus throughout and reserves $r$ for the sponge *rate* introduced below.
 
 #### Overview of the construction
 
@@ -148,7 +157,7 @@ Full rounds provide strong security against statistical attacks (differential/li
 
 > **Notation:** the paper [1] uses two symbols for full rounds: $R_f$ (lowercase) for the full rounds on *one* side, and $R_F = 2R_f$ (uppercase) for the *total*.
 > Throughout this document $R_F$ always denotes the total number of full rounds (so $R_F/2$ on each side equals the paper's $R_f$).
-> The paper's statistical-security minimum is $R_F \geq 6$; the value $R_F = 8$ used below is that minimum plus the recommended safety margin.
+> The paper's statistical-security minimum is $R_F \geq 6$; the value $R_F = 8$ used below is that minimum plus the paper's recommended safety margin of two additional full rounds [1].
 
 The S-box is the most expensive operation in a circuit, so applying it to one element instead of $t$ for most rounds is where the savings come from.
 The exact round counts $(R_F, R_P)$ are derived from $p$, $t$, and $\alpha$ to give a target security level (typically 128 bits).
@@ -185,10 +194,10 @@ Round counts are not universal constants: they are derived from the field $p$, t
 One property is **normative** for every instance of this built-in, present and future: it is instantiated over the **BLS12-381 scalar field** introduced above, the only pairing curve exposed by Plutus built-ins and the field the reference implementation's arithmetic is built on.
 
 The other agreements between the instances below are **descriptive, not normative**: each happens to target **128-bit security** with S-box exponent **$\alpha = 5$** and **$R_F = 8$** full rounds (split as 4 before and 4 after the partial rounds).
-The recurrence of $\alpha = 5$ is no coincidence: $\alpha$ is conventionally chosen as the *smallest* integer such that $\gcd(\alpha, r - 1) = 1$, which is what makes $x \mapsto x^\alpha$ a bijection.
-For the BLS12-381 scalar field this smallest choice is $5$ — the candidate $3$ is ruled out because $3$ divides $r - 1$, so $x^3$ is not a bijection over this field.
+The recurrence of $\alpha = 5$ is no coincidence: $\alpha$ is conventionally chosen as the *smallest* integer such that $\gcd(\alpha, p - 1) = 1$, which is what makes $x \mapsto x^\alpha$ a bijection.
+For the BLS12-381 scalar field this smallest choice is $5$ — the candidate $3$ is ruled out because $3$ divides $p - 1$, so $x^3$ is not a bijection over this field.
 Nevertheless, none of these values is fixed forever.
-Instead, a future instance must satisfy the registry's admission criteria: $\gcd(\alpha, r - 1) = 1$, a declared security level of at least 128 bits, and round counts meeting the Poseidon paper's minima (plus its recommended margin) for the declared $(t, \alpha)$ at that level.
+Instead, a future instance must satisfy the registry's admission criteria: $\gcd(\alpha, p - 1) = 1$, a declared security level of at least 128 bits, and round counts meeting the Poseidon paper's minima (plus its recommended margin) for the declared $(t, \alpha)$ at that level.
 The deployed BLS12-381 instances that have been cross-validated against the reference implementation backing this proposal are:
 
 | Origin | $t$ (rate $r$ / capacity $c$) | $\alpha$ | $R_F$ | $R_P$ | Constant generation |
@@ -213,7 +222,8 @@ This CIP adds a single built-in function exposing the Poseidon *permutation* —
 bls12_381_poseidonPermutation : integer -> list integer -> list integer
 ```
 
-(The name carries `bls12_381` following the existing family of BLS12-381 built-ins; the final spelling is to be agreed with the Plutus Core team.)
+(The name carries `bls12_381` following the existing family of BLS12-381 built-ins; the final spelling is to be agreed with the Plutus Core team.
+It deliberately says *permutation*, not hash — see the terminology box below — and deliberately says *Poseidon* rather than HADES: HADES [2] is the broader design *strategy*, of which other instantiations exist, whereas this built-in's registry admits specifically the original Poseidon construction — power-map S-box, a single MDS linear layer, the Poseidon paper's round-count minima.)
 
 Its semantics:
 
@@ -221,16 +231,16 @@ Its semantics:
    An index with no registered instance makes evaluation fail.
 2. The second argument is the **full input state**: a list of exactly $t$ integers, where $t$ is the selected instance's width.
    A list of any other length makes evaluation fail — the input is **never padded** (see below).
-3. Each input integer is **reduced modulo $r$** into a field element, with exactly the semantics the existing BLS12-381 built-ins use when converting an integer to a scalar: the representative is $n \bmod r$, so inputs $\geq r$ wrap around and negative inputs land in $[0, r)$ (e.g. $-1$ becomes $r - 1$).
+3. Each input integer is **reduced modulo $p$** into a field element, with exactly the semantics the existing BLS12-381 built-ins use when converting an integer to a scalar: the representative is $n \bmod p$, so inputs $\geq p$ wrap around and negative inputs land in $[0, p)$ (e.g. $-1$ becomes $p - 1$).
    The reduction is total; callers for whom an out-of-range input is an error must check the range themselves before calling.
-4. The instance's permutation $P$ is applied to the state, and the **full output state** — $t$ integers, each a canonical representative in $[0, r)$ — is returned.
+4. The instance's permutation $P$ is applied to the state, and the **full output state** — $t$ integers, each a canonical representative in $[0, p)$ — is returned.
 
 For a fixed variant index the function is a pure, constant-cost map from $t$ field elements to $t$ field elements; it has no other failure modes and no dependence on chain state.
 One call computes one *complete* permutation — all $R_F + R_P$ rounds run inside the implementation; the caller never iterates rounds.
 
 > [!IMPORTANT]
 > **Terminology, used normatively throughout this document.**
-> The **permutation** is what this built-in computes: a public bijection on $\mathbb{F}_r^t$ with *no security properties of its own*.
+> The **permutation** is what this built-in computes: a public bijection on $\mathbb{F}_p^t$ with *no security properties of its own*.
 > A **hash** is a construction: a specific framing of permutation calls (initial capacity value, absorption schedule, digest lane), chosen by the calling script — never by the registry, which identifies permutations only.
 > "Poseidon hash" in this document always means *permutation plus framing*, never a bare built-in call — and the output of a single built-in call is a **state**, never a digest.
 > Conflating the two is the root of every attack in *Misuse warnings* below.
@@ -238,7 +248,7 @@ One call computes one *complete* permutation — all $R_F + R_P$ rounds run insi
 #### Why the permutation and not a hash
 
 As the *Framing conventions* section shows, deployed Poseidon hashes disagree on everything above the permutation: capacity position and initialization, input order, chunking, tags and digest lane.
-The permutation is the layer where implementations actually agree — and the layer that carries all of the cryptographic cost.
+The permutation is the lowest layer that can be pinned down bit-for-bit: implementations still differ in *which* permutation they run (see *Parameters*), but each choice, once its constants are fixed, is a single immutable function that a registry index can identify forever — and it is the layer that carries all of the cryptographic cost.
 A script reproduces any framing with a handful of cheap operations around the built-in: list construction, integer additions, and reading elements of the result.
 
 The deeper reason is that the two layers evolve on different timescales.
@@ -262,7 +272,7 @@ Padding and domain separation are security-relevant decisions that must remain t
 #### Why the rate/capacity split is not an argument
 
 The signature contains $t$ but says nothing about the split $t = r + c$, and deliberately so: the split is not a property of the permutation.
-$P$ is a bijection on $\mathbb{F}_r^t$ with no distinguished lanes — the reference C context accordingly stores only the width, round counts and constants.
+$P$ is a bijection on $\mathbb{F}_p^t$ with no distinguished lanes — the reference C context accordingly stores only the width, round counts and constants.
 "Rate" and "capacity" only come into existence in a *mode*: the rate is the set of lanes a mode chooses to add message into, and the capacity is the set of lanes it promises never to touch.
 Since the built-in never absorbs, there is nothing for it to be ambiguous about: how an arity-6 hash splits its inputs — three chunks of two on a width-3 instance, or a single chunk on a width-7 instance — is written out explicitly in the calling script, one permutation call per chunk, and different splits are simply different (individually well-defined) hash functions.
 The split does matter for *security*: the sponge indifferentiability argument [4] applies only to scripts that leave the instance's $c$ designated capacity lanes untouched by input and output.
@@ -287,7 +297,7 @@ In particular:
 - **The full output state is never a commitment.**
   Given all $t$ output elements, the entire input state is recoverable exactly by running $P$ backwards.
   More generally, *revealing* (or absorbing into) all $t$ lanes leaves no hidden state: an attacker who learns the full state after any permutation call can run the sponge backwards to recover everything absorbed and forwards to compute digests of arbitrary extensions.
-  Preimage resistance exists only because the $c$ capacity lanes of the final state are withheld — a digest must be a *truncation* of the output (the sponge construction bounds security by $c \cdot \log_2(r) / 2$ bits [4], about 127 bits for a width-3, $c = 1$ instance).
+  Preimage resistance exists only because the $c$ capacity lanes of the final state are withheld — a digest must be a *truncation* of the output (the sponge construction bounds security by $c \cdot \log_2(p) / 2$ bits [4], about 127 bits for a width-3, $c = 1$ instance).
   Consequently: publish only the framing's designated digest lane(s); never absorb message elements into the capacity lane; never build keyed constructions (MAC-like uses) that expose more of the state than the framing's digest.
 
 - **Prefix and extension attacks on home-made framings.**
@@ -297,8 +307,8 @@ In particular:
   The deployed framings avoid these pitfalls by construction — midnight's capacity length tag pins the arity, circom's fixed width pins it structurally — which is precisely why scripts should reproduce a documented framing (its machine-readable description and known-answer vectors ship with each instance) rather than invent one.
 
 - **The integer reduction is not injective.**
-  Inputs $n$ and $n + r$ are the same field element and produce identical outputs.
-  A script hashing data that can numerically exceed $[0, r)$ (e.g. values parsed from 32-byte strings, which range up to $2^{256} > r$) must range-check before calling, or two distinct pieces of data collide trivially.
+  Inputs $n$ and $n + p$ are the same field element and produce identical outputs.
+  A script hashing data that can numerically exceed $[0, p)$ (e.g. values parsed from 32-byte strings, which range up to $2^{256} > p$) must range-check before calling, or two distinct pieces of data collide trivially.
 
 #### Non-normative examples
 
@@ -349,12 +359,14 @@ This documentation describes one *use* of the entry, not a property of it: the e
 
 #### Registered instances
 
+The two initial entries are chosen to cover the two dominant proving-stack lineages over the BLS12-381 scalar field: the plonkish/halo2 ecosystem (index 0) and the circomlib-style R1CS ecosystem (index 1).
+
 | Index | Instance | $t$ | $\alpha$ | $R_F$ | $R_P$ | Partial S-box lane | Constants |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0 | midnight-zk [6] | 3 | 5 | 8 | 60 | last | [`midnight-poseidon-constants.json`](./midnight-poseidon-constants.json) |
 | 1 | circom BLS12-381 port [7], 2-input | 3 | 5 | 8 | 56 | first | [`circom-bls-t3-poseidon-constants.json`](./circom-bls-t3-poseidon-constants.json) |
 
-**Index 0 — midnight-zk.**
+**Index 0 — midnight-zk (plonkish/halo2 ecosystem).**
 The instance behind midnight-zk's Poseidon chip: width 3, $R_F = 8$, $R_P = 60$, S-box $x^5$, partial-round S-box on the last lane, row-major MDS ($\text{state}'_i = \sum_j M_{ij}\,\text{state}_j$), constants consumed in ARC → S-box → Mix order.
 Provenance: `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (the pasta-hadeshash generator); source of truth `circuits/src/hash/poseidon/constants/blstrs.rs` in [6] (`Fq::from_raw` little-endian limbs, canonical form), converted to the decimal integers in the constants file and cross-validated against midnight's own Rust implementation.
 The ecosystem it originates from operates it as: capacity lane last, initialized to the input count; digest = first lane (an example use, documented non-normatively in the constants file and demonstrated in *Non-normative examples*).
@@ -364,6 +376,7 @@ The width-3 instance of the circom port [7], serving the circomlib-style R1CS ec
 Provenance: `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (the hadeshash generator); source of truth `circuits/poseidon255_constants.circom` in [7], cross-validated against the circom tooling on the compiled circuit.
 The entry is *defined* by this upstream form; an implementation whose permutation core fixes the S-box on the last lane may realize it through the exact state-reversal conjugation shipped as `conjugated_form` in the constants file — observationally identical, hence not a distinct variant under the registry contract.
 The ecosystem it originates from operates it as: a single permutation of $(0, \text{in}_1, \text{in}_2)$ — capacity lane first, fixed to zero, exactly two inputs; digest = first lane (an example use, documented non-normatively in the constants file).
+This lineage also covers other toolchains that follow circomlib's conventions: Noir's Poseidon library [9], for instance, uses exactly this recipe (Grain/hadeshash constants, width $t = n + 1$, capacity first and zero, partial-round S-box and digest on the first lane) — today only over the BN254 field and hence out of scope, but a future Noir proving backend over the BLS12-381 scalar field adopting the same recipe would be served by this instance family rather than needing a new one.
 
 #### Candidate instances
 
@@ -381,10 +394,11 @@ A proposed instance is added by amending this CIP with a complete registry entry
 Beyond completeness, the entry must satisfy:
 
 1. **Field**: the BLS12-381 scalar field — this built-in never hosts another field.
-2. **S-box**: $\gcd(\alpha, r - 1) = 1$, so $x \mapsto x^\alpha$ is a bijection.
+   Ecosystems native to a different field — the canonical BN254 deployments of circomlib, or Noir with its Barretenberg backend (BN254) — are permanently out of scope: their digests cannot be reproduced over this field at any layer.
+2. **S-box**: $\gcd(\alpha, p - 1) = 1$, so $x \mapsto x^\alpha$ is a bijection.
 3. **Security level**: a declared level of at least 128 bits, with $(R_F, R_P)$ meeting the Poseidon paper's minima plus its recommended margin for the declared $(t, \alpha)$ [1].
-4. **Constant properties**: all constants canonical in $[0, r)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $\{x : x_{\text{S-box lane}} = 0\}$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
-   (The stronger condition that no power $M^i$ has *any* eigenvalue in $\mathbb{F}_r$ is sufficient but **not necessary** — the registered midnight instance and the circom candidates have such eigenvalues yet satisfy the criterion above.)
+4. **Constant properties**: all constants canonical in $[0, p)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $\{x : x_{\text{S-box lane}} = 0\}$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
+   (The stronger condition that no power $M^i$ has *any* eigenvalue in $\mathbb{F}_p$ is sufficient but **not necessary** — both registered width-3 instances have such eigenvalues yet satisfy the criterion above; the width-4 circom candidate happens to have none.)
 5. **Cross-validation**: test vectors reproduced against the upstream implementation the instance claims compatibility with, plus the normative permutation vector.
 6. **Demonstrated demand**: a concrete user or protocol that needs this instance.
 
@@ -426,14 +440,19 @@ All vectors are independently re-derived from the shipped constants files by `ch
 
 ## Rationale: How does this CIP achieve its goals?
 
-Poseidon could in principle be implemented in Plutus itself on top of the existing integer or BLS12-381 built-ins, but each evaluation requires on the order of 60+ rounds of field exponentiations and an MDS matrix multiplication, which is prohibitively expensive within current script budgets.
-Exposing Poseidon as a native built-in, costed like the existing hash primitives (SHA-256, Blake2b, Keccak-256), makes onchain verification of Poseidon-based commitments practical and closes the gap between what zk provers produce and what Plutus scripts can verify.
+The Poseidon permutation could in principle be implemented in Plutus itself on top of the existing integer or BLS12-381 built-ins, but each evaluation requires on the order of 60+ rounds of field exponentiations and an MDS matrix multiplication, which is prohibitively expensive within current script budgets.
+Exposing the permutation as a native built-in — costed as a constant per variant index, since the built-in never absorbs variable-length input — makes onchain verification of Poseidon-based commitments practical and closes the gap between what zk provers produce and what Plutus scripts can verify.
+
+The pivotal design decision is exposing the *permutation* rather than a hash; the full argument is given under *Why the permutation and not a hash*.
+In short: deployed framings disagree on everything above the permutation and keep evolving, so a hash-shaped built-in would freeze one convention into protocol law and force every other present or future framing to wait for a protocol upgrade, whereas the permutation-level interface has one uniform signature and cost shape and leaves all of them expressible in script today.
+The cost of this generality is that a bare built-in call has no hash security properties.
+The specification addresses this deliberately shifted responsibility with normative terminology (a call yields a *state*, never a digest), explicit misuse warnings, and — per registry instance — a machine-readable description of the originating ecosystem's framing plus full-trace test vectors, from which audited script-level hash wrappers can be built and checked call by call.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- [ ] The Poseidon exact parameter sets (fields, $t$, $\alpha$, round counts, constant generation) are fixed in this specification.
+- [ ] The exact parameter set of each registered instance (the BLS12-381 scalar field, $t$, $\alpha$, round counts, constant generation, structural choices) is fixed in this specification.
 - [ ] The built-in is implemented in Plutus with a benchmarked costing function, validated against reference implementation test vectors.
 - [ ] The built-in is released on mainnet in a protocol upgrade enabling a new Plutus language version or built-in set.
 
@@ -441,7 +460,9 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 
 - [ ] Agree on the parameter sets with the Plutus Core team.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
-- [ ] Align the `cardano-base` variant registry with the table in this CIP: the preliminary implementation registers a different width-3 instance at index 0; index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`; and its constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
+- [ ] Align the `cardano-base` variant registry with the table in this CIP.
+  The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
+  Index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`, and the constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
 - [ ] Benchmark and propose costing parameters.
 
 ## References
@@ -454,6 +475,7 @@ Exposing Poseidon as a native built-in, costed like the existing hash primitives
 6. Midnight Network. *midnight-zk*, the zero-knowledge library of the Midnight blockchain; Poseidon instance and constants under [`circuits/src/hash/poseidon`](https://github.com/midnightntwrk/midnight-zk/tree/main/circuits/src/hash/poseidon). [github.com/midnightntwrk/midnight-zk](https://github.com/midnightntwrk/midnight-zk).
 7. J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
 8. L. Grassi, C. Rechberger, M. Schofnegger. *Proving Resistance Against Infinitely Long Subspace Trails: How to Choose the Linear Layer.* IACR ToSC 2021(2). IACR ePrint [2020/500](https://eprint.iacr.org/2020/500).
+9. noir-lang. *poseidon*, the Poseidon library of the Noir language (formerly in the Noir standard library); circomlib-consistent instantiations over BN254. [github.com/noir-lang/poseidon](https://github.com/noir-lang/poseidon).
 
 ## Copyright
 
