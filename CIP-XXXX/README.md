@@ -522,6 +522,7 @@ A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterp
 ### Acceptance Criteria
 
 - [ ] The exact parameter set of each registered instance (the BLS12-381 scalar field, $t$, $\alpha$, round counts, constant generation, structural choices) is fixed in this specification.
+- [ ] The constants files shipped with this CIP are independently validated as the correct, usable parameter sets: regenerated bit-for-bit from each instance's pinned generator script and cross-checked against its upstream source of truth, and confirmed to satisfy the constant properties of the admission criteria (`check-constants.py` passes).
 - [ ] The built-in is implemented in Plutus with a benchmarked costing function, validated against reference implementation test vectors.
 - [ ] The C permutation core and its integration (`cardano-base` bindings and the Plutus built-in) have passed an independent security audit — the existing implementation and benchmarks are preliminary feasibility work, not a production implementation.
 - [ ] The ledger is updated with new protocol parameters controlling the costing of the built-in.
@@ -530,6 +531,7 @@ A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterp
 ### Implementation Plan
 
 - [ ] Agree on the parameter sets with the Plutus Core team and community.
+- [ ] Validate the shipped constants files: re-run the pinned generator scripts and diff against the upstream sources of truth (`blstrs.rs` for index 0, `poseidon255_constants.circom` for index 1), and verify the admission criteria's constant properties via `check-constants.py`.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
   The existing `cardano-base`/`plutus` integration that produced the benchmarks in this document is preliminary work — its purpose was to demonstrate that the built-in can run on chain, not to be the final production implementation.
 - [ ] Commission an independent audit of the C permutation core [10] and its bindings.
