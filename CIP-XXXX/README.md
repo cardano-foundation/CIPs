@@ -238,12 +238,23 @@ Its semantics:
 For a fixed variant index the function is a pure, constant-cost map from $t$ field elements to $t$ field elements; it has no other failure modes and no dependence on chain state.
 One call computes one *complete* permutation — all $R_F + R_P$ rounds run inside the implementation; the caller never iterates rounds.
 
+**Time and space complexity.**
+For a fixed instance the time is constant: one call executes exactly $R_F + R_P$ rounds, each dominated by the $O(t^2)$ field multiplications of the MDS matrix product plus at most $t$ S-box exponentiations, with no input-dependent control flow.
+The only input-size-dependent work is the initial reduction of each input integer modulo $p$, linear in the size of that integer (and negligible for canonical inputs — see *Cost model and initial benchmarks*).
+Space is constant per instance: the state is $t$ field elements throughout, and the result is $t$ integers in $[0, p)$.
+
 > [!IMPORTANT]
 > **Terminology, used normatively throughout this document.**
 > The **permutation** is what this built-in computes: a public bijection on $\mathbb{F}_p^t$ with *no security properties of its own*.
 > A **hash** is a construction: a specific framing of permutation calls (initial capacity value, absorption schedule, digest lane), chosen by the calling script — never by the registry, which identifies permutations only.
 > "Poseidon hash" in this document always means *permutation plus framing*, never a bare built-in call — and the output of a single built-in call is a **state**, never a digest.
 > Conflating the two is the root of every attack in *Misuse warnings* below.
+
+#### Reference implementation
+
+The permutation core referenced throughout this document is the C Poseidon implementation in Nomadic Labs' [`ocaml-bls12-381-hash`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash) library [10] ([`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon)), MIT-licensed, which operates on the same `blst` field arithmetic as the existing BLS12-381 built-ins.
+Its permutation context is parameterized over the width, round counts and constants, so each registry entry instantiates the same core with its own constants file (index 1 additionally needs either a generalized partial-S-box lane or the shipped `conjugated_form` — see *Implementation Plan*).
+This core, integrated into `cardano-base` and Plutus, is what produced the benchmark results in *Cost model and initial benchmarks*; that integration is **preliminary work demonstrating onchain feasibility, not a production implementation**, and the C core has not yet been independently audited (see *Trustworthiness* and *Path to Active*).
 
 #### Why the permutation and not a hash
 
@@ -443,6 +454,15 @@ All vectors are independently re-derived from the shipped constants files by `ch
 The Poseidon permutation could in principle be implemented in Plutus itself on top of the existing integer or BLS12-381 built-ins, but each evaluation requires on the order of 60+ rounds of field exponentiations and an MDS matrix multiplication, which is prohibitively expensive within current script budgets.
 Exposing the permutation as a native built-in — costed as a constant per variant index, since the built-in never absorbs variable-length input — makes onchain verification of Poseidon-based commitments practical and closes the gap between what zk provers produce and what Plutus scripts can verify.
 
+### Trustworthiness of the implementation
+
+Per CIP-35, a proposed built-in must argue that its implementation can be trusted. For the reference implementation (see *Reference implementation*):
+
+- **Provenance and review.** The C core comes from Nomadic Labs' MIT-licensed `ocaml-bls12-381-hash` library [10], built on the same `blst` arithmetic as the existing BLS12-381 built-ins. It has been reviewed by the authors of this proposal, and every registered instance is cross-validated against its upstream ecosystem implementation through the shipped test vectors (`test-vectors.json`, re-derivable via `check-constants.py`). It has **not** yet been independently audited; an audit is a precondition for a production release and appears in the acceptance criteria below.
+- **Termination.** Every call executes exactly $R_F + R_P$ rounds of straight-line field arithmetic; there is no input-dependent control flow, so the function always terminates.
+- **No exceptions.** The function is total apart from its two specified failure modes — an unregistered variant index and a wrong-length input list — both of which are ordinary, costed built-in evaluation failure, not exceptions. The arithmetic itself is total: the modular reduction accepts any integer (negative included) and no division is performed.
+- **Predictable behaviour.** The cost is constant per instance up to the input-size-linear modular reduction; the benchmarks below show a flat curve (under 10% variation over a 31× input-size range), and the proposed linear guard term covers inputs beyond the benchmarked range. There is no data-dependent worst case.
+
 ### Cost model and initial benchmarks
 
 An initial implementation of the built-in was benchmarked on the Plutus cost model benchmarking machine ([CI run](https://github.com/IntersectMBO/plutus/actions/runs/34118839558); raw data in [`results.csv`](./results.csv)) to establish how the built-in should be costed and that it is affordable on chain.
@@ -503,14 +523,18 @@ A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterp
 
 - [ ] The exact parameter set of each registered instance (the BLS12-381 scalar field, $t$, $\alpha$, round counts, constant generation, structural choices) is fixed in this specification.
 - [ ] The built-in is implemented in Plutus with a benchmarked costing function, validated against reference implementation test vectors.
-- [ ] The built-in is released on mainnet in a protocol upgrade enabling a new Plutus language version or built-in set.
+- [ ] The C permutation core and its integration (`cardano-base` bindings and the Plutus built-in) have passed an independent security audit — the existing implementation and benchmarks are preliminary feasibility work, not a production implementation.
+- [ ] The ledger is updated with new protocol parameters controlling the costing of the built-in.
+- [ ] The built-in is released on mainnet in a hard-fork protocol upgrade (adding a built-in changes the binary format and therefore requires a hard fork; per CIP-35 it does **not** require a new Plutus Core language version).
 
 ### Implementation Plan
 
 - [ ] Agree on the parameter sets with the Plutus Core team and community.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
+  The existing `cardano-base`/`plutus` integration that produced the benchmarks in this document is preliminary work — its purpose was to demonstrate that the built-in can run on chain, not to be the final production implementation.
+- [ ] Commission an independent audit of the C permutation core [10] and its bindings.
 - [ ] Align the `cardano-base` variant registry with the table in this CIP.
-  The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
+  The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` [10] instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
   Index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`, and the constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
 - [ ] Benchmark and propose costing parameters (initial benchmarks and a proposed costing shape in *Cost model and initial benchmarks*).
 
@@ -525,6 +549,7 @@ A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterp
 7. J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
 8. L. Grassi, C. Rechberger, M. Schofnegger. *Proving Resistance Against Infinitely Long Subspace Trails: How to Choose the Linear Layer.* IACR ToSC 2021(2). IACR ePrint [2020/500](https://eprint.iacr.org/2020/500).
 9. noir-lang. *poseidon*, the Poseidon library of the Noir language (formerly in the Noir standard library); circomlib-consistent instantiations over BN254. [github.com/noir-lang/poseidon](https://github.com/noir-lang/poseidon).
+10. Nomadic Labs. *ocaml-bls12-381-hash*, MIT-licensed C implementations (with OCaml bindings) of arithmetization-friendly hash primitives over the BLS12-381 scalar field; the Poseidon permutation core referenced by this proposal lives under [`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon). [gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash).
 
 ## Copyright
 
