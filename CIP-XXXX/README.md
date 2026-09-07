@@ -443,11 +443,6 @@ All vectors are independently re-derived from the shipped constants files by `ch
 The Poseidon permutation could in principle be implemented in Plutus itself on top of the existing integer or BLS12-381 built-ins, but each evaluation requires on the order of 60+ rounds of field exponentiations and an MDS matrix multiplication, which is prohibitively expensive within current script budgets.
 Exposing the permutation as a native built-in — costed as a constant per variant index, since the built-in never absorbs variable-length input — makes onchain verification of Poseidon-based commitments practical and closes the gap between what zk provers produce and what Plutus scripts can verify.
 
-The pivotal design decision is exposing the *permutation* rather than a hash; the full argument is given under *Why the permutation and not a hash*.
-In short: deployed framings disagree on everything above the permutation and keep evolving, so a hash-shaped built-in would freeze one convention into protocol law and force every other present or future framing to wait for a protocol upgrade, whereas the permutation-level interface has one uniform signature and cost shape and leaves all of them expressible in script today.
-The cost of this generality is that a bare built-in call has no hash security properties.
-The specification addresses this deliberately shifted responsibility with normative terminology (a call yields a *state*, never a digest), explicit misuse warnings, and — per registry instance — a machine-readable description of the originating ecosystem's framing plus full-trace test vectors, from which audited script-level hash wrappers can be built and checked call by call.
-
 ## Path to Active
 
 ### Acceptance Criteria
@@ -458,7 +453,7 @@ The specification addresses this deliberately shifted responsibility with normat
 
 ### Implementation Plan
 
-- [ ] Agree on the parameter sets with the Plutus Core team.
+- [ ] Agree on the parameter sets with the Plutus Core team and community.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
 - [ ] Align the `cardano-base` variant registry with the table in this CIP.
   The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
