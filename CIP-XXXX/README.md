@@ -443,6 +443,60 @@ All vectors are independently re-derived from the shipped constants files by `ch
 The Poseidon permutation could in principle be implemented in Plutus itself on top of the existing integer or BLS12-381 built-ins, but each evaluation requires on the order of 60+ rounds of field exponentiations and an MDS matrix multiplication, which is prohibitively expensive within current script budgets.
 Exposing the permutation as a native built-in — costed as a constant per variant index, since the built-in never absorbs variable-length input — makes onchain verification of Poseidon-based commitments practical and closes the gap between what zk provers produce and what Plutus scripts can verify.
 
+### Cost model and initial benchmarks
+
+An initial implementation of the built-in was benchmarked on the Plutus cost model benchmarking machine ([CI run](https://github.com/IntersectMBO/plutus/actions/runs/34118839558); raw data in [`results.csv`](./results.csv)) to establish how the built-in should be costed and that it is affordable on chain.
+
+#### What determines the cost
+
+The interface gives the costing function little to depend on, by design:
+
+- the **variant index** is a bounded small integer (one word for every registry entry), selecting a fixed permutation;
+- the **input list** has exactly $t$ integers; each is reduced modulo $p$ on entry, after which all work — the $R_F + R_P$ rounds — is fixed-size field arithmetic independent of the arguments.
+
+The only argument-size-dependent work is therefore the initial modular reduction.
+This splits the cost into a **realistic-usage cost** — inputs that are already canonical field elements of at most 255 bits (4 words), which is what every framing produces — and a **worst case** for oversized integers, whose reduction the built-in must still charge for.
+The benchmarks measure both by varying the size of the input integers from 1 to 31 machine words (64 to ~2000 bits), for both registered variants:
+
+| Variant | Total rounds ($R_F + R_P$) | 1-word inputs | realistic usage (255-bit inputs) | measured worst case (31-word inputs) |
+| --- | --- | --- | --- | --- |
+| 0 (midnight-zk) | 68 | 21.8 µs | ~23.6 µs | 24.1 µs |
+| 1 (circom port) | 64 | 20.7 µs | ~22.2 µs | 23.1 µs |
+
+Two observations:
+
+- **The cost is essentially constant in the input size.** Growing every input from 1 to 31 words moves the cost by under 10%: the reduction is negligible against the round function, and the realistic-usage cost sits within a few percent of the measured worst case.
+- **The cost is proportional to the round count.** Variant 1 is ~5% cheaper than variant 0, matching its round-count ratio ($64/68 \approx 0.94$). The permutation cost is thus dominated by the rounds, and the cost of any future instance is predictable from its $t$ and $(R_F, R_P)$ before it is implemented.
+
+#### Proposed costing
+
+- **CPU**: a constant per call, set to the measured worst case over registered instances — about 24 µs on the benchmarking machine, i.e. on the order of $2.4 \times 10^7$ `ExCPU`. Because the size curve is so flat, this conservative constant overcharges realistic usage (255-bit inputs) by only a few percent. For inputs beyond the benchmarked range the modular reduction keeps scaling, so the constant should be accompanied by a small linear term in the total size of the list elements (mirroring how `modInteger` is costed today) to keep adversarially large integers safely costed.
+- **Memory**: a constant per call: the output is $t$ canonical field elements of at most 4 words each (12 words of integers for the width-3 instances, plus list overhead).
+
+One nuance: Plutus costing functions depend on argument *sizes*, not values, so a costing function cannot dispatch on the variant index — both indices cost the same. For the current registry this loses almost nothing (the two width-3 instances are within 5% of each other), but it makes cost part of instance admission: a future instance with a materially larger width or round count either raises the shared constant for every variant or requires new value-indexed costing machinery.
+
+#### Comparison with other built-ins
+
+Against the same benchmarking suite run on `master` ([CI run of 2026-08-10](https://github.com/IntersectMBO/plutus/actions/runs/31355664724); raw data in [`results-master.csv`](./results-master.csv), covering `equalsByteString` and `equalsString`): those built-ins run at 1.1–2.3 µs across argument sizes up to ~20 kB, so one Poseidon permutation costs roughly 10–20 such calls — squarely in the range of ordinary built-in work, orders of magnitude below the budget-dominating BLS12-381 pairing operations already on mainnet.
+
+The instructive comparison is with the traditional hash built-ins, which are the other way to build a Merkle tree on chain.
+Per the current mainnet cost model, hashing one 64-byte Merkle node (two 32-byte children) costs about 0.27 µs with `blake2b_256` and about 0.45 µs with `sha2_256`; the corresponding Poseidon 2-to-1 compression is one permutation call at ~23 µs.
+**On chain, a Poseidon Merkle node is therefore roughly 90× more expensive than a `blake2b_256` node** (roughly 50× a `sha2_256` node).
+That factor is the price of arithmetization-friendliness, and it buys back far more on the proving side: in-circuit, a bit-oriented hash costs tens of thousands of constraints per evaluation against a few hundred for Poseidon (see *Motivation*) — a ~100× saving exactly where the budget is scarce.
+
+In protocol terms (`ExCPU` is calibrated as ~1 ps on the reference machine), one permutation call is ~$2.4 \times 10^7$ `ExCPU`, i.e. **~0.24% of the mainnet per-transaction CPU budget** of $10^{10}$. A single transaction could afford over 400 permutation calls on CPU cost alone.
+
+#### What this buys: a Merkle tree on chain
+
+The motivating workload is Merkle verification. In both registered framings a 2-to-1 compression — hashing a node's left and right child — is a *single* permutation call (circom: digest of $P(0, l, r)$; midnight: digest of $P(l, r, 2)$), so verifying a Merkle membership proof of depth $d$ costs $d$ calls plus cheap glue (list construction, selecting the left/right position per level):
+
+| Tree depth (leaves) | Permutation calls | Built-in CPU cost | Share of tx budget | Same proof with `blake2b_256` |
+| --- | --- | --- | --- | --- |
+| 20 ($10^6$) | 20 | ~0.48 ms | ~4.8% | ~5.4 µs (~0.05%) |
+| 32 ($4 \times 10^9$) | 32 | ~0.77 ms | ~7.7% | ~8.6 µs (~0.09%) |
+
+A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterpart, yet a proof over a tree with four billion leaves still consumes under a tenth of one transaction's CPU budget — the construction the *Motivation* section opens with is comfortably practical on chain, which is what this initial experiment set out to show.
+
 ## Path to Active
 
 ### Acceptance Criteria
@@ -458,7 +512,7 @@ Exposing the permutation as a native built-in — costed as a constant per varia
 - [ ] Align the `cardano-base` variant registry with the table in this CIP.
   The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
   Index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`, and the constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
-- [ ] Benchmark and propose costing parameters.
+- [ ] Benchmark and propose costing parameters (initial benchmarks and a proposed costing shape in *Cost model and initial benchmarks*).
 
 ## References
 
