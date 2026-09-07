@@ -9,7 +9,8 @@ Authors:
 
 Proposed Solutions: []
 Discussions:
-    - /
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1260
+    - Early CIP discussion: https://github.com/cardano-foundation/CIPs/pull/1157
 Created: 2026-09-02
 License: CC-BY-4.0
 ---
