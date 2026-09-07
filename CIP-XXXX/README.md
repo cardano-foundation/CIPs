@@ -41,10 +41,10 @@ The initial instance registry contains two entries, chosen to serve the two domi
 
 ### Poseidon
 
-Poseidon is a cryptographic hash function designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.).
+Poseidon is a family of cryptographic hash functions designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.), each built as a framing around a core permutation — the layer this CIP exposes.
 Unlike "traditional" hashes such as SHA-256 or Blake2b, which operate on bits and are
 cheap on a CPU but extremely expensive to prove in a circuit, Poseidon operates directly over the elements of a large prime field $\mathbb{F}_p$, where $p$ is usually the scalar field prime of the elliptic curve underlying the proof system.
-Because the operations of which the Poseidon hash function is comprised of are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation in-circuit is orders of magnitude smaller than for a bit-oriented hash.
+Because the operations of which a Poseidon function is comprised are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation in-circuit is orders of magnitude smaller than for a bit-oriented hash.
 This is what makes it "arithmetization-friendly".
 
 #### Prime fields
