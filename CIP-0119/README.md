@@ -8,8 +8,9 @@ Authors:
 Implementors: []
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/788
-    - Video: https://vimeo.com/912374177/0e9299fb5d?share=copy
-    - Video: https://vimeo.com/915297122/c39f4a739b?share=copy
+    - Video: https://vimeo.com/912374177/0e9299fb5d
+    - Video: https://vimeo.com/915297122/c39f4a739b
+    - Metadata extensions: https://github.com/cardano-foundation/CIPs/issues/977
 Created: 2024-02-07
 License: CC-BY-4.0
 ---
