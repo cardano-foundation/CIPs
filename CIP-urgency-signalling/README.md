@@ -817,8 +817,9 @@ same shape and the fee change credit goes to the same place: `minfee` to the fee
 `minfeeAt(adjusted_tier_coeff) - minfee` to the treasury, and the remainder of the collected collateral
 to the `feeChangeAccount` if the transaction names a registered one, or to the treasury if it does not.
 
+<!-- PORTABILITY: once CIP-0192 (PR #1218) merges, repoint this at the repo-relative ../CIP-0192 -->
 Note that this diverges from
-[CIP-0192](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0192), which states that
+[CIP-0192](https://github.com/cardano-foundation/CIPs/pull/1218), which states that
 collateral collection needs no change and that any overpayment goes to the fee pot.
 
 The following changes to transaction application ensure correct tier specification 
