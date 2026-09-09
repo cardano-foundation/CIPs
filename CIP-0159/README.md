@@ -316,7 +316,9 @@ transaction_body =
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
   ...
-  , ? 24 : account_balance_intervals ; new field
+  ; fields 23 (sub_transactions) and 24 (required_top_level_guards) come from CIP-0118.
+  , ? 26 : account_balance_intervals ; new field
+  , ? 27 : starting_account_balance_intervals ; new field (top-level body only)
   }
 ```
 
@@ -326,12 +328,66 @@ be mentioned:
 
 1. Using the account balance interval does *not* require a witness from the associated credential.
 2. To declare that a certain asset in the `AccountValue` has a specific balance of `n`, the asset's
-   balance interval must be set to `[n, n+1)`.
+   balance interval must be set to `[n, n+1)`. For ADA, a bare `coin` is a *first-class exact
+   assertion* (`balance == n`), not a shorthand rewritten to `[n, n+1)`: the two are equivalent as
+   predicates, but they stay distinct in the transaction body and in the script context, so a plutus
+   script can tell them apart.
 3. If the account balance interval is used for an asset not supported in the current whitelist, the
    transaction will fail *Phase 1 Validation*.
+4. The referenced account must be registered; an interval on an unregistered account fails
+   *Phase 1 Validation*. Registration is judged against the state the interval is evaluated in (see
+   behavior 7), which is *before* that level's own certificates: an account registered by a
+   certificate in the same transaction level is not yet visible to that level's interval assertions.
+5. The network id of each reward account must match the network of the ledger the transaction is
+   submitted to; an interval on an account address of the wrong network fails *Phase 1 Validation*.
+6. The three ways a map can be rejected — an account on the wrong network, an unregistered account,
+   and a balance outside its interval — are independent checks.
+7. Interval checks are part of *Phase 1 Validation*, but they are only evaluated when the top-level
+   transaction's `isValid` flag is true. A transaction marked `isValid = false` is processed for
+   collateral only and applies no withdrawals or deposits, so its interval assertions — which guard
+   those effects — are not reached. This holds at every level of a nested transaction: each
+   `account_balance_intervals` map is checked independently at the top level and within each
+   sub-transaction, against the account balances that level observes, and before that level's own
+   certificates, withdrawals and direct deposits are applied. Because sub-transactions are processed
+   *before* the top level, the balances a top-level `account_balance_intervals` map observes are the
+   ones left behind by all of the sub-transactions; use
+   [`starting_account_balance_intervals`](#starting-account-balance-intervals) to assert against the
+   balances at the start of the whole transaction.
+8. An interval whose bounds cannot be satisfied (for example `[10, 5)`) is representable and simply
+   never holds; only an interval with *both* bounds absent is rejected outright when the transaction
+   is decoded. Bounds are unsigned and no wider than the quantity they constrain, so a bound can
+   express neither a negative balance nor one beyond the representable maximum.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
-`ScriptContext`. See the [New Plutus Script Context section](#new-plutus-script-context).
+`ScriptContext`, keyed by the account id — a wrapper around the reward account's credential: the
+network id of the reward account is not carried into the script context, in the same way that it is
+not for withdrawals. See the [New Plutus Script Context section](#new-plutus-script-context).
+
+### Starting Account Balance Intervals
+
+`account_balance_intervals` are evaluated against the account balances each transaction level
+observes as that level is processed, and a nested transaction processes its sub-transactions *before*
+its top level. Every `account_balance_intervals` map therefore sees balances that earlier levels may
+already have moved: a sub-transaction's map sees the balances threaded through any earlier
+sub-transaction, and the top-level map sees the balances left behind by *all* of the
+sub-transactions. Since `account_balance_intervals` map can't express an assertion about the balances at
+the very start of the whole transaction. A separate top-level field,
+`starting_account_balance_intervals`, fills this gap: it asserts intervals against the account balances
+at the start of the whole transaction, before any sub-transaction or top-level withdrawal or direct
+deposit is applied. It uses the same representation as `account_balance_intervals`, requires the
+referenced accounts to be registered and to carry the correct network id, requires no witness, fails
+in the same three independent ways, and is only present in the top-level transaction body.
+
+This field is deliberately absent from sub-transaction bodies. Every sub-transaction observes the same
+whole-transaction starting balances, so a per-sub-transaction copy could assert nothing that the
+top-level field cannot already express. In keeping with the CIP-0118 design — where top-level guards
+are responsible for the holistic view of a transaction, while other script purposes focus on the
+contents of an individual transaction — a sub-transaction builder that needs assurance about the
+starting balances can require it through a script in `required_top_level_guards`.
+
+```cddl
+starting_account_balance_intervals = {+ reward_account => account_balance_interval}
+```
 
 ### New Ledger State
 
@@ -386,10 +442,14 @@ This CIP does not introduce any new `ScriptPurpose`s, but the `TxInfo` field nee
 new sub-fields:
 
 ```haskell
-data BalanceInterval
-  = InclusiveLowerBoundOnly Integer
-  | ExclusiveUpperBoundOnly Integer
-  | InclusiveLowerExclusiveUpperBounds Integer Integer
+data AccountBalanceInterval
+  = AccountBalanceExact Lovelace
+  | AccountBalanceLowerBound Lovelace -- ^ Inclusive.
+  | AccountBalanceUpperBound Lovelace -- ^ Exclusive.
+  | AccountBalanceBothBounds Lovelace Lovelace -- ^ Inclusive lower, exclusive upper.
+
+newtype AccountBalanceIntervals
+  = AccountBalanceIntervals (Map AccountId AccountBalanceInterval)
 
 data TxInfo = TxInfo
   { txInfoInputs                :: [TxInInfo]
@@ -402,7 +462,7 @@ data TxInfo = TxInfo
   , txInfoValidRange            :: POSIXTimeRange
   ... 
   , txInfoDirectDeposits        :: Map Credential Value -- ^ New field.
-  , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
+  , txInfoAccountBalanceIntervals :: AccountBalanceIntervals -- ^ New field.
   }
 ```
 
@@ -432,7 +492,10 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 1. Deposit ADA into account addresses.
 2. Partial withdrawals from account addresses in sub-transactions, or in a top-level transaction
    but only when plutus v1-v3 scripts are not used in it.
-3. Account balance intervals validated as part of *Phase 1 Validation*.
+3. Account balance intervals validated as part of *Phase 1 Validation*, independently at the top
+   level and within each sub-transaction.
+4. Starting (whole-transaction) account balance intervals validated as part of *Phase 1 Validation*,
+   from the top-level body only.
 
 **CDDL Changes**
 ```cddl
@@ -441,33 +504,43 @@ are all forced to charge *~1 ADA* due to the `minUTxOValue` requirement.
 ; Same definition as current withdrawals.
 direct_deposits = {+ reward_account => coin}
 
-account_balance_intervals = 
-  { + reward_account => 
-        [ inclusive_lower_bound: coin, exclusive_upper_bound: coin / nil ]  /
-        [ inclusive_lower_bound: coin / nil, exclusive_upper_bound: coin ] 
-  }
+account_balance_intervals          = {+ reward_account => account_balance_interval}
+starting_account_balance_intervals = {+ reward_account => account_balance_interval}
+
+; A `coin` means exact (balance == coin).
+account_balance_interval =
+    [inclusive_lower_bound : coin, exclusive_upper_bound : coin/ nil]
+  / [inclusive_lower_bound : coin/ nil, exclusive_upper_bound : coin]
+  / coin
 
 transaction_body = 
   {   0  : set<transaction_input>         
   ,   1  : [* transaction_output]      
   ...
-  , ? 23 : direct_deposits ; new field
-  , ? 24 : account_balance_intervals ; new field
+  ; fields 23 (sub_transactions) and 24 (required_top_level_guards) come from CIP-0118.
+  , ? 25 : direct_deposits ; new field
+  , ? 26 : account_balance_intervals ; new field
+  , ? 27 : starting_account_balance_intervals ; new field (top-level body only)
   }
 ```
 
 **Plutus Script Context**
 
-The plutus script context will be pre-emptively upgraded to support the fields needed in the second
-delivery phase. This way the features can be turned on with a hardfork and plutus scripts written
-for the first delivery phase can immediately take advantage of the new features without having to be
-recompiled.
+The plutus script context is upgraded to expose `account_balance_intervals`. Note that the exposed
+`AccountBalanceInterval` is ADA-only, matching this delivery phase, so the multi-asset phase will
+require a further script context change rather than being a hardfork switch for already-compiled
+scripts. `starting_account_balance_intervals` is not exposed — see
+[Starting Account Balance Intervals](#starting-account-balance-intervals).
 
 ```haskell
-data BalanceInterval
-  = InclusiveLowerBoundOnly Integer
-  | ExclusiveUpperBoundOnly Integer
-  | InclusiveLowerExclusiveUpperBounds Integer Integer
+data AccountBalanceInterval
+  = AccountBalanceExact Lovelace
+  | AccountBalanceLowerBound Lovelace -- ^ Inclusive.
+  | AccountBalanceUpperBound Lovelace -- ^ Exclusive.
+  | AccountBalanceBothBounds Lovelace Lovelace -- ^ Inclusive lower, exclusive upper.
+
+newtype AccountBalanceIntervals
+  = AccountBalanceIntervals (Map AccountId AccountBalanceInterval)
 
 data TxInfo = TxInfo
   { txInfoInputs                :: [TxInInfo]
@@ -480,7 +553,7 @@ data TxInfo = TxInfo
   , txInfoValidRange            :: POSIXTimeRange
   ... 
   , txInfoDirectDeposits        :: Map Credential Value -- ^ New field.
-  , txInfoBalanceIntervals      :: Map Credential (Map PolicyID (Map AssetName BalanceInterval)) -- ^ New field. 
+  , txInfoAccountBalanceIntervals :: AccountBalanceIntervals -- ^ New field.
   }
 ```
 
@@ -542,6 +615,9 @@ account_balance_interval =
   ] 
 
 account_balance_intervals = 
+  { + reward_account => account_balance_interval }
+
+starting_account_balance_intervals =
   { + reward_account => account_balance_interval }
 ```
 
