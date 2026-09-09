@@ -1,7 +1,7 @@
 ---
 CPS: ?
 Title: Voluntary Block Producer Software Signalling
-Category: Consensus/Monitoring (?)
+Category: Consensus
 Status: Open
 Authors:
     - Alex Moser <alexander.moser@cardanofoundation.org>
