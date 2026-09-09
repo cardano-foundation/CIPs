@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: "?"
 Title: Voluntary Block Producer Software Signalling
 Category: Consensus
 Status: Open
