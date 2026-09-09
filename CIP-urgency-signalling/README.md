@@ -88,6 +88,26 @@ We propose two lanes by which a user can submit a transaction to a node: urgent 
 
 The ledger enforces the urgency signalling rule: every transaction in a valid Ranking Block must carry a fee that covers the urgent quote for that block. In simulation under severe congestion, the mechanism preserves more urgent-class transaction value than linear-Leios with today's flat fee. Retained value means the modelled gross transaction value that remains at inclusion, before fees. Urgent-class retained value improved across most simulated loads. At light load, the mechanism slightly reduces overall retained value, because transactions on the standard path wait longer while Endorser Blocks fill. The Rationale gives exact figures.
 
+### Common misconceptions: clarified
+
+* The premium above the ordinary minimum fee goes to the treasury, so producers cannot earn it by favouring urgent transactions over EB certificates.
+* Under the normal block-production policy, a ready, qualifying EB certificate takes precedence over a direct RB transaction payload, regardless of urgent backlog. Urgent backlog therefore does not defer that certificate under this policy.
+* A transaction entering the urgent lane is eligible but not guaranteed to be included in an RB. If it instead enters an EB, it pays the standard quote at inclusion time, with the excess being refunded (assuming the transaction specifies a registered refund account).
+* Each lane’s quote is a posted price calculated by its controller. A larger fee cap provides headroom against quote increases; under the reference FIFO policy, it does not buy an earlier queue position.
+* The standard lane has its own controller; it is not derived from the urgent quote.
+* A standard transaction is _never_ eligible to enter an RB, even if a produced RB would be otherwise empty.
+* Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee all the time. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, conversely, the price decreases again.
+
+### A note on linear-Leios, as specified in CIP-0164
+
+Not all transactions go through EBs in unmodified linear-Leios as specified in [CIP-0164](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164). CIP-0164 specifies the timing formula: `A certificate may only be included if RB' is at least 3×Lhdr+Lvote+Ldiff slots after RB` [in the chain inclusion section](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#step-5-chain-inclusion). In the [feasible protocol parameters](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#feasible-protocol-parameters) section, the CIP specifies an EB cooldown of 14 slots (meaning the next 13 slots after the announcing RB are too early to include that EB's certificate): `Total certificate inclusion delay:3×Lhdr+Lvote+Ldiff=3+4+7=14slots`.
+
+With an RB production probability of 0.05 per slot, the probability of an EB surviving the cooldown is the probability that no RB is produced in the 13 slots following the RB that announced it:
+
+0.95^13 = ~51.33%
+
+That means there's a ~51.33% chance of an EB surviving the cooldown period, meaning, statistically, ~48.67% of blocks can be expected to be transaction-carrying RBs.
+
 ## Motivation: Why is this CIP necessary?
 
 Some transactions lose value when delayed, but users currently have no protocol-level way to signal that urgency.
