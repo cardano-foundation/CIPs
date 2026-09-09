@@ -67,3 +67,6 @@ Any solution must remain **strictly voluntary**: signalling software identity is
 - Ethereum block `extraData` / "graffiti" convention and client-diversity monitoring
 - CIP-0164 (Ouroboros Leios) — future header structure considerations
 - CIP-9999 — Cardano Problem Statement process
+ 
+## Copyright
+This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
