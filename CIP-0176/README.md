@@ -59,21 +59,15 @@ block =
   ]
 
 block_body =
-  [ invalid_transactions : [* transaction_index]
-  , transactions : [* transaction]
+  [ transactions : [* block_transaction]
   ]
 
-transaction =
-  [  transaction_body, transaction_witness_set, true, auxiliary_data/ nil
-  // transaction_body, transaction_witness_set, auxiliary_data/ nil
-  ]
+block_transaction =
+  [transaction_body, transaction_witness_set, auxiliary_data/ nil, bool]
 ```
 
-Note that we propose keeping invalid transaction indices separately, because:
-  * the `isValid` flag - which determines validity -  is controlled by the block producing node, not by the transaction creator;
-  * it's more efficient: we serialize indices only for invalid transactions, which are a small minority.
-
-Also, note that `invalid_transactions` indices precede `transactions` in the proposed layout, so that consumers can determine the validity of transactions without having to scan through the entire transaction list.
+Note that the `is_valid` flag is controlled by the block producing node, not by the transaction creator, which is why it is not part of the transaction serialization used for submission (see CIP-0167) and is instead appended to each transaction by the block producer.
+Placing it after the auxiliary data keeps all the fields supplied by the transaction author in a contiguous prefix of each `block_transaction`, and gives future block-producer-supplied fields (such as the proposed `feeChangeAmount`) a natural position at the end of the transaction.
 
 ## Rationale: How does this CIP achieve its goals?
 
