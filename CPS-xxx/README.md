@@ -34,7 +34,7 @@ This CPS states the problem and calls for a standard, strictly opt-in, one-way s
 Any solution must remain **strictly voluntary**: signalling software identity is an SPO's choice, never an obligation, and non-signalling blocks must remain fully valid and unpenalized.
 
 
-## Use cases
+## Use Cases
 
 - **Client diversity monitoring**: explorers and dashboards showing the live share of blocks per implementation (Haskell `cardano-node`, Amaru, Dingo, …), analogous to Ethereum client-diversity dashboards.
 - **Upgrade/rollout observation**: tracking adoption of a new client or version across the active stake distribution during consensus-critical transitions.
