@@ -52,7 +52,7 @@ Any solution must remain **strictly voluntary**: signalling software identity is
 5. Guarantee the mechanism is **opt-in, zero cost, and consensus-neutral**: no ledger rule changes, no validity impact, no obligation.
 
 
-## Open questions
+## Open Questions
 - Header minor version vs. marker transaction — or header for identity (producer-bound) plus transactions for richer, occasional signals?
 - Who assigns and maintains client/version identifiers, and how are collisions and deprecations handled? A CIP, a repo?
    - In Cardano, we have lots of precedence in that regard, as we maintain various registries already. 
