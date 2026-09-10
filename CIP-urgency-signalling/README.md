@@ -10,9 +10,10 @@ Authors:
   - Giorgos Panagiotakos <giorgos.panagiotakos@iohk.io>
 Implementors: []
 Discussions:
-  - CPS-0031-PR: https://github.com/cardano-foundation/CIPs/pull/1194
+  - https://github.com/cardano-foundation/CIPs/pull/1194
+  - https://github.com/cardano-foundation/CIPs/pull/1265
 Solution To:
-  - CPS-0031: https://github.com/cardano-foundation/CIPs/pull/1194
+  - CPS-0031
 Created: 2026-06-24
 License: CC-BY-4.0
 ---
