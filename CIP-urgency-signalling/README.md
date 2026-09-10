@@ -104,7 +104,7 @@ Not all transactions go through EBs in unmodified linear-Leios as specified in [
 
 With an RB production probability of 0.05 per slot, the probability of an EB surviving the cooldown is the probability that no RB is produced in the 13 slots following the RB that announced it:
 
-0.95^13 = ~51.33%
+`0.95^13 = ~51.33%`
 
 That means there's a ~51.33% chance of an EB surviving the cooldown period, meaning, statistically, ~48.67% of blocks can be expected to be transaction-carrying RBs.
 
