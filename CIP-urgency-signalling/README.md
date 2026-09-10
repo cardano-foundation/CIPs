@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: "?"
 Title: Transaction Urgency Signalling On Linear-Leios
 Category: Consensus
 Status: Proposed
