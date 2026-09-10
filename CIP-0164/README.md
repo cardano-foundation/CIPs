@@ -287,6 +287,10 @@ EB inclusion is therefore opportunistic rather than guaranteed, depending on the
 random timing of block production relative to the certification process. The
 precise timing mechanism is detailed in the following section.
 
+Additionally, the reader should note the following implication: any RB that
+does not include a certificate may itself include transactions directly, so
+not all transactions go through EBs, even under congestion.
+
 ### Protocol Flow
 
 The protocol operates through five sequential steps that involve three critical
@@ -2459,6 +2463,14 @@ Based on the [network timing measurements](#network-characteristics):
   margin
 - **Total certificate inclusion delay:**
   $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} = 3 + 4 + 7 = 14$ seconds
+
+With these example values, a certificate may only be included in an RB at least
+14 slots after the announcing RB at mainnet's one-second slot length. With
+Praos' active slot coefficient of $f = 0.05$, the probability that no RB is
+produced in the intervening 13 slots is $0.95^{13} \approx 51\\%$. Even if every
+RB announces an EB and every timely EB reaches quorum, roughly half of all RBs
+will therefore carry a transaction list directly rather than a certificate. Not
+all transactions go through EBs, even under congestion.
 
 **Simulation-Tested Parameters**
 
