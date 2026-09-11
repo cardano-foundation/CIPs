@@ -8,7 +8,8 @@ Authors:
   - Will Gould <will.gould@iohk.io>
   - Polina Vinogradova <polina.vinogradova@iohk.io>
 Proposed Solutions: []
-Discussions: []
+Discussions:
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1268
 Created: 2026-07-28
 License: CC-BY-4.0
 ---
