@@ -7,9 +7,8 @@ Authors:
     - Alex Moser <alexander.moser@cardanofoundation.org>
 Proposed Solutions: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/????
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1266
     - CIP-0113 | Programmable tokens: https://github.com/cardano-foundation/CIPs/pull/444
-    - CPS-???? | Discoverability and machine-readable description of programmable token substandards (draft): https://github.com/Kammerlo/CIPs/blob/docs/cip-113-substandard-cps/CPS-%3F%3F%3F%3F/README.md
 Created: 2026-08-20
 License: CC-BY-4.0
 ---
