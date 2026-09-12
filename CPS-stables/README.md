@@ -1,6 +1,6 @@
 ---
 CPS: "?"
-Title: Shared Standard for Regulated Stablecoins
+Title: Standardisation of Regulatable Stablecoins
 Category: Tokens
 Status: Open
 Authors:
