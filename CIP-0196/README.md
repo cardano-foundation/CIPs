@@ -29,11 +29,17 @@ assigning namespace ownership or mandatory resolution priority
 to any single provider.
 
 This CIP addresses the problems documented in CPS-0032.
-This version defines resolution for NFT-holder based
-handle systems using the `policy_asset_holder` method.
-Alternative resolution architectures such as datum-based
-registries and Plutus contracts may be defined in future
-versions of this CIP.
+This CIP defines an interoperability interface — not a
+requirement to use NFTs or Policy IDs. The
+`policy_asset_holder` method is the first defined
+on-chain resolution method. Providers using other
+resolution architectures such as Plutus contract
+registries, datum-based systems, or token-owned address
+structures can register and document their own
+`onchain_method`. The registry format and wallet
+interface remain the same regardless of the underlying
+resolution technology. Additional methods may be defined
+in future versions of this CIP.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -529,6 +535,12 @@ CIP editors. Wallets or users discovering a security
 issue with a registered provider SHOULD contact that
 provider directly using the `security_contact` field
 in the registry entry.
+
+The CIP author commits to monitoring wallet implementations
+as they emerge and proposing additions to this section when
+common countermeasures converge — such as provider
+blocklists, verification badges, or trust scoring
+approaches that wallet teams independently develop.
 
 ### Registry model
 
