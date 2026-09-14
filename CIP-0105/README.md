@@ -1,8 +1,8 @@
 ---
 CIP: 105
 Title: Conway era Key Chains for HD Wallets
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
   - Ryan Williams <ryan.williams@intersectmbo.org>
 Implementors:
@@ -17,7 +17,7 @@ Implementors:
   - Yoroi <https://yoroi-wallet.com/>
   - Gero <https://gerowallet.io/>
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/597
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/597
 Created: 2023-09-22
 License: CC-BY-4.0
 ---
@@ -36,7 +36,7 @@ Here we define some accompanying tooling standards.
 > and
 > [CIP-1694](https://github.com/cardano-foundation/CIPs/blob/master/CIP-1694/README.md).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 In the Conway ledger era, DRep credentials allow registered DReps to be identified on-chain, in DRep registrations, retirements, votes, and in vote delegations from ada holders.
 Whilst constitutional committee members can be recognized by their cold credentials within update committee governance actions, authorize hot credential certificate and resign cold key certificates.
@@ -244,7 +244,7 @@ This CIP previously also lacked `_vkh` key definitions, which are now added abov
 This CIP is not to be versioned using a traditional scheme, rather if any large technical changes are required then a new proposal must replace this one.
 Small changes can be made if they are completely backwards compatible with implementations, but this should be avoided.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Derivation
 

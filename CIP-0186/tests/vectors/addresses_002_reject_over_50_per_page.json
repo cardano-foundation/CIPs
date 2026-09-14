@@ -1,0 +1,11 @@
+{
+  "name": "addresses_002_reject_over_50_per_page",
+  "spec_section": "Methods (getUsedAddresses; MUST NOT return more than 50 per call)",
+  "category": "addresses",
+  "input": {
+    "decrypted_response_address_count": 51
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "page_size_exceeds_limit"
+}

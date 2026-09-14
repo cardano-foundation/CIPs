@@ -20,7 +20,7 @@ types:
     seq:
       - id: len_payload
         type: u4
-        doc: Size of the record, including size and record type
+        doc: Size of the record, including record type
       - id: payload
         type: scls_record_data
         doc: payload of the record

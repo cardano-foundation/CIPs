@@ -1,8 +1,8 @@
 ---
 CIP: 26
 Title: Cardano Off-Chain Metadata
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Michael Peyton Jones <michael.peyton-jones@iohk.io>
@@ -10,7 +10,7 @@ Authors:
 Implementors:
   - cardano-token-registry <https://github.com/cardano-foundation/cardano-token-registry>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/112
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/112
 Created: 2021-08-10
 License: CC-BY-4.0
 ---
@@ -19,7 +19,7 @@ License: CC-BY-4.0
 
 We introduce a standard for off-chain metadata that can map opaque on-chain identifiers to metadata suitable for human consumption. This will support user-interface components, and allow resolving trust issues in a moderately decentralized way.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 On the blockchain, we tend to refer to things by hashes or other opaque identifiers. But these are not very human friendly:
 * In the case of hashes, we often want to know the preimage of the hash, such as
@@ -403,7 +403,7 @@ Similar to the recommendations for metadata servers, this section gives some rec
 - The metadata client MAY be configurable to limit the amount downloaded.
 - The metadata client MAY accept user updates for metadata entries.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Interfaces and progressive enhancement
 

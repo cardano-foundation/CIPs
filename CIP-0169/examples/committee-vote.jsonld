@@ -1,0 +1,238 @@
+{
+  "@context": {
+    "@language": "en-us",
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "CIP116": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
+    "CIP169": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0169/README.md#",
+    "CIP136": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
+    "body": {
+      "@id": "CIP136:body",
+      "@context": {
+        "references": {
+          "@id": "CIP100:references",
+          "@container": "@set",
+          "@context": {
+            "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+            "Other": "CIP100:OtherReference",
+            "label": "CIP100:reference-label",
+            "uri": "CIP100:reference-uri"
+          }
+        },
+        "summary": "CIP136:summary",
+        "rationaleStatement": "CIP136:rationaleStatement",
+        "precedentDiscussion": "CIP136:precedentDiscussion",
+        "counterargumentDiscussion": "CIP136:counterargumentDiscussion",
+        "conclusion": "CIP136:conclusion",
+        "internalVote": {
+          "@id": "CIP136:internalVote",
+          "@context": {
+            "constitutional": "CIP136:constitutional",
+            "unconstitutional": "CIP136:unconstitutional",
+            "abstain": "CIP136:abstain",
+            "didNotVote": "CIP136:didNotVote",
+            "againstVote": "CIP136:againstVote"
+          }
+        },
+        "comment": "CIP100:comment",
+        "externalUpdates": {
+          "@id": "CIP100:externalUpdates",
+          "@context": {
+            "title": "CIP100:update-title",
+            "uri": "CIP100:update-uri"
+          }
+        },
+        "onChain": {
+          "@id": "CIP169:onChain",
+          "@context": {
+            "@vocab": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0116/README.md#",
+            "deposit": "CIP116:deposit",
+            "reward_account": "CIP116:reward_account",
+            "coin": "CIP116:coin",
+            "tag": "CIP116:tag",
+            "policy_hash": "CIP116:policy_hash",
+            "drep_credential": {
+              "@id": "CIP116:drep_credential",
+              "@context": {
+                "tag": "CIP116:tag",
+                "value": "CIP116:credential_value"
+              }
+            },
+            "committee_cold_credential": {
+              "@id": "CIP116:committee_cold_credential",
+              "@context": {
+                "tag": "CIP116:tag",
+                "value": "CIP116:credential_value"
+              }
+            },
+            "gov_action": {
+              "@id": "CIP116:gov_action",
+              "@context": {
+                "tag": "CIP116:tag",
+                "gov_action_id": {
+                  "@id": "CIP116:gov_action_id",
+                  "@context": {
+                    "transaction_id": "CIP116:transaction_id",
+                    "gov_action_index": "CIP116:gov_action_index"
+                  }
+                },
+                "protocol_version": {
+                  "@id": "CIP116:protocol_version",
+                  "@context": {
+                    "major": "CIP116:major",
+                    "minor": "CIP116:minor"
+                  }
+                },
+                "rewards": {
+                  "@id": "CIP116:rewards",
+                  "@container": "@set",
+                  "@context": {
+                    "key": "CIP116:reward_account",
+                    "value": "CIP116:coin"
+                  }
+                },
+                "members_to_remove": {
+                  "@id": "CIP116:members_to_remove",
+                  "@container": "@set",
+                  "@context": {
+                    "tag": "CIP116:tag",
+                    "value": "CIP116:credential_value"
+                  }
+                },
+                "committee": {
+                  "@id": "CIP116:committee",
+                  "@container": "@set",
+                  "@context": {
+                    "key": {
+                      "@id": "CIP116:committee_cold_credential",
+                      "@context": {
+                        "tag": "CIP116:tag",
+                        "value": "CIP116:credential_value"
+                      }
+                    },
+                    "value": "CIP116:epoch"
+                  }
+                },
+                "signature_threshold": {
+                  "@id": "CIP116:signature_threshold",
+                  "@context": {
+                    "numerator": "CIP116:numerator",
+                    "denominator": "CIP116:denominator"
+                  }
+                },
+                "constitution": {
+                  "@id": "CIP116:constitution",
+                  "@context": {
+                    "anchor": {
+                      "@id": "CIP116:anchor",
+                      "@context": {
+                        "url": "CIP116:url",
+                        "data_hash": "CIP116:data_hash"
+                      }
+                    },
+                    "script_hash": "CIP116:script_hash"
+                  }
+                }
+              }
+            },
+            "key": {
+              "@id": "CIP116:voter",
+              "@context": {
+                "tag": "CIP116:tag",
+                "credential": {
+                  "@id": "CIP116:credential",
+                  "@context": {
+                    "tag": "CIP116:tag",
+                    "value": "CIP116:credential_value"
+                  }
+                },
+                "pubkey_hash": "CIP116:pubkey_hash"
+              }
+            },
+            "value": {
+              "@id": "CIP116:voting_procedures_value",
+              "@container": "@set",
+              "@context": {
+                "key": {
+                  "@id": "CIP116:gov_action_id",
+                  "@context": {
+                    "transaction_id": "CIP116:transaction_id",
+                    "gov_action_index": "CIP116:gov_action_index"
+                  }
+                },
+                "value": {
+                  "@id": "CIP116:voting_procedure",
+                  "@context": {
+                    "vote": "CIP116:vote"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "authors": {
+      "@id": "CIP100:authors",
+      "@container": "@set",
+      "@context": {
+        "did": "@id",
+        "name": "http://xmlns.com/foaf/0.1/name",
+        "witness": {
+          "@id": "CIP100:witness",
+          "@context": {
+            "witnessAlgorithm": "CIP100:witnessAlgorithm",
+            "publicKey": "CIP100:publicKey",
+            "signature": "CIP100:signature"
+          }
+        }
+      }
+    }
+  },
+  "hashAlgorithm": "blake2b-256",
+  "body": {
+    "summary": "Voting NO on the treasury withdrawal: unconstitutional use of funds.",
+    "rationaleStatement": "The Cardano treasury is not meant to be used for personal gain; it should be for the benefit of the community.",
+    "precedentDiscussion": "No precedent for treasury withdrawals of this nature.",
+    "counterargumentDiscussion": "It would be pretty cool, but coolness is not a constitutional criterion.",
+    "conclusion": "Spending treasury funds to benefit a single individual is unconstitutional.",
+    "internalVote": {
+      "constitutional": 0,
+      "unconstitutional": 1,
+      "abstain": 0,
+      "didNotVote": 0
+    },
+    "onChain": [
+      {
+        "key": {
+          "tag": "cc_credential",
+          "credential": {
+            "tag": "pubkey_hash",
+            "value": "f1e2d3c4b5a69788796a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a"
+          }
+        },
+        "value": [
+          {
+            "key": {
+              "transaction_id": "e14de8d9dc4f4ddf3fe9250a8a926e20f10e99b86bd0610b77d7a054981591ee",
+              "gov_action_index": "0"
+            },
+            "value": {
+              "vote": "no"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "authors": [
+    {
+      "name": "Ryan Williams",
+      "witness": {
+        "witnessAlgorithm": "ed25519",
+        "publicKey": "7ea09a34aebb13c9841c71397b1cabfec5ddf950405293dee496cac2f437480a",
+        "signature": "b0233db23c979007d8a9c18e2fd8c8ce4c890963c3a718b9916b38cdf9e41ac154c0383825b354e428908a21e852d899a09965b4a393d960662cca0ec3564e0f"
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "response_002_session_json_shape",
+  "spec_section": "Methods (connect; session-json)",
+  "category": "response_envelope",
+  "input": {
+    "decrypted_session_json": {
+      "session": "c2Vzc2lvbi1pZC0wMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA",
+      "network": 0,
+      "addresses": ["addr_test1qz_example"],
+      "chain": "cardano:preprod",
+      "walletId": "lace",
+      "expiresAt": 1810000000,
+      "signingPublicKey": "c2Vzc2lvbi12a2V5LWVkMjU1MTktZXhhbXBsZS0zMi1ieXRlcy0wMA"
+    }
+  },
+  "expected": {
+    "required_keys": ["session", "network", "addresses", "chain", "walletId", "expiresAt", "signingPublicKey"],
+    "network_in_range": true,
+    "addresses_length_le_5": true,
+    "no_utxos_key": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

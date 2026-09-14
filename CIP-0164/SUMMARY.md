@@ -37,13 +37,14 @@ network using optimized diffusion protocols.
 
 ### 3. **Committee Validation**
 
-A randomly selected committee of stake pools validates the EB within a specific
-voting period, ensuring network consensus.
+A committee of stake pools — the top-staked pools covering a configured
+fraction of total active stake, fixed for the epoch — validates the EB within
+a specific voting period, ensuring network consensus.
 
 ### 4. **Certification**
 
-If enough committee members vote (≥75% threshold), the EB becomes certified and
-ready for inclusion.
+If votes representing ≥75% of total active stake are collected, the EB becomes
+certified and ready for inclusion.
 
 ### 5. **Chain Inclusion**
 
