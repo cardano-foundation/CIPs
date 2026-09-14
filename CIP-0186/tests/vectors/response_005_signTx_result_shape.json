@@ -1,0 +1,19 @@
+{
+  "name": "response_005_signTx_result_shape",
+  "spec_section": "Methods (signTx; result-json)",
+  "category": "response_envelope",
+  "input": {
+    "decrypted_result_json": {
+      "commit": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "witnessSet": "oQCBglggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYQBEREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREREQ",
+      "txHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+    },
+    "request_commit_b64url": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "expected": {
+    "required_keys": ["commit", "witnessSet", "txHash"],
+    "commit_echoes_request": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

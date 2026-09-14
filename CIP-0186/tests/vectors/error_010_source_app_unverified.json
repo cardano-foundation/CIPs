@@ -1,0 +1,17 @@
+{
+  "name": "error_010_source_app_unverified",
+  "spec_section": "Source-app identity binding; Appendix A (-13)",
+  "category": "error_response",
+  "input": {
+    "platform": "ios",
+    "redirect_host": "no-aasa.example",
+    "aasa_fetch_result": "404"
+  },
+  "expected": {
+    "errorCode": -13,
+    "errorName": "SourceAppUnverified",
+    "signing_ui_shown": false
+  },
+  "should_reject": true,
+  "rejection_reason": "source_app_unverified"
+}

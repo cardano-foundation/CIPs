@@ -1,0 +1,11 @@
+{
+  "name": "base64url_003_reject_standard_alphabet",
+  "spec_section": "URI format (base64url strict-decode rule)",
+  "category": "base64url_decode",
+  "input": {
+    "encoded": "ab+/cdef"
+  },
+  "expected": null,
+  "should_reject": true,
+  "rejection_reason": "non_alphabet_char"
+}

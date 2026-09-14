@@ -2,14 +2,18 @@
 CIP: 158
 Title: Cardano URIs - Browse Application
 Category: Wallets
-Status: Proposed
+Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
-    - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz> 
+    - Alex Dochioiu (VESPR Wallet) <alex@vespr.xyz>
+    - Mad Orkestra <mad@madorkestra.com>
 Implementors:
-    - VESPR Wallet (https://vespr.xyz)
+    - VESPR Wallet <https://vespr.xyz>
+    - Begin Wallet <https://begin.is>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1058
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1058
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2025-07-17
 License: CC-BY-4.0
 ---
@@ -20,7 +24,7 @@ This CIP proposes a new URI scheme authority, `browse`, under `web+cardano` to
 enable Cardano wallets to launch external or embedded applications and dApps
 with the full path and context, using a standardized, interoperable URI format.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Today, exploring dApps on Cardano — especially on mobile devices — is
 cumbersome. Most Cardano wallets with embedded browsers require users to
@@ -144,7 +148,7 @@ web+cardano://browse/v1?uri=http%3A%2F%2Flocalhost%3A3000%2FdevPage
   security in mind, using short-lived or ephemeral tokens where needed and avoid
   embedding sensitive user data.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 A dedicated `browse` authority isolates app navigation and launch intents from
 payment or metadata intents, improving clarity and interoperability.
@@ -153,13 +157,13 @@ payment or metadata intents, improving clarity and interoperability.
 
 ### Acceptance Criteria
 
-- [ ] At least two major Cardano wallets implement support for the browse
+- [X] At least two major Cardano wallets implement support for the browse
   authority in web+cardano URIs, including launching its embedded browser with
   the specified path.
-- [ ] Demonstrable user success in navigating from a mobile device (e.g., native
+- [X] Demonstrable user success in navigating from a mobile device (e.g., native
   camera or link) into a wallet and then directly into the dApp or application
   flow.
-- [ ] Positive feedback or validation from the community or wallet/dApp
+- [X] Positive feedback or validation from the community or wallet/dApp
   developers confirming interoperability.
 
 ### Implementation Plan

@@ -1,8 +1,8 @@
 ---
 CIP: 99
 Title: Proof of Onboarding
-Status: Active
 Category: Wallets
+Status: Active
 Authors:
 - Adam Dean <adam@crypto2099.io>
 - Carl <vegas@hosky.io>
@@ -10,8 +10,13 @@ Authors:
 Implementors:
 - VESPR Wallet <https://www.vespr.xyz/>
 - Yoroi Wallet <https://yoroi-wallet.com/>
+- Lace <https://www.lace.io/>
+- Begin Wallet <https://begin.is/>
+- Eternl Mobile <https://eternl.io/>
 Discussions:
-- https://github.com/cardano-foundation/CIPs/pull/546
+- Original PR: https://github.com/cardano-foundation/CIPs/pull/546
+Solution To:
+- CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2023-06-20
 License: CC-BY-4.0
 ---

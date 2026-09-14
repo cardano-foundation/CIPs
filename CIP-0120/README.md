@@ -6,10 +6,10 @@ Status: Proposed
 Authors:
     - Ryan Williams <ryan.williams@intersectmbo.org>
     - Danielle Stanko <danielle.stanko@iohk.io>
-Implementors: 
+Implementors:
     - Danielle Stanko <danielle.stanko@iohk.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/796
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/796
 Created: 2024-03-19
 License: CC-BY-4.0
 ---
@@ -27,7 +27,7 @@ Constitution to enhance the accessibility and safety of the document.
 > **Note:** This proposal only covers the technical form of the constitution,
 > this standard is agnostic to the content of the constitution.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-1694 defines the on-chain anchor mechanism used to link the off-chain
 Constitution document to on-chain actions.
@@ -340,7 +340,7 @@ The last line in the document SHOULD be empty.
 
 See [Test vector file](./test-vector.md).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Line length
 
@@ -439,7 +439,7 @@ Secondly, some features of markdown may not want to be used in a formal
 constitution document.
 Embedded HTML or videos are likely things to be avoided.
 
-## Open Questions
+### Open Questions
 
 - [x] How can we support multi-languages?
   - The Cardano constitution will be in English, but we will add best practice guidelines via [Best Practices](#best-practices).

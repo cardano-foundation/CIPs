@@ -7,17 +7,17 @@ Authors:
     - Adam Dean <adam@crypto2099.io>
     - Martin Lang <martin@martinlang.at>
 Implementors:
-    -   Cardano Signer: https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0
-    -   pg_cardano: https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1
-    -   Cardano Koios: https://github.com/cardano-community/koios-artifacts/tree/v1.3.2
-    -   CNTools: https://github.com/cardano-community/guild-operators/tree/alpha
-    -   SPO Scripts: https://github.com/gitmachtl/scripts
-    -   Reference Implementation: https://github.com/crypto2099/calidus-demo
-    -   VeriGlyph Sentinel: https://sentinel.veriglyph.io
-    -   Ekklesia: https://ekklesia.vote
+    -   Cardano Signer <https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0>
+    -   pg_cardano <https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1>
+    -   Cardano Koios <https://github.com/cardano-community/koios-artifacts/tree/v1.3.2>
+    -   CNTools <https://github.com/cardano-community/guild-operators/tree/alpha>
+    -   SPO Scripts <https://github.com/gitmachtl/scripts>
+    -   Reference Implementation <https://github.com/crypto2099/calidus-demo>
+    -   VeriGlyph Sentinel <https://sentinel.veriglyph.io>
+    -   Ekklesia <https://ekklesia.vote>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/999
-    - https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/999
+    - Cardano Forum: https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
 Created: 2025-02-17
 License: CC-BY-4.0
 ---
@@ -29,7 +29,7 @@ a specific initial focus on Cardano's _Native Scripts_ specifically related to
 NFT and FT minting policies. This extension to the standard aims to provide
 support for stake pools to register verifiable information on-chain.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 By extending the existing [CIP-0088] specification, we can provide an extensible
 framework for stake pool operators (SPOs) to provide verifiable, on-chain
@@ -64,7 +64,7 @@ metadata label of **867** has been chosen for the purposes of this standard.
 
 | Index | Name              | Type   | Required | Notes/Examples                                                                                                                                                                                                                                    |
 |-------|-------------------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Scope             | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
+| 1     | Scope             | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001?). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
 | 2     | Feature Set       | Array  | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
 | 3     | Validation Method | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
 | 4     | Nonce             | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
@@ -383,7 +383,7 @@ a simple hex-encoded CBOR witness signature.
 > entry 2 of the COSE Sign1 Payload array back to object notation before
 > validating.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 This CIP was born out of a desire to allow SPOs to routinely identify themselves
 to third-party services such as: voting platforms, social media, governance

@@ -48,6 +48,7 @@
             "title": "Witness",
             "description": "A witness proving that the author endorses the content of the metadata",
             "type": "object",
+            "required": ["witnessAlgorithm", "publicKey", "signature"],
             "properties": {
                 "witnessAlgorithm": {
                     "title": "WitnessAlgorithm",
@@ -72,11 +73,13 @@
             "properties": {
                 "title": {
                     "type": "string",
+                    "maxLength": 80,
                     "title": "Title",
                     "description": "A brief introduction to the motivation for the governance action"
                 },
                 "abstract": {
                     "type": "string",
+                    "maxLength": 2500,
                     "title": "Abstract",
                     "description": "A concise summary of the motivation and rationale for the governance action"
                 },
@@ -93,6 +96,7 @@
                 "references": {
                     "type": "array",
                     "title": "References",
+                    "uniqueItems": true,
                     "items": {
                         "$ref": "#/definitions/reference"
                     }
@@ -112,7 +116,8 @@
                 },
                 "label": {
                     "type": "string",
-                    "title": "Label"
+                    "title": "Label",
+                    "description": "A human-readable label describing the reference"
                 },
                 "uri": {
                     "type": "string",

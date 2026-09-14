@@ -7,7 +7,7 @@ Authors:
   - Jonathan Rodriguez <info@anastasialabs.com>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/758
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/758
 Created: 2024-02-01
 License: CC-BY-4.0
 ---
@@ -21,7 +21,7 @@ This CIP facilitates the preservation of input ordering from a submitted transac
 
 Furthermore, this implementation offers the potential to enhance existing design patterns already used in production, specifically by improving the ability to group and match inputs and outputs located at the specific index positions.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 According to the Babbage CDDL [transaction_body](https://github.com/IntersectMBO/cardano-ledger/blob/master/eras/babbage/impl/cddl-files/babbage.cddl) , the inputs and reference inputs of a transaction body are represented as a set, which indicates the non-duplicate inputs. However, the ledger not only process the [transaction_inputs](https://github.com/IntersectMBO/cardano-ledger/blob/0274cf65dbb79773122b69dfd36a8299eec2783f/eras/babbage/impl/cddl-files/babbage.cddl#L75-L77) as a set , but also orders them lexicographically, first by `transaction_id` and then by `index`.
 
@@ -115,14 +115,14 @@ The proposed solution suggests modifying the inputs representation to an `oset` 
 ```
 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 The motivation behind this CIP stems from observed limitations and inefficiencies associated with the current lexicographical ordering of transaction inputs.
 
 The strict lexicographical ordering mandated by the ledger requires traversing inputs to locate the appropriate inputs for the validation logic, which can lead to execution inefficiencies.
 
 To address these issues, the proposed solution suggests transitioning from an `set` based representation of transaction inputs and reference inputs to an `oset` type, which preserves the order of elements.
 
-This CIP tries to revive the original draft [CIP-0051](https://github.com/cardano-foundation/CIPs/pull/231)
+This CIP tries to revive the original draft [CIP-0051?](https://github.com/cardano-foundation/CIPs/pull/231)
 
 ### Alternatives
 #### 1. Retain the existing set-based representation:

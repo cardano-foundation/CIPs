@@ -1,0 +1,22 @@
+{
+  "name": "replay_001_first_submission_accepted",
+  "spec_section": "Replay protection",
+  "category": "replay_nonce",
+  "input": {
+    "dappKey_b64url": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+    "nonce_b64url": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF",
+    "ttl_unix": 1810000300,
+    "now_unix": 1810000000,
+    "nonce_cache_before": []
+  },
+  "expected": {
+    "accepted": true,
+    "nonce_cache_after_contains": {
+      "dappKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF",
+      "ttl_unix": 1810000300
+    }
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

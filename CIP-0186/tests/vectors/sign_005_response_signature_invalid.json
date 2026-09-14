@@ -1,0 +1,17 @@
+{
+  "name": "sign_005_response_signature_invalid",
+  "spec_section": "Response signing (dApp verification); Appendix A (-10)",
+  "category": "canonical_subject",
+  "input": {
+    "emitted_url": "https://aegis.example/cb?response=approved&payload=ZXg&signature=AA",
+    "signing_public_key_b64url": "c2Vzc2lvbi12a2V5LWVkMjU1MTktZXhhbXBsZS0zMi1ieXRlcy0wMA",
+    "note": "signature is structurally a 1-byte zero, never a valid Ed25519 signature for any non-trivial subject."
+  },
+  "expected": {
+    "errorCode": -10,
+    "errorName": "ResponseSignatureInvalid",
+    "dApp_action": "discard_response_and_disconnect"
+  },
+  "should_reject": true,
+  "rejection_reason": "response_signature_invalid"
+}

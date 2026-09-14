@@ -1,0 +1,59 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/Snapshots.hs
+
+;  The key for the entry is one of the following:
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: snapshot
+;
+;  types:
+;    snapshot:
+;      seq:
+;        - id: key_type
+;          type: u1
+;        - id: keyhash
+;          size: 29
+;          type:
+;            switch-on: key_type
+;            cases:
+;              0: credential
+;              1: keyhash
+;        - id: value_type
+;          type: u1
+;          enum: snapshot_value
+;
+;    credential:
+;      seq:
+;        - id: cred_data
+;          size: 29
+;
+;    keyhash:
+;      seq:
+;        - id: keyhash_data
+;          size: 28
+;        - id: dummy
+;          type: u1
+;          const: 0
+;
+;    snapshot_value:
+;      0: coin
+;      1: address
+;  ```
+record_entry = snapshot_out
+
+;  Value maybe be one of the following:
+;   - Coin value
+;   - Keyhash of an delegation address
+;   - Pool parameters
+snapshot_out = [0, coin// 1, keyhash28]
+
+coin = uint
+
+keyhash28 = hash28
+
+hash28 = bytes .size 28

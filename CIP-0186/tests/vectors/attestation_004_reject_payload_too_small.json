@@ -1,0 +1,21 @@
+{
+  "name": "attestation_004_reject_payload_too_small",
+  "spec_section": "Vendor attestation manifest; URI length budget",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "lace",
+      "protocol_versions": ["1"],
+      "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getRewardAddresses", "getNetworkId"],
+      "https_prefix": "https://lace.io/cip30dl/v1/",
+      "scheme": "cip30dl-lace",
+      "max_payload_bytes": 8192
+    }
+  },
+  "expected": {
+    "schema_valid": false,
+    "failing_constraint": "max_payload_bytes.minimum"
+  },
+  "should_reject": true,
+  "rejection_reason": "below_minimum_payload_bytes"
+}

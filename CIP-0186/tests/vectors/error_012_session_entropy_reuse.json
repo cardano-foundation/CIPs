@@ -1,0 +1,16 @@
+{
+  "name": "error_012_session_entropy_reuse",
+  "spec_section": "Response signing (Session-binding key derivation); Appendix A (-12)",
+  "category": "error_response",
+  "input": {
+    "first_connect": {"dapp_host": "aegis.example", "session_entropy_hex": "0101010101010101010101010101010101010101010101010101010101010101"},
+    "second_connect": {"dapp_host": "aegis.example", "session_entropy_hex": "0101010101010101010101010101010101010101010101010101010101010101"}
+  },
+  "expected": {
+    "errorCode": -12,
+    "errorName": "SessionEntropyReuse",
+    "applies_to": "second_connect"
+  },
+  "should_reject": true,
+  "rejection_reason": "session_entropy_reuse"
+}

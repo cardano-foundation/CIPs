@@ -2,11 +2,11 @@
 CIP: 176
 Title: Non-segregated Block Body Serialization
 Category: Ledger
+Status: Proposed
 Authors:
   - Teodora Danciu <teodora.danciu@iohk.io>
   - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: N/A
-Status: Proposed
 Discussions:
   - Ledger issue: https://github.com/IntersectMBO/cardano-ledger/issues/5046
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1084
