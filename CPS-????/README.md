@@ -1,5 +1,5 @@
 ---
-CPS: "?"
+CPS: 37
 Title: Application and transaction-builder friction in the current minUTxO implementation
 Category: Ledger
 Status: Open
