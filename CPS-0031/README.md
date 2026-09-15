@@ -107,7 +107,6 @@ Explored and rejected. Even agreements with major SPOs yield next-block probabil
 
    **Who loses today:** Users who cannot express the value of precedence through a public, permissionless mechanism and whose access instead depends on submission speed or application-level intermediaries.
 
-
 ## Goals
 
 1. **Reduce avoidable losses from delay or lost precedence.** Urgent transactions should have a way to avoid value-destroying delay when competing with traffic that has no time sensitivity, or to obtain precedence when competing with a conflicting transaction. Note that where transactions conflict over the same UTxO, precedence can change who captures an opportunity without increasing aggregate retained value, so solutions (or parts of solutions) targeting UTxO conflict need not improve globally retained value. Their contribution is in replacing an arrival-order race with a permissionless, predictable rule, as in goals 2 and 3.
