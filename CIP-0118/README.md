@@ -194,7 +194,6 @@ It is usually not possible to make new features that are added to a transaction 
 
 In order to make this a reality we propose a special mode for the top level transaction validation. This mode will be enabled automatically when a top level transaction uses any of the older PlutusV1, PlutusV2 or PlutusV3 scripts. This special mode will validate the top level transaction in isolation from all of the sub-transactions that were included in it. In particular:
 * top level transaction will have to balance out by itself and all of the sub-transactions will have to balance each other, without relying on the top level transaction.
-* top level transaction cannot use any of the sub-transactions as the source of actual scripts or datums. They will have to be supplied at the top level through the usual means of reference inputs or through the witness set.
 * top level transaction itself cannot use any of the new features. Eg. guards list cannot contain any script hashes at the top level.
 
 With this slight modification to the rules we will be able to guarantee backwards compatibility for PlutusV1 - PlutusV3 scripts. The only change visible to the older scripts in the script context would be potentially slightly higher than usual transaction fee, which is not disallowed today.
