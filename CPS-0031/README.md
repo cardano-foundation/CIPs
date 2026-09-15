@@ -139,7 +139,6 @@ Elimination of congestion
 
 Any specific pricing mechanism
 
-
 ## Open Questions
 
 How can whatever protocol-level commitments are decided upon be enforced or incentivised?
