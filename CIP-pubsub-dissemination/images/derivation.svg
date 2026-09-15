@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 298" width="860" height="298" role="img" aria-labelledby="t d">
+<title id="t">Deriving one node's links for one epoch</title>
+<desc id="d">Three rows of markers over the same peers. The first row is every other node whose entry is active and lists the topic at the epoch's registration cutoff. The second marks those for which the verifiable gate holds, roughly one in B of them. The third marks the k the node actually picks from that eligible set, drawn with its own randomness. The first row is public; pairwise eligibility in the second must be verifiable by both endpoints. The evaluated hash baseline also makes the second row public. The third is the node's own draw and is private.</desc>
+<rect width="860" height="298" rx="8" fill="#fcfcfb"/>
+<circle cx="48.0" cy="68.0" r="11.0" fill="#1a1a19"/>
+<text x="48.0" y="72.0" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">1</text>
+<text x="66.0" y="72.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Registered peers</text>
+<text x="66.0" y="92.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600" xml:space="preserve">N<tspan font-size="0.72em" dy="0.26em">T</tspan><tspan dy="-0.26em"> − 1 = 32 other peers · public</tspan></text>
+<circle cx="300.0" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="316.5" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="333.0" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="349.5" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="366.1" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="382.6" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="399.1" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="415.6" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="432.1" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="448.6" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="465.2" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="481.7" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="498.2" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="514.7" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="531.2" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="547.7" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="564.3" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="580.8" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="597.3" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="613.8" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="630.3" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="646.8" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="663.4" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="679.9" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="696.4" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="712.9" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="729.4" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="745.9" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="762.5" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="779.0" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="795.5" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<circle cx="812.0" cy="76.0" r="4.6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.5"/>
+<line x1="556.0" y1="96.0" x2="556.0" y2="119.0" stroke="#b9b6ab" stroke-width="1.4" stroke-linecap="round"/>
+<polygon points="556.0,126.0 552.5,119.0 559.5,119.0" fill="#b9b6ab"/>
+<text x="568.0" y="116.0" font-size="10" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">verifiable gate, B = 4</text>
+<circle cx="48.0" cy="142.0" r="11.0" fill="#1a1a19"/>
+<text x="48.0" y="146.0" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">2</text>
+<text x="66.0" y="146.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Eligible peers</text>
+<text x="66.0" y="166.0" font-size="10.5" fill="#4a3aa7" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600" xml:space="preserve">8 illustrated; ≈ (N<tspan font-size="0.72em" dy="0.26em">T</tspan><tspan dy="-0.26em"> − 1)/B in expectation</tspan></text>
+<circle cx="300.0" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="316.5" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="333.0" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="349.5" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="366.1" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="382.6" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="399.1" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="415.6" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="432.1" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="448.6" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="465.2" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="481.7" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="498.2" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="514.7" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="531.2" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="547.7" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="564.3" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="580.8" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="597.3" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="613.8" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="630.3" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="646.8" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="663.4" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="679.9" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="696.4" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="712.9" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="729.4" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="745.9" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="762.5" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="779.0" cy="150.0" r="4.6" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="795.5" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="812.0" cy="150.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<line x1="556.0" y1="170.0" x2="556.0" y2="193.0" stroke="#b9b6ab" stroke-width="1.4" stroke-linecap="round"/>
+<polygon points="556.0,200.0 552.5,193.0 559.5,193.0" fill="#b9b6ab"/>
+<text x="568.0" y="190.0" font-size="10" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">private random selection</text>
+<circle cx="48.0" cy="216.0" r="11.0" fill="#1a1a19"/>
+<text x="48.0" y="220.0" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">3</text>
+<text x="66.0" y="220.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Picks</text>
+<text x="66.0" y="240.0" font-size="10.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">k = 4 of the 8, headroom r = 2 · private</text>
+<circle cx="300.0" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="316.5" cy="224.0" r="4.6" fill="#1e8f5e" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="333.0" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="349.5" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="366.1" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="382.6" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.5"/>
+<circle cx="399.1" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="415.6" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="432.1" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="448.6" cy="224.0" r="4.6" fill="#1e8f5e" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="465.2" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="481.7" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="498.2" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="514.7" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.5"/>
+<circle cx="531.2" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="547.7" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="564.3" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="580.8" cy="224.0" r="4.6" fill="#1e8f5e" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="597.3" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="613.8" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="630.3" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="646.8" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.5"/>
+<circle cx="663.4" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="679.9" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="696.4" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="712.9" cy="224.0" r="4.6" fill="#1e8f5e" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="729.4" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="745.9" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="762.5" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="779.0" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.5"/>
+<circle cx="795.5" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="812.0" cy="224.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<text x="846.0" y="287.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">schematic · not a deployment configuration · the bucket-count table gives B = 1 at this size</text>
+</svg>
