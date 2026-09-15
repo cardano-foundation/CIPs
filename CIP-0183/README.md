@@ -8,6 +8,8 @@ Authors:
 Implementors: []
 Discussions:
  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1178
+Solution To:
+ - CPS-0031 | Prioritising Urgent Transactions: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0031
 Created: 2026-04-09
 License: CC-BY-4.0
 ---
