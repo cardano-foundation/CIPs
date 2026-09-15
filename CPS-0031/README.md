@@ -49,7 +49,6 @@ Deployed as standard infrastructure. Improves latency-to-mempool, not confirmati
 
 Explored and rejected. Even agreements with major SPOs yield next-block probability insufficient for liquidations. More importantly, this produces a worse outcome than a formal mechanism: an opaque, permissioned, off-chain priority market accessible only to well-capitalised incumbents.
 
-
 ## Use Cases
 
 1. **Liquidations**
