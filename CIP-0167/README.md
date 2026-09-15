@@ -16,7 +16,7 @@ License: CC-BY-4.0
 ## Abstract
 
 We propose removing the `isValid` boolean from the CBOR encoding of standalone transactions (e.g. for mempool).
-This would not affect the serialization of the transactions within blocks, since isValid flag is already stored separately from the transaction
+Within blocks, transactions continue to carry an `is_valid` flag, but as the trailing element of each transaction, set by the block producer (see CIP-0176); it is not part of the serialization used by the transaction author.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -40,14 +40,31 @@ transaction = [transaction_body, transaction_witness_set, bool, auxiliary_data/ 
 
 The proposal is to change it to:
 ```cddl
-transaction = [transaction_body, transaction_witness_set, auxiliary_data/ nil]
+mempool_transaction =
+  [transaction_body, transaction_witness_set, auxiliary_data/ nil]
+  / [transaction_body, transaction_witness_set, true, auxiliary_data/ nil]
 ```
+
+The second alternative exists only for backwards compatibility during the transition to the era that adopts this CIP (transactions in a mempool at the hard fork boundary may still carry the flag): the legacy `is_valid` position is accepted on decoding, but only with the value `true`.
+Encoders must always produce the first alternative.
+In the following era the legacy alternative will be removed, so it is strongly recommended to encode transactions without the flag.
+
+Inside a block, a transaction is serialized with a trailing `is_valid` flag appended by the block producer, after all the fields supplied by the transaction author:
+
+```cddl
+block_transaction =
+  [transaction_body, transaction_witness_set, auxiliary_data/ nil, bool]
+```
+
+The in-block format is specified by CIP-0176; it is shown here only to clarify the relationship between the two formats.
 
 ## Rationale: How does this CIP achieve its goals?
 
 Removing the `isValid` flag from standalone transaction serialization simplifies the wire format without changing consensus or ledger semantics.
 
 The trusted local client submission use case might be better expressed in a different way (for example, as a Node-to-Client submit parameter), rather than embedded in the transaction bytes.
+
+Keeping the block-producer-supplied `is_valid` flag as the trailing element of the in-block transaction (rather than as a block-level index list) keeps the author-supplied fields as a contiguous prefix and provides a natural position for future block-producer-supplied fields, such as the proposed `feeChangeAmount`.
 
 ## Path to Active
 
