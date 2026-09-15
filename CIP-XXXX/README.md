@@ -9,7 +9,7 @@ Authors:
 Implementors:
     - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/0
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1263
 Created: 2026-09-02
 License: CC-BY-4.0
 ---
