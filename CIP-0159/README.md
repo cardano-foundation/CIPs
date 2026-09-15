@@ -336,26 +336,20 @@ be mentioned:
    transaction will fail *Phase 1 Validation*.
 4. The referenced account must be registered; an interval on an unregistered account fails
    *Phase 1 Validation*. Registration is judged against the state the interval is evaluated in (see
-   behavior 7), which is *before* that level's own certificates: an account registered by a
-   certificate in the same transaction level is not yet visible to that level's interval assertions.
-5. The network id of each reward account must match the network of the ledger the transaction is
+   behavior 5), which is *before* that level's own certificates.
+   The network id of each reward account must match the network of the ledger the transaction is
    submitted to; an interval on an account address of the wrong network fails *Phase 1 Validation*.
-6. The three ways a map can be rejected — an account on the wrong network, an unregistered account,
+   The three ways a map can be rejected — an account on the wrong network, an unregistered account,
    and a balance outside its interval — are independent checks.
-7. Interval checks are part of *Phase 1 Validation*, but they are only evaluated when the top-level
-   transaction's `isValid` flag is true. A transaction marked `isValid = false` is processed for
-   collateral only and applies no withdrawals or deposits, so its interval assertions — which guard
-   those effects — are not reached. This holds at every level of a nested transaction: each
-   `account_balance_intervals` map is checked independently at the top level and within each
-   sub-transaction, against the account balances that level observes, and before that level's own
-   certificates, withdrawals and direct deposits are applied. Because sub-transactions are processed
-   *before* the top level, the balances a top-level `account_balance_intervals` map observes are the
-   ones left behind by all of the sub-transactions; use
+5. This holds at every level of a nested transaction: each `account_balance_intervals` map is checked
+   independently at the top level and within each sub-transaction, against the account balances that
+   level observes, and before that level's own certificates, withdrawals and direct deposits are applied.
+   Because sub-transactions are processed *before* the top level, the balances a top-level
+  `account_balance_intervals` map observes are the ones left behind by all of the sub-transactions; use
    [`starting_account_balance_intervals`](#starting-account-balance-intervals) to assert against the
    balances at the start of the whole transaction.
-8. An interval whose bounds cannot be satisfied (for example `[10, 5)`) is representable and simply
-   never holds; only an interval with *both* bounds absent is rejected outright when the transaction
-   is decoded. Bounds are unsigned and no wider than the quantity they constrain, so a bound can
+6. An interval whose bounds cannot be satisfied (for example `[10, 5)`) is representable but false and
+   does not hold. Bounds are unsigned and no wider than the quantity they constrain, so a bound can
    express neither a negative balance nor one beyond the representable maximum.
 
 Plutus scripts will be able to see the set account balance intervals as part of their
@@ -377,13 +371,6 @@ at the start of the whole transaction, before any sub-transaction or top-level w
 deposit is applied. It uses the same representation as `account_balance_intervals`, requires the
 referenced accounts to be registered and to carry the correct network id, requires no witness, fails
 in the same three independent ways, and is only present in the top-level transaction body.
-
-This field is deliberately absent from sub-transaction bodies. Every sub-transaction observes the same
-whole-transaction starting balances, so a per-sub-transaction copy could assert nothing that the
-top-level field cannot already express. In keeping with the CIP-0118 design — where top-level guards
-are responsible for the holistic view of a transaction, while other script purposes focus on the
-contents of an individual transaction — a sub-transaction builder that needs assurance about the
-starting balances can require it through a script in `required_top_level_guards`.
 
 ```cddl
 starting_account_balance_intervals = {+ reward_account => account_balance_interval}
