@@ -21,7 +21,6 @@ During periods of congestion, high-urgency transactions lose value when they can
 
 Candidate solutions should be evaluated by how they handle prioritising high-urgency transactions, and by how they affect ordinary and low-urgency users during sustained congestion. Candidate solutions may address temporal urgency, causal urgency, or both.
 
-
 ## Problem
 
 Cardano does not currently provide a protocol-enforced way for a user or application to signal transaction priority.
