@@ -1,5 +1,5 @@
 ---
-CPS: TBD 
+CPS: 35
 Title: Digital Product Passports
 Category: Tools
 Status: Open
