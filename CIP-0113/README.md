@@ -10,10 +10,10 @@ Authors:
     - Giovanni Gargiulo <giovanni.gargiulo@cardanofoundation.org>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/444
-    - https://github.com/cardano-foundation/CIPs/pull/944
-Solution-To:
-    - https://github.com/cardano-foundation/CIPs/blob/master/CPS-0003/README.md
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/444
+    - CIP-0143 PR: https://github.com/cardano-foundation/CIPs/pull/944
+Solution To:
+    - CPS-0003: https://github.com/cardano-foundation/CIPs/blob/master/CPS-0003/README.md
 Created: 2023-01-14
 License: CC-BY-4.0
 ---
@@ -818,7 +818,7 @@ rebase any user can trigger), or restricted to actions that cannot reduce a hold
 MUST therefore determine a token's third-party capabilities and its trigger authority from its substandard,
 never from CIP-113 conformance alone.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 The current specification (Version 3.0) is the result of several iterations to create the best standard for programmable tokens.
 This standard safely extends the functionality of tokens on Cardano, in a scalable way and without disruptions, leveraging CNTs that live
 forever in a single smart contract.
