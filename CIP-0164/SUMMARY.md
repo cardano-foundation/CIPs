@@ -37,9 +37,9 @@ network using optimized diffusion protocols.
 
 ### 3. **Committee Validation**
 
-A committee of stake pools — the top-staked pools covering a configured
-fraction of total active stake, fixed for the epoch — validates the EB within
-a specific voting period, ensuring network consensus.
+A committee of stake pools — the top-staked pools up to a configured committee
+size, fixed for the epoch — validates the EB within a specific voting period,
+ensuring network consensus.
 
 ### 4. **Certification**
 
