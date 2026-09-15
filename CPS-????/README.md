@@ -1,11 +1,10 @@
 ---
 CPS: TBD 
 Title: Digital Product Passports
-Status: Open
 Category: Tools
+Status: Open
 Authors:
 - David Clark <david.clark@cardanofoundation.org>
-Implementors: []
 Proposed Solutions: []
 Discussions: []
 Created: 2025-11-24
@@ -284,7 +283,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - Active community participation in standards evolution
 - Comprehensive documentation and implementation guides
 - Industry recognition and regulatory acceptance
-- A dedicated Cardano DPP working group already meets monthly and maintains a draft solution-pattern blueprint (`cardano-foundation/cardano-dpp-standards`), to try and coordinate,support, and avoid duplicating effort
+-  A dedicated Cardano DPP working group already meets monthly and maintains a draft solution-pattern blueprint (`cardano-foundation/cardano-dpp-standards`), to try and coordinate,support, and avoid duplicating effort
 
 ## Copyright
 
