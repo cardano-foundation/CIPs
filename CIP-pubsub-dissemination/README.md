@@ -13,7 +13,7 @@ Authors:
 Implementors: []
 Discussions:
     - CPS PR: https://github.com/cardano-foundation/CIPs/pull/1270
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1271
 Created: 2026-07-21
 License: CC-BY-4.0
 ---
