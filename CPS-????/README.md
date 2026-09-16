@@ -10,7 +10,8 @@ Authors:
     - Jesus Diaz Vico <jesus.diaz.vico@gmail.com>
     - Dana Alibrandi <dalibrandi@gmail.com>
     - Mauro Jaskelioff <mauro.jaskelioff@iohk.io>
-Proposed Solutions: []
+Proposed Solutions:
+    - Decentralised Pub/Sub Message Dissemination: https://github.com/cardano-foundation/CIPs/pull/1271
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1270
 Created: 2026-08-20
