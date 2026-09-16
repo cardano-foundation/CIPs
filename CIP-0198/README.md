@@ -527,16 +527,20 @@ indistinguishable from nobody having seen the offer.
 | `unsupported-version` | an envelope version, era tag, schema version or interpreter hash the recipient does not recognise | repair, or try a party whose `GET /` accepts it |
 | `not-interested` | excluded by the [interest filter](#routing-and-filtering) or by an unadvertised [profile](#service-profile) refinement | try another service; the offer itself is sound |
 | `over-budget` | exceeds one of the recipient's published [budgets](#service-profile) | try a service with larger budgets |
+| `duplicate` | the recipient already holds this same offer, in a copy no larger | nothing — the offer is held |
+| `settled` | the chain has settled this offer: confirmed, expired or invalidated | read `GET /offers/{offer_id}`, which says which of the three |
 | `expired` | the validity upper bound is behind the recipient's tip | reissue with a new bound |
 | `invalidated` | one of the offer's spend inputs is no longer unspent | rebuild against current state |
-| `superseded` | the recipient already holds live offers spending one of these inputs, up to [`MAX_LIVE_OFFERS_PER_UTXO`](#protocol-constants) | wait, or spend a different input |
+| `superseded` | the recipient already holds a *different* live offer spending one of these inputs, up to [`MAX_LIVE_OFFERS_PER_UTXO`](#protocol-constants) | wait, or spend a different input |
 | `busy` | a rate limit or a full pool, and nothing about this offer | retry after the stated interval |
 | `not-ready` | the recipient is `degraded` or `failed` per [Readiness] | retry after the stated interval, or try another party |
 
 `superseded`, `busy` and `not-ready` are the three that are worth retrying at
-the same party, and each carries the interval after which to do so. The rest are
-not: the offer is either wrong, or wrong *for this recipient*, and repeating it
-only costs both sides. A recipient that wants to refuse without saying why
+the same party, and each carries the interval after which to do so. Of the rest,
+`duplicate` and `settled` mean the offer is already accounted for and the
+publisher has nothing to do. The others mean it is wrong, or wrong *for this
+recipient*, and repeating it only costs both sides. A recipient that wants to
+refuse without saying why
 answers `not-interested`, which is the least informative code in the set and
 therefore the safe one to overuse. A publisher meeting a code it does not
 recognise treats it as `not-interested` and moves on.
@@ -1216,6 +1220,7 @@ counted by the number of valid registrations and checked at each epoch boundary.
 | `REGISTRY_WAIT` | How long a party waits for registry statements after an epoch boundary before giving up on the new registry | Long enough for statements to arrive over a mesh nobody guarantees delivery on; short enough that the draw is not stale for a useful part of the epoch |  Released with the specification revision | Not enforced |
 | `REGISTRY_AGREEMENT` | Share of the deposit held by registered services in the held registry that must agree on a successor before a party adopts it | Too low and a minority rewrites what a relay believes; too high and one epoch's absentees stall every relay | Released with the specification revision | By each relay on itself |
 | `REGISTRATION_DEPOSIT` | Smallest deposit a registration may hold | A registration's draw weight is its deposit, so this bounds registry bloat rather than the draw | Released with the specification revision | By each service for itself (when compiling valid registration entries) |
+| `MIN_REGISTRATION_PERIOD` | Nearest a registration may set its `expiry` | The deposit cannot be released before expiry, so this is the least time it stays locked | Released with the specification revision | By the registration script, at mint and at every renewal |
 | `MAX_REGISTRATION_PERIOD` | Furthest ahead a registration may set its `expiry` | Long enough that renewal is routine; short enough that an abandoned entry leaves the draw while anyone still cares | Released with the specification revision | By the registration script, at mint and at every renewal |
 | `HINT_TTL` | Amount of time before a price hint expires | After this, a quote is not worth using. | Released with the specification revision | By the wallet, which treats an older hint as absent. A service cannot extend it |
 | `MAX_QUOTE_TTL` | Longest a [firm quote](#firm-quotes) may stay valid | Rate exposure the issuer cannot withdraw. Shorter than `HINT_TTL`, a hint being no commitment | Released with the specification revision | By the issuing service |
@@ -1536,9 +1541,9 @@ spent,
 2. the registration key signs the transaction (key looked up in the datum)
 - If the NFT is not burned, check 3-4
 3. new datum has same role and key
-4. the new datum's `expiry` is no further ahead than
-   [`MAX_REGISTRATION_PERIOD`](#protocol-constants) past the transaction's
-   validity lower bound
+4. the new datum's `expiry` is between
+   [`MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`](#protocol-constants)
+   past the transaction's validity lower bound
 - If the NFT is burned, check 5
 5. The validity lower bound must be at or past the datum's `expiry`
 
@@ -1645,8 +1650,8 @@ disclosure's note) is UTF-8 carried as a byte string.
 
 **Registrations expire.** A registration states an `expiry` and is live until it
 passes. Renewing moves the field forward, bounded each time by
-`MAX_REGISTRATION_PERIOD`. A party compiling the registry ignores an expired
-entry.
+`MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`. A party compiling the
+registry ignores an expired entry.
 `expiry` is POSIX seconds, where an offer's validity bounds are slots. 
 
 **Where the endpoint points.** Either an absolute URL, or a bare domain resolved
@@ -1789,6 +1794,11 @@ the parties' interest filters. The bad-faith offers still not dropped after
 those checks cannot accumulate indefinitely, as they are either eventually evicted by 
 incoming offers (pool size is bounded) or expire (because all offers must satisfy
 TTL requirement). 
+
+Spam may be coming from service providers also. The constant `MIN_REGISTRATION_PERIOD`
+is meant to prevent registration for very short amounts of time, for the purpose 
+of spamming, by forcing those planning to do so to commit a deposit for the 
+minimum allowed duration of the registration period.
 
 Finally, we impose limits on the frequency of peer-peer 
 envelope transmission, and allow dropping peers at-will, and parties may keep a
@@ -2209,6 +2219,9 @@ deployed behaviour to preserve.
       the batch-construction ones wait on the ledger interface)
 - [ ] a machine-readable schema for Binding A. Written (`openapi.yaml`) and
       conformance-tested against the reference implementation's handlers
+- [ ] `POST /quote`. Optional for a service, so its absence is conformant
+- [ ] readiness and status beyond skeletons. `GET /health` answers only `ready`
+      or `failed`, never `degraded` (no payload)
 - [ ] profile/hints schema finalization
 - [ ] constants finalization
 - [ ] settle registration deposit
