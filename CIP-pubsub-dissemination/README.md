@@ -12,6 +12,7 @@ Authors:
     - Mauro Jaskelioff <mauro.jaskelioff@iohk.io>
 Implementors: []
 Discussions:
+    - CPS PR: https://github.com/cardano-foundation/CIPs/pull/1270
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
 Created: 2026-07-21
 License: CC-BY-4.0
