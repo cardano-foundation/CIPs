@@ -12,7 +12,7 @@ Authors:
     - Mauro Jaskelioff <mauro.jaskelioff@iohk.io>
 Proposed Solutions: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1270
 Created: 2026-08-20
 License: CC-BY-4.0
 ---
