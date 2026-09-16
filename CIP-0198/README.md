@@ -1844,10 +1844,22 @@ over HTTPS instead of broadcasting.
 
 **Hint baiting**: hints bind nothing, so a
 service can advertise attractive terms purely to attract signed offers it never
-intends to include, harvesting them as intelligence. A reputation system
-may be useful to address this in the future. A wallet can instead ask for a
-[firm quote](#firm-quotes), which makes a refusal attributable. Not available on
-Binding B, where there is no counterparty to ask.
+intends to include. This is a means of gathering intelligence, of which
+front-running is one use. Others are competitive intelligence with no trade
+attached, linking a publisher's offers to each other, and simply letting them
+lapse. 
+
+A wallet that wants a signal beforehand asks for a
+[firm quote](#firm-quotes), which makes a refusal attributable. A reputation
+system may also be useful in the future. Neither is available on Binding B.
+A publisher may submit over HTTPS
+to a specific counterparty.
+
+Limiting intelligence gathering can be done via adjusting the quotes, not publishing a
+[live status](#binding-a--https), not naming a
+[rate source](#service-profile) or declaring its
+[arrangements](#service-profile). 
+
 
 **Priority brokers**: a service may sell
 inclusion priority, because a prohibition would be unenforceable. 
