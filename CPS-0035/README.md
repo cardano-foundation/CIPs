@@ -7,7 +7,7 @@ Authors:
 - David Clark <david.clark@cardanofoundation.org>
 Proposed Solutions: []
 Discussions:
-- CPS-????: https://github.com/cardano-foundation/CIPs/pull/1114
+- CPS-0035: https://github.com/cardano-foundation/CIPs/pull/1114
 - Cardano DPP Working Group: https://github.com/cardano-foundation/cardano-dpp-standards
 Created: 2025-11-24
 License: CC-BY-4.0
