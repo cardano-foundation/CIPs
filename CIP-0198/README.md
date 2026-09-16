@@ -455,14 +455,19 @@ it answers, named by an *endpoint*: an HTTP method and a path.
 | `GET /interest` | The advertised interest filter: accept side, reject side, and whether it accepts everything. |
 | `GET /profile` | The [service profile](#service-profile), off chain — the same policy the (optional) on-chain registration carries. |
 | `GET /hints` | The service's current price hints: what it would indicatively charge to carry an offer, quoted per accepted asset. |
+| `POST /quote` | Optional. Asks the service to commit to terms for one intended offer, described by its assets and its size and ExUnits estimate. Answers a signed [quote](#firm-quotes) or declines. |
 | `GET /offers/stream` | A feed of accepted offers, so services can source from each other rather than only from publishers. |
+| `GET /health` | Whether the party is *able* to act on an offer right now, which is not the same question as whether it is reachable. See [Readiness]. |
+| `GET /status` | Optional. Live operating state: uncommitted liquidity per asset, and a recent inclusion rate. Non-binding, as [hints](#price-hints) are. |
 | `GET /` | Name, network, and the versions a counterparty needs before it builds: the API version, the [protocol revision](#versioning), the interpreter hashes it can satisfy, and any wire versions it accepts beyond what its revision implies. Also the oldest offer bound it still answers about, which is the one local limit nobody can discover by reaching it. |
 
-Price hints are an endpoint because nothing here can quote back: a
-sub-transaction's imbalance *is* its price, fixed when the publisher signs, and
-asking a service for a quote first would mean a session and so an identity. A
-service instead states indicative terms in advance, and a wallet reads them and
-does its own arithmetic. See [Price hints].
+Price hints are an endpoint. A service cannot negotiate with an offer
+that is already signed, so it states indicative terms in advance and a wallet
+reads them and does its own arithmetic. See [Price hints]. `POST /quote` is the
+optional stronger form, for a wallet that wants the terms committed to before it
+signs rather than after. It is available only on this binding, because a
+[firm quote](#firm-quotes) is something a *named* service issues, and on the
+mesh a publisher does not know who will pick its offer up.
 
 `/interest` is made up of the accept and reject sides of the profile. A service advertising
 an interest is expected to honour it.
@@ -472,9 +477,73 @@ when each part of a filter applies.
 Nothing on this binding relays, so an offer reaches exactly the services its
 publisher sends it to.
 
-A **relay** answers only to `GET /`, giving its registration names an endpoint. A party
-drawn to it has to be able to read the protocol revision and accepted versions
-it runs.
+A **relay** answers `GET /` and `GET /health`, giving its registration names an
+endpoint. A party drawn to it has to be able to read the protocol revision and
+accepted versions it runs, and to tell a relay that is forwarding from one that
+is merely answering.
+
+**Readiness**
+
+Reachable and ready are different states. A service or relay may be up 
+and not ready to function, e.g. because of a full buffer or a lagging 
+node. An offer carries a finite validity upper bound, and there is
+[no free cancel message](#offer-lifecycle).
+Readiness awareness lets publishers avoid wasting time on not-ready parties.
+`GET /health` answers one of three states:
+
+| State | Holds when | What a publisher does |
+|---|---|---|
+| `ready` | the party will act on an offer arriving now | send |
+| `degraded` | reachable, but not currently acting: a service whose node is behind the tip or whose wallet is unsynced, a relay whose buffer is full | do not send; try another party |
+| `failed` | reachable, and not acting until an operator intervenes | do not send; try another party |
+
+A service answering `degraded` or `failed` should also report its tip lag in
+slots. Silence (i.e. a party is unreachable) and
+`degraded` are distinguishable, and only the first is grounds for suspecting a
+[silent cut](#security-considerations).
+
+Readiness is advertised, never enforced. A party may answer `ready` and decline
+the next offer, for the same reason [hints bind nothing](#price-hints).
+
+**Rejection reasons**
+
+Every offer refusal on this binding carries a machine-readable
+reason from the closed set below. The prose accompanying it is for humans and
+carries no protocol meaning.
+
+A refusal reaches the publisher at one of two moments. The stateless checks and
+the body-derivable half of the interest filter run while the request is open,
+so those refusals replace the `202`. Chain-state verification is asynchronous,
+so a refusal after acceptance is recorded against the offer and read from
+`GET /offers/{offer_id}` — the [`rejected` state](#offer-lifecycle). Same codes
+either way, so a publisher polls once rather than treating `202` as final.
+
+Binding B has no back-channel. A refusal on the mesh is silence, and
+indistinguishable from nobody having seen the offer.
+
+| Code | Holds when | What the publisher should do |
+|---|---|---|
+| `malformed` | a [stateless check](#stateless-checks--performed-by-publishers-relays-services) failed | repair; the same bytes fail identically everywhere |
+| `unsupported-version` | an envelope version, era tag, schema version or interpreter hash the recipient does not recognise | repair, or try a party whose `GET /` accepts it |
+| `not-interested` | excluded by the [interest filter](#routing-and-filtering) or by an unadvertised [profile](#service-profile) refinement | try another service; the offer itself is sound |
+| `over-budget` | exceeds one of the recipient's published [budgets](#service-profile) | try a service with larger budgets |
+| `expired` | the validity upper bound is behind the recipient's tip | reissue with a new bound |
+| `invalidated` | one of the offer's spend inputs is no longer unspent | rebuild against current state |
+| `superseded` | the recipient already holds live offers spending one of these inputs, up to [`MAX_LIVE_OFFERS_PER_UTXO`](#protocol-constants) | wait, or spend a different input |
+| `busy` | a rate limit or a full pool, and nothing about this offer | retry after the stated interval |
+| `not-ready` | the recipient is `degraded` or `failed` per [Readiness] | retry after the stated interval, or try another party |
+
+`superseded`, `busy` and `not-ready` are the three that are worth retrying at
+the same party, and each carries the interval after which to do so. The rest are
+not: the offer is either wrong, or wrong *for this recipient*, and repeating it
+only costs both sides. A recipient that wants to refuse without saying why
+answers `not-interested`, which is the least informative code in the set and
+therefore the safe one to overuse. A publisher meeting a code it does not
+recognise treats it as `not-interested` and moves on.
+
+Rejection reasons are not verifiable.
+The set exists so that an honest refusal is actionable, not so that a
+dishonest one can be detected.
 
 #### Binding B — libp2p gossipsub
 
@@ -751,14 +820,18 @@ out which kinds apply and derives a key for each. The kinds are:
 | `SponsorshipOnly` | Sponsorship only | nothing | balanced; needs only fee and collateral | yes |
 | `Priority` | Priority | nothing | needs nothing and offers value: paying for inclusion rather than asking for it | yes |
 | `Guard` | Guard | a `credential`, key or script | a credential in required top-level guards | no |
+| `InvokesScript` | Invoked script | a `script_hash` | a script the sub-transaction itself runs | yes |
 | `ExUnits` | ExUnits band | one of `none`, `low`, `medium`, `high` | declared execution units, banded | no |
 | `UsesDirectDeposits` | Direct deposits | nothing | uses direct deposits | no |
 | `UsesAccountBalanceIntervals` | Balance intervals | nothing | uses account balance intervals | no |
 
-A key that carries nothing is one value; the other three are families, one key
+**`Guard` and `InvokesScript` name different scripts.** `Guard` names a script
+the *batch* must satisfy. `InvokesScript` names one the *sub-transaction* runs
+for its own reasons. It needs resolved inputs, so a relay cannot police it.
+
+A kind that carries a payload defines a family, one key
 per distinct payload. `ExUnits` carries a *band* rather than a number of
-execution units, because a topic has to be a name a subscriber can write down in
-advance, and there are only so many bands. The
+execution units. The
 [routing-key grammar](#routing-keys) is the wire spelling of exactly these
 payloads.
 
@@ -800,6 +873,7 @@ kind        = "offered/" policy-id
             / "class/priority"
             / "guard/key/" hash28
             / "guard/script/" hash28
+            / "invokes/" hash28
             / "exunits/" band
             / "feature/direct-deposits"
             / "feature/balance-intervals"
@@ -1104,24 +1178,25 @@ agreed network-wide, because a party applying a different one refuses what
 others accept. `MAX_REGISTRATION_BYTES` and `REGISTRATION_DEPOSIT` must 
 be too. Nobody enforces either on chain, so two parties applying
 different ones compile different registries — and a registry's hash is what
-every relay's agreement is taken over. `PEER_FAN_OUT` and `PEER_SET_EPOCHS`
+every relay's agreement is taken over. `MAX_REGISTRATION_PERIOD` is network-wide
+for the same reason, and is the one constant here the chain enforces itself.
+`PEER_FAN_OUT` and `PEER_SET_EPOCHS`
 define one shared draw and are meaningless held separately. `REGISTRY_WAIT` and
 `REGISTRY_AGREEMENT` ship with the revision so that parties start aligned, but a
 relay choosing its own affects only when that relay adopts. The rest are
 internal to the party that sets them (the two rate limits,
 `MAX_LIVE_OFFERS_PER_UTXO`, the three blacklist constants, the pool ceilings,
-`MAX_CONCURRENT_BATCHES`, `MAX_CATCH_UP_WINDOW` and `STATUS_RETENTION`),
+`MAX_CONCURRENT_BATCHES`, `MAX_CATCH_UP_WINDOW`, `FUNDING_HOLD_TTL` and
+`STATUS_RETENTION`),
 bounding either what a party spends on itself or what it
 will accept from others.
 This CIP fixes values for the first kind and floors for the second.
 
-**Activation is read off the registry rather than announced.** Every
+**Activation is read off the registry.** Every
 [registration](#on-chain-registration-of-relays-and-services) carries the
 [protocol revision](#versioning) its holder runs. A
 revision's values take effect once most of the registry has upgraded to it,
-counted by the number of valid registrations and checked at each epoch boundary. Nobody announces a date
-and nobody has to be watching on the day. What is not policed is whether a party
-runs the revision it registered.
+counted by the number of valid registrations and checked at each epoch boundary. 
 
 | Code name | Constant | Basis | How announced | How enforced |
 |---|---|---|---|---|
@@ -1135,20 +1210,22 @@ runs the revision it registered.
 | `MAX_GOSSIP_MESSAGE_BYTES` | Size in bytes of the largest gossip message | The sub-transaction ceiling plus the envelope overhead, both above | Released with the specification revision | By the binding |
 | `MAX_CATCH_UP_WINDOW` | Amount of time a service may catch up over | How far back it may ask after reconnecting | Not announced | By whoever serves the catch-up, which truncates a longer request |
 | `MAX_CONCURRENT_BATCHES` | Number of batches a service may have in flight | Each holds offers and wallet inputs out of circulation | Not announced | By the service |
+| `FUNDING_HOLD_TTL` | How long an input held for a batch under construction stays held | Long enough to build and submit; short enough that a crashed build does not strand liquidity until restart. | Not announced | By the service, on itself |
 | `PEER_FAN_OUT` | Number of backbone peers a service pulls from | Must outrun the share of the registry an attacker can afford to own | Released with the specification revision, in force once most of the registry has upgraded | Not enforced |
 | `PEER_SET_EPOCHS` | Number of epochs a drawn peer set lasts | One epoch unless raised. Bounds how long an unlucky draw can isolate a service | Released with the specification revision | Not enforced |
 | `REGISTRY_WAIT` | How long a party waits for registry statements after an epoch boundary before giving up on the new registry | Long enough for statements to arrive over a mesh nobody guarantees delivery on; short enough that the draw is not stale for a useful part of the epoch |  Released with the specification revision | Not enforced |
 | `REGISTRY_AGREEMENT` | Share of the deposit held by registered services in the held registry that must agree on a successor before a party adopts it | Too low and a minority rewrites what a relay believes; too high and one epoch's absentees stall every relay | Released with the specification revision | By each relay on itself |
 | `REGISTRATION_DEPOSIT` | Smallest deposit a registration may hold | A registration's draw weight is its deposit, so this bounds registry bloat rather than the draw | Released with the specification revision | By each service for itself (when compiling valid registration entries) |
+| `MAX_REGISTRATION_PERIOD` | Furthest ahead a registration may set its `expiry` | Long enough that renewal is routine; short enough that an abandoned entry leaves the draw while anyone still cares | Released with the specification revision | By the registration script, at mint and at every renewal |
 | `HINT_TTL` | Amount of time before a price hint expires | After this, a quote is not worth using. | Released with the specification revision | By the wallet, which treats an older hint as absent. A service cannot extend it |
-| `STATUS_RETENTION` | Amount of time a service answers about a finished offer | Until this, status is still available | Not announced | Not enforced; a 404 in response to an offer query mean "forgotten" rather than "never seen" |
+| `MAX_QUOTE_TTL` | Longest a [firm quote](#firm-quotes) may stay valid | Rate exposure the issuer cannot withdraw. Shorter than `HINT_TTL`, a hint being no commitment | Released with the specification revision | By the issuing service |
+| `STATUS_RETENTION` | Amount of time a service answers about a finished offer | At least `MAX_OFFER_TTL`. A refusal after acceptance is readable only via querying this constant | The floor is released with the specification revision; the operator's own figure is answered at `GET /` | Not enforced |
 
 
 ### Offer lifecycle
 
 **States**
-Four internal states record one service's progress through its own work for each offer 
-in its pool:
+Five offer states internal to a service :
 
 | State | Holds when |
 |---|---|
@@ -1156,9 +1233,12 @@ in its pool:
 | verified | passed the chain-state and pre-inclusion checks — an eligible candidate |
 | included in batch | selected into a batch being built |
 | submitted | that batch went to the mempool |
+| rejected | refused after acceptance, carrying the [reason](#binding-a--https) |
 
-Three more are settled by the chain, and any party with a chain view derives
-the same answer at the same time:
+`rejected` is a local off-chain verdict, held for the
+[status-retention period](#protocol-constants) like any settled outcome.
+
+Three more are settled by the chain:
 
 | State | Holds when |
 |---|---|
@@ -1385,15 +1465,27 @@ service runs rather than specifying one. In addition to the usual input
 selection process, an input chosen for a
 batch still being built must be held out of selection until that build finishes
 or abandons, and collateral is kept apart from spendable
-funds. The reference implementation settles one asset at a time in a fixed
+funds. The hold must also expire on its own, after
+[`FUNDING_HOLD_TTL`](#protocol-constants). "Until that build finishes or
+abandons" is not by itself enough: a build that crashes, or that is waiting on a
+peer that never answers, never reaches either outcome, and the inputs it claimed
+stay claimed. 
+
+The reference implementation settles one asset at a time in a fixed
 order, with lovelace first. For each asset, a service draws at random from the set 
 of UTxOs it owns containing that asset until a
 sufficient quantity of the asset is added to the consumed side of 
 the top-level tx being constructed. 
 
+**Passing an offer on.** A service short of the asset an offer needs has a
+third option besides funding it and dropping it: hand the offer to a peer over
+`GET /offers/stream`, which is the same path services already use to source from
+each other. 
+
 **Where the value goes**
 The budgets in a
-[service profile](#service-profile) can be specified to constrain what a service will expose at
+[service profile](#service-profile) 
+can be specified to constrain what a service will expose at
 once so an author can tell whether its offer is even in range.
 
 **Using accounts**
@@ -1442,7 +1534,13 @@ This script address requires that, when
 spent, 
 1. the NFT either goes to a new UTxO with the same address, or is burned
 2. the registration key signs the transaction (key looked up in the datum)
+- If the NFT is not burned, check 3-4
 3. new datum has same role and key
+4. the new datum's `expiry` is no further ahead than
+   [`MAX_REGISTRATION_PERIOD`](#protocol-constants) past the transaction's
+   validity lower bound
+- If the NFT is burned, check 5
+5. The validity lower bound must be at or past the datum's `expiry`
 
 **The asset name is a commitment.** It is Blake2b-224 over three things that
 must not change for the registration's life: 
@@ -1473,10 +1571,16 @@ registration =
   #6.121([ schema_version    : uint
          , protocol_revision : uint
          , accepts           : accepted_versions
-         , endpoint          : text
+         , endpoint          : endpoint
+         , expiry            : uint          ; POSIX seconds
          , commitment
          , standing
          ])
+
+; Where to reach the party. A URL is self-contained and costs a transaction to
+; change; a domain is resolved through DNS SRV and costs nothing to change.
+endpoint     = #6.121([url : text])          ; absolute https:// URL
+             / #6.122([domain : text])       ; bare domain, resolved via SRV
 
 ; What the asset name hashes, restated so a reader can check it. The role is
 ; the constructor, since it is what the two spellings differ by.
@@ -1508,13 +1612,14 @@ accepted_versions =
 
 accept       = #6.121([]) / #6.122([[* filter_key]])  ; all / these keys
 
-; The nine kinds under Filter-key kinds
-; alternatives 7 and 8 are tags 1280 and 1281, not 128 and 129.
+; The ten kinds under Filter-key kinds
+; alternatives 7, 8 and 9 are tags 1280, 1281 and 1282, not 128, 129 and 130.
 filter_key   = #6.121([hash28]) / #6.122([hash28])  ; offered / needed policy
              / #6.123([]) / #6.124([]) / #6.125([]) ; pure babel / sponsorship / priority
              / #6.126([credential])                 ; guard
              / #6.127([band])                       ; ExUnits band
              / #6.1280([]) / #6.1281([])            ; the two feature markers
+             / #6.1282([hash28])                    ; invoked script
 band         = #6.121([]) / #6.122([]) / #6.123([]) / #6.124([])
                                               ; none / low / medium / high
 
@@ -1535,8 +1640,19 @@ budgets      = #6.121([ max_value_exposure : { * asset => uint }
 maybe<a>     = #6.121([]) / #6.122([a])
 ```
 
-The two text fields (the endpoint and a disclosure's note) are UTF-8 carried
-as byte strings.
+Every text field (either spelling of the endpoint, a feed reference, and a
+disclosure's note) is UTF-8 carried as a byte string.
+
+**Registrations expire.** A registration states an `expiry` and is live until it
+passes. Renewing moves the field forward, bounded each time by
+`MAX_REGISTRATION_PERIOD`. A party compiling the registry ignores an expired
+entry.
+`expiry` is POSIX seconds, where an offer's validity bounds are slots. 
+
+**Where the endpoint points.** Either an absolute URL, or a bare domain resolved
+through a DNS `SRV` record at `_subtx._tcp.<domain>`. `SRV` also carries priority
+and weight, so a party can publish a failover order. The cost is a resolver in
+the path, see [Security considerations](#security-considerations). 
 
 A **relay** registers the purpose of peer selection, which draws from the registry, so
 an unregistered relay can never be drawn. Its registration
@@ -1585,7 +1701,7 @@ two things it is. The service profile fields are as follows:
 
 | Code name | Field | What it says |
 |---|---|---|
-| `accept` | accept side | What the service will take: a set of [filter keys](#filter-key-kinds), or the marker meaning everything. Keys rather than assets, since six of the nine kinds are not assets: a service taking only scriptless offers, or only offers guarded by one DApp. |
+| `accept` | accept side | What the service will take: a set of [filter keys](#filter-key-kinds), or the marker meaning everything. Keys rather than assets, since six of the ten kinds are not assets: a service taking only scriptless offers, offers guarded by one DApp, or offers touching one DApp's validator. |
 | `rejected_keys` | rejected keys | Exclusions, which win over the accept side however it is set. |
 | `rate_source` | rate source | Where rates come from (not what they are): either quoted by the service itself, meaning read them from `GET /hints`, or a named feed it prices off.  |
 | `budgets` | budgets | The operator's risk limits, published so an author can tell whether its offer is even in range. `max_value_exposure` is the most of an asset the service will find **for one offer**, per asset with ADA included, keyed by asset rather than by filter key. `max_ex_units_mem` and `max_ex_units_steps` are ceilings on **the whole batch**, so an offer exceeding one alone can never be included, while an offer under them may still be refused for what it would have to share a batch with. `max_collateral` is what it will post. |
@@ -1632,6 +1748,33 @@ is not fixed to any chain or oracle data.
 
 **Hints bind nothing.** A service that publishes a rate has promised nothing and
 may decline any offer quoted against it. 
+
+### Firm quotes
+
+A firm quote is a service's signed statement that it will accept a described
+offer on stated terms until a stated moment. Optional on both sides.
+
+**The exchange.** A wallet describes the offer it intends to build — assets on
+each side, size and ExUnits estimate — and the service answers with terms, a
+deadline, a nonce, and its signature over all of them. The wallet builds against
+those terms and presents the quote alongside the envelope at `POST /offers`. 
+
+**Stateless.** The service stores nothing, and the service verifies a 
+returning quote by checking its own
+signature. 
+
+**Signed under the registration key**, to discourage
+[hint baiting](#security-considerations). 
+
+**Bounded by [`MAX_QUOTE_TTL`](#protocol-constants)**, since every outstanding
+quote is rate exposure the service cannot withdraw. How many it writes at once
+is its own rate limit.
+
+**It does not promise inclusion** — a quoted offer can still lose the
+[race](#offer-lifecycle) — and does not survive the offer changing.
+
+A service may decline to quote; the wallet then falls back to `GET /hints`.
+Hints remain the general mechanism, and the only one on Binding B.
 
 ### Security considerations
 
@@ -1692,7 +1835,9 @@ over HTTPS instead of broadcasting.
 **Hint baiting**: hints bind nothing, so a
 service can advertise attractive terms purely to attract signed offers it never
 intends to include, harvesting them as intelligence. A reputation system
-may be useful to address this in the future. 
+may be useful to address this in the future. A wallet can instead ask for a
+[firm quote](#firm-quotes), which makes a refusal attributable. Not available on
+Binding B, where there is no counterparty to ask.
 
 **Priority brokers**: a service may sell
 inclusion priority, because a prohibition would be unenforceable. 
@@ -1761,6 +1906,14 @@ locations read from the registry are attacker-controlled. Implementations must
 bound datum and response sizes, validate schemes and addresses, apply connection
 timeouts, and prevent access to loopback, link-local, and private infrastructure
 unless explicitly configured. Registry discovery must not become an SSRF path.
+
+**Resolvers in the discovery path.** A registration naming a
+[bare domain](#on-chain-registration-of-relays-and-services) puts whoever
+answers the `SRV` query in control of which host a drawn peer reaches, with no
+on-chain trace and an honest datum. Use DNSSEC where available and several
+independent resolvers otherwise. A resolved
+host is attacker-controlled input, exactly as a registered endpoint is. A party
+unwilling to accept this registers a URL.
 
 **Resource exhaustion below the rate limit.** Many identities, slow HTTP bodies,
 large SSE backlogs, decompression, CBOR nesting, signature checks, input
@@ -1998,16 +2151,20 @@ nothing.
       are settled, but reading block contents is not something the chain
       interface exposes yet. 
 
+
 #### Alternatives, prior art and compatibility
 
 Alternatives are argued where the
 decision they bear on is made, rather than gathered here: declared economics
 against derived filter keys under [Routing and
 filtering](#routing-and-filtering), reservations against races under [Offer
-lifecycle](#offer-lifecycle), request-for-quote against non-binding hints under
-[Price hints](#price-hints), a shared reputation record against local drops
+lifecycle](#offer-lifecycle), a shared reputation record against local drops
 under [Security considerations](#security-considerations), and a fourth envelope
-field against the fixed three, also there. Prior art is in the References, and
+field against the fixed three, also there. Request-for-quote against
+non-binding hints was argued under [Price hints](#price-hints) and is settled
+the other way by [firm quotes](#firm-quotes), an earlier draft having held that
+quoting requires a session and so an identity — which is true of a stateful
+quote and not of a signed bearer token. Prior art is in the References, and
 the two pieces that shaped the design are named where they bear: the original
 Babel Fees paper's packing result under [Batch construction](#batch-construction)
 and Cavefish in the light-client discussion at the end of this section.
@@ -2046,19 +2203,20 @@ deployed behaviour to preserve.
 - [x] constraint wire format (PlutusData encoding, tags pinned by test)
 - [ ] interpreter guard prototype audit/testing
 - [ ] constraint encoder/decoder audit/testing
-- [ ] registration minting policy prototype audit/testing
+- [ ] registration minting policy and registration script prototype
+      audit/testing 
 - [x] publish the test vectors (`test-vectors/`, envelope and constraint datum;
       the batch-construction ones wait on the ledger interface)
+- [ ] a machine-readable schema for Binding A. Written (`openapi.yaml`) and
+      conformance-tested against the reference implementation's handlers
 - [ ] profile/hints schema finalization
 - [ ] constants finalization
 - [ ] settle registration deposit
-- [ ] settle TBD constraint values
+- [ ] settle TBD constraint/constant values
 - [ ] settle restrictions of assets supported in initial release (e.g. only certain stablecoins) 
 - [ ] upstream ledger dependencies (blocker list; filed flags)
 - [ ] ecosystem coordination (wallets, explorers, db-sync)
-- [ ] network transports: the HTTPS client and the gossip mesh shell are held
-      by a toolchain constraint in the reference implementation rather than by
-      anything in this specification
+- [ ] network transports
 
 
 ## Versioning
@@ -2103,7 +2261,6 @@ Some additional notes on versioning :
   discovery appendix.
 - CIP-0159 — Accounts and direct deposits; interacts with imbalance derivation
   and the direct-deposits filter key.
-- CIP-0112 — [verify title and relevance; appears in no design note]
 - CIP-0133 — references Mithril certificate verification; context only.
 
 ### External standards
@@ -2142,18 +2299,12 @@ Some additional notes on versioning :
   rejected as a model.
 - Radix transaction manifests — pointer only.
 - [cardano-ledger issue #5123][ledger-5123] — Dijkstra era tracking.
-
-### Internal documents
-
-*Not for publication; prune before submission.*
-
-- `cip-draft.md` — design-notes companion. Decisions D1–D28, blockers B1–B11,
-  verification items, and all discussion notes referenced from this document.
-- Internal Babel Fees PRD — scope mandate, balance-free onboarding, worked
-  rate examples.
-- Statement of Work — a first-release supported-token restriction, which is
-  an operator's profile setting and not a property of this specification.
-- Ecosystem interviews — anonymised; participants not named.
+<!-- - [Reference implementation][babel-impl] — the service, relay and client this
+  document is written against, with the machine-readable schema for
+  [Binding A](#binding-a--https) (`openapi.yaml`), the published test vectors
+  (`test-vectors/`), the draft on-chain scripts (`onchain/`), and the
+  design-notes companion recording the decisions behind this document
+  (`cip-draft.md`). -->
 
 [CIP-0001]: https://cips.cardano.org/cip/CIP-0001
 [CIP-0118]: https://cips.cardano.org/cip/CIP-0118
@@ -2173,6 +2324,7 @@ Some additional notes on versioning :
 [Miniscript]: https://bitcoin.sipa.be/miniscript/
 [ERC-7521]: https://eips.ethereum.org/EIPS/eip-7521
 [ledger-5123]: https://github.com/IntersectMBO/cardano-ledger/issues/5123
+[babel-impl]: https://github.com/input-output-hk/babel-fees-aggregator
 
 
 ## Copyright
@@ -2181,6 +2333,7 @@ This CIP is licensed under [CC-BY-4.0][].
 
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [Transport bindings]: #transport-bindings
+[Readiness]: #binding-a--https
 [Forwarding]: #forwarding
 [Routing and filtering]: #routing-and-filtering
 [Validation]: #validation
