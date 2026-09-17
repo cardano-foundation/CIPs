@@ -129,8 +129,6 @@ Goals are ranked in the order below. Proposed solutions should state the scope a
   that led to this statement:
   <https://github.com/input-output-hk/pubsub/blob/5d6391813904159a04908dbdd20b03d1a56f85d1/docs/technical-report-1.md>
 
-### Method notes
-
 [^gossipsub]: Dimitris Vyzovitis, Yusef Napora, Dirk McCormick, David Dias and Yiannis Psaras. *GossipSub: Attack-Resilient Message Propagation in the Filecoin and ETH2.0 Networks.* arXiv:2007.02754. <https://arxiv.org/abs/2007.02754>. The peer scoring and mesh hardening referred to here are specified in gossipsub v1.1, *Security extensions to improve on attack resilience and bootstrapping*: <https://github.com/libp2p/specs/blob/master/pubsub/gossipsub/gossipsub-v1.1.md>.
 
 [^securecyclon]: Antonov and Voulgaris. *SecureCyclon: Dependable Peer Sampling.* 43rd IEEE International Conference on Distributed Computing Systems, ICDCS 2023, pp. 1–12. <https://doi.org/10.1109/ICDCS57875.2023.00041> The hardened descendant of CYCLON, and the peer-reviewed state of the art in Byzantine-resilient partial-view peer sampling.
