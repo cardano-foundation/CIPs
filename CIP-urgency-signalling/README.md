@@ -1,6 +1,6 @@
 ---
 CIP: 200
-Title: Transaction Urgency Signalling On Linear-Leios
+Title: Transaction Urgency Signalling On Linear Leios
 Category: Consensus
 Status: Proposed
 Authors:
@@ -78,7 +78,7 @@ License: CC-BY-4.0
   - [5.2 Implementation Plan](#implementation-plan)
 - [6. Versioning](#versioning)
   - [6.1 Relationship to CIP-183: conflict-based fee priority](#relationship-to-cip-183-conflict-based-fee-priority)
-  - [6.2 If the linear-Leios mechanism changes](#if-the-linear-leios-mechanism-changes)
+  - [6.2 If the linear Leios mechanism changes](#if-the-linear-leios-mechanism-changes)
 - [7. Copyright](#copyright)
 
 </details>
@@ -87,7 +87,7 @@ License: CC-BY-4.0
 
 We propose two lanes by which a user can submit a transaction to a node: urgent and standard. Only urgent transactions can enter Ranking Blocks. Both urgent and standard transactions can enter Endorser Blocks. Nodes produce Ranking Blocks more frequently than Endorser Blocks, and a Ranking Block enters the chain immediately. When capacity and queue order permit, an urgent transaction can therefore enter an earlier Ranking Block instead of the later Endorser Block path. This creates an earlier inclusion opportunity, not a guarantee of earlier inclusion.
 
-The ledger enforces the urgency signalling rule: every transaction in a valid Ranking Block must carry a fee that covers the urgent quote for that block. In simulation under severe congestion, the mechanism preserves more urgent-class transaction value than linear-Leios with today's flat fee. Retained value means the modelled gross transaction value that remains at inclusion, before fees. Urgent-class retained value improved across most simulated loads. At light load, the mechanism slightly reduces overall retained value, because transactions on the standard path wait longer while Endorser Blocks fill. The Rationale gives exact figures.
+The ledger enforces the urgency signalling rule: every transaction in a valid Ranking Block must carry a fee that covers the urgent quote for that block. In simulation under severe congestion, the mechanism preserves more urgent-class transaction value than linear Leios with today's flat fee. Retained value means the modelled gross transaction value that remains at inclusion, before fees. Urgent-class retained value improved across most simulated loads. At light load, the mechanism slightly reduces overall retained value, because transactions on the standard path wait longer while Endorser Blocks fill. The Rationale gives exact figures.
 
 ### Common misconceptions: clarified
 
@@ -99,9 +99,9 @@ The ledger enforces the urgency signalling rule: every transaction in a valid Ra
 * A standard transaction is _never_ eligible to enter an RB, even if a produced RB would be otherwise empty.
 * Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee all the time. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, conversely, the price decreases again.
 
-### A note on linear-Leios, as specified in CIP-0164
+### A note on linear Leios, as specified in CIP-0164
 
-Not all transactions go through EBs in unmodified linear-Leios as specified in [CIP-0164](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164). CIP-0164 specifies the timing formula: `A certificate may only be included if RB' is at least 3×Lhdr+Lvote+Ldiff slots after RB` [in the chain inclusion section](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#step-5-chain-inclusion). In the [feasible protocol parameters](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#feasible-protocol-parameters) section, the CIP specifies an EB cooldown of 14 slots (meaning the next 13 slots after the announcing RB are too early to include that EB's certificate): `Total certificate inclusion delay:3×Lhdr+Lvote+Ldiff=3+4+7=14slots`.
+Not all transactions go through EBs in unmodified linear Leios as specified in [CIP-0164](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164). CIP-0164 specifies the timing formula: `A certificate may only be included if RB' is at least 3×Lhdr+Lvote+Ldiff slots after RB` [in the chain inclusion section](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#step-5-chain-inclusion). In the [feasible protocol parameters](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164#feasible-protocol-parameters) section, the CIP specifies an EB cooldown of 14 slots (meaning the next 13 slots after the announcing RB are too early to include that EB's certificate): `Total certificate inclusion delay:3×Lhdr+Lvote+Ldiff=3+4+7=14slots`.
 
 With an RB production probability of 0.05 per slot, the probability of an EB surviving the cooldown is the probability that no RB is produced in the 13 slots following the RB that announced it:
 
@@ -113,7 +113,7 @@ That means there's a ~51.33% chance of an EB surviving the cooldown period, mean
 
 Some transactions lose value when delayed, but users currently have no protocol-level way to signal that urgency.
 
-Linear-Leios introduces a new block type: the Endorser Block. Vanilla linear-Leios uses this additional path only when traffic exceeds Ranking Block capacity. This proposal instead routes standard transactions through Endorser Blocks at every load. Endorser Blocks are slightly slower than Ranking Blocks, so latency variability increases. An urgency signal offsets this cost: it lets nodes allocate block space to serve users' intents.
+Linear Leios introduces a new block type: the Endorser Block. Vanilla linear Leios uses this additional path only when traffic exceeds Ranking Block capacity. This proposal instead routes standard transactions through Endorser Blocks at every load. Endorser Blocks are slightly slower than Ranking Blocks, so latency variability increases. An urgency signal offsets this cost: it lets nodes allocate block space to serve users' intents.
 
 From CPS-0031:
 
@@ -1302,7 +1302,7 @@ CPS-0031 sets four constraints on candidate solutions.
 
 **Censorship resistance.** Access to priority is by posted price alone, as argued under Goal 2, so the mechanism replaces the pressure toward opaque off-chain priority with a public channel. The premium goes to the treasury, so preferential treatment earns a producer no direct fee revenue. The constraint also asks for an evaluation of new opportunities for selective exclusion, and there are two. The public lane field gives a censoring producer one extra bit to select on, which is inseparable from having a signal at all. A producer can also suppress a qualifying Endorser Block by declining to announce it. The latency harm is limited, because a later producer can announce the batch and Ranking Blocks remain urgent-only regardless ([Endorser Block announcement threshold](#endorser-block-announcement-threshold)). Withholding also moves the standard quote ([Standard controller: 10-block capacity-weighted window](#standard-controller-10-block-capacity-weighted-window)). Censorship and withholding beyond these arguments stay within the scope of the independent audit required in [Path to Active](#acceptance-criteria).
 
-**Linear-Leios compatibility.** The mechanism is not an existing design ported onto linear-Leios: it is made of linear-Leios parts. Its two lanes are the two CIP-164 block types, its certificate rules extend the certificate-inclusion checks that CIP-164 already defines, and the acceptance criteria require CIP-164 to be active before or with this mechanism. The block-structure question below gives the detail.
+**Linear Leios compatibility.** The mechanism is not an existing design ported onto linear Leios: it is made of linear Leios parts. Its two lanes are the two CIP-164 block types, its certificate rules extend the certificate-inclusion checks that CIP-164 already defines, and the acceptance criteria require CIP-164 to be active before or with this mechanism. The block-structure question below gives the detail.
 
 #### Open questions
 
@@ -1314,13 +1314,13 @@ This CIP separates protocol commitments, which ledger rules enforce, from implem
 
 **How should updated fee or urgent quotes be propagated?**
 
-They do not need to be propagated at all. Each lane's quote is recomputable from the chain alone: every controller update is a fixed formula over the utilisation of the blocks before it, so any two nodes that agree on the chain tip agree on both quotes. Quote propagation therefore reduces to block propagation, which linear-Leios already provides, and a wallet reads the current quotes from any synchronised node. What remains is drift between the quote at submission and the quote at inclusion. That is a validity question, not a propagation question, and the repricing-interval answer below covers it.
+They do not need to be propagated at all. Each lane's quote is recomputable from the chain alone: every controller update is a fixed formula over the utilisation of the blocks before it, so any two nodes that agree on the chain tip agree on both quotes. Quote propagation therefore reduces to block propagation, which linear Leios already provides, and a wallet reads the current quotes from any synchronised node. What remains is drift between the quote at submission and the quote at inclusion. That is a validity question, not a propagation question, and the repricing-interval answer below covers it.
 
-**How would an urgent signal interact with the linear-Leios block structure?**
+**How would an urgent signal interact with the linear Leios block structure?**
 
-The signal is built out of the block structure rather than layered over it. Linear-Leios provides two block types with different latencies, and the mechanism assigns one lane to each: Ranking Blocks carry only urgent-paying transactions, while Endorser Blocks can carry both lanes. Vanilla linear-Leios uses Endorser Blocks only when traffic exceeds Ranking Block capacity; this proposal routes standard traffic through them at every load, and the resulting latency gap between the two paths is what the urgent premium buys. The structural point of friction is that a certificate-carrying Ranking Block is payload-free, so Endorser Block certificates and urgent transactions compete for the same Ranking Block space. The announcement threshold and its age escape exist to manage exactly that competition. The interaction extends into transaction diffusion: the transaction envelope repeats the lane field, so a mempool can request urgent transactions from its peers before standard ones without inspecting transaction bodies ([Mempool](#mempool)).
+The signal is built out of the block structure rather than layered over it. Linear Leios provides two block types with different latencies, and the mechanism assigns one lane to each: Ranking Blocks carry only urgent-paying transactions, while Endorser Blocks can carry both lanes. Vanilla linear Leios uses Endorser Blocks only when traffic exceeds Ranking Block capacity; this proposal routes standard traffic through them at every load, and the resulting latency gap between the two paths is what the urgent premium buys. The structural point of friction is that a certificate-carrying Ranking Block is payload-free, so Endorser Block certificates and urgent transactions compete for the same Ranking Block space. The announcement threshold and its age escape exist to manage exactly that competition. The interaction extends into transaction diffusion: the transaction envelope repeats the lane field, so a mempool can request urgent transactions from its peers before standard ones without inspecting transaction bodies ([Mempool](#mempool)).
 
-**Can we achieve our goals without starving low-urgency users of block space, especially in the context of linear-Leios?**
+**Can we achieve our goals without starving low-urgency users of block space, especially in the context of linear Leios?**
 
 Yes, at a measured delay cost and with a rule that repairs the worst case. Standard transactions keep access to Endorser Blocks at every load, and an Endorser Block carries two orders of magnitude more capacity than a Ranking Block. The starvation risk is specific to light traffic, where the announcement threshold makes standard transactions pool until an Endorser Block is worth its certificate. At a trickle the pure threshold does starve them, and the age escape repairs it: at 0.1 tx/slot the escape restored +83.39 ± 8.59 percentage points of standard retained value, and at ordinary low load it was bit-identical to the pure threshold. Under sustained congestion, the case the CPS highlights, standard traffic pays no appreciable measured delay cost, because Endorser Blocks fill on their own: every standard-lane mean and quantile difference is at or near zero. The cost falls on the loads where standard traffic must pool. At low load, transactions that stay standard wait a mean of 2.99 blocks against 1.78 under flat fee, and overall retained value sits 0.41 percentage points below the flat fee. At mid load the ten-seed rerun also records a longer standard wait. The [thousand-seed replication](#thousand-seed-replication-at-low-and-severe-congestion-load) prices that trade, and the acceptance criteria require declared standard-class regression bounds, including the 95th-percentile delay, before any testnet pass.
 
@@ -1471,7 +1471,7 @@ https://github.com/user-attachments/assets/6a4ef69a-516f-4517-bfbd-d7b8a97b09cf
 
 The two lanes running on the devnet (8 min 50 s): a walkthrough of the mechanism, followed by sustained demand, quote increases and transaction evictions, certification pressure and recovery, and the return to an idle network. Captions are included.
 
-The mechanism has been implemented end to end in a prototype based on the Linear Leios prototype node. The implementation covers four integration boundaries:
+The mechanism has been implemented end to end in a prototype based on the linear Leios prototype node. The implementation covers four integration boundaries:
 
 - ledger validation, controller updates, fee settlement, and refunds;
 - consensus mempool admission, selection, and revalidation;
@@ -1491,7 +1491,7 @@ The prototype exercises the following transaction lifecycle:
   The base fee enters the fee pot, the premium enters the treasury through the donation pot, and the excess is credited to the refund account specified by the transaction.
 - Node policy admits transactions using the one-step fee-cap buffer and revalidates them as quotes move. A transaction is evicted when its fee cap no longer satisfies the applicable admission requirement.
 - Endorser Block announcement is gated by the byte threshold—45,056 bytes with the tested configuration—and by the `K = 10` age escape. Below the threshold, standard transactions remain pooled until additional transactions arrive or the age escape opens.
-- All three nodes participate in the Linear Leios voting and certification pipeline. The certification-miss scenario suppresses votes at their source rather than fabricating a certificate or ledger outcome.
+- All three nodes participate in the linear Leios voting and certification pipeline. The certification-miss scenario suppresses votes at their source rather than fabricating a certificate or ledger outcome.
 
 The tested configuration uses a target utilisation of `0.5`, a max-change denominator of `16`, a five-sample urgent window, a twenty-block standard window, the urgent lane's initial `2×` coefficient, the announcement threshold, and the `K = 10` age escape. Utilisation is computed independently for bytes and execution units, using the larger ratio.
 
@@ -1507,10 +1507,10 @@ The prototype provides implementation evidence, but it is not production-ready. 
 
 We initially planned a mechanism based on the paper [Tiered Mechanisms for Blockchain Transaction Fees by Kiayias et al](https://arxiv.org/pdf/2304.06014) as the subject of this CIP. After discussion with stakeholders and investigation into the technical requirements, we decided that a reduced-complexity version is adequate for community needs. A simpler version is also easier to prove, is less likely to cause regression, and ships sooner. Earlier delivery can offset any value-retention differential anyway.
 
-The discarded tiered mechanism involved n tiers. Some designs used n tiers for each block type, and others used n tiers across block types. In both cases, each tier was independently and dynamically priced, and each tier carried an artificial delay: a transaction assigned to that tier had to wait out the delay before it became eligible for inclusion in a block. The most fundamental reason against the paper's model was that linear-Leios' structure supports multiple lanes naturally (one lane per block type), without manufactured delays. Beyond that, the main challenges we encountered were:
+The discarded tiered mechanism involved n tiers. Some designs used n tiers for each block type, and others used n tiers across block types. In both cases, each tier was independently and dynamically priced, and each tier carried an artificial delay: a transaction assigned to that tier had to wait out the delay before it became eligible for inclusion in a block. The most fundamental reason against the paper's model was that linear Leios' structure supports multiple lanes naturally (one lane per block type), without manufactured delays. Beyond that, the main challenges we encountered were:
 
-* The paper specifies delay eligibility abstractly: a transaction assigned to a tier is ignored until that tier's delay elapses. It does not specify how to implement that rule in Cardano or linear-Leios. In our attempted mapping, enforcement appeared to require ledger machinery to anchor and track the delay, define admission and validation of waiting transactions, handle dependencies and rollbacks, and bound the associated mempool and DoS exposure. It also mapped awkwardly onto linear-Leios: EB-bound transactions already follow a higher-latency path, so it is unclear whether they must incur the same additional artificial delay.
-* Division of block space by tier is complex even without linear-Leios, because of Cardano's multi-dimensional fee and fullness model (bytes and execution units)
+* The paper specifies delay eligibility abstractly: a transaction assigned to a tier is ignored until that tier's delay elapses. It does not specify how to implement that rule in Cardano or linear Leios. In our attempted mapping, enforcement appeared to require ledger machinery to anchor and track the delay, define admission and validation of waiting transactions, handle dependencies and rollbacks, and bound the associated mempool and DoS exposure. It also mapped awkwardly onto linear Leios: EB-bound transactions already follow a higher-latency path, so it is unclear whether they must incur the same additional artificial delay.
+* Division of block space by tier is complex even without linear Leios, because of Cardano's multi-dimensional fee and fullness model (bytes and execution units)
 * The paper did not handle UX, retry, rejection, or mempool overflow, which added more complexity to the design process
 * A security-adjacent concern: more tiers reveal a transaction's urgency, and thus potentially its purpose, more precisely, which increases the surface for front-running
 
@@ -1545,7 +1545,7 @@ approach is outside the scope of this CIP.
 
 The proposal is active when all of the following are true:
 
-- [ ] CIP-164 (linear-Leios) is active on mainnet, or one hard fork activates both CIP-164 and this mechanism.
+- [ ] CIP-164 (linear Leios) is active on mainnet, or one hard fork activates both CIP-164 and this mechanism.
 - [ ] The fee change CIP, which specifies the refund mechanism, is merged and active.
 - [ ] The formal ledger specification of the new rules is complete and merged upstream. The rules are: RB lane eligibility, fee settlement, the per-lane quote update, and the EB certificate threshold with the age escape.
 - [ ] The Agda mempool specifications for Leios with urgency signalling are complete and merged upstream.
@@ -1565,32 +1565,32 @@ The work items, in approximate order:
 - [ ] Merge the ledger and mempool specifications into their upstream repositories.
 - [ ] Extend the experimental evidence to the reference-script and execution-unit branches of the EB threshold.
 - [ ] Write a node-level technical specification, coordinated with the CIP-164 node work.
-- [ ] Implement the changes in `cardano-node`, integrated with the linear-Leios implementation.
+- [ ] Implement the changes in `cardano-node`, integrated with the linear Leios implementation.
 - [ ] Develop implementation-independent conformance tests, aligned with the CIP-164 blueprint work.
 - [ ] Update wallets and libraries for the new CDDL fields.
 - [ ] Publish the synthetic testnet workload, the metrics, and the pass margins. Then run load tests on a Leios testnet, and compare the results with the declared margins.
 - [ ] Audit the specification, the implementation, and the incentives analysis.
-- [ ] Schedule the hard-fork activation with, or after, the linear-Leios rollout.
+- [ ] Schedule the hard-fork activation with, or after, the linear Leios rollout.
 
 ## Versioning
 
-Transaction urgency signalling changes the rules by which transactions are admitted to Ranking Blocks under linear-Leios. Where this affects ledger validation, transaction format, fee calculation, or block validity, it requires a new major protocol version and a new ledger era, and [CIP-84](../CIP-0084) applies.
+Transaction urgency signalling changes the rules by which transactions are admitted to Ranking Blocks under linear Leios. Where this affects ledger validation, transaction format, fee calculation, or block validity, it requires a new major protocol version and a new ledger era, and [CIP-84](../CIP-0084) applies.
 
-A hard-fork event enables the mechanism, either as part of the linear-Leios hard fork or in a later hard fork. Incompatible changes require a successor CIP and a subsequent protocol version.
+A hard-fork event enables the mechanism, either as part of the linear Leios hard fork or in a later hard fork. Incompatible changes require a successor CIP and a subsequent protocol version.
 
 This CIP also depends on [the fee change CIP](https://github.com/cardano-foundation/CIPs/pull/1218).
 
 ### Relationship to CIP-183: conflict-based fee priority
 
-[CIP-183](https://github.com/cardano-foundation/CIPs/pull/1178) proposes a node-local replacement policy for transactions that conflict over spent or reference UTxOs. This CIP addresses a different scarcity: timely block inclusion under linear-Leios. CIP-183 affects mutually conflicting transactions while leaving uncontested traffic under FIFO; this CIP assigns transactions to standard or urgent delivery paths and adjusts protocol quotes from lane utilisation. CIP-183 therefore does not provide a general urgency signal, while this CIP does not auction access to contested UTxOs.
+[CIP-183](https://github.com/cardano-foundation/CIPs/pull/1178) proposes a node-local replacement policy for transactions that conflict over spent or reference UTxOs. This CIP addresses a different scarcity: timely block inclusion under linear Leios. CIP-183 affects mutually conflicting transactions while leaving uncontested traffic under FIFO; this CIP assigns transactions to standard or urgent delivery paths and adjusts protocol quotes from lane utilisation. CIP-183 therefore does not provide a general urgency signal, while this CIP does not auction access to contested UTxOs.
 
 The proposals could coexist in principle, but their current specifications cannot simply be layered. CIP-183 compares a fee that the winning transaction pays. Here, the posted fee is a maximum authorisation whose excess over the inclusion quote is refunded; using that maximum as a replacement bid would make refundable headroom determine conflict priority. The reference mempool policy in this CIP also rejects an incoming urgent transaction when admitting it would evict a conflicting standard transaction, whereas such eviction is CIP-183's defining operation.
 
 A combined design would need to define an economically binding contention bid or other comparison metric, cross-lane replacement rules, descendant handling, fee settlement, and the point at which a transaction committed to an Endorser Block can no longer be replaced. CIP-183 is therefore neither a dependency nor an alternative to this proposal. It is related work on a separate fee-market dimension, and the experimental and prototype evidence in this CIP does not evaluate the combined mechanism.
 
-### If the linear-Leios mechanism changes
+### If the linear Leios mechanism changes
 
-If a future linear-Leios revision permits a certificate-bearing RB to also carry a transaction payload, the effective capacity for urgent-lane transactions increases.
+If a future linear Leios revision permits a certificate-bearing RB to also carry a transaction payload, the effective capacity for urgent-lane transactions increases.
 
 Under this CIP, only urgent-paying transactions can enter a direct RB payload. Because of this rule, the change can only increase urgent-lane throughput. If the added capacity is not used, urgent-lane throughput does not change.
 
