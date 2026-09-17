@@ -29,85 +29,7 @@ The selected design combines a verifiable eligibility rule with a per-node admis
 The beacon, deployment parameters and several interoperability rules remain open. This draft specifies the architecture and selected dissemination design; the Rationale separates evidence from predictions, and Path to Active lists the work needed for deployment.
 
 <details>
-  <summary><h2>Table of contents</h2></summary>
-
-- [Abstract](#abstract)
-- [Motivation: Why is this CIP necessary?](#motivation-why-is-this-cip-necessary)
-- [Specification](#specification)
-  - [Overview](#overview)
-  - [Epochs](#epochs)
-  - [Topology derivation](#topology-derivation)
-    - [The registered peers on a topic](#the-registered-peers-on-a-topic)
-    - [The verifiable gate](#the-verifiable-gate)
-    - [The bucket count](#the-bucket-count)
-    - [Selection](#selection)
-    - [The relay link and the pick count](#the-relay-link-and-the-pick-count)
-    - [The serving cap](#the-serving-cap)
-    - [Small topics](#small-topics)
-  - [Link establishment](#link-establishment)
-  - [Messages](#messages)
-  - [Dissemination, recovery and retention](#dissemination-recovery-and-retention)
-  - [Services](#services)
-    - [Identity and keys](#identity-and-keys)
-    - [The node registry](#the-node-registry)
-    - [The topic registry](#the-topic-registry)
-      - [Topic identifier derivation](#topic-identifier-derivation)
-    - [The parameter output](#the-parameter-output)
-    - [The randomness beacon](#the-randomness-beacon)
-    - [Address resolution](#address-resolution)
-    - [Lifecycle and the registration cutoff](#lifecycle-and-the-registration-cutoff)
-  - [Parameters](#parameters)
-  - [Canonical encoding and domain separation](#canonical-encoding-and-domain-separation)
-  - [Versioning](#versioning)
-- [Rationale: How does this CIP achieve its goals?](#rationale-how-does-this-cip-achieve-its-goals)
-  - [The adversary this proposal defends against](#the-adversary-this-proposal-defends-against)
-  - [What the symmetric relay link gives](#what-the-symmetric-relay-link-gives)
-  - [How the evidence was obtained](#how-the-evidence-was-obtained)
-  - [Alternatives considered](#alternatives-considered)
-  - [Sizing the parameters](#sizing-the-parameters)
-    - [Choosing the admission parameters](#choosing-the-admission-parameters)
-    - [What can be turned, and what it costs](#what-can-be-turned-and-what-it-costs)
-  - [What a subscriber is guaranteed](#what-a-subscriber-is-guaranteed)
-    - [Two classes of fault, with different guarantees](#two-classes-of-fault-with-different-guarantees)
-    - [What the protocol guarantees instead](#what-the-protocol-guarantees-instead)
-    - [How long an epoch may be](#how-long-an-epoch-may-be)
-  - [Limits of this evidence](#limits-of-this-evidence)
-  - [Backward compatibility](#backward-compatibility)
-  - [Open Questions](#open-questions)
-    - [Responses to CPS questions](#responses-to-cps-questions)
-    - [Remaining design choices](#remaining-design-choices)
-      - [Deposit decay](#deposit-decay)
-      - [Authority over the parameter output](#authority-over-the-parameter-output)
-- [Path to Active](#path-to-active)
-  - [Acceptance Criteria](#acceptance-criteria)
-  - [Implementation Plan](#implementation-plan)
-- [References](#references)
-  - [Prior art](#prior-art)
-  - [External specifications this proposal builds on](#external-specifications-this-proposal-builds-on)
-  - [Related CIPs](#related-cips)
-  - [This proposal's own prior work](#this-proposals-own-prior-work)
-  - [This proposal's evidence](#this-proposals-evidence)
-  - [This proposal's reference implementation](#this-proposals-reference-implementation)
-  - [Companion tools](#companion-tools)
-  - [Open items tracked outside this document](#open-items-tracked-outside-this-document)
-  - [Method notes](#method-notes)
-- [Appendices](#appendices)
-  - [Terminology](#terminology)
-  - [Sizing derivations](#sizing-derivations)
-    - [The coverage law](#the-coverage-law)
-    - [Including admission refusals](#including-admission-refusals)
-    - [The three ceilings](#the-three-ceilings)
-    - [Admission parameter bands](#admission-parameter-bands)
-    - [Below the gate](#below-the-gate)
-    - [What remains to be measured](#what-remains-to-be-measured)
-  - [Registry schemas](#registry-schemas)
-- [Acknowledgements](#acknowledgements)
-- [Copyright](#copyright)
-
-</details>
-
-<details>
-  <summary><h2>Index of figures</h2></summary>
+  <summary><strong>Index of figures</strong></summary>
 
 - [Figure 1: The protocol at a glance](#figure-1)
 - [Figure 2: Deriving one node's links for one epoch](#figure-2)
@@ -120,7 +42,7 @@ The beacon, deployment parameters and several interoperability rules remain open
 </details>
 
 <details>
-  <summary><h2>Index of tables</h2></summary>
+  <summary><strong>Index of tables</strong></summary>
 
 - [Table 1: The services the protocol reads](#table-1)
 - [Table 2: Candidate bucket counts by topic population, for 10 picks, 20% adversarial nodes and a failure target of 10⁻⁴](#table-2)
@@ -1289,8 +1211,6 @@ These evaluate the rules this document states, at points other than the ones it 
 ### Open items tracked outside this document
 
 - The randomness beacon source: <https://github.com/input-output-hk/pubsub/issues/22>
-
-### Method notes
 
 [^bech32]: Bech32 address format, BIP-0173, as used across Cardano for human-facing identifiers. <https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki>. Used here for display only; every preimage in this proposal consumes raw key bytes.
 
