@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 642" width="860" height="642" role="img" aria-labelledby="t d">
+<title id="t">Four-way trade-off across the surviving designs</title>
+<desc id="d">One radar chart overlaying M2, M3 and M4 on four axes: bandwidth economy, connection economy, speed and churn tolerance, all oriented outward-is-better. Each is labelled at the axis where it reaches the outer ring. M4 reaches it on connection economy and on churn tolerance, and is the most even shape; M3 reaches it on bandwidth alone and sits under a third of the way out on churn tolerance; M2 reaches it on speed and is innermost on the other three. M5 and M1 are drawn as muted grey shapes with a faint fill and a solid outline, M1 nested inside M5: each lies inside or on a contending design on every axis, which is what being dominated looks like. The churn axis is the only dashed line in the figure, marking that it is read off the coverage law rather than sampled.</desc>
+<rect width="860" height="642" rx="8" fill="#fcfcfb"/>
+<polygon points="430.0,241.5 470.5,282.0 430.0,322.5 389.5,282.0" fill="none" stroke="#e2e0d8" stroke-width="1"/>
+<polygon points="430.0,201.0 511.0,282.0 430.0,363.0 349.0,282.0" fill="none" stroke="#e2e0d8" stroke-width="1"/>
+<polygon points="430.0,160.5 551.5,282.0 430.0,403.5 308.5,282.0" fill="none" stroke="#e2e0d8" stroke-width="1"/>
+<polygon points="430.0,120.0 592.0,282.0 430.0,444.0 268.0,282.0" fill="none" stroke="#e2e0d8" stroke-width="1"/>
+<line x1="430.0" y1="282.0" x2="430.0" y2="120.0" stroke="#e2e0d8" stroke-width="1"/>
+<line x1="430.0" y1="282.0" x2="592.0" y2="282.0" stroke="#e2e0d8" stroke-width="1"/>
+<line x1="430.0" y1="282.0" x2="430.0" y2="444.0" stroke="#e2e0d8" stroke-width="1"/>
+<line x1="430.0" y1="282.0" x2="268.0" y2="282.0" stroke="#c4c2b9" stroke-width="1" stroke-dasharray="4 4"/>
+<polygon points="430.0,158.1 515.8,282.0 430.0,436.9 382.5,282.0" fill="#6f6d66" fill-opacity="0.07" stroke="#6f6d66" stroke-width="1.4" stroke-linejoin="round"/>
+<polygon points="430.0,194.2 490.8,282.0 430.0,436.9 391.6,282.0" fill="#bcb9ae" fill-opacity="0.07" stroke="#bcb9ae" stroke-width="1.4" stroke-linejoin="round"/>
+<text x="38.0" y="30.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">Pareto-dominated (ties allowed), drawn for reference:</text>
+<rect x="38" y="36.0" width="28" height="11" rx="2" fill="#6f6d66" fill-opacity="0.07" stroke="#6f6d66" stroke-width="1.4"/>
+<text x="73.0" y="48.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">M5 · (9,8)</text>
+<rect x="38" y="54.0" width="28" height="11" rx="2" fill="#bcb9ae" fill-opacity="0.07" stroke="#bcb9ae" stroke-width="1.4"/>
+<text x="73.0" y="66.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">M1 · F=24</text>
+<polygon points="430.0,120.0 506.7,282.0 430.0,422.5 382.7,282.0" fill="#008300" fill-opacity="0.13" stroke="#008300" stroke-width="2.4" stroke-linejoin="round"/>
+<circle cx="430.0" cy="120.0" r="4.2" fill="#008300" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="506.7" cy="282.0" r="4.2" fill="#008300" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="430.0" cy="422.5" r="4.2" fill="#008300" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="382.7" cy="282.0" r="4.2" fill="#008300" stroke="#fcfcfb" stroke-width="1.6"/>
+<polygon points="430.0,156.3 592.0,282.0 430.0,436.9 268.0,282.0" fill="#eda100" fill-opacity="0.13" stroke="#eda100" stroke-width="2.4" stroke-linejoin="round"/>
+<circle cx="430.0" cy="156.3" r="4.2" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="592.0" cy="282.0" r="4.2" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="430.0" cy="436.9" r="4.2" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="268.0" cy="282.0" r="4.2" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<polygon points="430.0,194.2 490.8,282.0 430.0,444.0 392.9,282.0" fill="#4a3aa7" fill-opacity="0.13" stroke="#4a3aa7" stroke-width="2.4" stroke-linejoin="round"/>
+<circle cx="430.0" cy="194.2" r="4.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="490.8" cy="282.0" r="4.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="430.0" cy="444.0" r="4.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="392.9" cy="282.0" r="4.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<text x="430.0" y="98.0" font-size="12.5" fill="#008300" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="650">M3 · RF=13, s=7</text>
+<text x="430.0" y="62.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Bandwidth economy</text>
+<text x="430.0" y="77.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">copies per honest node c</text>
+<text x="430.0" y="48.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">M3 10.4 · M4 13.4 · M2 19.2</text>
+<text x="612.0" y="260.0" font-size="12.5" fill="#eda100" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="650">M4 · RF=9</text>
+<text x="612.0" y="278.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Connection economy</text>
+<text x="612.0" y="293.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">standing links per node d</text>
+<text x="612.0" y="307.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">M3 38 · M4 18 · M2 48</text>
+<text x="430.0" y="470.0" font-size="12.5" fill="#4a3aa7" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="650">M2 · RF=24</text>
+<text x="430.0" y="492.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Speed</text>
+<text x="430.0" y="507.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" xml:space="preserve">hops to full coverage h<tspan font-size="0.72em" dy="0.26em">full</tspan></text>
+<text x="430.0" y="521.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">M3 5.51 · M4 5.0 · M2 4.78</text>
+<text x="248.0" y="260.0" font-size="12.5" fill="#eda100" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end" font-weight="650">M4 · RF=9</text>
+<text x="248.0" y="278.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end" font-weight="600">Churn tolerance</text>
+<text x="248.0" y="293.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end" xml:space="preserve">churn budget p<tspan font-size="0.72em" dy="0.26em">max</tspan></text>
+<text x="248.0" y="307.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">M3 2.17 · M4 7.43 · M2 1.7</text>
+<text x="248.0" y="323.0" font-size="10" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">dashed axis: read off the law, not sampled</text>
+<text x="38.0" y="556.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-style="italic">Every axis is oriented so that outward is better.</text>
+<text x="38.0" y="572.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-style="italic">Each design is scored against the best of the three and labelled at the axis where it leads.</text>
+<text x="38.0" y="588.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-style="italic">Three axes are measured directly; the dashed one, churn tolerance, is read off the coverage law, whose behaviour under churn was measured separately.</text>
+<text x="38.0" y="604.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-style="italic">Radial position is the ratio to the best value on that axis, so half-way out is half as good; the centre is zero downtime, or unbounded cost.</text>
+<text x="846.0" y="631.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">N = 20 000 · μ = 0.2 · δ = 10⁻⁴</text>
+</svg>

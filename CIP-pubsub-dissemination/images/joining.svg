@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 176" width="960" height="176" role="img" aria-labelledby="jt jd">
+<title id="jt">Joining as a node</title>
+<desc id="jd">Five stages read left to right in three lanes. Off chain, stage one generates the keys. On chain, stage two creates the topic entry, drawn dashed because it applies only where the topic is new, and stage three registers the node. Per epoch, stage four is the wait for the next registration cutoff, and stage five is the first epoch in which the node takes part.</desc>
+
+<rect width="960" height="176" rx="8" fill="#fcfcfb"/>
+
+<!-- lanes -->
+<rect x="30" y="26" width="160" height="24" rx="6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.2"/>
+<text x="110" y="42" font-size="10.5" fill="#8a887e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Off chain</text>
+
+<rect x="215" y="26" width="345" height="24" rx="6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.2"/>
+<text x="387" y="42" font-size="10.5" fill="#8a887e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">On chain</text>
+
+<rect x="585" y="26" width="345" height="24" rx="6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.2"/>
+<text x="757" y="42" font-size="10.5" fill="#8a887e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Per epoch</text>
+
+<!-- 1 -->
+<rect x="30" y="66" width="160" height="64" rx="6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.4"/>
+<circle cx="110" cy="88" r="11" fill="#1a1a19"/>
+<text x="110" y="92" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">1</text>
+<text x="110" y="117" font-size="11.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Generate keys</text>
+<line x1="194" y1="98" x2="206" y2="98" stroke="#b9b6ab" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="212,98 205,94.5 205,101.5" fill="#b9b6ab"/>
+
+<!-- 2 -->
+<rect x="215" y="66" width="160" height="64" rx="6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.4" stroke-dasharray="5 5"/>
+<circle cx="295" cy="88" r="11" fill="#1a1a19"/>
+<text x="295" y="92" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">2</text>
+<text x="295" y="117" font-size="11.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Create the topic</text>
+<text x="295" y="150" font-size="10" fill="#8a887e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">only if it is new</text>
+<line x1="379" y1="98" x2="391" y2="98" stroke="#b9b6ab" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="397,98 390,94.5 390,101.5" fill="#b9b6ab"/>
+
+<!-- 3 -->
+<rect x="400" y="66" width="160" height="64" rx="6" fill="#fcfcfb" stroke="#4a3aa7" stroke-width="1.4"/>
+<circle cx="480" cy="88" r="11" fill="#1a1a19"/>
+<text x="480" y="92" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">3</text>
+<text x="480" y="117" font-size="11.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Register the node</text>
+<line x1="564" y1="98" x2="576" y2="98" stroke="#b9b6ab" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="582,98 575,94.5 575,101.5" fill="#b9b6ab"/>
+
+<!-- 4 -->
+<rect x="585" y="66" width="160" height="64" rx="6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.4"/>
+<circle cx="665" cy="88" r="11" fill="#1a1a19"/>
+<text x="665" y="92" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">4</text>
+<text x="665" y="117" font-size="11.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Registration cutoff</text>
+<line x1="749" y1="98" x2="761" y2="98" stroke="#b9b6ab" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="767,98 760,94.5 760,101.5" fill="#b9b6ab"/>
+
+<!-- 5 -->
+<rect x="770" y="66" width="160" height="64" rx="6" fill="#fcfcfb" stroke="#1e8f5e" stroke-width="1.4"/>
+<circle cx="850" cy="88" r="11" fill="#1a1a19"/>
+<text x="850" y="92" font-size="11.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">5</text>
+<text x="850" y="117" font-size="11.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Take part</text>
+</svg>

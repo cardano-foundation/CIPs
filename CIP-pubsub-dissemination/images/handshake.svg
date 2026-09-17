@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 470" width="860" height="470" role="img" aria-labelledby="t d">
+<title id="t">Establishing one link</title>
+<desc id="d">A sequence diagram in two lanes. The dialler sends one signed Request to the acceptor. The acceptor evaluates six checks in a fixed order: signature, epoch, membership, already held, gate, cap. Failing the first three or the gate is dropped without a reply. An already held link is accepted again. At the cap a crossing still completes. The acceptor replies Accepted, or Rejected once its admissions budget is spent.</desc>
+<rect width="860" height="470" rx="8" fill="#fcfcfb"/>
+<rect x="40.0" y="34.0" width="160.0" height="36.0" rx="6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.4"/>
+<text x="120.0" y="57.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Dialler</text>
+<line x1="120.0" y1="70.0" x2="120.0" y2="448.0" stroke="#e2e0d8" stroke-width="1.2" stroke-dasharray="4 5"/>
+<rect x="530.0" y="34.0" width="160.0" height="36.0" rx="6" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.4"/>
+<text x="610.0" y="57.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Acceptor</text>
+<line x1="610.0" y1="70.0" x2="610.0" y2="448.0" stroke="#e2e0d8" stroke-width="1.2" stroke-dasharray="4 5"/>
+<line x1="122.0" y1="102.0" x2="599.0" y2="102.0" stroke="#1a1a19" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="606.0,102.0 599.0,105.5 599.0,98.5" fill="#1a1a19"/>
+<text x="365.0" y="94.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">Request   topic T, epoch e, signed</text>
+<rect x="410.0" y="122.0" width="400.0" height="202.0" rx="8" fill="#fcfcfb" stroke="#b9b6ab" stroke-width="1.4"/>
+<text x="430.0" y="142.0" font-size="11" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Evaluated in this order</text>
+<circle cx="434.0" cy="164.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="168.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">1</text>
+<text x="450.0" y="168.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Signature</text>
+<text x="794.0" y="168.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">dropped, no reply</text>
+<circle cx="434.0" cy="190.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="194.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">2</text>
+<text x="450.0" y="194.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Epoch</text>
+<text x="794.0" y="194.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">dropped, no reply</text>
+<circle cx="434.0" cy="216.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="220.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">3</text>
+<text x="450.0" y="220.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Membership</text>
+<text x="794.0" y="220.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">dropped, no reply</text>
+<circle cx="434.0" cy="242.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="246.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">4</text>
+<text x="450.0" y="246.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Already held</text>
+<text x="794.0" y="246.0" font-size="9.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">Accepted again, idempotent</text>
+<circle cx="434.0" cy="268.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="272.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">5</text>
+<text x="450.0" y="272.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Gate</text>
+<text x="794.0" y="272.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">dropped, no reply</text>
+<circle cx="434.0" cy="294.0" r="8.5" fill="#1a1a19" stroke="#1a1a19" stroke-width="0"/>
+<text x="434.0" y="298.0" font-size="9.5" fill="#fcfcfb" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="700">6</text>
+<text x="450.0" y="298.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Cap</text>
+<text x="794.0" y="298.0" font-size="9.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">crossing always completes</text>
+<line x1="606.0" y1="386.0" x2="129.0" y2="386.0" stroke="#1e8f5e" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="122.0,386.0 129.0,382.5 129.0,389.5" fill="#1e8f5e"/>
+<text x="365.0" y="378.0" font-size="10.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Accepted   the link stands for this epoch</text>
+<line x1="606.0" y1="424.0" x2="129.0" y2="424.0" stroke="#e87ba4" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="122.0,424.0 129.0,420.5 129.0,427.5" fill="#e87ba4"/>
+<text x="365.0" y="416.0" font-size="10.5" fill="#e87ba4" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Rejected   the admissions budget is spent</text>
+<text x="40.0" y="452.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">A dialler that is rejected does not retry that peer this epoch.</text>
+</svg>
