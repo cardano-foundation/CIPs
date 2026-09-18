@@ -1,5 +1,5 @@
 ---
-CIP: XXXX
+CIP: 191
 Title: Ekklesia - Hydra L2 Voting Protocol
 Category: Tokens
 Status: Proposed
@@ -12,7 +12,7 @@ Implementors:
     - Civitas <https://www.civitasexplorer.com/>
     - Fetch <https://cardano.fetchswap.io/governance>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/1207
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1207
 Created: 2026-05-12
 License: Apache-2.0
 ---
