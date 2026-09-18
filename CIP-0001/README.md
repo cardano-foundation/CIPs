@@ -431,6 +431,7 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 | Ryan Williams    | [@Ryun1](https://github.com/Ryun1)           |
 | Thomas Vellekoop | [@perturbing](https://github.com/perturbing) |
 | Sebastian Nagel  | [@ch1bo](https://github.com/ch1bo)           |
+| Adam Dean        | [@Crypto2099](https://github.com/Crypto2099) |
 
 | Emeritus editors    |                                                      |
 |:--------------------|:-----------------------------------------------------|
@@ -438,7 +439,6 @@ The missions of an editor include, but aren't exclusively limited to, any of the
 | Sebastien Guillemot | [@SebastienGllmt](https://github.com/SebastienGllmt) |
 | Matthias Benkort    | [@KtorZ](https://github.com/KtorZ)                   |
 | Duncan Coutts       | [@dcoutts](https://github.com/dcoutts)               |
-| Adam Dean           | [@Crypto2099](https://github.com/Crypto2099)         |
 
 ## Rationale: How does this CIP achieve its goals?
 
