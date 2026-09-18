@@ -32,6 +32,10 @@
     "description": "CIP-0190 - Proof of Existence record"
   },
   {
+    "transaction_metadatum_label": 529,
+    "description": "Tokenance - Producer-signed Proof of Origin record"
+  },
+  {
     "transaction_metadatum_label": 544,
     "description": "TapDano - Proof Platform"
   },
