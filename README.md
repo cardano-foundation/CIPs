@@ -255,3 +255,4 @@ Proposals stalled without any updates from their authors will eventually be clos
 | Ryan Williams    | [@Ryun1](https://github.com/Ryun1)           |
 | Thomas Vellekoop | [@perturbing](https://github.com/perturbing) |
 | Sebastian Nagel  | [@ch1bo](https://github.com/ch1bo)           |
+| Adam Dean        | [@Crypto2099](https://github.com/Crypto2099) |
