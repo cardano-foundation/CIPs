@@ -1,0 +1,555 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.ekklesia.vote/cip/hydra-voting-tokens/v0.3.0/results.schema.json",
+  "title": "EvidenceArtifacts",
+  "description": "Top-level union for the two main results-side artifacts: FullResults (results.json) and VoterInclusionProof (proofs/{tokenName}.json).",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/FullResults"
+    },
+    {
+      "$ref": "#/$defs/VoterInclusionProof"
+    }
+  ],
+  "$defs": {
+    "Hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Hex28": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "Hex29": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{58}$"
+    },
+    "VoteMethod": {
+      "type": "string",
+      "enum": [
+        "binary",
+        "single-choice",
+        "multi-choice",
+        "range",
+        "ranked",
+        "weighted",
+        "likert"
+      ]
+    },
+    "Role": {
+      "type": "string",
+      "enum": [
+        "raw",
+        "drep",
+        "pool",
+        "stake"
+      ]
+    },
+    "OptionCount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option",
+        "count"
+      ],
+      "properties": {
+        "option": {
+          "type": "integer"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "DistributionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "count"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "WeightedOptionTally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option",
+        "totalPoints",
+        "voterCount"
+      ],
+      "properties": {
+        "option": {
+          "type": "integer"
+        },
+        "totalPoints": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "voterCount": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "LikertOptionTally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option",
+        "count",
+        "distribution"
+      ],
+      "properties": {
+        "option": {
+          "type": "integer"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distribution": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "PairwiseMatrix": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "options",
+        "matrix"
+      ],
+      "properties": {
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "MethodTally": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "results"
+          ],
+          "properties": {
+            "method": {
+              "enum": [
+                "binary",
+                "single-choice",
+                "multi-choice"
+              ]
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/OptionCount"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "distribution"
+          ],
+          "properties": {
+            "method": {
+              "const": "range"
+            },
+            "distribution": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/DistributionEntry"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "firstPreference",
+            "pairwise"
+          ],
+          "properties": {
+            "method": {
+              "const": "ranked"
+            },
+            "firstPreference": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/OptionCount"
+              }
+            },
+            "pairwise": {
+              "$ref": "#/$defs/PairwiseMatrix"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "results"
+          ],
+          "properties": {
+            "method": {
+              "const": "weighted"
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WeightedOptionTally"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "results"
+          ],
+          "properties": {
+            "method": {
+              "const": "likert"
+            },
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/LikertOptionTally"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "QuestionTally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "method",
+        "roleResults"
+      ],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "method": {
+          "$ref": "#/$defs/VoteMethod"
+        },
+        "roleResults": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/MethodTally"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Role"
+          }
+        },
+        "abstainedByRole": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Role"
+          }
+        }
+      }
+    },
+    "BackendOptionResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "count",
+        "votingPower"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "votingPower": {
+          "const": 0
+        }
+      }
+    },
+    "BackendGroupTally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "totalVotes",
+        "results"
+      ],
+      "properties": {
+        "totalVotes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BackendOptionResult"
+          }
+        },
+        "scale": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "distribution"
+          ],
+          "properties": {
+            "distribution": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/DistributionEntry"
+              }
+            }
+          }
+        },
+        "ranked": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "firstPreference",
+            "pairwise"
+          ],
+          "properties": {
+            "firstPreference": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/OptionCount"
+              }
+            },
+            "pairwise": {
+              "$ref": "#/$defs/PairwiseMatrix"
+            }
+          }
+        },
+        "weighted": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "results"
+          ],
+          "properties": {
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/WeightedOptionTally"
+              }
+            }
+          }
+        },
+        "likert": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "results"
+          ],
+          "properties": {
+            "results": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/LikertOptionTally"
+              }
+            }
+          }
+        }
+      }
+    },
+    "BackendTally": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "results",
+        "resultsByGroup"
+      ],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BackendOptionResult"
+          }
+        },
+        "resultsByGroup": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/BackendGroupTally"
+          },
+          "propertyNames": {
+            "$ref": "#/$defs/Role"
+          }
+        }
+      }
+    },
+    "FullResults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "specVersion",
+        "ballotId",
+        "tallies",
+        "questionTallies",
+        "totalVoters",
+        "headId",
+        "finalizedAt"
+      ],
+      "properties": {
+        "specVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "ballotId": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "tallies": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/BackendTally"
+          }
+        },
+        "questionTallies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/QuestionTally"
+          }
+        },
+        "totalVoters": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "headId": {
+          "$ref": "#/$defs/Hex28"
+        },
+        "finalizedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "votersByRole": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "propertyNames": {
+            "type": "string",
+            "enum": [
+              "drep",
+              "pool",
+              "stake"
+            ]
+          }
+        },
+        "excludedVoters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "tokenName",
+              "reason"
+            ],
+            "properties": {
+              "tokenName": {
+                "$ref": "#/$defs/Hex29"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "VoterInclusionProof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "voterId",
+        "contentHashHex",
+        "leafHashHex",
+        "merkleRoot",
+        "proof"
+      ],
+      "properties": {
+        "voterId": {
+          "$ref": "#/$defs/Hex29"
+        },
+        "contentHashHex": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "leafHashHex": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "merkleRoot": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "proof": {
+          "type": "array",
+          "description": "Ordered sibling hashes from leaf to root. Order at each level is recovered by ascending-lowercase-hex comparison (see the 'Merkle proof structure' section); no direction field is stored.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "siblingHex"
+            ],
+            "properties": {
+              "siblingHex": {
+                "$ref": "#/$defs/Hex32"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
