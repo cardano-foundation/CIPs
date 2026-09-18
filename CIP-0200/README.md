@@ -13,7 +13,7 @@ Discussions:
   - CPS discussion: https://github.com/cardano-foundation/CIPs/pull/1194
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1265
 Solution To:
-  - CPS-0031?: https://github.com/cardano-foundation/CIPs/pull/1194
+  - CPS-0031: https://github.com/cardano-foundation/CIPs/pull/1194
 Created: 2026-06-24
 License: CC-BY-4.0
 ---
