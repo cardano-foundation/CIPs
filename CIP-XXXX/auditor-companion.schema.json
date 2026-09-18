@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.ekklesia.vote/cip/hydra-voting-tokens/v0.3.0/auditor-companion.schema.json",
+  "title": "AuditorCompanionArtifacts",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/ProofPackage"
+    },
+    {
+      "$ref": "#/$defs/VoteHistory"
+    },
+    {
+      "$ref": "#/$defs/Exclusions"
+    }
+  ],
+  "$defs": {
+    "Hex32": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Hex29": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{58}$"
+    },
+    "IpfsCid": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ProofStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "siblingHex"
+      ],
+      "properties": {
+        "siblingHex": {
+          "$ref": "#/$defs/Hex32"
+        }
+      }
+    },
+    "ProofPackageFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "contentHashHex",
+        "leafHashHex",
+        "merkleProof"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Leaf name. For the evidence tree this is the voter token name (58 hex, see the 'Voter token name' section); it is folded into the leaf hash (content+path mode, see the 'Merkle proof structure' section)."
+        },
+        "contentHashHex": {
+          "$ref": "#/$defs/Hex32",
+          "description": "The voter's vote_hash."
+        },
+        "leafHashHex": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "merkleProof": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ProofStep"
+          }
+        }
+      }
+    },
+    "ProofPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "hashAlg",
+        "leafPrefixHex",
+        "nodePrefixHex",
+        "pairSort",
+        "rootHex",
+        "createdAt",
+        "files",
+        "leafMode"
+      ],
+      "description": "proof-package.json: the self-describing merkle package emitted at finalization. Binds every evidence leaf to the on-chain merkle_root.",
+      "properties": {
+        "schema": {
+          "const": "lerna-labs/merkle-proof@v1"
+        },
+        "hashAlg": {
+          "const": "blake2b-256"
+        },
+        "leafPrefixHex": {
+          "const": "00"
+        },
+        "nodePrefixHex": {
+          "const": "01"
+        },
+        "pairSort": {
+          "const": "lexicographic"
+        },
+        "rootHex": {
+          "$ref": "#/$defs/Hex32",
+          "description": "Same value as merkle_root in the (601) datum."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "leafMode": {
+          "const": "content+path"
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/ProofPackageFile"
+          }
+        }
+      }
+    },
+    "VoteHistoryEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "voteHash",
+        "ipfsCid",
+        "txHash",
+        "timestamp"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "voteHash": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "ipfsCid": {
+          "$ref": "#/$defs/IpfsCid"
+        },
+        "txHash": {
+          "type": "string",
+          "description": "Hydra transaction hash that committed this vote update."
+        },
+        "prevTxHash": {
+          "type": "string",
+          "description": "Transaction hash of the previous update in the chain; absent on the first entry."
+        },
+        "timestamp": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Unix epoch milliseconds at submission."
+        }
+      }
+    },
+    "VoteHistory": {
+      "type": "array",
+      "description": "history/{voterId}.json: a chronological array of vote updates for one voter (the filename uses the bech32 voterId), oldest first. The last entry is the vote that participated in the final tally.",
+      "items": {
+        "$ref": "#/$defs/VoteHistoryEntry"
+      }
+    },
+    "Exclusions": {
+      "type": "array",
+      "description": "exclusions.json: voters present in the pre-burn ledger whose evidence could not be verified at finalization. The file is omitted entirely when there are no exclusions.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "tokenName",
+          "reason"
+        ],
+        "properties": {
+          "tokenName": {
+            "$ref": "#/$defs/Hex29"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Free-text exclusion reason (typically the verification error message). Not an enumerated set in this version."
+          }
+        }
+      }
+    }
+  }
+}
