@@ -778,6 +778,19 @@ Note that this diverges from
 [CIP-0192](https://github.com/cardano-foundation/CIPs/pull/1218), which states that
 collateral collection needs no change and that any overpayment goes to the fee pot.
 
+To ensure correct accounting, the credit to `feeChangeAccount` (item 2 above), as well as 
+items 3 and 4, appear in the produced/consumed 
+calculation as separate items. Item 2 is not bundled with other debits and credits the tx 
+is making to/from accounts.
+
+Any Plutus script run by the transaction would not have access to the amount of change 
+given to the change account address. For this reason, a script cannot use the fee change amount 
+as input to decide whether its constraints are satisfied. So, the fee change credit cannot affect the 
+outcome of script validation locally vs. 
+at block-application time. The double satisfaction problem does not apply here, as it is not possible to 
+express a Plutus script constraint that depends on the change fee (due to it not being included in
+TxInfo). The change fee cannot, therefore, satisfy (or fail to satisfy) either one or two constraints. 
+
 The following changes to transaction application ensure correct tier specification 
 with respect to `policyState`:
 
