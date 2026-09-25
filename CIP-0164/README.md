@@ -735,7 +735,10 @@ their headers and embedding EB certificates in their bodies.
 
 1. **Header additions**:
    - `announced_eb` (optional): Hash of the EB created by this block producer
-   - `announced_eb_size` (optional): Size in bytes of the announced EB (4 bytes)
+   - `announced_eb_size` (optional): Size in bytes of the announced EB's
+     **closure** — the EB itself plus every transaction it references (4
+     bytes). It is the closure rather than the EB alone because this is what
+     lets a peer budget the transfer it is about to request.
    - `certified_eb` (optional): Single bit indicating whether this RB certifies
      the EB announced by the previous RB (the EB hash is already available via
      the previous header's `announced_eb` field)
@@ -1526,7 +1529,7 @@ not yet received MsgLeiosBlockTxsOffer.
 | ------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Client→ | MsgLeiosNotificationRequestNext | $\emptyset$                                                  | Requests one Leios notification: the announcement of an EB, a delivery offer for a block or its transactions, or votes.                                                                                                              |
 | ←Server | MsgLeiosBlockAnnouncement       | RB header that announces an EB                               | The server has seen this EB announcement.                                                                                                                                                                                             |
-| ←Server | MsgLeiosBlockOffer              | slot and EB hash                                             | The server can immediately deliver this block.                                                                                                                                                                                        |
+| ←Server | MsgLeiosBlockOffer              | slot, EB hash, and EB size                                   | The server can immediately deliver this block. The declared size lets the client budget its receive buffers before requesting; it duplicates the announcement's `announced_eb_size` and may be dropped once that is relied upon.     |
 | ←Server | MsgLeiosBlockTxsOffer           | slot and EB hash                                             | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
 | ←Server | MsgLeiosVotes                   | non-empty list of votes                                      | Votes the server has received and considers worth relaying.                                                                                                                                                                           |
 | Client→ | MsgLeiosBlockRequest            | slot and EB hash                                             | The server must now deliver this block.                                                                                                                                                                                               |
@@ -3330,14 +3333,15 @@ proofs-of-possession) used by Leios voting and certification.
 ```diff
  ranking_block =
    [ header                   : block_header
-   , transaction_bodies       : [* transaction_body]
-   , transaction_witness_sets : [* transaction_witness_set]
-   , auxiliary_data_set       : {* transaction_index => auxiliary_data}
-   , invalid_transactions     : [* transaction_index]
-+  , ? eb_certificate         : leios_certificate
+   , block_body
    ]
 
-block_header =
+ block_body =
+   [ transactions             : [* block_transaction]
++  , leios_certificate        : leios_certificate/ nil
+   ]
+
+ block_header =
    [ header_body              : block_header_body
    , body_signature           : kes_signature
    ]
@@ -3351,19 +3355,30 @@ block_header =
    , vrf_result               : vrf_cert
    , block_body_size          : uint
    , block_body_hash          : hash32
-+  , ? ( announced_eb         : hash32
-+      , announced_eb_size    : uint32
-+      )
-+  , ? certified_eb           : bool
+   , operational_cert
+   , protocol_version
++  , certified_eb             : bool
++  , announced_eb             : eb_announcement/ nil
    ]
+
++eb_announcement =
++  [ eb_hash                  : hash32
++  , eb_size                  : uint32   ; size of the EB closure
++  ]
 ```
+
+The certificate is likewise a **nullable field that is always present**, not
+an optional trailing item, and the same holds in the header. Both header
+fields are present in every Dijkstra header rather than optional trailing
+items: `certified_eb` is a plain `bool` and `announced_eb` is a
+nullable group. A header is fixed-shape, so a decoder never has to infer
+which trailing field it is looking at, and the announcement's two components
+travel together as one group that is either wholly there or `nil`.
 
 <a id="endorser-block-cddl" href="#endorser-block-cddl">**Endorser Block**</a>
 
 ```cddl
-endorser_block =
-  [ transaction_references   : omap<hash32, uint32>
-  ]
+endorser_block = omap<hash32, uint32>   ; transaction references
 
 ; Ordered map type definition
 ; An omap behaves like a map but preserves insertion order and prevents duplicate keys
@@ -3376,6 +3391,11 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ;   , tx_size                  : uint32     ; Transaction size in bytes
 ;   ]
 ```
+
+The endorser block **is** the map; it is not wrapped in an enclosing array.
+This matters beyond encoding tidiness: an EB's identifier is the hash of
+exactly these bytes, so a redundant wrapper would change which block a hash
+denotes.
 
 The declared size is a 32-bit quantity: a 16-bit size would cap an endorsable
 transaction at 64 KiB, which the `maxTxSize` protocol parameter is free to
