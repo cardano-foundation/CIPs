@@ -113,9 +113,7 @@ technical resources, visit the Leios Innovation R&D site at
 - [Figure 3: Leios chain structure showing Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
 - [Figure 4: Detailed timing mechanism showing timing constraints for EB certification](#figure-4)
 - [Figure 5: Up- and downstream interactions of a node](#figure-5)
-- [Figure 6: LeiosAnnounce mini-protocol state machine](#figure-6a)
-- [Figure 6: LeiosVotes mini-protocol state machine](#figure-6b)
-- [Figure 6: LeiosBlockNotify mini-protocol state machine](#figure-6c)
+- [Figure 6: LeiosNotify mini-protocol state machine](#figure-6)
 - [Figure 7: LeiosFetch mini-protocol state machine](#figure-7)
 - [Figure 8: SPO profitability forecast under Leios](#figure-8)
 - [Figure 9: Time for transaction to reach the ledger](#figure-9)
@@ -498,18 +496,18 @@ availability:
 <div align="center">
 <a name="table-3" id="table-3"></a>
 
-| Parameter                                                        | Ledger Name                            | Symbol            | Units        | Description                                                                                        | Rationale                                                                                                                                                                                                         |
-| :--------------------------------------------------------------- | :------------------------------------  | :------------:    | :----------: | :------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Committee size                                                   | `leiosCommitteeSize`                   | $N_c$             | seats        | Number of top-stake pools seated on the epoch's voting committee                                   | Directly bounds votes per EB and certificate size. Governed from the stake distribution so that covered stake $\sigma(N_c)$ exceeds $\tau$ with headroom; see [feasible values](#table-7).                        |
-| Quorum stake threshold                                           | `leiosQuorumStakeThreshold`            | $\tau$            | fraction     | Minimum fraction of total active stake that must be represented by votes in a certificate          | Safety-critical. Must satisfy $0.5 < \tau < \sigma(N_c)$, and leave a sizable $\tau - \sigma_a$ of honest stake for the $\Delta_\text{EB}^{\text{W}}$ assumption; see [choosing the quorum threshold](#choosing-quorum-threshold).   |
-| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length   | `leiosAnnouncementLength`              | $L_\text{hdr}$    | milliseconds | Duration for RB headers to propagate network-wide                                                  | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                            |
-| <a id="l-vote" href="#l-vote"></a>Voting period length           | `leiosVotingPeriodLength`              | $L_\text{vote}$   | milliseconds | Duration during which committee members can vote on endorser blocks                                | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                              |
-| <a id="l-diff" href="#l-diff"></a>Diffusion period length        | `leiosDiffusionPeriodLength`           | $L_\text{diff}$   | milliseconds | Additional period after voting to ensure network-wide EB availability                              | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                    |
-| Maximum endorser block size                                      | `maxEndorserBlockSize`                 | $S_\text{EB}$     | bytes        | Maximum size of an endorser block itself                                                           | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                                           |
-| Maximum total transaction size per endorser block                | `maxEndorserBlockTxsSize`              | $S_\text{EB-tx}$  | bytes        | Maximum total size of transactions that can be endorsed by an endorser block                       | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                                   |
-| Maximum reference script size per endorser block                 | `maxRefScriptSizePerEndorserBlock`     | $S_\text{EB-ref}$ | bytes        | Maximum total size of reference scripts used by the transactions endorsed by an endorser block     | The EB analogue of the Praos per-block `maxRefScriptSizePerBlock`: bounds the script bytes that must be loaded from the UTxO and evaluated per EB, which the EB's own size does not account for.                  |
-| Maximum Plutus steps per endorser block                          | `maxEndorserBlockExUnits`              | -                 | step units   | Maximum computational steps allowed for Plutus scripts in a single endorser block                  | Limits computational resources per EB to ensure timely validation. Merged into one "execution unit" parameter, analogous to Praos execution limits.                                                                  |
-| Maximum Plutus memory per endorser block                         | `maxEndorserBlockExUnits`              | -                 | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                               | Limits memory resources per EB to ensure timely validation. Merged into one "execution unit" parameter, analogous to Praos execution limits.                                                                           |
+| Parameter                                                  | Ledger Name                        | Symbol            | Units        | Description                                                                                    | Rationale                                                                                                                                                                                                                          |
+| :--------------------------------------------------------- | :--------------------------------- | :---------------: | :----------: | :--------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Committee size                                             | `leiosCommitteeSize`               | $N_c$             | seats        | Number of top-stake pools seated on the epoch's voting committee                               | Directly bounds votes per EB and certificate size. Governed from the stake distribution so that covered stake $\sigma(N_c)$ exceeds $\tau$ with headroom; see [feasible values](#table-7).                                         |
+| Quorum stake threshold                                     | `leiosQuorumStakeThreshold`        | $\tau$            | fraction     | Minimum fraction of total active stake that must be represented by votes in a certificate      | Safety-critical. Must satisfy $0.5 < \tau < \sigma(N_c)$, and leave a sizable $\tau - \sigma_a$ of honest stake for the $\Delta_\text{EB}^{\text{W}}$ assumption; see [choosing the quorum threshold](#choosing-quorum-threshold). |
+| <a id="l-hdr" href="#l-hdr"></a>Announcement period length | `leiosAnnouncementPeriodLength`    | $L_\text{hdr}$    | milliseconds | Duration for an EB announcement to propagate network-wide                                      | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                                             |
+| <a id="l-vote" href="#l-vote"></a>Voting period length     | `leiosVotePeriodLength`            | $L_\text{vote}$   | milliseconds | Duration during which committee members can vote on endorser blocks                            | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                                               |
+| <a id="l-diff" href="#l-diff"></a>Diffusion period length  | `leiosDiffusionPeriodLength`       | $L_\text{diff}$   | milliseconds | Additional period after voting to ensure network-wide EB availability                          | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                                     |
+| Maximum endorser block size                                | `maxEndorserBlockReferencesSize`   | $S_\text{EB}$     | bytes        | Maximum size of an endorser block itself                                                       | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                                                            |
+| Maximum total transaction size per endorser block          | `maxEndorserBlockTxsSize`          | $S_\text{EB-tx}$  | bytes        | Maximum total size of transactions that can be endorsed by an endorser block                   | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                                                    |
+| Maximum reference script size per endorser block           | `maxRefScriptSizePerEndorserBlock` | $S_\text{EB-ref}$ | bytes        | Maximum total size of reference scripts used by the transactions endorsed by an endorser block | The EB analogue of the Praos per-block `maxRefScriptSizePerBlock`: bounds the script bytes that must be loaded from the UTxO and evaluated per EB, which the EB's own size does not account for.                                   |
+| Maximum Plutus steps per endorser block                    | `maxEndorserBlockExUnits`          | -                 | step units   | Maximum computational steps allowed for Plutus scripts in a single endorser block              | Limits computational resources per EB to ensure timely validation. Merged into one "execution unit" parameter, analogous to Praos execution limits.                                                                                |
+| Maximum Plutus memory per endorser block                   | `maxEndorserBlockExUnits`          | -                 | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                           | Limits memory resources per EB to ensure timely validation. Merged into one "execution unit" parameter, analogous to Praos execution limits.                                                                                       |
 
 <em>Table 3: Protocol Parameters</em>
 
@@ -561,7 +559,8 @@ network detects any attempts by adversaries to create multiple conflicting
 blocks for the same slot. The equivocation detection mechanism ensures that
 honest nodes can reliably identify and reject equivocating behavior before
 participating in voting. The equivocation detection period is $3 L_\text{hdr}$,
-derived from the header diffusion parameter $L_\text{hdr}$.
+derived from the announcement period $L_\text{hdr}$ — the time a single
+announcement, i.e. an RB header, needs to travel the network.
 
 **Equivocation Attack Model**: An adversary controlling a block production slot
 may attempt to create multiple conflicting EBs and distribute different versions
@@ -823,9 +822,42 @@ selected by stake without having registered a valid voting key; such a seat is
 *keyless* — it cannot sign, and any certificate marking a keyless seat as a
 signer must be rejected.
 
-Voting keys **rotate** on a cadence comparable to KES *key rotation* (~90 days
-on Cardano mainnet), which a corresponding key time-to-live should enforce.
-This is distinct from KES *key evolution* (~12 hours): evolution provides
+<a id="key-expiry" href="#key-expiry"></a>Voting keys **rotate** on a cadence
+comparable to KES *key rotation* (~90 days on Cardano mainnet), enforced by
+**expiry**: the ledger stops honouring a registered voting key a fixed number of
+epochs after its registration, and a pool that has not re-registered by then
+occupies a *keyless* seat until it does. Expiry takes effect at an epoch
+boundary, like activation, so an epoch's committee has a stable set of usable
+keys throughout. Because the key is carried by the pool registration
+certificate, re-registering it is an ordinary pool re-registration, and the
+registration epoch the expiry is measured from is the epoch in which that
+certificate was accepted.
+
+The expiry period is **not a protocol parameter**: it is derived
+deterministically from the KES setup already fixed in genesis, as
+
+```
+maxKeyAgeEpochs = ceil(slotsPerKESPeriod * maxKESEvolutions / epochLength) + 2
+```
+
+i.e. the KES key lifetime rounded up to whole epochs, plus two epochs for the
+activation delay — a voting key registered now enters the mark snapshot at the
+next epoch boundary and the active committee only at the one after. Pools must
+rotate their KES key on exactly this cadence anyway, so deriving the bound keeps
+voting and operational key rotation on a single schedule by construction, with
+no second knob that could drift out of step. On mainnet the KES rotation period
+is `slotsPerKESPeriod * maxKESEvolutions / epochLength = 18.6` epochs, so the
+bound derives to **21 epochs**. Retuning the cadence therefore means changing
+the KES setup itself, which — like `slotsPerKESPeriod` and `maxKESEvolutions`
+today — requires a hard fork; the expiry never becomes stale relative to the
+rotation schedule it exists to track.
+
+Expiry is judged against the epoch the committee is selected *for*, not the
+epoch its stake snapshot was taken in: a seat's key arrives through a snapshot
+and may have been registered several epochs earlier, while the age bound is
+applied afresh at each epoch boundary.
+
+Expiry is distinct from KES *key evolution* (~12 hours): evolution provides
 forward secrecy within a single key's lifetime and is not required for voting
 keys. Unlike a KES key, which takes effect immediately on the chain it is used
 to build, a voting key must be **activated at an epoch boundary**, because the
@@ -847,6 +879,12 @@ handling. A newly registered or rotated key is not eligible to vote until the
 snapshot in which it appears becomes active; a committee that must be live from
 the first epoch (e.g. at genesis) therefore requires its keys to be present in
 the initial stake snapshots.
+
+Because activation is deterministic and epoch-scoped, an operator can install
+the outgoing and incoming key together and let the node **select the right one
+per epoch** rather than swap files at a boundary. Nothing in this specification
+prevents that, and it removes the only step of rotation with a hard deadline;
+the details are left to implementations.
 
 <a id="committee-structure" href="#committee-structure"></a>**Committee
 Structure**: The voting committee for an epoch is determined by **stake-based
@@ -1330,9 +1368,11 @@ $L_\text{diff}$ even during a burst of withheld-but-valid messages.
 
 **Concrete Proposal and its Feasibility**
 
-The following four new mini-protocols are proposed for the Leios implementation.
+The following two new mini-protocols are proposed for the Leios implementation.
 This is not the only feasible solution, but this CIP should be amended as
-implementors refine these mini-protocols.
+implementors refine these mini-protocols. The pair specified here is the one
+realized by the Leios prototype and recorded, with wire-level codecs, in the
+[Cardano Blueprint](https://cardano-scaling.github.io/cardano-blueprint/network/index.html).
 
 If the general structure and semantics of mini-protocols is not already
 familiar, see the Chapter 2 "Multiplexing mini-protocols" and Chapter 3
@@ -1350,107 +1390,104 @@ topology results in each relay having many more downstream peers than upstream
 peers. Syncing peers will be discussed below.
 
 <div align="center">
-<a name="figure-6a" id="figure-6a"></a>
+<a name="figure-6" id="figure-6"></a>
 
 ```mermaid
 ---
-title: LeiosAnnounce
+title: LeiosNotify
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
    style StBusy fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
-   StBusy["StBusy<br>{ tokens := N }"]
-
-   StIdle -->|"MsgLeiosAnnounceRequestNext(N)"| StBusy
-   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens > 1; tokens −= 1}"| StBusy
-   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens = 1 }"| StIdle
+   StIdle -->|MsgLeiosNotificationRequestNext| StBusy
+   StBusy -->|MsgLeiosBlockAnnouncement| StIdle
+   StBusy -->|MsgLeiosBlockOffer| StIdle
+   StBusy -->|MsgLeiosBlockTxsOffer| StIdle
+   StBusy -->|MsgLeiosVotes| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
 
-<em>Figure 6a: LeiosAnnounce mini-protocol state machine</em>
+<em>Figure 6: LeiosNotify mini-protocol state machine</em>
 
 </div>
 
-The purpose of this first protocol is to diffuse block announcements as fast as
-possible throughout the network. Since these announcements are small and
-latency is the primary concern, a [reactive streams](https://www.reactive-streams.org)
-style request batching is used to ensure that under normal conditions the
-responder can always send without having to wait for a request (intended usage
-for LeiosVotes (below) is to request 1000 initially, then request 100 more
-after each 100 received). Sending the next request before the previous one has
-been fully responded to is not modeled explicitly but supported implicitly via
-protocol pipelining as usual, see below for a definition.
+LeiosNotify diffuses the small, latency-critical Leios objects: the
+announcement of an EB, the offers that tell a peer an EB body or its referenced
+transactions can now be served, and the votes themselves. It is pull-based —
+the client requests the next notification and the server replies with whichever
+is available — and is intended to run pipelined, so that the client has
+requests outstanding at all times and the server can send the moment it has
+something to send.
+
+Votes are delivered directly by LeiosNotify rather than offered and then
+fetched. A vote is small enough that a separate offer/request round-trip would
+cost more latency than the bandwidth it saves, and votes must reach a quorum
+within $L_\text{vote}$. `MsgLeiosVotes` carries a non-empty list so the server
+can bundle when that is the better trade-off; see the discussion of bundling
+heuristics below.
 
 <div align="center">
-<a name="figure-6b" id="figure-6b"></a>
+<a name="figure-7" id="figure-7"></a>
 
 ```mermaid
 ---
-title: LeiosVotes
+title: LeiosFetch
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
-   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StBlock fill:PowderBlue,stroke:DarkBlue;
+   style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
+   style StBlockRange fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
-   StBusy["StBusy<br>{ tokens := N }"]
-
-   StIdle -->|"MsgLeiosVotesRequestNext(N)"| StBusy
-   StBusy -->|"MsgLeiosVote<br>{ if tokens > 1; tokens −= 1}"| StBusy
-   StBusy -->|"MsgLeiosVote<br>{ if tokens = 1 }"| StIdle
+   StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
+   StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
+   StIdle -->|MsgLeiosBlockRangeRequest| StBlockRange -->|MsgLeiosNextBlockAndTxsInRange| StBlockRange -->|MsgLeiosLastBlockAndTxsInRange| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
 
-<em>Figure 6b: LeiosVotes mini-protocol state machine</em>
+<em>Figure 7: LeiosFetch mini-protocol state machine</em>
 
 </div>
 
-Analog to LeiosAnnounce, LeiosVotes serves the purpose of diffusing votes as
-quickly as possible throughout the network. Since votes are small, no
-separate round-trip for requesting them is needed, downstream just keeps
-supplying the upstream with tokens so that under normal conditions the upstream
-can typically send immediately.
+LeiosFetch carries the large responses and therefore uses the established
+request-response pattern, possibly with mini-protocol pipelining. Note that
+such bulk transfers will be multiplexed on the underlying TCP connection in a
+fair manner based on 64 kB segments, hence the transfer latency is determined
+by the bandwidth-RTT-product as well as the size of the configured TCP send and
+receive buffers.
 
-<div align="center">
-<a name="figure-6c" id="figure-6c"></a>
+A caught-up node fetches an announced EB with `MsgLeiosBlockRequest` and then
+the referenced transactions it does not already hold with
+`MsgLeiosBlockTxsRequest`. A syncing node instead uses
+`MsgLeiosBlockRangeRequest` to stream the EBs certified over a range of RBs
+together with all of their transactions, which it will not have in its mempool
+anyway.
 
-```mermaid
----
-title: LeiosBlockNotify
----
-graph LR
-   style StIdle fill:PaleGreen,stroke:DarkGreen;
-   style StBusy fill:PowderBlue,stroke:DarkBlue;
-   style StDone fill:SeaShell,stroke:DimGray;
+Transactions are addressed by their index within the EB, in a compact bitmap
+form: a map from a 16-bit window index to a 64-bit presence bitmap, where the
+transaction corresponding to the bitmap's first bit has offset 64 times the
+window index. A few hundred bytes can thus request every transaction in even
+the largest EB, while a request for a single transaction costs tens of bytes.
+Without a compact addressing scheme, a node needing every transaction of an EB
+would have to send a request about as large as the EB itself.
 
-   StBusy["StBusy<br>{ tokens := N }"]
+> [!NOTE]
+>
+> `MsgLeiosBlockRangeRequest`, `MsgLeiosNextBlockAndTxsInRange` and
+> `MsgLeiosLastBlockAndTxsInRange` are specified here but are not yet
+> implemented in the Leios prototype; see the
+> [LeiosFetch codec](https://cardano-scaling.github.io/cardano-blueprint/network/node-to-node/leios-fetch/index.html)
+> in the Cardano Blueprint for the prototype's current message set.
 
-   StIdle -->|"MsgLeiosBlockNotifyRequestNext(N)"| StBusy
-   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens > 1; tokens −= 1}<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens > 1; tokens −= 1}"| StBusy
-   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens = 1 }<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens = 1 }"| StIdle
-
-   StIdle -->|MsgDone| StDone
-```
-
-<em>Figure 6c: LeiosBlockNotify mini-protocol state machine</em>
-
-</div>
-
-The last forward information diffusion protocol is LeiosBlockNotify, which
-signals downstream that a previously announced block is now ready for download
-or that its set of referenced transactions is now fully available. Both of
-these may trigger the downstraem to fetch information from the upstream using
-the next protocol below.
-
-It is important to note that the protocols above should be combined with
-pipelining, meaning that the request for the next batch of responses should be
-sent before the previous batch has been delivered. This is instrumental in
-eliminating wait times (and therefore dissemination delays) due to round-trip
-latency between peers.
+Both mini-protocols should be combined with pipelining, meaning that the
+request for the next response should be sent before the previous one has been
+delivered. This is instrumental in eliminating wait times — and therefore
+dissemination delays — due to round-trip latency between peers.
 
 > **Definition of pipelining:**
 >
@@ -1469,56 +1506,7 @@ latency between peers.
 > message that transitions that instance into the switch state, the receive
 > multiplexer selects the next instance.
 
-In the three mini-protocols above, StIdle is the switch state. In case maximum
-buffering commitment shall be made for 1000 responses, one could e.g. choose a
-pipelining depth of 2 with a request count of 500 each or a depth of 10 with a
-request count of 100 each; the latter would keep the worst-case demand level
-higher than the former at the price of sending slightly more data towards the
-responder.
-
-<div align="center">
-<a name="figure-7" id="figure-7"></a>
-
-```mermaid
----
-title: LeiosFetch
----
-graph LR
-   style StIdle fill:PaleGreen,stroke:DarkGreen;
-   style StMultiBlock fill:PowderBlue,stroke:DarkBlue;
-   style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
-   style StDone fill:SeaShell,stroke:DimGray;
-
-   StIdle -->|MsgLeiosMultiBlockRequest| StMultiBlock -->|MsgLeiosBlock| StMultiBlock -->|MsgLeiosNoMoreBlocks| StIdle
-   StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
-
-   StIdle -->|MsgDone| StDone
-```
-
-<em>Figure 7: LeiosFetch mini-protocol state machine</em>
-
-</div>
-
-The LeiosFetch protocol is used to request large responses from upstream and
-therefore uses the established request-response pattern, possibly with
-mini-protocol pipelining. Note that such bulk transfers will be multiplexed on
-the underlying TCP connection in a fair manner based on 64kB segments, hence
-the transfer latency is determined by the bandwidth-RTT-product as well as the
-size of the configured TCP send and receive buffers.
-
-While the node is catching up with the chain after a restart, it will see Praos
-blocks referencing EBs and use the MsgLeiosMultiBlockRequest to get not only
-the EB but also all transactions referenced therein. When following the current
-state of the chain, it will instead use the MsgLeiosBlockTxsRequest, which
-allows it to fetch either the EB itself (with an empty transaction ID list)
-or a list of transactions referenced by the EB (identified by their sequence
-index in the EB and transmitted in compressed bitmap format). The initial
-proposal for the bitmap representation is inspired by roaring bitmaps:
-
-- a bitmap is a CBOR byte string with the following internal format
-- it is a concatenation of 9-octet slices, where the first octet C names the
-  chunk (for values `C*64..(C+1)*64`) and the following eight octets contain
-  a bitmap of which values of this chunk are in the requested set
+In both mini-protocols above, StIdle is the switch state.
 
 The required exchange between two neighboring nodes is captured by the
 following Information Exchange Requirements table (IER table). For the sake of
@@ -1534,26 +1522,26 @@ not yet received MsgLeiosBlockTxsOffer.
 <div align="center">
 <a name="table-4" id="table-4"></a>
 
-| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
-| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
-| ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
-| Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
-| ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
-| Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
-| ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
-| ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
-| Client→ | MsgLeiosMultiBlockRequest       | list of EB hashes              | Requests the EBs and all referenced transactions for the given EB hashes                                 |
-| ←Server | MsgLeiosBlock                   | EB block, list of transactions | A block requested in the previous MsgLeiosMultiBlockRequest                                              |
-| ←Server | MsgLeiosNoMoreBlocks            | $\emptyset$                    | All blocks from the previous MsgLeiosMultiBlockRequest have been delivered                               |
-| Client→ | MsgLeiosBlockTxsRequest         | EB hash, list of integers      | For the referenced EB, request a list of transactions identified by their sequence number within that EB |
-| ←Server | MsgLeiosBlockTxs                | list of transactions           | The transactions from an earlier MsgLeiosBlockTxsRequest                                                 |
+| Sender  | Name                            | Arguments                                                    | Semantics                                                                                                                                                                                                                             |
+| ------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosNotificationRequestNext | $\emptyset$                                                  | Requests one Leios notification: the announcement of an EB, a delivery offer for a block or its transactions, or votes.                                                                                                              |
+| ←Server | MsgLeiosBlockAnnouncement       | RB header that announces an EB                               | The server has seen this EB announcement.                                                                                                                                                                                             |
+| ←Server | MsgLeiosBlockOffer              | slot and EB hash                                             | The server can immediately deliver this block.                                                                                                                                                                                        |
+| ←Server | MsgLeiosBlockTxsOffer           | slot and EB hash                                             | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
+| ←Server | MsgLeiosVotes                   | non-empty list of votes                                      | Votes the server has received and considers worth relaying.                                                                                                                                                                           |
+| Client→ | MsgLeiosBlockRequest            | slot and EB hash                                             | The server must now deliver this block.                                                                                                                                                                                               |
+| ←Server | MsgLeiosBlock                   | EB block                                                     | The block from an earlier MsgLeiosBlockRequest.                                                                                                                                                                                       |
+| Client→ | MsgLeiosBlockTxsRequest         | slot, EB hash, and map from 16-bit index to 64-bit bitmap    | The server must now deliver these transactions. The given bitmap identifies which of 64 contiguous transactions are requested, and the offset of the transaction corresponding to the bitmap's first bit is 64 times the given index. |
+| ←Server | MsgLeiosBlockTxs                | slot, EB hash, the requested bitmap, and list of transactions | The transactions from an earlier MsgLeiosBlockTxsRequest.                                                                                                                                                                             |
+| Client→ | MsgLeiosBlockRangeRequest       | two slots and two RB header hashes                           | The server must now deliver the EBs certified by the given range of RBs, in order.                                                                                                                                                   |
+| ←Server | MsgLeiosNextBlockAndTxsInRange  | an EB and all of its transactions                            | The next certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
+| ←Server | MsgLeiosLastBlockAndTxsInRange  | an EB and all of its transactions                            | The last certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
 
 <em>Table 4: Leios Information Exchange Requirements table (IER table)</em>
 
 </div>
 
-This set of mini-protocols satisfies the above requirements in the following ways.
+This mini-protocol pair satisfies the above requirements in the following ways.
 
 - These mini-protocols have less width than the LocalStateQuery mini-protocol
   and less depth than the TxSubmission mini-protocol. Thus, its structure is not
@@ -1564,9 +1552,12 @@ This set of mini-protocols satisfies the above requirements in the following way
   mini-protocols.
 - Depending on how severely the node must prioritize Praos over Leios, the
   separation of their mini-protocols may simplify the prioritization mechanism.
-  However, urgency inversion means that LeiosFetch may
-  occasionally need to have the same priority as Praos.
-- LeiosAnnounce, LeiosVotes and LeiosFetch can also progress independently, because they are
+  However, urgency inversion means that at least MsgLeiosBlockRangeRequest,
+  MsgLeiosNextBlockAndTxsInRange, and MsgLeiosLastBlockAndTxsInRange may
+  occasionally need to have the same priority as Praos. If it would benefit the
+  prioritization implementation, those three messages could be isolated in a
+  third Leios mini-protocol that has equal priority as the Praos mini-protocols.
+- LeiosNotify and LeiosFetch can also progress independently, because they are
   separate mini-protocols. A client can therefore receive notifications about
   new Leios data and when it could be fetched from this peer even while a large
   reply is arriving via LeiosFetch. This avoids unnecessary increases in the
@@ -1574,45 +1565,27 @@ This set of mini-protocols satisfies the above requirements in the following way
 - The client can prioritize the youngest of outstanding offers from the peer
   when deciding which LeiosFetch request to send next, as freshest-first
   delivery requires.
-- For LeiosFetch, latency can be optimized by using the established pipelining
-  technique; for the other three protocols an explicit and more powerful
-  approach is chosen in order to avoid any blocking of the sending under
-  nominal circumstances while still placing a strict bound on the maximally
-  outstanding response size.
+- Because the client only has agency in one state, it can pipeline its requests
+  for the sake of latency hiding.
 - The client can request multiple transactions at once, which avoids wasting
   resources on overhead due to the potentially thousands of transactions
   exchanged per EB. (Most EBs' transactions will usually have already arrived
   via the Mempool, but the adversary can prevent that for their EBs.) The
-  EB index-based addressing scheme allows for compact requests for even thousands
-  of transactions: a few kB of MsgLeiosBlockTxsRequest can request
-  every transaction in even the largest EB, while a MsgLeiosBlockTxsRequest for
-  a single transaction would only cost tens of bytes. Without a compact
-  addressing scheme, a node that requires every transaction for some EB would
-  essentially need to send a request that's the same size as the EB itself,
-  which is large enough to be considered an unnecessary risk of increased
-  latency.
-- The client can request multiple votes at once without having to wait for
-  the reception of their identifiers, which avoids wasting resources
-  on overhead due to the hundreds of votes exchanged per EB. Because the first
-  vote in a bundle could have arrived sooner than the last vote in a bundle if
-  it had not been bundled, maximal bundling risks unnecessary increases in
-  latency. Some heuristic will balance the overhead decrease and latency
-  increase, such as the client gradually stops bundling its vote requests as its
-  set of received votes approaches a quorum.
-- The server can bundle votes when submitting them to the multiplexer during
-  the early phase of voting on a given block in order to achieve better
-  bandwidth utilization, and it can switch to individual submissions during the
-  phase where the quorum is close to optimize for minimal latency.
-- MsgLeiosMultiBlockRequest lets syncing nodes avoid wasting resources on
+  bitmap-based addressing scheme described above keeps those requests compact.
+- Because votes arrive unsolicited on LeiosNotify, no round-trip is spent on
+  them at all. Bundling several votes into one MsgLeiosVotes trades latency for
+  overhead — the first vote in a bundle could have arrived sooner had it not
+  been bundled — so a server should bundle during the early phase of voting on
+  a block for bandwidth efficiency and switch to individual sends as the quorum
+  approaches, to optimize for minimal latency.
+- MsgLeiosBlockRangeRequest lets syncing nodes avoid wasting resources on
   overhead due to the (hopefully) high rate of EBs per RB. BlockFetch already
   bundles its RB requests when syncing, and this message lets LeiosFetch do the
   same. The starvation detection and avoidance mechanism used by Ouroboros
   Genesis' Devoted BlockFetch variant can be easily copied for
-  MsgLeiosMultiBlockRequest if Ouroboros Genesis is enabled. Since this request
-  type is meant to be used during sync, the response also contains all
-  referenced transactions — the client won't have them in its mempool anyway.
+  MsgLeiosBlockRangeRequest if Ouroboros Genesis is enabled.
 - Recall that the `certified_eb` bit enables the client to correctly predict the
-  total payload size of the valid replies to a MsgLeiosMultiBlockRequest. This
+  total payload size of the valid replies to a MsgLeiosBlockRangeRequest. This
   enables the client to manage its receive buffers, balance load across peers,
   etc.
 - A server should disconnect if the client requests an EB (or its transactions)
@@ -1623,10 +1596,10 @@ This set of mini-protocols satisfies the above requirements in the following way
   be able to serve it. Whether additional restrictions would be useful is not
   yet clear. For example, it seems natural to restrict MsgLeiosBlockRequest and
   MsgLeiosBlockTxsRequest to young EBs (and perhaps also
-  MsgLeiosMultiBlockRequest to old EBs), but it's not already clear what the
+  MsgLeiosBlockRangeRequest to old EBs), but it's not already clear what the
   benefit would be.
-- If MsgLeiosBlockTxsRequest were restricted to young
-  EBs, then MsgLeiosMultiBlockRequest would not only enable syncing nodes but
+- If MsgLeiosBlockRequest and MsgLeiosBlockTxsRequest were restricted to young
+  EBs, then MsgLeiosBlockRangeRequest would not only enable syncing nodes but
   also the unfortunate node that suffers from a $\Delta^\text{W}_\text{EB}$
   violation. The protocol design requires that that event is rare or at least
   confined to a small portion of honest stake at a time. But it will
@@ -1641,7 +1614,7 @@ This set of mini-protocols satisfies the above requirements in the following way
   election and Praos elections have a stochastically low arrival rate, this
   memory bound is low enough to admit existing Cardano infrastructure.
 
-The mini-protocols do not already address the following challenges, but
+The mini-protocol pair does not already address the following challenges, but
 the corresponding enrichments — if necessary — would not contradict the
 Tolerable Implementation Complexity requirement.
 
@@ -1660,6 +1633,16 @@ Tolerable Implementation Complexity requirement.
   infrastructure, but only by splitting the mini-protocol's requests and
   responses into different mini-protocols, which might be prohibitively
   obfuscated.
+- With server-side reordering, LeiosFetch could also be free to interleave small
+  replies with large replies to block/transaction requests. Without it, the
+  collocation of small and large replies in a single mini-protocol with granular
+  states incurs head-of-line blocking. That risks occasionally increasing some
+  key latencies, thereby threatening freshest-first delivery or even motivating
+  inflations of $L_\text{vote}$ and/or $L_\text{diff}$. One easy mitigation
+  would run two instances of LeiosFetch and reserve one for requests that are
+  small and urgent (e.g., small blocks or a few missing transactions); the
+  existing infrastructure would naturally interleave those with the larger
+  and/or less urgent requests.
 
 ### Incentives
 
@@ -2450,7 +2433,7 @@ Based on the [network timing measurements](#network-characteristics):
 
 **Timing Parameter Calibration:**
 
-- $L_\text{hdr} = 1$ second: Header diffusion period, where equivocation
+- $L_\text{hdr} = 1$ second: Announcement period, where the equivocation
   detection period is $3 \times L_\text{hdr} = 3$ seconds (per
   [equivocation detection](#equivocation-detection))
 - $L_\text{vote} = 4$ seconds: Since voting begins after
@@ -2486,7 +2469,7 @@ consideration of tradeoffs.
 |---------------------------------------------------|:-----------------:|:------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Committee size                                    |       $N_c$       |     900 seats      | Covers ~99% of mainnet active stake (890 pools reach 99% at epoch 649), with a 113 B certificate bitfield and a vote count inside the simulated range. See [choosing the committee size](#choosing-committee-size).                                                                                                                                  |
 | Quorum stake threshold                            |      $\tau$       |        0.75        | Votes representing ≥75% of total active stake must sign, so $\tau - \sigma_a = 25\\%$ of honest stake holds every certified EB even at 50% adversarial stake — the seed coverage $\Delta_\text{EB}^{\text{W}}$ and $L_\text{diff}$ assume. Must satisfy $0.5 < \tau < \sigma(N_c)$; see [choosing the quorum threshold](#choosing-quorum-threshold). |
-| Header diffusion period length                    |  $L_\text{hdr}$   |      1 second      | Per [equivocation detection](#equivocation-detection): accommodates header propagation for equivocation detection. Equivocation detection period is $3 \times L_\text{hdr}$.                                                                                                                                                                         |
+| Announcement period length                        |  $L_\text{hdr}$   |      1 second      | Per [equivocation detection](#equivocation-detection): accommodates propagation of one announcement (an RB header). Equivocation detection period is $3 \times L_\text{hdr}$.                                                                                                                                                                         |
 | Voting period length                              |  $L_\text{vote}$  |     4 seconds      | Per [voting period](#voting-period): accommodates EB propagation and validation time, with equivocation detection handled separately by $3 \times L_\text{hdr}$.                                                                                                                                                                                     |
 | Diffusion period length                           |  $L_\text{diff}$  |     7 seconds      | Per [diffusion period](#diffusion-period): minimum calculated as 4 seconds with typical network values, use 7 for safety margin.                                                                                                                                                                                                                       |
 | Maximum endorser block size                       |   $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                                                                                                                                                                                           |
@@ -3379,7 +3362,7 @@ block_header =
 
 ```cddl
 endorser_block =
-  [ transaction_references   : omap<hash32, uint16>
+  [ transaction_references   : omap<hash32, uint32>
   ]
 
 ; Ordered map type definition
@@ -3390,9 +3373,13 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ; Legacy reference structure (for documentation)
 ; tx_reference =
 ;   [ tx_hash                  : hash32     ; Hash of complete transaction bytes
-;   , tx_size                  : uint16     ; Transaction size in bytes
+;   , tx_size                  : uint32     ; Transaction size in bytes
 ;   ]
 ```
+
+The declared size is a 32-bit quantity: a 16-bit size would cap an endorsable
+transaction at 64 KiB, which the `maxTxSize` protocol parameter is free to
+exceed.
 
 <a id="votes-certificates-cddl" href="#votes-certificates-cddl">**Votes and
 Certificates**</a>
@@ -3470,10 +3457,58 @@ Rotation](#key-registration)):
    )
 
 +bls_key =
-+  [ leios_bls_verification_key
-+  , leios_bls_pop
++  [ bls_pubkey           : leios_bls_verification_key
++  , bls_possession_proof : leios_bls_pop
 +  ]
 ```
+
+<a id="protocol-parameters-cddl" href="#protocol-parameters-cddl">**Protocol
+Parameters**</a>
+
+The parameters of [Table 3](#table-3) are added to the Dijkstra era's
+`protocol_param_update` map, so that each is updatable through the existing
+governance action. The keys below are those of the `cardano-ledger`
+implementation:
+
+```diff
+ protocol_param_update =
+   { ? 0  : coin                   ; minfeeA
+     ...
+   , ? 38 : max_pledge_leverage    ; max pledge leverage
+   , ? 39 : unit_interval          ; min pool margin
++  , ? 40 : uint .size 4           ; leios announcement period length in ms
++  , ? 41 : uint .size 4           ; leios vote period length in ms
++  , ? 42 : uint .size 4           ; leios diffusion period length in ms
++  , ? 43 : uint .size 2           ; leios committee size
++  , ? 44 : unit_interval          ; leios quorum stake threshold
++  , ? 45 : uint .size 4           ; max endorser block references size
++  , ? 46 : uint .size 4           ; max endorser block txs size
++  , ? 47 : ex_units               ; max endorser block ex units
++  , ? 48 : uint .size 4           ; max ref script size per endorser block
+   }
+```
+
+Mapping these onto [Table 3](#table-3):
+
+| CDDL key | Symbol            | Table 3 parameter                                |
+|----------|-------------------|--------------------------------------------------|
+| 40       | $L_\text{hdr}$    | Announcement period length                        |
+| 41       | $L_\text{vote}$   | Voting period length                              |
+| 42       | $L_\text{diff}$   | Diffusion period length                           |
+| 43       | $N_c$             | Committee size                                    |
+| 44       | $\tau$            | Quorum stake threshold                            |
+| 45       | $S_\text{EB}$     | Maximum endorser block size                       |
+| 46       | $S_\text{EB-tx}$  | Maximum total transaction size per endorser block |
+| 47       | -                 | Maximum Plutus steps and memory per endorser block |
+| 48       | $S_\text{EB-ref}$ | Maximum reference script size per endorser block  |
+
+Two encoding notes. The three timing parameters are stated in **seconds**
+throughout this document because that is the unit the protocol's timing
+arguments reason in, but they are **encoded in milliseconds** on the wire so
+that sub-second values remain expressible independently of `slotLength`. The
+per-EB Plutus step and memory budgets share a single `ex_units` pair (key 47),
+mirroring the existing `max tx ex units` and `max block ex units` parameters,
+rather than occupying two keys.
 
 ## Copyright
 
