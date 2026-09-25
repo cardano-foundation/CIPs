@@ -3406,13 +3406,13 @@ Certificates**</a>
 
 ```cddl
 leios_certificate =
-  [ signers               : bytes          ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
+  [ signers               : bytes .size (0 .. 8192)  ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
   , aggregated_signature  : leios_bls_signature
   ]
 
 leios_vote =
-  [ announcing_rb_hash    : hash32         ; the signed message; hash of the RB header announcing the EB
-  , voter_id              : uint           ; index into the epoch's stake-based committee
+  [ announcing_rb_hash    : hash32           ; the signed message; hash of the RB header announcing the EB
+  , voter_id              : uint .size 2     ; index into the epoch's stake-based committee
   , vote_signature        : leios_bls_signature
   ]
 ```
@@ -3421,6 +3421,11 @@ Neither structure repeats the announcing RB's slot or the EB hash. A vote is
 verified against the `announcing_rb_hash` it carries, and a certificate is
 verified against the announcing RB determined from the certifying RB's own chain
 context, so both are redundant on the wire.
+
+Both widths are bounded, so a decoder can reject a malformed structure before
+doing any work on it. `voter_id` is two bytes because `committeeSize` is, and
+`signers` is capped at 8192 bytes — the bitfield for the largest committee a
+two-byte seat index can address.
 
 The `signers` bitfield is `⌈N/8⌉` bytes where `N` is the committee size for the
 epoch in which the announcing RB was produced: the `committeeSize` protocol
