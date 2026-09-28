@@ -133,16 +133,15 @@ the formalized metatheory.
 
 The reduction semantics for free variables is given by the following rule:
 
-```
 
----------
-x ⟶ error
+```math
+\frac{ }{x \to \texttt{error}}
 ```
 
 The CEK semantics for free variables is given by the step:
 
-```
-s; ρ ▷ x ↦ ◆    (if x is not bound in ρ)
+```math
+s; ρ ▷ x ↦ ◆    \text{(if x is not bound in ρ)}
 ```
 
 Text in the specification is updated accordingly. For example:
