@@ -43,7 +43,7 @@ indices. That required a conversion from de Bruijn indices to names, which
 incidentally enforced well-scopedness. A scope check was kept to preserve that
 behaviour. This "wasn't a conscious choice"[^bench].
 
-[^plutus-spec]: https://plutus.cardano.intersectmbo.org/resources/plutus-core-spec.pdf
+[^plutus-spec]: [Plutus Core specification](https://plutus.cardano.intersectmbo.org/resources/plutus-core-spec.pdf)
 
 ### The scope check is costly
 
@@ -58,8 +58,8 @@ Transaction throughput and developer adoption (which is hindered by high fees)
 are both core pillars of Cardano's 2030 strategy[^2030-strategy]. This raises
 the question: is the scope check worth it?
 
-[^bench]: https://github.com/IntersectMBO/plutus/issues/7368
-[^2030-strategy]: https://product.cardano.intersectmbo.org/vision/strategy-2030/
+[^bench]: [Original issue](https://github.com/IntersectMBO/plutus/issues/7368)
+[^2030-strategy]: [Cardano 2030 Strategy](https://product.cardano.intersectmbo.org/vision/strategy-2030/)
 
 
 
@@ -100,7 +100,7 @@ relies on the well-scopedness property. For example, the Amaru Rust
 implementation deals with variable lookup failure in the same way as the Haskell
 node.
 
-[^cek-open-error]: https://github.com/IntersectMBO/plutus/blob/57d6d00c307c802d8a5c0f92253205438a9180f4/plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs#L1085
+[^cek-open-error]: [CEK machine logic for free variables](https://github.com/IntersectMBO/plutus/blob/57d6d00c307c802d8a5c0f92253205438a9180f4/plutus-core/untyped-plutus-core/src/UntypedPlutusCore/Evaluation/Machine/Cek/Internal.hs#L1085)
 
 
 ### The current scope check is unsound
@@ -110,7 +110,7 @@ accept some open terms already. This should be fixed (independently of this
 proposal), but in practice free variables have already been part of the
 semantics for some time.
 
-[^scope-bug]: https://github.com/IntersectMBO/plutus/issues/7965
+[^scope-bug]: [checkScope does not traverse Constr/Case: free variables inside SOP terms pass the ledger scope check](https://github.com/IntersectMBO/plutus/issues/7965)
 
 
 ### Developer tooling typically performs the scope check off-chain
@@ -166,7 +166,7 @@ without scoping restrictions and a corresponding CEK machine, in addition to the
 scoped and typed formalisations (which cannot represent open terms). The CEK
 machine will implement the semantics for free variables as outlined above.
 
-[^plutus-metatheory]: https://github.com/IntersectMBO/plutus/tree/master/plutus-metatheory
+[^plutus-metatheory]: [Plutus metatheory in Agda](https://github.com/IntersectMBO/plutus/tree/master/plutus-metatheory)
 
 ### The conformance test suite
 
@@ -270,7 +270,7 @@ An experiment has shown that fusing the scope check with deserialization
 improves performance [^fusing], but it still requires work for each variable and
 doesn't address the other parts of the motivation.
 
-[^fusing]: https://github.com/IntersectMBO/plutus/issues/7368#issuecomment-3686732448
+[^fusing]: [Experiment on fusing the scope check](https://github.com/IntersectMBO/plutus/issues/7368#issuecomment-3686732448)
 
 
 #### Keeping well-scopedness to prevent mistakes in a CEK implementation
