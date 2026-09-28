@@ -735,10 +735,11 @@ their headers and embedding EB certificates in their bodies.
 
 1. **Header additions**:
    - `announced_eb` (optional): Hash of the EB created by this block producer
-   - `announced_eb_size` (optional): Size in bytes of the announced EB's
-     **closure** — the EB itself plus every transaction it references (4
-     bytes). It is the closure rather than the EB alone because this is what
-     lets a peer budget the transfer it is about to request.
+   - `announced_eb_size` (optional): Size in bytes of the announced EB itself
+     — its encoded reference map, not the closure of transactions it refers
+     to (4 bytes). It lets a peer budget the EB fetch before requesting it;
+     the closure's size is the sum of the reference sizes the EB carries, so
+     it is known once the EB has arrived.
    - `certified_eb` (optional): Single bit indicating whether this RB certifies
      the EB announced by the previous RB (the EB hash is already available via
      the previous header's `announced_eb` field)
@@ -3363,7 +3364,7 @@ proofs-of-possession) used by Leios voting and certification.
 
 +eb_announcement =
 +  [ eb_hash                  : hash32
-+  , eb_size                  : uint32   ; size of the EB closure
++  , eb_size                  : uint32   ; size of the encoded EB
 +  ]
 ```
 
