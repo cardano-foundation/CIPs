@@ -1543,7 +1543,8 @@ spent,
 3. new datum has same role and key
 4. the new datum's `expiry` is between
    [`MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`](#protocol-constants)
-   past the transaction's validity lower bound
+   ahead of now: at least the former past the validity **upper** bound, and at
+   most the latter past the validity **lower** bound
 - If the NFT is burned, check 5
 5. The validity lower bound must be at or past the datum's `expiry`
 
@@ -1577,7 +1578,7 @@ registration =
          , protocol_revision : uint
          , accepts           : accepted_versions
          , endpoint          : endpoint
-         , expiry            : uint          ; POSIX seconds
+         , expiry            : uint          ; POSIX milliseconds
          , commitment
          , standing
          ])
@@ -1652,7 +1653,8 @@ disclosure's note) is UTF-8 carried as a byte string.
 passes. Renewing moves the field forward, bounded each time by
 `MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`. A party compiling the
 registry ignores an expired entry.
-`expiry` is POSIX seconds, where an offer's validity bounds are slots. 
+`expiry` is POSIX milliseconds, matching the units a script reads the validity
+range in, where an offer's validity bounds are slots. 
 
 **Where the endpoint points.** Either an absolute URL, or a bare domain resolved
 through a DNS `SRV` record at `_subtx._tcp.<domain>`. `SRV` also carries priority
