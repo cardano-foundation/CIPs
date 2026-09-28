@@ -26,13 +26,18 @@ The ledger enforces the urgency signalling rule: every transaction in a valid Ra
 
 ### Common misconceptions: clarified
 
+* Refunds support two cases:
+  * The transaction offers the urgent fee but ends up in an EB
+  * The transaction offers headroom in its fee to reduce the risk of eviction due to price increases, but not all of that headroom is required at the time of inclusion
 * The premium above the ordinary minimum fee goes to the treasury, so producers cannot earn it by favouring urgent transactions over EB certificates.
-* Under the normal block-production policy, a ready, qualifying EB certificate takes precedence over a direct RB transaction payload, regardless of urgent backlog. Urgent backlog therefore does not defer that certificate under this policy.
+* Under the normal block-production policy, a ready, qualifying EB certificate takes precedence over a direct RB transaction payload, regardless of urgent backlog. Urgent backlog therefore does not defer that certificate under this policy. Tips paid directly to a producer could give it a reason to break this policy; see [Why not leave priority to the mempool?](#why-not-leave-priority-to-the-mempool).
 * A transaction entering the urgent lane is eligible but not guaranteed to be included in an RB. If it instead enters an EB, it pays the standard quote at inclusion time, with the excess being refunded (assuming the transaction specifies a registered refund account).
 * Each lane’s quote is a posted price calculated by its controller. A larger fee cap provides headroom against quote increases; under the reference FIFO policy, it does not buy an earlier queue position.
 * The standard lane has its own controller; it is not derived from the urgent quote.
 * A standard transaction is _never_ eligible to enter an RB, even if a produced RB would be otherwise empty.
 * Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee all the time. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, conversely, the price decreases again.
+* Standard transactions may never enter RBs in order to make RB entry ledger enforceable, so as to eliminate bribery as a route into the urgent resource for transactions not offering the urgent fee
+* A small portion of determinism is given up. If a transaction elects to use a refund account, certainty of collected fees is lost, as is certainty of that refund account's balance after transaction inclusion. This is a per-transaction choice.
 
 ### A note on linear Leios, as specified in CIP-0164
 
@@ -49,6 +54,8 @@ That means there's a ~51.33% chance of an EB surviving the cooldown period, mean
 Some transactions lose value when delayed, but users currently have no protocol-level way to signal that urgency.
 
 Linear Leios introduces a new block type: the Endorser Block. Vanilla linear Leios uses this additional path only when traffic exceeds Ranking Block capacity. This proposal instead routes standard transactions through Endorser Blocks at every load. Endorser Blocks are slightly slower than Ranking Blocks, so latency variability increases. An urgency signal offsets this cost: it lets nodes allocate block space to serve users' intents.
+
+While linear Leios significantly enhances throughput, Praos block (AKA Ranking Block) space will remain scarce. The SundaeSwap launch resulted in saturation of Praos blocks, so a similar event may result in saturation of RBs, so a motivating historical scenario has already occurred.
 
 From CPS-0031:
 
@@ -547,6 +554,14 @@ EB construction operates the same way block construction operates on Cardano tod
 Mempool structure remains node policy, so the ledger does not enforce it.
 
 #### Revalidation and stale fees
+
+##### Key points
+
+* A transaction whose offered fee no longer covers the current price should be evicted so as to not take up space in the mempool
+* Extra headroom should be added to a transaction's fee in order to decrease the likelihood of eviction
+* If a registered refund account is specified, any unnecessary headroom will be refunded
+
+##### Explanation
 
 A dynamic quote can rise after admission. A posted max fee that covered the quote at submission can then fall short when the transaction is selected. We handle this with three layers of node policy, ordered by when each acts.
 
@@ -1473,6 +1488,18 @@ The discarded tiered mechanism involved n tiers. Some designs used n tiers for e
 * A security-adjacent concern: more tiers reveal a transaction's urgency, and thus potentially its purpose, more precisely, which increases the surface for front-running
 
 The two-lane mechanism specified here is a first increment, not a ceiling: if evidence emerges that finer-grained tiers retain meaningfully more value, a successor CIP can extend it.
+
+### Why not leave priority to the mempool?
+
+Priority could instead be left to node policy: a mempool could order transactions by what they pay, and producers could collect tips for earlier inclusion. This CIP is about eligibility to enter Ranking Blocks. A mempool upgrade doesn't necessarily invalidate this functionality; it would just enable efficient acceptance (by block producers) of tips offered via some other means, as discussed in [Tipping](#tipping).
+
+Consider the following line of reasoning:
+
+1. A mempool upgrade can let producers put the transactions that pay the most first. The ledger cannot check that order, because the ledger cannot see the mempool.
+2. This upgrade may allow block producers to more easily collect tips, and the producer keeps all of a tip.
+3. These tips give a producer a reason to skip a ready EB certificate since an RB may contain _either_ transactions _or_ an EB certificate, never both. The producer can then fill its own RB with transactions that offer tips for it, and is incentivised to do so because it controls its own RB, but if it puts those transactions in a new EB, that EB can fail certification.
+4. This CIP does not make skipping EB certificates impossible, but it makes it less attractive. To enter an RB, a transaction must pay the urgent price. The part of that price above the minimum fee goes to the treasury, not to the producer. As a result, the user has less money left for a tip. This depends on the premium. While urgent utilisation stays below its target, the urgent quote settles at the ordinary minimum fee and there is no premium. The premium rises with demand for Ranking Block space, which is also when tips, and so the reason to skip a certificate, would be largest.
+5. This protection comes from a ledger rule, not from the mempool, so a mempool upgrade does not make this CIP unnecessary.
 
 ### Optional extensions
 
