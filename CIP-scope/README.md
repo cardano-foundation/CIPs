@@ -7,8 +7,8 @@ Authors:
   - Jacco Krijnen <jacco.krijnen@iohk.io>
 Implementors: []
 Discussions:
-  - Plutus-issue: https://github.com/IntersectMBO/plutus/issues/7368
-  - Original-PR: https://github.com/cardano-foundation/CIPs/pull/1278
+  - Plutus issue: https://github.com/IntersectMBO/plutus/issues/7368
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1278
 Created: 2026-09-21
 License: CC-BY-4.0
 ---
