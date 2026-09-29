@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 201
 Title: Decentralised Pub/Sub Message Dissemination
 Category: Network
 Status: Proposed
