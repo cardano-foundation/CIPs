@@ -12,6 +12,8 @@ Created: 2026-09-17
 License: CC-BY-4.0
 ---
 
+> **Updated 2026-09-29:** linked draft CDDL package (`cddl/`); added period-scoped observer encryption keys candidate.
+
 ## Abstract
 
 Cardano lacks an implementation-independent, operator-controlled way for an external observer to query a small standardized snapshot of node information over the Cardano networking layer.
