@@ -1,0 +1,29 @@
+;
+; NodeToNodeVersionData, v16
+;
+; Upstream reference (ouroboros-network):
+;   cardano-diffusion/protocols/cddl/specs/node-to-node-version-data-v16.cddl
+;
+; Observability is NOT advertised in this VersionData tuple; it is
+; gated by operator config when negotiated version >= 16. A future
+; observabilitySupport field would likely force V17 if networking refuses to
+; amend V16.
+;
+
+nodeToNodeVersionData = [
+  networkMagic,
+  initiatorOnlyDiffusionMode,
+  peerSharing,
+  query,
+  perasSupport
+]
+
+; range between 0 and 0xffffffff
+networkMagic = base.word32
+initiatorOnlyDiffusionMode = bool
+; range between 0 and 1
+peerSharing = 0..1
+query = bool
+perasSupport = bool
+
+;# import network.base as base

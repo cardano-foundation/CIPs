@@ -23,7 +23,7 @@ This CIP defines that mechanism: publicly reachable relays publish slot-aligned 
 - **optional producer proxying** without exposing internal addresses;
 - a shared field vocabulary under topic prefixes, plus implementation namespaces for experiments.
 
-Field names in JSON examples are logical identifiers for configuration and documentation. The wire encoding is expected to be versioned CBOR/CDDL with a compact key registry (required before Active; see Path to Active).
+Field names in JSON examples are logical identifiers for configuration and documentation. The wire encoding is expected to be versioned CBOR/CDDL with a compact key registry (required before Active; see Path to Active). A working CDDL draft for the mini-protocol messages, envelopes, and field registry lives in [`cddl/`](./cddl/README.md).
 
 ## Motivation: Why is this CIP necessary?
 
@@ -634,6 +634,50 @@ Sealed boxes use a fresh ephemeral key pair per encryption. Same plaintext + sam
 
 So a party without the private key cannot tell from ciphertext equality whether underlying values changed. No extra application-level salt is required.
 
+#### Period-scoped observer encryption keys (candidate)
+
+A single forever-valid X25519 observer key is simple, but operationally brittle: a leaked private key, or a devops engineer who leaves with access to it, keeps decrypt capability until every operator drops that pubkey from config.
+
+A stronger optional model is **cold-authorized, period-scoped rotating observer keys**:
+
+1. A long-term **observer identity** is an Ed25519 key (optionally a hardware wallet key or a multisig). It is used only to authorize period keys, not for sealed-box encryption on the hot path.
+2. For each validity window, the observer issues a fresh **period X25519 key pair**. Only the corresponding period private key is held by temporary operator / monitoring infrastructure.
+3. Nodes encrypt sealed boxes to the **current period X25519 public key**, not to the cold Ed25519 identity.
+
+Example period numbering (illustrative; exact mapping is TBD):
+
+- Period length = 10 epochs
+- Period `65` is valid for epochs `650` through `659`
+- Near the boundary, observers publish the next period key early so operators can update before epoch `660`
+
+```text
+Long-term Observer Identity
+          Ed25519
+          (HW and/or multisig optional)
+             |
+             | signs / authorizes
+             v
+   +--------------------+
+   | Period 65          |
+   | X25519 public key  |
+   | valid 650..659     |
+   +--------------------+
+             |
+             | corresponding private key
+             v
+      temporary operator / monitoring host
+```
+
+**Benefits**
+
+- compromise of a period private key has a bounded decrypt window;
+- staff turnover does not leave a forever-valid observer secret in former hands;
+- cold identity stays offline (or behind HW / multisig) and only authorizes the next period key.
+
+**Open challenge (TBD).** How period public keys are pushed or pulled onto nodes so operators do not manually edit config every 10 epochs. Candidates include signed period-key announcements in the optional on-chain observer directory, out-of-band signed manifests that config tooling fetches, or operator-side automation that verifies Ed25519 authorization before updating `observer_public_key`. This CIP keeps the node encrypt path simple (encrypt to configured X25519 pubkeys); discovery and rotation plumbing is observer/ops tooling work still to settle.
+
+Until that update path is agreed, the baseline remains a statically configured `observer_public_key`, with manual rotation as described under observer private-key compromise.
+
 ### Observer Keys and Discovery
 
 #### Out-of-band distribution (baseline)
@@ -689,7 +733,7 @@ What is at stake in this CIP is mainly **current operational and chain-state sig
 3. operators update configs to the new `observer_public_key` and drop the old one;
 4. optional: observers use distinct keys per audience or rotate on a schedule so blast radius stays small.
 
-More complex observer-side key setups (HSMs, per-environment keys, short-lived keys) are fine. They must not force complex key machinery into the node implementation: the node only needs a list of current observer public keys to encrypt to.
+More complex observer-side key setups (HSMs, per-environment keys, [period-scoped rotating keys](#period-scoped-observer-encryption-keys-candidate)) are fine. They must not force complex key machinery into the node implementation: the node only needs a list of current observer public keys to encrypt to.
 
 ### Confidentiality, Authenticity, and Trust Model
 
@@ -855,7 +899,7 @@ Field names in this document (`node_name`, `system_cores`, `chain_tip_slot`, …
 
 JSON examples are for humans. They are not a requirement to ship JSON string keys over Ouroboros N2N.
 
-The mini-protocol should define a versioned binary wire form (expected: CBOR + CDDL). Typical pattern:
+The mini-protocol should define a versioned binary wire form (expected: CBOR + CDDL). See the draft package in [`cddl/`](./cddl/README.md) (messages, envelopes, field registry, and golden vectors). Typical pattern:
 
 - CBOR maps use compact **integer keys** (or equivalent tags);
 - a small registry maps those keys to the logical field identifiers above;
@@ -1013,7 +1057,7 @@ Treat refusal, handshake failure, and mini-protocol timeout as normal. Retry wit
 
 This CIP may become Active when all of the following are met:
 
-1. Dedicated read-only observability mini-protocol messages are specified with versioned **CBOR/CDDL** (or an equivalent Ouroboros-network-native encoding) consistent with this logical model. CDDL is **required before Active**; JSON examples here remain the logical view only.
+1. Dedicated read-only observability mini-protocol messages are specified with versioned **CBOR/CDDL** (or an equivalent Ouroboros-network-native encoding) consistent with this logical model. CDDL is **required before Active**; JSON examples here remain the logical view only. A draft lives in [`cddl/`](./cddl/README.md).
 2. Published **test vectors** exist for the field registry mapping and for sealed-box encrypt/decrypt round-trips.
 3. At least **two independent node implementations** expose the common open/encrypted subset from a publicly reachable relay, with operator opt-in or opt-out.
 4. Operator configuration for field selection, observers, and optional producer proxying is documented for those implementations.
@@ -1048,6 +1092,9 @@ Implementors are listed in the preamble when teams commit; currently none are fo
 [https://docs.cardano.org/about-cardano/explore-more/time](https://docs.cardano.org/about-cardano/explore-more/time)
 - Libsodium sealed boxes:
   <https://doc.libsodium.org/public-key_cryptography/sealed_boxes>
+
+- Draft CDDL package for this CIP (mini-protocol messages, envelopes, field registry, vectors):
+  [`cddl/README.md`](./cddl/README.md)
 
 - CIP-20 transaction metadata JSON schema (possible vehicle for an on-chain observer directory):
   <https://cips.cardano.org/cip/CIP-20>
