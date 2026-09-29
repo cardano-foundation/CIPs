@@ -1006,7 +1006,9 @@ The relay must forward already-encrypted producer publications without decryptin
 
 Topic prefixes (`node_`, `system_`, `chain_`) keep the shared vocabulary readable in operator config while staying distinct from implementation namespaces (`cardano_node.*`, `amaru.*`). JSON examples document the logical registry; CBOR wire can use compact integer keys mapped to those IDs so string names need not ride every message.
 
-### Related work: block markers, draft CIP-0180, and CPS discussion
+### Related work
+
+***Block markers, draft CIP-0180, and CPS discussion***
 
 This N2N snapshot protocol is complementary to on-chain block producer identification, not a substitute.
 
