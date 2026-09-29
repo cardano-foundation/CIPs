@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 203
 Title: Node Implementation Identifier Registry
 Category: Consensus
 Status: Proposed
