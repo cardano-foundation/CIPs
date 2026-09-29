@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 202
 Title: Node Observability Snapshot Protocol
 Category: Network
 Status: Proposed
