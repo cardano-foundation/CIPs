@@ -1,5 +1,5 @@
 ---
-CPS: "?"
+CPS: 38
 Title: Trustworthy Off-chain Message Dissemination
 Category: Network
 Status: Open
