@@ -110,6 +110,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0109 | [Modular Exponentiation Built-in for Plutus Core](./CIP-0109) | Proposed |
 | 0110 | [Plutus v1 Script References](./CIP-0110) | Active |
 | 0112 | [Observe script type](./CIP-0112) | Proposed |
+| 0113 | [Programmable token-like assets](./CIP-0113) | Proposed |
 | 0114 | [CBOR Tags Registry](./CIP-0114) | Proposed |
 | 0115 | [CBOR tag definition - ED25519-BIP32 Keys](./CIP-0115) | Proposed |
 | 0116 | [Canonical JSON Encoding for Domain Types](./CIP-0116) | Proposed |
@@ -178,7 +179,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-09-01</i></p>
+<p align="right"><i>Last updated on 2026-09-29</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
