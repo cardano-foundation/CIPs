@@ -26,10 +26,11 @@ We initially planned a mechanism based on full tiered pricing, then set it aside
 
 ## Specification
 
-The core of the design rests on a two-lane system.
+The core of the design rests on a two-lane system:
 
-Urgent: transactions must offer to pay at least the urgent fee in order to be eligible for inclusion in a Ranking Block
-Standard: transactions offer to pay at least the standard fee in order to be eligible for inclusion to an Endorser Block
+* Urgent: transactions must offer to pay at least the urgent fee in order to be eligible for inclusion in a Ranking Block
+
+* Standard: transactions offer to pay at least the standard fee in order to be eligible for inclusion to an Endorser Block
 
 ### What
 
