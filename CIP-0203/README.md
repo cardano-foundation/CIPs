@@ -1,6 +1,6 @@
 ---
 CIP: 203
-Title: Node Implementation Identifier Registry
+Title: Block Producer Identifier Registry
 Category: Consensus
 Status: Proposed
 Authors:
