@@ -52,7 +52,18 @@ protocol_version = [major_protocol_version, uint .size 4]
 major_protocol_version = 0 .. 12
 ```
 
-Ledger rules only depend on the major version; the minor version has no impact on block validity, hard-fork initiation, or era selection. The header is signed by the pool's KES key under its operational certificate. Therefore, whatever value is placed there is attributable to a specific pool, even though it is self-declared. 
+Ledger rules only depend on the major version; the minor version has no impact on block validity, hard-fork initiation, or era selection. In the Dijkstra era, the ledger makes this explicit. The header carries `header_version_info` instead of `protocol_version`, with the second field being renamed to `self_reported_software_tag`. This document uses "minor version" throughout, since that is the term used generally by the ecosystem.
+
+
+```cddl
+header_version_info =
+  [ highest_supported_major_version : uint .size 4
+  , self_reported_software_tag : uint .size 4
+  ]
+```
+
+
+The header is signed by the pool's KES key under its operational certificate. Therefore, whatever value is placed there is attributable to a specific pool, even though it is self-declared. 
 
 ### Bit layout of the minor version
 
@@ -247,6 +258,7 @@ Every block produced before this CIP decodes to a value this document already ac
 - [x] Publish `registry.json` and `registry.schema.json` alongside this CIP.
 - [ ] Reference decoder: a few lines in two languages, or a link to a shared test-vector file.
 - [ ] Reach out to explorers (Cexplorer, PoolTool, Cardanoscan, AdaStat) and node teams.
+- [ ] cardano-node: populate `self_reported_software_tag` with its registered identifier when building Dijkstra headers, in place of the release minor.
 
 ## References
 
@@ -259,6 +271,8 @@ Every block produced before this CIP decodes to a value this document already ac
   - [CIP-0034: Chain ID Registry](../CIP-0034)
   - [CIP-0067: Asset Name Label Registry](../CIP-0067)
 - [RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://datatracker.ietf.org/doc/html/rfc2119) and [RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words](https://datatracker.ietf.org/doc/html/rfc8174).
+- [Dijkstra CDDL, `header_version_info`](https://github.com/IntersectMBO/cardano-ledger/blob/master/eras/dijkstra/impl/cddl/data/dijkstra.cddl), cardano-ledger.
+- [Change semantics of protocol version in BlockHeader](https://github.com/IntersectMBO/cardano-ledger/issues/5763), Alexey Kuleshevich, the ledger issue defining `self_reported_software_tag`.
 - [Gerolamo](https://github.com/HarmonicLabs/gerolamo), Harmonic Labs.
 - [Amaru](https://github.com/pragma-org/amaru), PRAGMA.
 - [BIP 9: Version bits with timeout and delay](https://github.com/bitcoin/bips/blob/master/bip-0009.mediawiki) and [BIP 8: Version bits with lock-in by height](https://github.com/bitcoin/bips/blob/master/bip-0008.mediawiki).
@@ -270,7 +284,6 @@ Every block produced before this CIP decodes to a value this document already ac
 - Alex Moser and Matthias Benkort for the CPS-0036 draft.
 - Matthias Benkort for proposing to fit identification into the minor version without a breaking change.
 - Markus Gufler for the compact-encoding counter-proposal, the abuse analysis, and the operator privacy interviews.
-- Alexey Kuleshevich for clarifying the ledger semantics of the header protocol version.
 - Robert Phair for the deliberate vs indeliberate non-participation requirement and early editorial guidance.
 - Martin Lang for pressing on extensibility and hard-fork minor version semantics.
 - Blink Labs (Dingo) and Harmonic Labs (Gerolamo) for initial implementations.
