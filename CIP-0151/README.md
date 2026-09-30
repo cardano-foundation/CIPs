@@ -10,11 +10,13 @@ Implementors:
     -   Cardano Signer <https://github.com/gitmachtl/cardano-signer/releases/tag/v1.23.0>
     -   pg_cardano <https://github.com/cardano-community/pg_cardano/releases/tag/v1.0.5-p1>
     -   Cardano Koios <https://github.com/cardano-community/koios-artifacts/tree/v1.3.2>
+    -   Blockfrost <https://github.com/blockfrost/blockfrost-backend-ryo/pull/260>
     -   CNTools <https://github.com/cardano-community/guild-operators/tree/alpha>
     -   SPO Scripts <https://github.com/gitmachtl/scripts>
     -   Reference Implementation <https://github.com/crypto2099/calidus-demo>
     -   VeriGlyph Sentinel <https://sentinel.veriglyph.io>
     -   Ekklesia <https://ekklesia.vote>
+    -   AdaStat <https://adastat.net>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/999
     - Cardano Forum: https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
@@ -408,7 +410,7 @@ shown an interest in using it as a method of authentication and validation.
     * [x] pg_cardano
     * [x] cardano-hw-cli support
     * [x] Cardano Koios
-    * [ ] Blockfrost
+    * [x] Blockfrost
     * [x] CN Tools
     * [x] SPO Scripts
     * [x] VeriGlyph
@@ -418,7 +420,7 @@ shown an interest in using it as a method of authentication and validation.
 * Applications
     * [ ] CExplorer
     * [ ] CardanoScan
-    * [ ] AdaStat
+    * [x] AdaStat
     * [ ] PoolTool.io
     * [x] DripDropz
     * [x] Ekklesia
