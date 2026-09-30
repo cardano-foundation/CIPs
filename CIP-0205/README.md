@@ -125,8 +125,11 @@ machine.
 ## Specification
 
 This specification covers changes to the Plutus Core language
-specification[^plutus-spec], the implementation, the conformance test suite and
-the formalized metatheory.
+specification[^plutus-spec], the implementation[^plutus-repo], the conformance
+test suite[^plutus-conformance] and the formalized metatheory[^plutus-metatheory].
+
+[^plutus-repo]: [Plutus repository](https://github.com/IntersectMBO/plutus)
+[^plutus-conformance]: [Plutus conformance test suite](https://github.com/IntersectMBO/plutus/tree/master/plutus-conformance)
 
 
 ### The Plutus Core specification
