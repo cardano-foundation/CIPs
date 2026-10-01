@@ -5,7 +5,7 @@ Category: "Tools"
 Status: Proposed
 Authors:
     - Adam Dean <adam@crypto2099.io>
-Implementors: [ ]
+Implementors: []
 Discussions:
     -   Original PR: https://github.com/cardano-foundation/CIPs/pull/1282/
     -   CIP-203 PR: https://github.com/cardano-foundation/CIPs/pull/1276/
