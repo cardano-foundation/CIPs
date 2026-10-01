@@ -1,0 +1,4041 @@
+diff --git a/abstract-sim-hs/config/sweeps/announcement-semantics-smoke.json b/abstract-sim-hs/config/sweeps/announcement-semantics-smoke.json
+new file mode 100644
+index 00000000..dd7915b5
+--- /dev/null
++++ b/abstract-sim-hs/config/sweeps/announcement-semantics-smoke.json
+@@ -0,0 +1,27 @@
++{
++  "description": "Exploratory paired four-arm ablation of the simulator's announcement semantics against the CIP's specified semantics. Holds the S=.75/U=.50, D16, half-RB threshold, K10 mechanism fixed while varying two independent knobs: (1) block-window takes the standard controller's 20-entry window over processed-block summaries only, filtering out the zero-width EbAnnounced entries that the historical signal lets occupy window positions; (2) cert-reset restarts the EB age-escape count when a certified EB is applied, matching the specified 'Ranking Blocks since an EB certificate last entered the chain', instead of at every announcement (including announcements whose EB is later dropped without certifying). The fourth arm applies both. Ten paired seeds across the five headline loads plus the 0.1 tx/slot trickle (where the age escape binds) are intended as a directional smoke test, not confirmatory evidence.",
++  "seedStart": 440,
++  "seeds": 10,
++  "slots": 2000,
++  "summaryOnly": true,
++  "randomness": "independent-streams",
++  "out": "sweep-results/announcement-semantics-smoke/severe-congestion",
++  "variants": [
++    {
++      "name": "historical",
++      "config": "config/variants/standard-target-screen/s75-u50.json"
++    },
++    {
++      "name": "block-window",
++      "config": "config/variants/announcement-semantics/block-window.json"
++    },
++    {
++      "name": "cert-reset",
++      "config": "config/variants/announcement-semantics/cert-reset.json"
++    },
++    {
++      "name": "block-window-cert-reset",
++      "config": "config/variants/announcement-semantics/block-window-cert-reset.json"
++    }
++  ]
++}
+diff --git a/abstract-sim-hs/config/sweeps/recommended-headlines.json b/abstract-sim-hs/config/sweeps/recommended-headlines.json
+new file mode 100644
+index 00000000..7c0cb466
+--- /dev/null
++++ b/abstract-sim-hs/config/sweeps/recommended-headlines.json
+@@ -0,0 +1,18 @@
++{
++  "description": "Refresh of the CIP headline comparisons under the adopted recommended construction: flat fee versus the mechanism with the 0.75 standard target, the 10-block processed-block standard window, and the age-escape reset at certification. The window length and the reset rule were selected by the standard-window screen (seeds 0-99), bounded by the announcement-semantics smoke (seeds 440-449), and confirmed on disjoint seeds (500-599). The runner applies each of the five headline load profiles to this manifest, using ten paired seeds and 2,000 slots without retaining event traces.",
++  "seeds": 10,
++  "slots": 2000,
++  "summaryOnly": true,
++  "randomness": "independent-streams",
++  "out": "sweep-results/recommended-headlines",
++  "variants": [
++    {
++      "name": "flat-fee",
++      "config": "config/variants/flat-fee.json"
++    },
++    {
++      "name": "recommended",
++      "config": "config/variants/standard-window-confirm/block-window-10-cert-reset.json"
++    }
++  ]
++}
+diff --git a/abstract-sim-hs/config/sweeps/standard-window-confirm.json b/abstract-sim-hs/config/sweeps/standard-window-confirm.json
+new file mode 100644
+index 00000000..5366fdcc
+--- /dev/null
++++ b/abstract-sim-hs/config/sweeps/standard-window-confirm.json
+@@ -0,0 +1,23 @@
++{
++  "description": "Confirmation of the standard-window screen's selection on disjoint seeds. The candidate is the exact configuration the CIP will specify: the standard controller's utilisation window taken over the 10 most recent processed-block summaries (announcements excluded), and the EB age-escape count reset at certified-EB application rather than at announcement. It is compared against the historical announcement-diluted 20-entry window with announcement-time reset, and against flat fee. Seeds 500-599 are disjoint from the screen (0-99) and from every earlier selection experiment. Pre-declared pass criteria, all of which must hold (conjunctive gating, so no multiplicity adjustment), evaluated mechanically by scripts/compare_standard_window_confirm.py: C1 launch-day overall retained value beats historical (95% CI above zero and candidate higher in at least 90% of seed pairs); C2 severe-congestion and EB-capacity-stress overall retained-value ratio within 0.05 percentage points of historical (95% CI lower bound above -0.05); C3 overall retained value beats flat fee at severe congestion, EB-capacity stress, and launch day (95% CI above zero); C4 trickle standard-lane retained-value ratio within 1 percentage point of historical (95% CI lower bound above -1.0). Mid-load bit-identity to historical is expected and reported but not gated.",
++  "seedStart": 500,
++  "seeds": 100,
++  "slots": 2000,
++  "summaryOnly": true,
++  "randomness": "independent-streams",
++  "out": "sweep-results/standard-window-confirm/severe-congestion",
++  "variants": [
++    {
++      "name": "historical",
++      "config": "config/variants/standard-target-screen/s75-u50.json"
++    },
++    {
++      "name": "flat-fee",
++      "config": "config/variants/flat-fee.json"
++    },
++    {
++      "name": "block-window-10-cert-reset",
++      "config": "config/variants/standard-window-confirm/block-window-10-cert-reset.json"
++    }
++  ]
++}
+diff --git a/abstract-sim-hs/config/sweeps/standard-window-screen.json b/abstract-sim-hs/config/sweeps/standard-window-screen.json
+new file mode 100644
+index 00000000..f5d7ef57
+--- /dev/null
++++ b/abstract-sim-hs/config/sweeps/standard-window-screen.json
+@@ -0,0 +1,35 @@
++{
++  "description": "Exploratory screen of the standard controller's window length under the enforceable processed-block window semantics. The announcement-semantics smoke showed that the historical signal's zero-width EbAnnounced entries shorten the effective window at contended loads (to roughly 10-13 processed blocks), and that a clean 20-processed-block window loses launch-day retained value against it. Announcement entries are not adoptable in the ledger rule: an announcement is a costless, unpunishable producer claim, so counting it would hand producers a free lever on the standard quote. This screen therefore asks whether a shorter processed-block window recovers the historical performance. Arms: the historical announcement-diluted 20-entry window (reference), flat fee (baseline), and processed-block windows of 10, 13, 15, and 20. Everything else is fixed at S=.75/U=.50, D16, half-RB threshold, K10, announcement-time age reset. One hundred paired seeds across the five headline loads plus the 0.1 tx/slot trickle. This is a screen: any selected length needs confirmation on disjoint seeds before adoption.",
++  "seedStart": 0,
++  "seeds": 100,
++  "slots": 2000,
++  "summaryOnly": true,
++  "randomness": "independent-streams",
++  "out": "sweep-results/standard-window-screen/severe-congestion",
++  "variants": [
++    {
++      "name": "historical",
++      "config": "config/variants/standard-target-screen/s75-u50.json"
++    },
++    {
++      "name": "flat-fee",
++      "config": "config/variants/flat-fee.json"
++    },
++    {
++      "name": "block-window-10",
++      "config": "config/variants/standard-window-screen/block-window-10.json"
++    },
++    {
++      "name": "block-window-13",
++      "config": "config/variants/standard-window-screen/block-window-13.json"
++    },
++    {
++      "name": "block-window-15",
++      "config": "config/variants/standard-window-screen/block-window-15.json"
++    },
++    {
++      "name": "block-window-20",
++      "config": "config/variants/standard-window-screen/block-window-20.json"
++    }
++  ]
++}
+diff --git a/abstract-sim-hs/config/variants/announcement-semantics/block-window-cert-reset.json b/abstract-sim-hs/config/variants/announcement-semantics/block-window-cert-reset.json
+new file mode 100644
+index 00000000..2d9e78ea
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/announcement-semantics/block-window-cert-reset.json
+@@ -0,0 +1,82 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 20
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    },
++    "ageResetAtCertification": true
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/announcement-semantics/block-window.json b/abstract-sim-hs/config/variants/announcement-semantics/block-window.json
+new file mode 100644
+index 00000000..b60b8e68
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/announcement-semantics/block-window.json
+@@ -0,0 +1,81 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 20
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/announcement-semantics/cert-reset.json b/abstract-sim-hs/config/variants/announcement-semantics/cert-reset.json
+new file mode 100644
+index 00000000..e610f7ae
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/announcement-semantics/cert-reset.json
+@@ -0,0 +1,82 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-window",
++          "window": 20
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    },
++    "ageResetAtCertification": true
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/standard-window-confirm/block-window-10-cert-reset.json b/abstract-sim-hs/config/variants/standard-window-confirm/block-window-10-cert-reset.json
+new file mode 100644
+index 00000000..6c5440d3
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/standard-window-confirm/block-window-10-cert-reset.json
+@@ -0,0 +1,82 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "ageResetAtCertification": true,
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 10
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/standard-window-screen/block-window-10.json b/abstract-sim-hs/config/variants/standard-window-screen/block-window-10.json
+new file mode 100644
+index 00000000..716eb035
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/standard-window-screen/block-window-10.json
+@@ -0,0 +1,81 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 10
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/standard-window-screen/block-window-13.json b/abstract-sim-hs/config/variants/standard-window-screen/block-window-13.json
+new file mode 100644
+index 00000000..da48607f
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/standard-window-screen/block-window-13.json
+@@ -0,0 +1,81 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 13
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/standard-window-screen/block-window-15.json b/abstract-sim-hs/config/variants/standard-window-screen/block-window-15.json
+new file mode 100644
+index 00000000..bca99a32
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/standard-window-screen/block-window-15.json
+@@ -0,0 +1,81 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 15
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/config/variants/standard-window-screen/block-window-20.json b/abstract-sim-hs/config/variants/standard-window-screen/block-window-20.json
+new file mode 100644
+index 00000000..b60b8e68
+--- /dev/null
++++ b/abstract-sim-hs/config/variants/standard-window-screen/block-window-20.json
+@@ -0,0 +1,81 @@
++{
++  "design": {
++    "laneStructure": "two",
++    "reservationPolicy": {
++      "type": "priority-reservation-rb-eb-threshold",
++      "ebThresholdBytes": 45056,
++      "bytes": 90112,
++      "ebAgeEscapeRbIntervals": 10
++    },
++    "selection": "fifo",
++    "feeSemantics": "eip1559",
++    "priorityPremiumScope": "rb-only",
++    "controllers": {
++      "standardController": {
++        "targetUtilisation": 0.75,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 1,
++        "signal": {
++          "type": "capacity-weighted-block-window",
++          "window": 20
++        }
++      },
++      "priorityController": {
++        "targetUtilisation": 0.5,
++        "maxChangeDenominator": 16,
++        "initialCoefficient": 2,
++        "signal": {
++          "type": "priority-reservation-window",
++          "window": 5
++        }
++      },
++      "multiplierFloor": null,
++      "absoluteCoeffFloor": 1
++    }
++  },
++  "curves": "default",
++  "f": 0.05,
++  "D": 13,
++  "load": "severe-congestion",
++  "actors": [
++    {
++      "count": 2,
++      "type": "honest",
++      "feeBuffer": 2,
++      "minValueFeeMultiple": 1,
++      "valueMultiplier": 1,
++      "urgencyMultiplier": 1
++    }
++  ],
++  "rbTxBytesCap": 90112,
++  "rbExUnitsCap": 96991334,
++  "ebTxBytesCap": 12000000,
++  "ebStructureBytesCap": 512000,
++  "ebExUnitsCap": 9499133448,
++  "mempoolBytesCap": 24000000,
++  "admissionHeadroomUpdates": 1,
++  "retryPolicy": {
++    "feeTooLow": {
++      "type": "resubmit-after",
++      "delaySlots": 2,
++      "jitterSlots": 6
++    },
++    "mempoolFull": {
++      "type": "resubmit-after",
++      "delaySlots": 20,
++      "jitterSlots": 20
++    },
++    "evicted": {
++      "type": "resubmit-after",
++      "delaySlots": 10,
++      "jitterSlots": 30
++    },
++    "maxAttempts": 5,
++    "escalationFactor": 1.2
++  },
++  "laneLatencyEstimate": {
++    "expectedStandardLatency": 50,
++    "expectedPriorityLatency": 25
++  },
++  "priceConvergenceBandPct": 0.05
++}
+diff --git a/abstract-sim-hs/scripts/compare_announcement_semantics_smoke.py b/abstract-sim-hs/scripts/compare_announcement_semantics_smoke.py
+new file mode 100644
+index 00000000..f448b39d
+--- /dev/null
++++ b/abstract-sim-hs/scripts/compare_announcement_semantics_smoke.py
+@@ -0,0 +1,573 @@
++#!/usr/bin/env python3
++"""Compare the four-arm announcement-semantics ablation across six loads.
++
++The historical simulator differs from the CIP's specified mechanism in two
++announcement-related behaviours. First, the standard controller's 20-entry
++window is taken over all block summaries, so a zero-width EbAnnounced entry
++occupies a window position; the specified window contains processed blocks
++only. Second, the EB age-escape count resets at every announcement, including
++announcements whose EB is later dropped without certifying; the specified
++count resets only when an EB certificate enters the chain. The block-window
++and cert-reset arms apply the specified semantics one at a time, and the
++combined arm applies both. Ten paired seeds make this a directional smoke
++test, not an equivalence test.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++from typing import Any
++
++from compare_canonical_headlines import source_provenance
++from compare_cross_lane_inversion_smoke import paired_interval
++from compare_window_ablation_smoke import (
++    METRIC_GROUPS,
++    Metric,
++    differing_paths,
++    exactly_equal_count,
++    interval_text,
++    json_object,
++    mean,
++    metric_is_usable_for_load,
++    nested_value,
++    numeric_scalar,
++    plain,
++    variant_runs,
++)
++
++PROJECT_DIR = Path(__file__).resolve().parent.parent
++DEFAULT_ROOT = PROJECT_DIR / "sweep-results/announcement-semantics-smoke"
++DEFAULT_MANIFEST = PROJECT_DIR / "config/sweeps/announcement-semantics-smoke.json"
++
++HISTORICAL = "historical"
++BLOCK_WINDOW = "block-window"
++CERT_RESET = "cert-reset"
++COMBINED = "block-window-cert-reset"
++
++VARIANTS = {
++    HISTORICAL: "config/variants/standard-target-screen/s75-u50.json",
++    BLOCK_WINDOW: "config/variants/announcement-semantics/block-window.json",
++    CERT_RESET: "config/variants/announcement-semantics/cert-reset.json",
++    COMBINED: "config/variants/announcement-semantics/block-window-cert-reset.json",
++}
++
++VARIANT_LABELS = {
++    HISTORICAL: "Historical announcement semantics",
++    BLOCK_WINDOW: "Processed-block standard window",
++    CERT_RESET: "Age-escape reset at certification",
++    COMBINED: "Both specified semantics",
++}
++
++CANDIDATES = (BLOCK_WINDOW, CERT_RESET, COMBINED)
++
++SIGNAL_TYPE_PATH = ("design", "controllers", "standardController", "signal", "type")
++AGE_RESET_PATH = ("design", "ageResetAtCertification")
++
++EXPECTED_DIFFERENCES = {
++    BLOCK_WINDOW: {SIGNAL_TYPE_PATH},
++    CERT_RESET: {AGE_RESET_PATH},
++    COMBINED: {SIGNAL_TYPE_PATH, AGE_RESET_PATH},
++}
++
++LOADS = (
++    ("low", "Low"),
++    ("mid-load", "Mid load"),
++    ("severe-congestion", "Severe congestion"),
++    ("eb-capacity-stress", "EB-capacity stress"),
++    ("launch-day", "Launch day"),
++    ("trickle-0p1", "Trickle 0.1 tx/slot"),
++)
++
++# The trickle profile's embedded name uses a dot where its filename uses "p".
++PROFILE_NAMES = {directory: directory for directory, _ in LOADS if directory != "low"}
++PROFILE_NAMES["trickle-0p1"] = "trickle-0.1"
++
++
++def contrast_id(candidate: str) -> str:
++    return f"{candidate}-minus-{HISTORICAL}"
++
++
++def expected_override(directory: str) -> dict[str, str]:
++    if directory == "low":
++        return {"name": "low", "type": "preset"}
++    return {
++        "copy": "selected-load-profile.json",
++        "name": PROFILE_NAMES[directory],
++        "source": f"config/loads/{directory}.json",
++        "type": "profile",
++    }
++
++
++def validate_manifest(path: Path) -> dict[str, Any]:
++    manifest = json_object(path)
++    if manifest.get("randomness") != "independent-streams":
++        raise ValueError(f"manifest must use independent-streams randomness: {path}")
++    if manifest.get("summaryOnly") is not True:
++        raise ValueError(f"manifest must set summaryOnly=true: {path}")
++    if manifest.get("seedStart") != 440:
++        raise ValueError(f"manifest must default to seed 440: {path}")
++    if manifest.get("seeds") != 10 or manifest.get("slots") != 2_000:
++        raise ValueError(f"manifest must default to ten seeds and 2,000 slots: {path}")
++
++    variants = manifest.get("variants")
++    if not isinstance(variants, list):
++        raise ValueError(f"manifest is missing its variants array: {path}")
++    actual: dict[str, Any] = {}
++    for variant in variants:
++        if not isinstance(variant, dict) or not isinstance(variant.get("name"), str):
++            raise ValueError(f"malformed manifest variant in {path}")
++        name = variant["name"]
++        if name in actual:
++            raise ValueError(f"duplicate manifest variant {name!r} in {path}")
++        actual[name] = variant.get("config")
++    if actual != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: expected={VARIANTS!r}, actual={actual!r}"
++        )
++    return manifest
++
++
++def validate_effective_configs(directory: Path) -> dict[str, str]:
++    paths = {name: directory / f"{name}.config.json" for name in VARIANTS}
++    configs = {name: json_object(path) for name, path in paths.items()}
++
++    historical_design = nested_value(configs[HISTORICAL], ("design",), paths[HISTORICAL])
++    historical_reset = historical_design.get(AGE_RESET_PATH[-1], False)
++    if historical_reset is not False:
++        raise ValueError(
++            f"historical arm must reset at announcement (absent or false) in "
++            f"{paths[HISTORICAL]}: actual={historical_reset!r}"
++        )
++    historical_signal = nested_value(configs[HISTORICAL], SIGNAL_TYPE_PATH, paths[HISTORICAL])
++    if historical_signal != "capacity-weighted-window":
++        raise ValueError(
++            f"historical arm must use the capacity-weighted-window signal in "
++            f"{paths[HISTORICAL]}: actual={historical_signal!r}"
++        )
++
++    for name in (BLOCK_WINDOW, COMBINED):
++        signal = nested_value(configs[name], SIGNAL_TYPE_PATH, paths[name])
++        if signal != "capacity-weighted-block-window":
++            raise ValueError(
++                f"{name} arm must use the capacity-weighted-block-window signal in "
++                f"{paths[name]}: actual={signal!r}"
++            )
++    for name in (CERT_RESET, COMBINED):
++        reset = nested_value(configs[name], AGE_RESET_PATH, paths[name])
++        if reset is not True:
++            raise ValueError(
++                f"{name} arm must set ageResetAtCertification=true in {paths[name]}: "
++                f"actual={reset!r}"
++            )
++
++    fixed_expectations = {
++        ("design", "controllers", "standardController", "targetUtilisation"): 0.75,
++        ("design", "controllers", "standardController", "maxChangeDenominator"): 16,
++        ("design", "controllers", "standardController", "signal", "window"): 20,
++        ("design", "controllers", "priorityController", "targetUtilisation"): 0.5,
++        ("design", "controllers", "priorityController", "maxChangeDenominator"): 16,
++        ("design", "reservationPolicy", "ebThresholdBytes"): 45_056,
++        ("design", "reservationPolicy", "ebAgeEscapeRbIntervals"): 10,
++    }
++    for name, config in configs.items():
++        for path, expected in fixed_expectations.items():
++            actual = nested_value(config, path, paths[name])
++            if actual != expected:
++                raise ValueError(
++                    f"unexpected {'.'.join(path)} in {paths[name]}: "
++                    f"expected={expected!r}, actual={actual!r}"
++                )
++
++    for name in CANDIDATES:
++        differences = differing_paths(configs[name], configs[HISTORICAL])
++        if differences != EXPECTED_DIFFERENCES[name]:
++            rendered = [".".join(path) or "<root>" for path in sorted(differences)]
++            expected = [".".join(path) for path in sorted(EXPECTED_DIFFERENCES[name])]
++            raise ValueError(
++                f"effective configs for {name} must differ from {HISTORICAL} only at "
++                f"{expected!r}: actual differences={rendered!r}"
++            )
++    return {name: str(path) for name, path in paths.items()}
++
++
++def load_runs(
++    root: Path, directory: str
++) -> tuple[Path, dict[str, dict[int, dict[str, float]]], int, dict[str, str]]:
++    path = root / directory / "summary.json"
++    summary = json_object(path)
++    if not isinstance(summary.get("variants"), list):
++        raise ValueError(f"not a sweep summary (missing variants array): {path}")
++    if summary.get("randomness") != "independent-streams":
++        raise ValueError(f"summary must use independent-streams randomness: {path}")
++    if summary.get("summaryOnly") is not True:
++        raise ValueError(f"summary must be summary-only: {path}")
++    if summary.get("loadOverride") != expected_override(directory):
++        raise ValueError(
++            f"unexpected load override in {path}: {summary.get('loadOverride')!r}"
++        )
++    if directory != "low":
++        profile = summary.get("loadProfile")
++        if not isinstance(profile, dict) or profile.get("name") != PROFILE_NAMES[directory]:
++            raise ValueError(f"missing/wrong selected load profile in {path}")
++
++    actual_configs = {
++        variant.get("name"): variant.get("config") for variant in summary["variants"]
++    }
++    if actual_configs != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: "
++            f"expected={VARIANTS!r}, actual={actual_configs!r}"
++        )
++
++    runs = {name: variant_runs(summary, name, path) for name in VARIANTS}
++    seed_sets = {name: set(by_seed) for name, by_seed in runs.items()}
++    reference_seeds = seed_sets[HISTORICAL]
++    if any(seeds != reference_seeds for seeds in seed_sets.values()):
++        rendered = {name: sorted(seeds) for name, seeds in seed_sets.items()}
++        raise ValueError(
++            f"paired comparison requires identical seed sets in {path}: {rendered}"
++        )
++    if len(reference_seeds) < 2:
++        raise ValueError(f"paired comparison requires at least two seeds in {path}")
++    if summary.get("seeds") != len(reference_seeds):
++        raise ValueError(
++            f"summary seed metadata disagrees with runs in {path}: "
++            f"metadata={summary.get('seeds')!r}, runs={len(reference_seeds)}"
++        )
++
++    slots = summary.get("slots")
++    if isinstance(slots, bool) or not isinstance(slots, int) or slots < 1:
++        raise ValueError(f"invalid slot count in {path}: {slots!r}")
++
++    scalar_keys: set[str] | None = None
++    for name, by_seed in runs.items():
++        for seed, scalars in by_seed.items():
++            keys = set(scalars)
++            if scalar_keys is None:
++                scalar_keys = keys
++            elif keys != scalar_keys:
++                raise ValueError(f"scalar-key mismatch for {name}, seed {seed} in {path}")
++
++    effective_configs = validate_effective_configs(root / directory)
++    return path, runs, slots, effective_configs
++
++
++def metric_result(
++    metric: Metric,
++    runs: dict[str, dict[int, dict[str, float]]],
++    seeds: list[int],
++) -> dict[str, Any]:
++    values = {
++        name: [
++            metric.scale * numeric_scalar(by_seed[seed], metric.key, name, seed)
++            for seed in seeds
++        ]
++        for name, by_seed in runs.items()
++    }
++    contrasts: dict[str, Any] = {}
++    for candidate in CANDIDATES:
++        differences = [
++            candidate_value - historical_value
++            for candidate_value, historical_value in zip(
++                values[candidate], values[HISTORICAL]
++            )
++        ]
++        estimate, low, high = paired_interval(differences)
++        contrasts[contrast_id(candidate)] = {
++            "candidate": candidate,
++            "reference": HISTORICAL,
++            "primary": candidate != COMBINED,
++            "mean": estimate,
++            "ci95_low": low,
++            "ci95_high": high,
++            "candidate_higher": sum(value > 0 for value in differences),
++            "reference_higher": sum(value < 0 for value in differences),
++            "ties": sum(value == 0 for value in differences),
++        }
++    return {
++        "key": metric.key,
++        "label": metric.label,
++        "unit": metric.unit,
++        "digits": metric.digits,
++        "preference": metric.preference,
++        "arm_means": {name: mean(arm_values) for name, arm_values in values.items()},
++        "contrasts": contrasts,
++    }
++
++
++def build_report(
++    root: Path, manifest_path: Path, simulator_sha256: str
++) -> dict[str, Any]:
++    validate_manifest(manifest_path)
++    load_data: list[dict[str, Any]] = []
++    common_seeds: tuple[int, ...] | None = None
++    common_slots: int | None = None
++
++    for directory, label in LOADS:
++        summary_path, runs, slots, effective_configs = load_runs(root, directory)
++        seeds = tuple(sorted(runs[HISTORICAL]))
++        if common_seeds is None:
++            common_seeds = seeds
++        elif seeds != common_seeds:
++            raise ValueError(
++                f"loads use different paired seed sets: first={list(common_seeds)}, "
++                f"{directory}={list(seeds)}"
++            )
++        if common_slots is None:
++            common_slots = slots
++        elif slots != common_slots:
++            raise ValueError(
++                f"loads use different slot counts: first={common_slots}, "
++                f"{directory}={slots}"
++            )
++
++        seed_list = list(seeds)
++        groups = [
++            {
++                "id": group_id,
++                "label": group_label,
++                "metrics": [
++                    metric_result(metric, runs, seed_list)
++                    for metric in metrics
++                    if metric_is_usable_for_load(metric, directory)
++                ],
++            }
++            for group_id, group_label, metrics in METRIC_GROUPS
++        ]
++        load_data.append(
++            {
++                "load": directory,
++                "label": label,
++                "source": {
++                    "summary": str(summary_path),
++                    "effective_configs": effective_configs,
++                },
++                "paired_seeds": len(seed_list),
++                "exactly_equal_all_scalars": {
++                    contrast_id(candidate): exactly_equal_count(
++                        runs[candidate], runs[HISTORICAL], seed_list
++                    )
++                    for candidate in CANDIDATES
++                },
++                "metric_groups": groups,
++            }
++        )
++
++    if common_seeds is None or common_slots is None:
++        raise ValueError("no load results found")
++    provenance = source_provenance(root / "source.patch")
++    provenance["simulator_sha256"] = simulator_sha256
++    return {
++        "schema_version": 1,
++        "experiment": "announcement-semantics-smoke",
++        "method": "paired mean difference with two-sided 95% Student-t confidence interval",
++        "evidence_scope": (
++            "Exploratory directional smoke test. The committed default is ten paired "
++            "seeds; this run is not powered to establish equivalence, select protocol "
++            "parameters, or show that an unobserved practically important effect is absent."
++        ),
++        "difference_direction": "specified-semantics arm minus historical arm",
++        "manifest": str(manifest_path),
++        "variants": {
++            name: {"label": VARIANT_LABELS[name], "config": path}
++            for name, path in VARIANTS.items()
++        },
++        "contrasts": {
++            contrast_id(candidate): {
++                "label": f"{VARIANT_LABELS[candidate]} − historical",
++                "candidate": candidate,
++                "reference": HISTORICAL,
++                "primary": candidate != COMBINED,
++            }
++            for candidate in CANDIDATES
++        },
++        "seeds": list(common_seeds),
++        "slots": common_slots,
++        "provenance": provenance,
++        "loads": load_data,
++        "notes": [
++            (
++                "block-window changes only the standard controller's utilisation "
++                "signal: its 20-entry window is taken over processed-block summaries "
++                "(non-certificate RBs, certificate-carrying RBs, certified EBs), so a "
++                "zero-width announcement entry cannot occupy a window position. "
++                "Certificate-carrying RBs remain zero-capacity window entries in both "
++                "arms."
++            ),
++            (
++                "cert-reset changes only when the EB age-escape count restarts: at "
++                "certified-EB application instead of at every announcement. Under the "
++                "historical policy an announcement whose EB is later dropped without "
++                "certifying still resets the count; with f=0.05 and D=13 roughly 46% "
++                "of announcements drop this way."
++            ),
++            (
++                "The age escape binds at trickle load, so trickle-0p1 is the "
++                "decision-facing load for cert-reset; the standard window shape "
++                "matters wherever the standard coefficient leaves its floor, so "
++                "severe congestion, EB-capacity stress, and launch day are the "
++                "decision-facing loads for block-window."
++            ),
++            (
++                "Independent streams align fresh-demand samples and Ranking Block "
++                "opportunities within a seed; retry jitter remains mechanism-dependent."
++            ),
++            (
++                "Launch-day urgent-class slices are omitted because that profile changes "
++                "the urgency-rate multiplier over time; priority-lane metrics remain usable."
++            ),
++        ],
++    }
++
++
++def markdown(report: dict[str, Any]) -> str:
++    seeds = report["seeds"]
++    provenance = report["provenance"]
++    revision = provenance.get("git_revision") or "unknown"
++    source_state = (
++        "clean"
++        if provenance.get("abstract_sim_worktree_clean") is True
++        else "dirty"
++        if provenance.get("abstract_sim_worktree_clean") is False
++        else "unknown"
++    )
++    source_line = (
++        f"Source revision: `{revision}`; `abstract-sim-hs` worktree: {source_state}; "
++        f"simulator SHA-256: `{provenance['simulator_sha256']}`."
++    )
++    dirty_patch = provenance.get("dirty_patch")
++    if dirty_patch:
++        source_line += (
++            f" Dirty-source patch: `{dirty_patch['path']}` "
++            f"(SHA-256 `{dirty_patch['sha256']}`)."
++        )
++
++    if seeds == list(range(seeds[0], seeds[-1] + 1)):
++        seed_text = f"{seeds[0]}–{seeds[-1]}"
++    else:
++        seed_text = ", ".join(str(seed) for seed in seeds)
++    lines = [
++        "# Announcement-semantics ablation smoke",
++        "",
++        (
++            f"Historical announcement semantics versus the CIP's specified semantics, "
++            f"one knob at a time and combined; paired seeds {seed_text} "
++            f"(n={len(seeds)}), {report['slots']:,} slots per load. Cells are "
++            "arm-minus-historical mean differences with two-sided 95% paired-t "
++            "confidence intervals."
++        ),
++        "",
++        (
++            "**Exploratory/directional only.** This smoke run cannot establish "
++            "equivalence, select a protocol default, or show that a practically "
++            "important effect is absent."
++        ),
++        "",
++        source_line,
++    ]
++
++    for load in report["loads"]:
++        lines.extend(["", f"## {load['label']}"])
++        equalities = load["exactly_equal_all_scalars"]
++        equality_text = ", ".join(
++            f"{VARIANT_LABELS[candidate]}: {equalities[contrast_id(candidate)]}"
++            f"/{load['paired_seeds']}"
++            for candidate in CANDIDATES
++        )
++        lines.extend(["", f"Exact all-scalar ties versus historical: {equality_text}."])
++        for group in load["metric_groups"]:
++            lines.extend(
++                [
++                    "",
++                    f"### {group['label']}",
++                    "",
++                    (
++                        "| Metric | Unit | Historical mean "
++                        "| Block window − hist | Cert reset − hist | Both − hist |"
++                    ),
++                    "|---|---:|---:|---:|---:|---:|",
++                ]
++            )
++            for metric in group["metrics"]:
++                cells = " | ".join(
++                    interval_text(metric["contrasts"][contrast_id(candidate)], metric["digits"])
++                    for candidate in CANDIDATES
++                )
++                lines.append(
++                    f"| {metric['label']} | {metric['unit']} "
++                    f"| {plain(metric['arm_means'][HISTORICAL], metric['digits'])} "
++                    f"| {cells} |"
++                )
++
++    lines.extend(
++        [
++            "",
++            "## Interpretation notes",
++            "",
++            *[f"- {note}" for note in report["notes"]],
++            "- Positive retained-value, service-rate, and throughput differences are favourable; negative latency, retry, and oscillation differences are favourable.",
++            "- Percentage-point rows are absolute changes in ratios, not relative percentages.",
++            "",
++        ]
++    )
++    return "\n".join(lines)
++
++
++def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--root",
++        type=Path,
++        default=DEFAULT_ROOT,
++        help="directory containing the six load subdirectories",
++    )
++    parser.add_argument(
++        "--manifest",
++        type=Path,
++        default=DEFAULT_MANIFEST,
++        help="committed sweep manifest",
++    )
++    parser.add_argument(
++        "--simulator-sha256",
++        required=True,
++        help="SHA-256 of the executable used for every run",
++    )
++    parser.add_argument(
++        "--markdown-output",
++        type=Path,
++        help="Markdown report path (default: ROOT/comparison.md)",
++    )
++    parser.add_argument(
++        "--json-output",
++        type=Path,
++        help="machine-readable report path (default: ROOT/comparison.json)",
++    )
++    return parser.parse_args(argv)
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parse_args(argv)
++    simulator_sha256 = args.simulator_sha256.lower()
++    if len(simulator_sha256) != 64 or any(
++        character not in "0123456789abcdef" for character in simulator_sha256
++    ):
++        raise SystemExit("error: --simulator-sha256 must be 64 hexadecimal characters")
++
++    markdown_output = args.markdown_output or args.root / "comparison.md"
++    json_output = args.json_output or args.root / "comparison.json"
++    try:
++        report = build_report(args.root, args.manifest, simulator_sha256)
++        rendered = markdown(report)
++        markdown_output.write_text(rendered, encoding="utf-8")
++        json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
++    except (OSError, ValueError) as error:
++        raise SystemExit(f"error: {error}") from error
++    print(f"wrote {markdown_output}")
++    print(f"wrote {json_output}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/abstract-sim-hs/scripts/compare_recommended_headlines.py b/abstract-sim-hs/scripts/compare_recommended_headlines.py
+new file mode 100644
+index 00000000..01e6474b
+--- /dev/null
++++ b/abstract-sim-hs/scripts/compare_recommended_headlines.py
+@@ -0,0 +1,487 @@
++#!/usr/bin/env python3
++"""Compare flat fee with the adopted recommended construction across the five
++headline loads.
++
++The recommended construction is the configuration the CIP specifies: the 0.75
++standard target, the 10-block processed-block standard window, and the
++age-escape reset at certification. The window length and the reset rule were
++selected by the standard-window screen (seeds 0-99), bounded by the
++announcement-semantics smoke (seeds 440-449), and confirmed on disjoint seeds
++(500-599). This refresh regenerates the headline mechanism-versus-flat-fee
++figures under that configuration.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++from typing import Any
++
++from compare_canonical_headlines import source_provenance
++from compare_cross_lane_inversion_smoke import paired_interval
++from compare_window_ablation_smoke import (
++    METRIC_GROUPS,
++    Metric,
++    interval_text,
++    json_object,
++    mean,
++    metric_is_usable_for_load,
++    nested_value,
++    numeric_scalar,
++    plain,
++    variant_runs,
++)
++
++PROJECT_DIR = Path(__file__).resolve().parent.parent
++DEFAULT_ROOT = PROJECT_DIR / "sweep-results/recommended-headlines"
++DEFAULT_MANIFEST = PROJECT_DIR / "config/sweeps/recommended-headlines.json"
++
++FLAT_FEE = "flat-fee"
++RECOMMENDED = "recommended"
++
++VARIANTS = {
++    FLAT_FEE: "config/variants/flat-fee.json",
++    RECOMMENDED: "config/variants/standard-window-confirm/block-window-10-cert-reset.json",
++}
++
++VARIANT_LABELS = {
++    FLAT_FEE: "Flat fee",
++    RECOMMENDED: "Recommended construction",
++}
++
++CONTRAST_ID = "recommended-minus-flat-fee"
++
++LOADS = (
++    ("low", "Low"),
++    ("mid-load", "Mid load"),
++    ("severe-congestion", "Severe congestion"),
++    ("eb-capacity-stress", "EB-capacity stress"),
++    ("launch-day", "Launch day"),
++)
++
++
++def expected_override(directory: str) -> dict[str, str]:
++    if directory == "low":
++        return {"name": "low", "type": "preset"}
++    return {
++        "copy": "selected-load-profile.json",
++        "name": directory,
++        "source": f"config/loads/{directory}.json",
++        "type": "profile",
++    }
++
++
++def validate_manifest(path: Path) -> dict[str, Any]:
++    manifest = json_object(path)
++    if manifest.get("randomness") != "independent-streams":
++        raise ValueError(f"manifest must use independent-streams randomness: {path}")
++    if manifest.get("summaryOnly") is not True:
++        raise ValueError(f"manifest must set summaryOnly=true: {path}")
++    if manifest.get("seeds") != 10 or manifest.get("slots") != 2_000:
++        raise ValueError(f"manifest must default to ten seeds and 2,000 slots: {path}")
++
++    variants = manifest.get("variants")
++    if not isinstance(variants, list):
++        raise ValueError(f"manifest is missing its variants array: {path}")
++    actual: dict[str, Any] = {}
++    for variant in variants:
++        if not isinstance(variant, dict) or not isinstance(variant.get("name"), str):
++            raise ValueError(f"malformed manifest variant in {path}")
++        name = variant["name"]
++        if name in actual:
++            raise ValueError(f"duplicate manifest variant {name!r} in {path}")
++        actual[name] = variant.get("config")
++    if actual != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: expected={VARIANTS!r}, actual={actual!r}"
++        )
++    return manifest
++
++
++def validate_effective_configs(directory: Path) -> dict[str, str]:
++    paths = {name: directory / f"{name}.config.json" for name in VARIANTS}
++    configs = {name: json_object(path) for name, path in paths.items()}
++
++    flat_expectations = {
++        ("design", "laneStructure"): "one",
++        ("design", "reservationPolicy", "type"): "no-reservation",
++        ("design", "feeSemantics"): "fixed-fee",
++    }
++    for path, expected in flat_expectations.items():
++        actual = nested_value(configs[FLAT_FEE], path, paths[FLAT_FEE])
++        if actual != expected:
++            raise ValueError(
++                f"unexpected {'.'.join(path)} in {paths[FLAT_FEE]}: "
++                f"expected={expected!r}, actual={actual!r}"
++            )
++
++    recommended_expectations = {
++        ("design", "controllers", "standardController", "targetUtilisation"): 0.75,
++        ("design", "controllers", "standardController", "maxChangeDenominator"): 16,
++        (
++            "design",
++            "controllers",
++            "standardController",
++            "signal",
++            "type",
++        ): "capacity-weighted-block-window",
++        ("design", "controllers", "standardController", "signal", "window"): 10,
++        ("design", "controllers", "priorityController", "targetUtilisation"): 0.5,
++        ("design", "controllers", "priorityController", "maxChangeDenominator"): 16,
++        ("design", "reservationPolicy", "ebThresholdBytes"): 45_056,
++        ("design", "reservationPolicy", "ebAgeEscapeRbIntervals"): 10,
++        ("design", "ageResetAtCertification"): True,
++    }
++    for path, expected in recommended_expectations.items():
++        actual = nested_value(configs[RECOMMENDED], path, paths[RECOMMENDED])
++        if actual != expected:
++            raise ValueError(
++                f"unexpected {'.'.join(path)} in {paths[RECOMMENDED]}: "
++                f"expected={expected!r}, actual={actual!r}"
++            )
++    return {name: str(path) for name, path in paths.items()}
++
++
++def load_runs(
++    root: Path, directory: str
++) -> tuple[Path, dict[str, dict[int, dict[str, float]]], int, dict[str, str]]:
++    path = root / directory / "summary.json"
++    summary = json_object(path)
++    if not isinstance(summary.get("variants"), list):
++        raise ValueError(f"not a sweep summary (missing variants array): {path}")
++    if summary.get("randomness") != "independent-streams":
++        raise ValueError(f"summary must use independent-streams randomness: {path}")
++    if summary.get("summaryOnly") is not True:
++        raise ValueError(f"summary must be summary-only: {path}")
++    if summary.get("loadOverride") != expected_override(directory):
++        raise ValueError(
++            f"unexpected load override in {path}: {summary.get('loadOverride')!r}"
++        )
++    if directory != "low":
++        profile = summary.get("loadProfile")
++        if not isinstance(profile, dict) or profile.get("name") != directory:
++            raise ValueError(f"missing/wrong selected load profile in {path}")
++
++    actual_configs = {
++        variant.get("name"): variant.get("config") for variant in summary["variants"]
++    }
++    if actual_configs != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: "
++            f"expected={VARIANTS!r}, actual={actual_configs!r}"
++        )
++
++    runs = {name: variant_runs(summary, name, path) for name in VARIANTS}
++    seed_sets = {name: set(by_seed) for name, by_seed in runs.items()}
++    reference_seeds = seed_sets[FLAT_FEE]
++    if any(seeds != reference_seeds for seeds in seed_sets.values()):
++        rendered = {name: sorted(seeds) for name, seeds in seed_sets.items()}
++        raise ValueError(
++            f"paired comparison requires identical seed sets in {path}: {rendered}"
++        )
++    if len(reference_seeds) < 2:
++        raise ValueError(f"paired comparison requires at least two seeds in {path}")
++    if summary.get("seeds") != len(reference_seeds):
++        raise ValueError(
++            f"summary seed metadata disagrees with runs in {path}: "
++            f"metadata={summary.get('seeds')!r}, runs={len(reference_seeds)}"
++        )
++
++    slots = summary.get("slots")
++    if isinstance(slots, bool) or not isinstance(slots, int) or slots < 1:
++        raise ValueError(f"invalid slot count in {path}: {slots!r}")
++
++    scalar_keys: set[str] | None = None
++    for name, by_seed in runs.items():
++        for seed, scalars in by_seed.items():
++            keys = set(scalars)
++            if scalar_keys is None:
++                scalar_keys = keys
++            elif keys != scalar_keys:
++                raise ValueError(f"scalar-key mismatch for {name}, seed {seed} in {path}")
++
++    effective_configs = validate_effective_configs(root / directory)
++    return path, runs, slots, effective_configs
++
++
++def metric_result(
++    metric: Metric,
++    runs: dict[str, dict[int, dict[str, float]]],
++    seeds: list[int],
++) -> dict[str, Any]:
++    values = {
++        name: [
++            metric.scale * numeric_scalar(by_seed[seed], metric.key, name, seed)
++            for seed in seeds
++        ]
++        for name, by_seed in runs.items()
++    }
++    differences = [
++        recommended_value - flat_value
++        for recommended_value, flat_value in zip(values[RECOMMENDED], values[FLAT_FEE])
++    ]
++    estimate, low, high = paired_interval(differences)
++    return {
++        "key": metric.key,
++        "label": metric.label,
++        "unit": metric.unit,
++        "digits": metric.digits,
++        "preference": metric.preference,
++        "arm_means": {name: mean(arm_values) for name, arm_values in values.items()},
++        "contrasts": {
++            CONTRAST_ID: {
++                "candidate": RECOMMENDED,
++                "reference": FLAT_FEE,
++                "primary": True,
++                "mean": estimate,
++                "ci95_low": low,
++                "ci95_high": high,
++                "candidate_higher": sum(value > 0 for value in differences),
++                "reference_higher": sum(value < 0 for value in differences),
++                "ties": sum(value == 0 for value in differences),
++            }
++        },
++    }
++
++
++def build_report(
++    root: Path, manifest_path: Path, simulator_sha256: str
++) -> dict[str, Any]:
++    validate_manifest(manifest_path)
++    load_data: list[dict[str, Any]] = []
++    common_seeds: tuple[int, ...] | None = None
++    common_slots: int | None = None
++
++    for directory, label in LOADS:
++        summary_path, runs, slots, effective_configs = load_runs(root, directory)
++        seeds = tuple(sorted(runs[FLAT_FEE]))
++        if common_seeds is None:
++            common_seeds = seeds
++        elif seeds != common_seeds:
++            raise ValueError(
++                f"loads use different paired seed sets: first={list(common_seeds)}, "
++                f"{directory}={list(seeds)}"
++            )
++        if common_slots is None:
++            common_slots = slots
++        elif slots != common_slots:
++            raise ValueError(
++                f"loads use different slot counts: first={common_slots}, "
++                f"{directory}={slots}"
++            )
++
++        seed_list = list(seeds)
++        groups = [
++            {
++                "id": group_id,
++                "label": group_label,
++                "metrics": [
++                    metric_result(metric, runs, seed_list)
++                    for metric in metrics
++                    if metric_is_usable_for_load(metric, directory)
++                ],
++            }
++            for group_id, group_label, metrics in METRIC_GROUPS
++        ]
++        load_data.append(
++            {
++                "load": directory,
++                "label": label,
++                "source": {
++                    "summary": str(summary_path),
++                    "effective_configs": effective_configs,
++                },
++                "paired_seeds": len(seed_list),
++                "metric_groups": groups,
++            }
++        )
++
++    if common_seeds is None or common_slots is None:
++        raise ValueError("no load results found")
++    provenance = source_provenance(root / "source.patch")
++    provenance["simulator_sha256"] = simulator_sha256
++    return {
++        "schema_version": 1,
++        "experiment": "recommended-headlines",
++        "method": "paired mean difference with two-sided 95% Student-t confidence interval",
++        "evidence_scope": (
++            "Headline refresh under the adopted recommended construction. Ten paired "
++            "seeds match the original headline design; the thousand-seed replication "
++            "bounds seed-sampling error separately and has not been regenerated under "
++            "this configuration."
++        ),
++        "difference_direction": "recommended construction minus flat fee",
++        "manifest": str(manifest_path),
++        "variants": {
++            name: {"label": VARIANT_LABELS[name], "config": path}
++            for name, path in VARIANTS.items()
++        },
++        "contrasts": {
++            CONTRAST_ID: {
++                "label": "Recommended construction − flat fee",
++                "candidate": RECOMMENDED,
++                "reference": FLAT_FEE,
++                "primary": True,
++            }
++        },
++        "seeds": list(common_seeds),
++        "slots": common_slots,
++        "provenance": provenance,
++        "loads": load_data,
++        "notes": [
++            (
++                "The recommended construction here is the full adopted configuration: "
++                "0.75 standard target, 0.5 urgent target, D = 16, half-RB threshold, "
++                "K = 10, the 10-block processed-block standard window, and the "
++                "age-escape reset at certification."
++            ),
++            (
++                "The window length and the reset rule were selected on seeds 0-99, "
++                "bounded on seeds 440-449, and confirmed on seeds 500-599. This "
++                "refresh reuses the original headline seeds 0-9, which overlap the "
++                "selecting screen's seed range; the disjoint-seed confirmation is the "
++                "guard against selection bias, not this refresh."
++            ),
++            (
++                "Independent streams align fresh-demand samples and Ranking Block "
++                "opportunities within a seed; retry jitter remains mechanism-dependent."
++            ),
++            (
++                "Launch-day urgent-class slices are omitted because that profile changes "
++                "the urgency-rate multiplier over time; priority-lane metrics remain usable."
++            ),
++        ],
++    }
++
++
++def markdown(report: dict[str, Any]) -> str:
++    seeds = report["seeds"]
++    provenance = report["provenance"]
++    revision = provenance.get("git_revision") or "unknown"
++    source_state = (
++        "clean"
++        if provenance.get("abstract_sim_worktree_clean") is True
++        else "dirty"
++        if provenance.get("abstract_sim_worktree_clean") is False
++        else "unknown"
++    )
++    source_line = (
++        f"Source revision: `{revision}`; `abstract-sim-hs` worktree: {source_state}; "
++        f"simulator SHA-256: `{provenance['simulator_sha256']}`."
++    )
++    dirty_patch = provenance.get("dirty_patch")
++    if dirty_patch:
++        source_line += (
++            f" Dirty-source patch: `{dirty_patch['path']}` "
++            f"(SHA-256 `{dirty_patch['sha256']}`)."
++        )
++
++    if seeds == list(range(seeds[0], seeds[-1] + 1)):
++        seed_text = f"{seeds[0]}–{seeds[-1]}"
++    else:
++        seed_text = ", ".join(str(seed) for seed in seeds)
++    lines = [
++        "# Recommended-construction headline refresh",
++        "",
++        (
++            f"Flat fee versus the adopted recommended construction; paired seeds "
++            f"{seed_text} (n={len(seeds)}), {report['slots']:,} slots per load. "
++            "Cells are recommended-minus-flat-fee mean differences with two-sided "
++            "95% paired-t confidence intervals."
++        ),
++        "",
++        source_line,
++    ]
++
++    for load in report["loads"]:
++        lines.extend(["", f"## {load['label']}"])
++        for group in load["metric_groups"]:
++            lines.extend(
++                [
++                    "",
++                    f"### {group['label']}",
++                    "",
++                    "| Metric | Unit | Flat-fee mean | Recommended mean | Recommended − flat fee |",
++                    "|---|---:|---:|---:|---:|",
++                ]
++            )
++            for metric in group["metrics"]:
++                result = metric["contrasts"][CONTRAST_ID]
++                lines.append(
++                    f"| {metric['label']} | {metric['unit']} "
++                    f"| {plain(metric['arm_means'][FLAT_FEE], metric['digits'])} "
++                    f"| {plain(metric['arm_means'][RECOMMENDED], metric['digits'])} "
++                    f"| {interval_text(result, metric['digits'])} |"
++                )
++
++    lines.extend(
++        [
++            "",
++            "## Interpretation notes",
++            "",
++            *[f"- {note}" for note in report["notes"]],
++            "- Positive retained-value, service-rate, and throughput differences are favourable; negative latency, retry, and oscillation differences are favourable.",
++            "- Percentage-point rows are absolute changes in ratios, not relative percentages.",
++            "",
++        ]
++    )
++    return "\n".join(lines)
++
++
++def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--root",
++        type=Path,
++        default=DEFAULT_ROOT,
++        help="directory containing the five load subdirectories",
++    )
++    parser.add_argument(
++        "--manifest",
++        type=Path,
++        default=DEFAULT_MANIFEST,
++        help="committed sweep manifest",
++    )
++    parser.add_argument(
++        "--simulator-sha256",
++        required=True,
++        help="SHA-256 of the executable used for every run",
++    )
++    parser.add_argument(
++        "--markdown-output",
++        type=Path,
++        help="Markdown report path (default: ROOT/comparison.md)",
++    )
++    parser.add_argument(
++        "--json-output",
++        type=Path,
++        help="machine-readable report path (default: ROOT/comparison.json)",
++    )
++    return parser.parse_args(argv)
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parse_args(argv)
++    simulator_sha256 = args.simulator_sha256.lower()
++    if len(simulator_sha256) != 64 or any(
++        character not in "0123456789abcdef" for character in simulator_sha256
++    ):
++        raise SystemExit("error: --simulator-sha256 must be 64 hexadecimal characters")
++
++    markdown_output = args.markdown_output or args.root / "comparison.md"
++    json_output = args.json_output or args.root / "comparison.json"
++    try:
++        report = build_report(args.root, args.manifest, simulator_sha256)
++        rendered = markdown(report)
++        markdown_output.write_text(rendered, encoding="utf-8")
++        json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
++    except (OSError, ValueError) as error:
++        raise SystemExit(f"error: {error}") from error
++    print(f"wrote {markdown_output}")
++    print(f"wrote {json_output}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/abstract-sim-hs/scripts/compare_standard_window_confirm.py b/abstract-sim-hs/scripts/compare_standard_window_confirm.py
+new file mode 100644
+index 00000000..dd191e5b
+--- /dev/null
++++ b/abstract-sim-hs/scripts/compare_standard_window_confirm.py
+@@ -0,0 +1,732 @@
++#!/usr/bin/env python3
++"""Confirm the standard-window screen's selection on disjoint seeds.
++
++The candidate arm is the exact configuration the CIP will specify: the
++standard controller's utilisation window taken over the 10 most recent
++processed-block summaries (announcements excluded), and the EB age-escape
++count reset at certified-EB application rather than at announcement. It runs
++against the historical announcement-diluted 20-entry window and flat fee.
++
++Pre-declared pass criteria, all of which must hold (conjunctive gating, so
++no multiplicity adjustment is applied):
++
++  C1  launch day: candidate-minus-historical overall retained value has a
++      95% CI above zero, and the candidate is higher in at least 90% of
++      seed pairs
++  C2  severe congestion and EB-capacity stress: candidate-minus-historical
++      overall retained-value ratio has a 95% CI lower bound above -0.05
++      percentage points
++  C3  severe congestion, EB-capacity stress, and launch day:
++      candidate-minus-flat-fee overall retained value has a 95% CI above
++      zero
++  C4  trickle: candidate-minus-historical standard-lane retained-value
++      ratio has a 95% CI lower bound above -1.0 percentage points
++
++Mid-load bit-identity to historical is expected and reported, not gated.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import math
++from pathlib import Path
++from typing import Any
++
++from compare_canonical_headlines import source_provenance
++from compare_cross_lane_inversion_smoke import paired_interval
++from compare_window_ablation_smoke import (
++    METRIC_GROUPS,
++    Metric,
++    differing_paths,
++    exactly_equal_count,
++    interval_text,
++    json_object,
++    mean,
++    metric_is_usable_for_load,
++    nested_value,
++    numeric_scalar,
++    plain,
++    variant_runs,
++)
++
++PROJECT_DIR = Path(__file__).resolve().parent.parent
++DEFAULT_ROOT = PROJECT_DIR / "sweep-results/standard-window-confirm"
++DEFAULT_MANIFEST = PROJECT_DIR / "config/sweeps/standard-window-confirm.json"
++
++HISTORICAL = "historical"
++FLAT_FEE = "flat-fee"
++CANDIDATE = "block-window-10-cert-reset"
++
++VARIANTS = {
++    HISTORICAL: "config/variants/standard-target-screen/s75-u50.json",
++    FLAT_FEE: "config/variants/flat-fee.json",
++    CANDIDATE: "config/variants/standard-window-confirm/block-window-10-cert-reset.json",
++}
++
++VARIANT_LABELS = {
++    HISTORICAL: "Historical announcement-diluted window (20 entries)",
++    FLAT_FEE: "Flat fee",
++    CANDIDATE: "Specified semantics (10-block window, cert reset)",
++}
++
++SIGNAL_TYPE_PATH = ("design", "controllers", "standardController", "signal", "type")
++SIGNAL_WINDOW_PATH = ("design", "controllers", "standardController", "signal", "window")
++AGE_RESET_PATH = ("design", "ageResetAtCertification")
++
++CONTRASTS = {
++    "candidate-minus-historical": {
++        "candidate": CANDIDATE,
++        "reference": HISTORICAL,
++        "primary": True,
++    },
++    "candidate-minus-flat-fee": {
++        "candidate": CANDIDATE,
++        "reference": FLAT_FEE,
++        "primary": False,
++    },
++    "historical-minus-flat-fee": {
++        "candidate": HISTORICAL,
++        "reference": FLAT_FEE,
++        "primary": False,
++    },
++}
++
++LOADS = (
++    ("low", "Low"),
++    ("mid-load", "Mid load"),
++    ("severe-congestion", "Severe congestion"),
++    ("eb-capacity-stress", "EB-capacity stress"),
++    ("launch-day", "Launch day"),
++    ("trickle-0p1", "Trickle 0.1 tx/slot"),
++)
++
++# The trickle profile's embedded name uses a dot where its filename uses "p".
++PROFILE_NAMES = {directory: directory for directory, _ in LOADS if directory != "low"}
++PROFILE_NAMES["trickle-0p1"] = "trickle-0.1"
++
++
++def expected_override(directory: str) -> dict[str, str]:
++    if directory == "low":
++        return {"name": "low", "type": "preset"}
++    return {
++        "copy": "selected-load-profile.json",
++        "name": PROFILE_NAMES[directory],
++        "source": f"config/loads/{directory}.json",
++        "type": "profile",
++    }
++
++
++def validate_manifest(path: Path) -> dict[str, Any]:
++    manifest = json_object(path)
++    if manifest.get("randomness") != "independent-streams":
++        raise ValueError(f"manifest must use independent-streams randomness: {path}")
++    if manifest.get("summaryOnly") is not True:
++        raise ValueError(f"manifest must set summaryOnly=true: {path}")
++    if manifest.get("seedStart") != 500:
++        raise ValueError(f"manifest must default to seed 500: {path}")
++    if manifest.get("seeds") != 100 or manifest.get("slots") != 2_000:
++        raise ValueError(f"manifest must default to 100 seeds and 2,000 slots: {path}")
++
++    variants = manifest.get("variants")
++    if not isinstance(variants, list):
++        raise ValueError(f"manifest is missing its variants array: {path}")
++    actual: dict[str, Any] = {}
++    for variant in variants:
++        if not isinstance(variant, dict) or not isinstance(variant.get("name"), str):
++            raise ValueError(f"malformed manifest variant in {path}")
++        name = variant["name"]
++        if name in actual:
++            raise ValueError(f"duplicate manifest variant {name!r} in {path}")
++        actual[name] = variant.get("config")
++    if actual != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: expected={VARIANTS!r}, actual={actual!r}"
++        )
++    return manifest
++
++
++def validate_effective_configs(directory: Path) -> dict[str, str]:
++    paths = {name: directory / f"{name}.config.json" for name in VARIANTS}
++    configs = {name: json_object(path) for name, path in paths.items()}
++
++    historical_signal = nested_value(configs[HISTORICAL], SIGNAL_TYPE_PATH, paths[HISTORICAL])
++    if historical_signal != "capacity-weighted-window":
++        raise ValueError(
++            f"historical arm must use the capacity-weighted-window signal in "
++            f"{paths[HISTORICAL]}: actual={historical_signal!r}"
++        )
++    historical_window = nested_value(configs[HISTORICAL], SIGNAL_WINDOW_PATH, paths[HISTORICAL])
++    if historical_window != 20:
++        raise ValueError(
++            f"historical arm must use a 20-entry window in {paths[HISTORICAL]}: "
++            f"actual={historical_window!r}"
++        )
++    historical_design = nested_value(configs[HISTORICAL], ("design",), paths[HISTORICAL])
++    historical_reset = historical_design.get(AGE_RESET_PATH[-1], False)
++    if historical_reset is not False:
++        raise ValueError(
++            f"historical arm must reset at announcement (absent or false) in "
++            f"{paths[HISTORICAL]}: actual={historical_reset!r}"
++        )
++
++    flat_expectations = {
++        ("design", "laneStructure"): "one",
++        ("design", "reservationPolicy", "type"): "no-reservation",
++        ("design", "feeSemantics"): "fixed-fee",
++    }
++    for path, expected in flat_expectations.items():
++        actual = nested_value(configs[FLAT_FEE], path, paths[FLAT_FEE])
++        if actual != expected:
++            raise ValueError(
++                f"unexpected {'.'.join(path)} in {paths[FLAT_FEE]}: "
++                f"expected={expected!r}, actual={actual!r}"
++            )
++
++    fixed_expectations = {
++        ("design", "controllers", "standardController", "targetUtilisation"): 0.75,
++        ("design", "controllers", "standardController", "maxChangeDenominator"): 16,
++        ("design", "controllers", "priorityController", "targetUtilisation"): 0.5,
++        ("design", "controllers", "priorityController", "maxChangeDenominator"): 16,
++        ("design", "reservationPolicy", "ebThresholdBytes"): 45_056,
++        ("design", "reservationPolicy", "ebAgeEscapeRbIntervals"): 10,
++    }
++    for name in (HISTORICAL, CANDIDATE):
++        for path, expected in fixed_expectations.items():
++            actual = nested_value(configs[name], path, paths[name])
++            if actual != expected:
++                raise ValueError(
++                    f"unexpected {'.'.join(path)} in {paths[name]}: "
++                    f"expected={expected!r}, actual={actual!r}"
++                )
++
++    candidate_signal = nested_value(configs[CANDIDATE], SIGNAL_TYPE_PATH, paths[CANDIDATE])
++    if candidate_signal != "capacity-weighted-block-window":
++        raise ValueError(
++            f"candidate arm must use the capacity-weighted-block-window signal in "
++            f"{paths[CANDIDATE]}: actual={candidate_signal!r}"
++        )
++    candidate_window = nested_value(configs[CANDIDATE], SIGNAL_WINDOW_PATH, paths[CANDIDATE])
++    if candidate_window != 10:
++        raise ValueError(
++            f"candidate arm must use a 10-block window in {paths[CANDIDATE]}: "
++            f"actual={candidate_window!r}"
++        )
++    candidate_reset = nested_value(configs[CANDIDATE], AGE_RESET_PATH, paths[CANDIDATE])
++    if candidate_reset is not True:
++        raise ValueError(
++            f"candidate arm must set ageResetAtCertification=true in {paths[CANDIDATE]}: "
++            f"actual={candidate_reset!r}"
++        )
++
++    expected_diff = {SIGNAL_TYPE_PATH, SIGNAL_WINDOW_PATH, AGE_RESET_PATH}
++    differences = differing_paths(configs[CANDIDATE], configs[HISTORICAL])
++    if differences != expected_diff:
++        rendered = [".".join(path) or "<root>" for path in sorted(differences)]
++        expected = [".".join(path) for path in sorted(expected_diff)]
++        raise ValueError(
++            f"effective configs for {CANDIDATE} must differ from {HISTORICAL} only at "
++            f"{expected!r}: actual differences={rendered!r}"
++        )
++    return {name: str(path) for name, path in paths.items()}
++
++
++def load_runs(
++    root: Path, directory: str
++) -> tuple[Path, dict[str, dict[int, dict[str, float]]], int, dict[str, str]]:
++    path = root / directory / "summary.json"
++    summary = json_object(path)
++    if not isinstance(summary.get("variants"), list):
++        raise ValueError(f"not a sweep summary (missing variants array): {path}")
++    if summary.get("randomness") != "independent-streams":
++        raise ValueError(f"summary must use independent-streams randomness: {path}")
++    if summary.get("summaryOnly") is not True:
++        raise ValueError(f"summary must be summary-only: {path}")
++    if summary.get("loadOverride") != expected_override(directory):
++        raise ValueError(
++            f"unexpected load override in {path}: {summary.get('loadOverride')!r}"
++        )
++    if directory != "low":
++        profile = summary.get("loadProfile")
++        if not isinstance(profile, dict) or profile.get("name") != PROFILE_NAMES[directory]:
++            raise ValueError(f"missing/wrong selected load profile in {path}")
++
++    actual_configs = {
++        variant.get("name"): variant.get("config") for variant in summary["variants"]
++    }
++    if actual_configs != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: "
++            f"expected={VARIANTS!r}, actual={actual_configs!r}"
++        )
++
++    runs = {name: variant_runs(summary, name, path) for name in VARIANTS}
++    seed_sets = {name: set(by_seed) for name, by_seed in runs.items()}
++    reference_seeds = seed_sets[HISTORICAL]
++    if any(seeds != reference_seeds for seeds in seed_sets.values()):
++        rendered = {name: sorted(seeds) for name, seeds in seed_sets.items()}
++        raise ValueError(
++            f"paired comparison requires identical seed sets in {path}: {rendered}"
++        )
++    if len(reference_seeds) < 2:
++        raise ValueError(f"paired comparison requires at least two seeds in {path}")
++    if summary.get("seeds") != len(reference_seeds):
++        raise ValueError(
++            f"summary seed metadata disagrees with runs in {path}: "
++            f"metadata={summary.get('seeds')!r}, runs={len(reference_seeds)}"
++        )
++
++    slots = summary.get("slots")
++    if isinstance(slots, bool) or not isinstance(slots, int) or slots < 1:
++        raise ValueError(f"invalid slot count in {path}: {slots!r}")
++
++    scalar_keys: set[str] | None = None
++    for name, by_seed in runs.items():
++        for seed, scalars in by_seed.items():
++            keys = set(scalars)
++            if scalar_keys is None:
++                scalar_keys = keys
++            elif keys != scalar_keys:
++                raise ValueError(f"scalar-key mismatch for {name}, seed {seed} in {path}")
++
++    effective_configs = validate_effective_configs(root / directory)
++    return path, runs, slots, effective_configs
++
++
++def metric_result(
++    metric: Metric,
++    runs: dict[str, dict[int, dict[str, float]]],
++    seeds: list[int],
++) -> dict[str, Any]:
++    values = {
++        name: [
++            metric.scale * numeric_scalar(by_seed[seed], metric.key, name, seed)
++            for seed in seeds
++        ]
++        for name, by_seed in runs.items()
++    }
++    contrasts: dict[str, Any] = {}
++    for cid, spec in CONTRASTS.items():
++        candidate, reference = spec["candidate"], spec["reference"]
++        differences = [
++            candidate_value - reference_value
++            for candidate_value, reference_value in zip(
++                values[candidate], values[reference]
++            )
++        ]
++        estimate, low, high = paired_interval(differences)
++        contrasts[cid] = {
++            "candidate": candidate,
++            "reference": reference,
++            "primary": spec["primary"],
++            "mean": estimate,
++            "ci95_low": low,
++            "ci95_high": high,
++            "candidate_higher": sum(value > 0 for value in differences),
++            "reference_higher": sum(value < 0 for value in differences),
++            "ties": sum(value == 0 for value in differences),
++        }
++    return {
++        "key": metric.key,
++        "label": metric.label,
++        "unit": metric.unit,
++        "digits": metric.digits,
++        "preference": metric.preference,
++        "arm_means": {name: mean(arm_values) for name, arm_values in values.items()},
++        "contrasts": contrasts,
++    }
++
++
++def paired_contrast(
++    runs: dict[str, dict[int, dict[str, float]]],
++    seeds: list[int],
++    key: str,
++    candidate: str,
++    reference: str,
++    scale: float,
++) -> dict[str, Any]:
++    differences = [
++        scale
++        * (
++            numeric_scalar(runs[candidate][seed], key, candidate, seed)
++            - numeric_scalar(runs[reference][seed], key, reference, seed)
++        )
++        for seed in seeds
++    ]
++    estimate, low, high = paired_interval(differences)
++    return {
++        "mean": estimate,
++        "ci95_low": low,
++        "ci95_high": high,
++        "candidate_higher": sum(value > 0 for value in differences),
++        "n": len(differences),
++    }
++
++
++def evaluate_criteria(
++    runs_by_load: dict[str, dict[str, dict[int, dict[str, float]]]],
++    seeds: list[int],
++) -> list[dict[str, Any]]:
++    n = len(seeds)
++    directional_threshold = math.ceil(0.9 * n)
++    criteria: list[dict[str, Any]] = []
++
++    c1 = paired_contrast(
++        runs_by_load["launch-day"], seeds, "value.retainedLovelace", CANDIDATE, HISTORICAL, 1e-9
++    )
++    c1_pass = c1["ci95_low"] > 0 and c1["candidate_higher"] >= directional_threshold
++    criteria.append(
++        {
++            "id": "C1",
++            "description": (
++                "Launch day: candidate-minus-historical overall retained value, 95% CI "
++                f"above zero and candidate higher in at least {directional_threshold}/{n} "
++                "seed pairs"
++            ),
++            "observed": (
++                f"{c1['mean']:+.3f} G [{c1['ci95_low']:+.3f}, {c1['ci95_high']:+.3f}], "
++                f"candidate higher in {c1['candidate_higher']}/{n}"
++            ),
++            "pass": c1_pass,
++        }
++    )
++
++    for directory in ("severe-congestion", "eb-capacity-stress"):
++        c2 = paired_contrast(
++            runs_by_load[directory], seeds, "value.retainedRatio", CANDIDATE, HISTORICAL, 100.0
++        )
++        criteria.append(
++            {
++                "id": f"C2 ({directory})",
++                "description": (
++                    f"{directory}: candidate-minus-historical overall retained-value "
++                    "ratio, 95% CI lower bound above -0.05 pp"
++                ),
++                "observed": (
++                    f"{c2['mean']:+.4f} pp [{c2['ci95_low']:+.4f}, {c2['ci95_high']:+.4f}]"
++                ),
++                "pass": c2["ci95_low"] > -0.05,
++            }
++        )
++
++    for directory in ("severe-congestion", "eb-capacity-stress", "launch-day"):
++        c3 = paired_contrast(
++            runs_by_load[directory], seeds, "value.retainedLovelace", CANDIDATE, FLAT_FEE, 1e-9
++        )
++        criteria.append(
++            {
++                "id": f"C3 ({directory})",
++                "description": (
++                    f"{directory}: candidate-minus-flat-fee overall retained value, "
++                    "95% CI above zero"
++                ),
++                "observed": (
++                    f"{c3['mean']:+.3f} G [{c3['ci95_low']:+.3f}, {c3['ci95_high']:+.3f}]"
++                ),
++                "pass": c3["ci95_low"] > 0,
++            }
++        )
++
++    c4 = paired_contrast(
++        runs_by_load["trickle-0p1"], seeds, "value.standard.retainedRatio", CANDIDATE, HISTORICAL, 100.0
++    )
++    criteria.append(
++        {
++            "id": "C4",
++            "description": (
++                "Trickle: candidate-minus-historical standard-lane retained-value "
++                "ratio, 95% CI lower bound above -1.0 pp"
++            ),
++            "observed": (
++                f"{c4['mean']:+.3f} pp [{c4['ci95_low']:+.3f}, {c4['ci95_high']:+.3f}]"
++            ),
++            "pass": c4["ci95_low"] > -1.0,
++        }
++    )
++    return criteria
++
++
++def build_report(
++    root: Path, manifest_path: Path, simulator_sha256: str
++) -> dict[str, Any]:
++    validate_manifest(manifest_path)
++    load_data: list[dict[str, Any]] = []
++    runs_by_load: dict[str, dict[str, dict[int, dict[str, float]]]] = {}
++    common_seeds: tuple[int, ...] | None = None
++    common_slots: int | None = None
++
++    for directory, label in LOADS:
++        summary_path, runs, slots, effective_configs = load_runs(root, directory)
++        runs_by_load[directory] = runs
++        seeds = tuple(sorted(runs[HISTORICAL]))
++        if common_seeds is None:
++            common_seeds = seeds
++        elif seeds != common_seeds:
++            raise ValueError(
++                f"loads use different paired seed sets: first={list(common_seeds)}, "
++                f"{directory}={list(seeds)}"
++            )
++        if common_slots is None:
++            common_slots = slots
++        elif slots != common_slots:
++            raise ValueError(
++                f"loads use different slot counts: first={common_slots}, "
++                f"{directory}={slots}"
++            )
++
++        seed_list = list(seeds)
++        groups = [
++            {
++                "id": group_id,
++                "label": group_label,
++                "metrics": [
++                    metric_result(metric, runs, seed_list)
++                    for metric in metrics
++                    if metric_is_usable_for_load(metric, directory)
++                ],
++            }
++            for group_id, group_label, metrics in METRIC_GROUPS
++        ]
++        load_data.append(
++            {
++                "load": directory,
++                "label": label,
++                "source": {
++                    "summary": str(summary_path),
++                    "effective_configs": effective_configs,
++                },
++                "paired_seeds": len(seed_list),
++                "exactly_equal_all_scalars": {
++                    "candidate-minus-historical": exactly_equal_count(
++                        runs[CANDIDATE], runs[HISTORICAL], seed_list
++                    )
++                },
++                "metric_groups": groups,
++            }
++        )
++
++    if common_seeds is None or common_slots is None:
++        raise ValueError("no load results found")
++    seed_list = list(common_seeds)
++    criteria = evaluate_criteria(runs_by_load, seed_list)
++    verdict = "PASS" if all(criterion["pass"] for criterion in criteria) else "FAIL"
++
++    provenance = source_provenance(root / "source.patch")
++    provenance["simulator_sha256"] = simulator_sha256
++    return {
++        "schema_version": 1,
++        "experiment": "standard-window-confirm",
++        "method": "paired mean difference with two-sided 95% Student-t confidence interval",
++        "evidence_scope": (
++            "Confirmatory run against pre-declared criteria on seeds disjoint from the "
++            "selecting screen. All criteria must hold (conjunctive gating, so no "
++            "multiplicity adjustment is applied). The run cannot establish equivalence "
++            "beyond the declared margins."
++        ),
++        "difference_direction": "candidate arm minus reference arm, per contrast",
++        "manifest": str(manifest_path),
++        "variants": {
++            name: {"label": VARIANT_LABELS[name], "config": path}
++            for name, path in VARIANTS.items()
++        },
++        "contrasts": {
++            cid: {
++                "label": f"{VARIANT_LABELS[spec['candidate']]} − {VARIANT_LABELS[spec['reference']]}",
++                **spec,
++            }
++            for cid, spec in CONTRASTS.items()
++        },
++        "seeds": seed_list,
++        "slots": common_slots,
++        "provenance": provenance,
++        "criteria": criteria,
++        "verdict": verdict,
++        "loads": load_data,
++        "notes": [
++            (
++                "The candidate is the configuration the CIP will specify: the standard "
++                "controller's window is the 10 most recent processed-block summaries "
++                "(non-certificate RBs, certificate-carrying RBs, certified EBs; "
++                "announcements excluded), and the EB age-escape count resets when a "
++                "certified EB is applied rather than at announcement."
++            ),
++            (
++                "The 10-block length was selected by the standard-window screen "
++                "(seeds 0-99); this run uses disjoint seeds 500-599. The cert-reset "
++                "change was separately bounded by the announcement-semantics smoke "
++                "(seeds 440-449), which found it within noise everywhere and "
++                "directionally favourable at trickle."
++            ),
++            (
++                "Mid-load bit-identity between candidate and historical is expected "
++                "(the standard coefficient rests on its floor and the age escape is "
++                "not consulted); it is reported in the per-load tie counts, not gated."
++            ),
++            (
++                "Independent streams align fresh-demand samples and Ranking Block "
++                "opportunities within a seed; retry jitter remains mechanism-dependent."
++            ),
++            (
++                "Launch-day urgent-class slices are omitted because that profile changes "
++                "the urgency-rate multiplier over time; priority-lane metrics remain usable."
++            ),
++        ],
++    }
++
++
++def markdown(report: dict[str, Any]) -> str:
++    seeds = report["seeds"]
++    provenance = report["provenance"]
++    revision = provenance.get("git_revision") or "unknown"
++    source_state = (
++        "clean"
++        if provenance.get("abstract_sim_worktree_clean") is True
++        else "dirty"
++        if provenance.get("abstract_sim_worktree_clean") is False
++        else "unknown"
++    )
++    source_line = (
++        f"Source revision: `{revision}`; `abstract-sim-hs` worktree: {source_state}; "
++        f"simulator SHA-256: `{provenance['simulator_sha256']}`."
++    )
++    dirty_patch = provenance.get("dirty_patch")
++    if dirty_patch:
++        source_line += (
++            f" Dirty-source patch: `{dirty_patch['path']}` "
++            f"(SHA-256 `{dirty_patch['sha256']}`)."
++        )
++
++    if seeds == list(range(seeds[0], seeds[-1] + 1)):
++        seed_text = f"{seeds[0]}–{seeds[-1]}"
++    else:
++        seed_text = ", ".join(str(seed) for seed in seeds)
++    lines = [
++        "# Standard-window confirmation",
++        "",
++        (
++            f"The specified configuration (10-block processed-block window, age reset "
++            f"at certification) versus the historical window and flat fee; paired "
++            f"seeds {seed_text} (n={len(seeds)}), {report['slots']:,} slots per load. "
++            "Cells are candidate-minus-reference mean differences with two-sided 95% "
++            "paired-t confidence intervals."
++        ),
++        "",
++        f"## Verdict: {report['verdict']}",
++        "",
++        "Pre-declared criteria (all must hold; conjunctive gating, no multiplicity adjustment):",
++        "",
++        "| Criterion | Requirement | Observed | Result |",
++        "|---|---|---|---|",
++    ]
++    for criterion in report["criteria"]:
++        result = "PASS" if criterion["pass"] else "FAIL"
++        lines.append(
++            f"| {criterion['id']} | {criterion['description']} "
++            f"| {criterion['observed']} | {result} |"
++        )
++    lines.extend(["", source_line])
++
++    for load in report["loads"]:
++        lines.extend(["", f"## {load['label']}"])
++        equality = load["exactly_equal_all_scalars"]["candidate-minus-historical"]
++        lines.extend(
++            [
++                "",
++                f"Exact all-scalar ties, candidate versus historical: "
++                f"{equality}/{load['paired_seeds']} paired seeds.",
++            ]
++        )
++        for group in load["metric_groups"]:
++            lines.extend(
++                [
++                    "",
++                    f"### {group['label']}",
++                    "",
++                    (
++                        "| Metric | Unit | Historical mean | Flat-fee mean "
++                        "| Candidate − hist | Candidate − flat | Hist − flat |"
++                    ),
++                    "|---|---:|---:|---:|---:|---:|---:|",
++                ]
++            )
++            for metric in group["metrics"]:
++                lines.append(
++                    f"| {metric['label']} | {metric['unit']} "
++                    f"| {plain(metric['arm_means'][HISTORICAL], metric['digits'])} "
++                    f"| {plain(metric['arm_means'][FLAT_FEE], metric['digits'])} "
++                    f"| {interval_text(metric['contrasts']['candidate-minus-historical'], metric['digits'])} "
++                    f"| {interval_text(metric['contrasts']['candidate-minus-flat-fee'], metric['digits'])} "
++                    f"| {interval_text(metric['contrasts']['historical-minus-flat-fee'], metric['digits'])} |"
++                )
++
++    lines.extend(
++        [
++            "",
++            "## Interpretation notes",
++            "",
++            *[f"- {note}" for note in report["notes"]],
++            "- Positive retained-value, service-rate, and throughput differences are favourable; negative latency, retry, and oscillation differences are favourable.",
++            "- Percentage-point rows are absolute changes in ratios, not relative percentages.",
++            "",
++        ]
++    )
++    return "\n".join(lines)
++
++
++def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--root",
++        type=Path,
++        default=DEFAULT_ROOT,
++        help="directory containing the six load subdirectories",
++    )
++    parser.add_argument(
++        "--manifest",
++        type=Path,
++        default=DEFAULT_MANIFEST,
++        help="committed sweep manifest",
++    )
++    parser.add_argument(
++        "--simulator-sha256",
++        required=True,
++        help="SHA-256 of the executable used for every run",
++    )
++    parser.add_argument(
++        "--markdown-output",
++        type=Path,
++        help="Markdown report path (default: ROOT/comparison.md)",
++    )
++    parser.add_argument(
++        "--json-output",
++        type=Path,
++        help="machine-readable report path (default: ROOT/comparison.json)",
++    )
++    return parser.parse_args(argv)
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parse_args(argv)
++    simulator_sha256 = args.simulator_sha256.lower()
++    if len(simulator_sha256) != 64 or any(
++        character not in "0123456789abcdef" for character in simulator_sha256
++    ):
++        raise SystemExit("error: --simulator-sha256 must be 64 hexadecimal characters")
++
++    markdown_output = args.markdown_output or args.root / "comparison.md"
++    json_output = args.json_output or args.root / "comparison.json"
++    try:
++        report = build_report(args.root, args.manifest, simulator_sha256)
++        rendered = markdown(report)
++        markdown_output.write_text(rendered, encoding="utf-8")
++        json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
++    except (OSError, ValueError) as error:
++        raise SystemExit(f"error: {error}") from error
++    print(f"wrote {markdown_output}")
++    print(f"wrote {json_output}")
++    print(f"verdict: {report['verdict']}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/abstract-sim-hs/scripts/compare_standard_window_screen.py b/abstract-sim-hs/scripts/compare_standard_window_screen.py
+new file mode 100644
+index 00000000..819c6dff
+--- /dev/null
++++ b/abstract-sim-hs/scripts/compare_standard_window_screen.py
+@@ -0,0 +1,630 @@
++#!/usr/bin/env python3
++"""Compare the standard-window-length screen across six loads.
++
++The announcement-semantics smoke showed that the historical standard signal's
++zero-width EbAnnounced window entries shorten the effective window at
++contended loads, and that a clean 20-processed-block window loses launch-day
++retained value against it. Announcement entries are not adoptable in the
++ledger rule (an announcement is a costless producer claim), so this screen
++sweeps the processed-block window length — 10, 13, 15, 20 — against the
++historical arm and flat fee, asking whether a shorter enforceable window
++recovers the historical performance. One hundred paired seeds make this a
++screen; a selected length needs confirmation on disjoint seeds before
++adoption.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++from pathlib import Path
++from typing import Any
++
++from compare_canonical_headlines import source_provenance
++from compare_cross_lane_inversion_smoke import paired_interval
++from compare_window_ablation_smoke import (
++    METRIC_GROUPS,
++    Metric,
++    differing_paths,
++    exactly_equal_count,
++    interval_text,
++    json_object,
++    mean,
++    metric_is_usable_for_load,
++    nested_value,
++    numeric_scalar,
++    plain,
++    variant_runs,
++)
++
++PROJECT_DIR = Path(__file__).resolve().parent.parent
++DEFAULT_ROOT = PROJECT_DIR / "sweep-results/standard-window-screen"
++DEFAULT_MANIFEST = PROJECT_DIR / "config/sweeps/standard-window-screen.json"
++
++HISTORICAL = "historical"
++FLAT_FEE = "flat-fee"
++WINDOW_ARMS = ("block-window-10", "block-window-13", "block-window-15", "block-window-20")
++WINDOW_LENGTHS = {name: int(name.rsplit("-", 1)[1]) for name in WINDOW_ARMS}
++
++VARIANTS = {
++    HISTORICAL: "config/variants/standard-target-screen/s75-u50.json",
++    FLAT_FEE: "config/variants/flat-fee.json",
++    **{
++        name: f"config/variants/standard-window-screen/{name}.json"
++        for name in WINDOW_ARMS
++    },
++}
++
++VARIANT_LABELS = {
++    HISTORICAL: "Historical announcement-diluted window (20 entries)",
++    FLAT_FEE: "Flat fee",
++    **{
++        name: f"Processed-block window ({WINDOW_LENGTHS[name]} blocks)"
++        for name in WINDOW_ARMS
++    },
++}
++
++SIGNAL_TYPE_PATH = ("design", "controllers", "standardController", "signal", "type")
++SIGNAL_WINDOW_PATH = ("design", "controllers", "standardController", "signal", "window")
++
++LOADS = (
++    ("low", "Low"),
++    ("mid-load", "Mid load"),
++    ("severe-congestion", "Severe congestion"),
++    ("eb-capacity-stress", "EB-capacity stress"),
++    ("launch-day", "Launch day"),
++    ("trickle-0p1", "Trickle 0.1 tx/slot"),
++)
++
++# The trickle profile's embedded name uses a dot where its filename uses "p".
++PROFILE_NAMES = {directory: directory for directory, _ in LOADS if directory != "low"}
++PROFILE_NAMES["trickle-0p1"] = "trickle-0.1"
++
++
++def contrast_id(candidate: str, reference: str) -> str:
++    return f"{candidate}-minus-{reference}"
++
++
++CONTRASTS: dict[str, dict[str, Any]] = {}
++for arm in WINDOW_ARMS:
++    CONTRASTS[contrast_id(arm, HISTORICAL)] = {
++        "candidate": arm,
++        "reference": HISTORICAL,
++        "primary": True,
++    }
++for arm in (HISTORICAL, *WINDOW_ARMS):
++    CONTRASTS[contrast_id(arm, FLAT_FEE)] = {
++        "candidate": arm,
++        "reference": FLAT_FEE,
++        "primary": False,
++    }
++
++
++def expected_override(directory: str) -> dict[str, str]:
++    if directory == "low":
++        return {"name": "low", "type": "preset"}
++    return {
++        "copy": "selected-load-profile.json",
++        "name": PROFILE_NAMES[directory],
++        "source": f"config/loads/{directory}.json",
++        "type": "profile",
++    }
++
++
++def validate_manifest(path: Path) -> dict[str, Any]:
++    manifest = json_object(path)
++    if manifest.get("randomness") != "independent-streams":
++        raise ValueError(f"manifest must use independent-streams randomness: {path}")
++    if manifest.get("summaryOnly") is not True:
++        raise ValueError(f"manifest must set summaryOnly=true: {path}")
++    if manifest.get("seedStart") != 0:
++        raise ValueError(f"manifest must default to seed 0: {path}")
++    if manifest.get("seeds") != 100 or manifest.get("slots") != 2_000:
++        raise ValueError(f"manifest must default to 100 seeds and 2,000 slots: {path}")
++
++    variants = manifest.get("variants")
++    if not isinstance(variants, list):
++        raise ValueError(f"manifest is missing its variants array: {path}")
++    actual: dict[str, Any] = {}
++    for variant in variants:
++        if not isinstance(variant, dict) or not isinstance(variant.get("name"), str):
++            raise ValueError(f"malformed manifest variant in {path}")
++        name = variant["name"]
++        if name in actual:
++            raise ValueError(f"duplicate manifest variant {name!r} in {path}")
++        actual[name] = variant.get("config")
++    if actual != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: expected={VARIANTS!r}, actual={actual!r}"
++        )
++    return manifest
++
++
++def validate_effective_configs(directory: Path) -> dict[str, str]:
++    paths = {name: directory / f"{name}.config.json" for name in VARIANTS}
++    configs = {name: json_object(path) for name, path in paths.items()}
++
++    historical_signal = nested_value(configs[HISTORICAL], SIGNAL_TYPE_PATH, paths[HISTORICAL])
++    if historical_signal != "capacity-weighted-window":
++        raise ValueError(
++            f"historical arm must use the capacity-weighted-window signal in "
++            f"{paths[HISTORICAL]}: actual={historical_signal!r}"
++        )
++    historical_window = nested_value(configs[HISTORICAL], SIGNAL_WINDOW_PATH, paths[HISTORICAL])
++    if historical_window != 20:
++        raise ValueError(
++            f"historical arm must use a 20-entry window in {paths[HISTORICAL]}: "
++            f"actual={historical_window!r}"
++        )
++
++    flat_expectations = {
++        ("design", "laneStructure"): "one",
++        ("design", "reservationPolicy", "type"): "no-reservation",
++        ("design", "feeSemantics"): "fixed-fee",
++    }
++    for path, expected in flat_expectations.items():
++        actual = nested_value(configs[FLAT_FEE], path, paths[FLAT_FEE])
++        if actual != expected:
++            raise ValueError(
++                f"unexpected {'.'.join(path)} in {paths[FLAT_FEE]}: "
++                f"expected={expected!r}, actual={actual!r}"
++            )
++
++    fixed_expectations = {
++        ("design", "controllers", "standardController", "targetUtilisation"): 0.75,
++        ("design", "controllers", "standardController", "maxChangeDenominator"): 16,
++        ("design", "controllers", "priorityController", "targetUtilisation"): 0.5,
++        ("design", "controllers", "priorityController", "maxChangeDenominator"): 16,
++        ("design", "reservationPolicy", "ebThresholdBytes"): 45_056,
++        ("design", "reservationPolicy", "ebAgeEscapeRbIntervals"): 10,
++    }
++    for name in (HISTORICAL, *WINDOW_ARMS):
++        for path, expected in fixed_expectations.items():
++            actual = nested_value(configs[name], path, paths[name])
++            if actual != expected:
++                raise ValueError(
++                    f"unexpected {'.'.join(path)} in {paths[name]}: "
++                    f"expected={expected!r}, actual={actual!r}"
++                )
++
++    for name in WINDOW_ARMS:
++        signal = nested_value(configs[name], SIGNAL_TYPE_PATH, paths[name])
++        if signal != "capacity-weighted-block-window":
++            raise ValueError(
++                f"{name} arm must use the capacity-weighted-block-window signal in "
++                f"{paths[name]}: actual={signal!r}"
++            )
++        window = nested_value(configs[name], SIGNAL_WINDOW_PATH, paths[name])
++        if window != WINDOW_LENGTHS[name]:
++            raise ValueError(
++                f"{name} arm must use a {WINDOW_LENGTHS[name]}-block window in "
++                f"{paths[name]}: actual={window!r}"
++            )
++        expected_diff = {SIGNAL_TYPE_PATH}
++        if WINDOW_LENGTHS[name] != 20:
++            expected_diff = {SIGNAL_TYPE_PATH, SIGNAL_WINDOW_PATH}
++        differences = differing_paths(configs[name], configs[HISTORICAL])
++        if differences != expected_diff:
++            rendered = [".".join(path) or "<root>" for path in sorted(differences)]
++            expected = [".".join(path) for path in sorted(expected_diff)]
++            raise ValueError(
++                f"effective configs for {name} must differ from {HISTORICAL} only at "
++                f"{expected!r}: actual differences={rendered!r}"
++            )
++    return {name: str(path) for name, path in paths.items()}
++
++
++def load_runs(
++    root: Path, directory: str
++) -> tuple[Path, dict[str, dict[int, dict[str, float]]], int, dict[str, str]]:
++    path = root / directory / "summary.json"
++    summary = json_object(path)
++    if not isinstance(summary.get("variants"), list):
++        raise ValueError(f"not a sweep summary (missing variants array): {path}")
++    if summary.get("randomness") != "independent-streams":
++        raise ValueError(f"summary must use independent-streams randomness: {path}")
++    if summary.get("summaryOnly") is not True:
++        raise ValueError(f"summary must be summary-only: {path}")
++    if summary.get("loadOverride") != expected_override(directory):
++        raise ValueError(
++            f"unexpected load override in {path}: {summary.get('loadOverride')!r}"
++        )
++    if directory != "low":
++        profile = summary.get("loadProfile")
++        if not isinstance(profile, dict) or profile.get("name") != PROFILE_NAMES[directory]:
++            raise ValueError(f"missing/wrong selected load profile in {path}")
++
++    actual_configs = {
++        variant.get("name"): variant.get("config") for variant in summary["variants"]
++    }
++    if actual_configs != VARIANTS:
++        raise ValueError(
++            f"unexpected variants/configs in {path}: "
++            f"expected={VARIANTS!r}, actual={actual_configs!r}"
++        )
++
++    runs = {name: variant_runs(summary, name, path) for name in VARIANTS}
++    seed_sets = {name: set(by_seed) for name, by_seed in runs.items()}
++    reference_seeds = seed_sets[HISTORICAL]
++    if any(seeds != reference_seeds for seeds in seed_sets.values()):
++        rendered = {name: sorted(seeds) for name, seeds in seed_sets.items()}
++        raise ValueError(
++            f"paired comparison requires identical seed sets in {path}: {rendered}"
++        )
++    if len(reference_seeds) < 2:
++        raise ValueError(f"paired comparison requires at least two seeds in {path}")
++    if summary.get("seeds") != len(reference_seeds):
++        raise ValueError(
++            f"summary seed metadata disagrees with runs in {path}: "
++            f"metadata={summary.get('seeds')!r}, runs={len(reference_seeds)}"
++        )
++
++    slots = summary.get("slots")
++    if isinstance(slots, bool) or not isinstance(slots, int) or slots < 1:
++        raise ValueError(f"invalid slot count in {path}: {slots!r}")
++
++    scalar_keys: set[str] | None = None
++    for name, by_seed in runs.items():
++        for seed, scalars in by_seed.items():
++            keys = set(scalars)
++            if scalar_keys is None:
++                scalar_keys = keys
++            elif keys != scalar_keys:
++                raise ValueError(f"scalar-key mismatch for {name}, seed {seed} in {path}")
++
++    effective_configs = validate_effective_configs(root / directory)
++    return path, runs, slots, effective_configs
++
++
++def metric_result(
++    metric: Metric,
++    runs: dict[str, dict[int, dict[str, float]]],
++    seeds: list[int],
++) -> dict[str, Any]:
++    values = {
++        name: [
++            metric.scale * numeric_scalar(by_seed[seed], metric.key, name, seed)
++            for seed in seeds
++        ]
++        for name, by_seed in runs.items()
++    }
++    contrasts: dict[str, Any] = {}
++    for cid, spec in CONTRASTS.items():
++        candidate, reference = spec["candidate"], spec["reference"]
++        differences = [
++            candidate_value - reference_value
++            for candidate_value, reference_value in zip(
++                values[candidate], values[reference]
++            )
++        ]
++        estimate, low, high = paired_interval(differences)
++        contrasts[cid] = {
++            "candidate": candidate,
++            "reference": reference,
++            "primary": spec["primary"],
++            "mean": estimate,
++            "ci95_low": low,
++            "ci95_high": high,
++            "candidate_higher": sum(value > 0 for value in differences),
++            "reference_higher": sum(value < 0 for value in differences),
++            "ties": sum(value == 0 for value in differences),
++        }
++    return {
++        "key": metric.key,
++        "label": metric.label,
++        "unit": metric.unit,
++        "digits": metric.digits,
++        "preference": metric.preference,
++        "arm_means": {name: mean(arm_values) for name, arm_values in values.items()},
++        "contrasts": contrasts,
++    }
++
++
++def build_report(
++    root: Path, manifest_path: Path, simulator_sha256: str
++) -> dict[str, Any]:
++    validate_manifest(manifest_path)
++    load_data: list[dict[str, Any]] = []
++    common_seeds: tuple[int, ...] | None = None
++    common_slots: int | None = None
++
++    for directory, label in LOADS:
++        summary_path, runs, slots, effective_configs = load_runs(root, directory)
++        seeds = tuple(sorted(runs[HISTORICAL]))
++        if common_seeds is None:
++            common_seeds = seeds
++        elif seeds != common_seeds:
++            raise ValueError(
++                f"loads use different paired seed sets: first={list(common_seeds)}, "
++                f"{directory}={list(seeds)}"
++            )
++        if common_slots is None:
++            common_slots = slots
++        elif slots != common_slots:
++            raise ValueError(
++                f"loads use different slot counts: first={common_slots}, "
++                f"{directory}={slots}"
++            )
++
++        seed_list = list(seeds)
++        groups = [
++            {
++                "id": group_id,
++                "label": group_label,
++                "metrics": [
++                    metric_result(metric, runs, seed_list)
++                    for metric in metrics
++                    if metric_is_usable_for_load(metric, directory)
++                ],
++            }
++            for group_id, group_label, metrics in METRIC_GROUPS
++        ]
++        load_data.append(
++            {
++                "load": directory,
++                "label": label,
++                "source": {
++                    "summary": str(summary_path),
++                    "effective_configs": effective_configs,
++                },
++                "paired_seeds": len(seed_list),
++                "exactly_equal_all_scalars": {
++                    contrast_id(arm, HISTORICAL): exactly_equal_count(
++                        runs[arm], runs[HISTORICAL], seed_list
++                    )
++                    for arm in WINDOW_ARMS
++                },
++                "metric_groups": groups,
++            }
++        )
++
++    if common_seeds is None or common_slots is None:
++        raise ValueError("no load results found")
++    provenance = source_provenance(root / "source.patch")
++    provenance["simulator_sha256"] = simulator_sha256
++    return {
++        "schema_version": 1,
++        "experiment": "standard-window-screen",
++        "method": "paired mean difference with two-sided 95% Student-t confidence interval",
++        "evidence_scope": (
++            "Exploratory screen over the standard-window length under processed-block "
++            "semantics. Screening on 100 paired seeds can rank the arms, but a selected "
++            "length needs confirmation on disjoint seeds before adoption, and this run "
++            "cannot establish equivalence or show that an unobserved practically "
++            "important effect is absent."
++        ),
++        "difference_direction": "candidate arm minus reference arm, per contrast",
++        "manifest": str(manifest_path),
++        "variants": {
++            name: {"label": VARIANT_LABELS[name], "config": path}
++            for name, path in VARIANTS.items()
++        },
++        "contrasts": {
++            cid: {
++                "label": f"{VARIANT_LABELS[spec['candidate']]} − {VARIANT_LABELS[spec['reference']]}",
++                **spec,
++            }
++            for cid, spec in CONTRASTS.items()
++        },
++        "seeds": list(common_seeds),
++        "slots": common_slots,
++        "provenance": provenance,
++        "loads": load_data,
++        "notes": [
++            (
++                "All window arms take the standard controller's utilisation window "
++                "over processed-block summaries only (non-certificate RBs, "
++                "certificate-carrying RBs, certified EBs); the historical arm's window "
++                "additionally lets zero-width EbAnnounced entries occupy positions, "
++                "which shortens its effective depth at contended loads. The window "
++                "arms differ from the historical arm only in the standard signal."
++            ),
++            (
++                "Announcement entries are not adoptable in the ledger rule: an "
++                "announcement is a costless, unpunishable producer claim, so counting "
++                "it would hand producers a free lever on the standard quote. The "
++                "screen asks which fixed processed-block length best approximates the "
++                "historical behaviour."
++            ),
++            (
++                "Launch day is the decision-facing load: the announcement-semantics "
++                "smoke measured the 20-processed-block window losing about 1.5 "
++                "percentage points of overall retained-value ratio there against the "
++                "historical arm. Low and mid load are expected to be bit-identical "
++                "across window arms (the standard coefficient rests on its floor)."
++            ),
++            (
++                "Flat-fee contrasts give the adoption floor: a window length is only "
++                "acceptable if the mechanism keeps its improvement over flat fee at "
++                "the contended loads."
++            ),
++            (
++                "Independent streams align fresh-demand samples and Ranking Block "
++                "opportunities within a seed; retry jitter remains mechanism-dependent."
++            ),
++            (
++                "Launch-day urgent-class slices are omitted because that profile changes "
++                "the urgency-rate multiplier over time; priority-lane metrics remain usable."
++            ),
++        ],
++    }
++
++
++def markdown(report: dict[str, Any]) -> str:
++    seeds = report["seeds"]
++    provenance = report["provenance"]
++    revision = provenance.get("git_revision") or "unknown"
++    source_state = (
++        "clean"
++        if provenance.get("abstract_sim_worktree_clean") is True
++        else "dirty"
++        if provenance.get("abstract_sim_worktree_clean") is False
++        else "unknown"
++    )
++    source_line = (
++        f"Source revision: `{revision}`; `abstract-sim-hs` worktree: {source_state}; "
++        f"simulator SHA-256: `{provenance['simulator_sha256']}`."
++    )
++    dirty_patch = provenance.get("dirty_patch")
++    if dirty_patch:
++        source_line += (
++            f" Dirty-source patch: `{dirty_patch['path']}` "
++            f"(SHA-256 `{dirty_patch['sha256']}`)."
++        )
++
++    if seeds == list(range(seeds[0], seeds[-1] + 1)):
++        seed_text = f"{seeds[0]}–{seeds[-1]}"
++    else:
++        seed_text = ", ".join(str(seed) for seed in seeds)
++    lines = [
++        "# Standard-window length screen",
++        "",
++        (
++            f"Processed-block standard windows of 10, 13, 15, and 20 blocks versus "
++            f"the historical announcement-diluted 20-entry window and flat fee; "
++            f"paired seeds {seed_text} (n={len(seeds)}), {report['slots']:,} slots "
++            "per load. Cells are candidate-minus-reference mean differences with "
++            "two-sided 95% paired-t confidence intervals."
++        ),
++        "",
++        (
++            "**Screen only.** This run ranks the arms; a selected length needs "
++            "confirmation on disjoint seeds before adoption, and the run cannot "
++            "establish equivalence or show that a practically important effect is "
++            "absent."
++        ),
++        "",
++        source_line,
++    ]
++
++    for load in report["loads"]:
++        lines.extend(["", f"## {load['label']}"])
++        equalities = load["exactly_equal_all_scalars"]
++        equality_text = ", ".join(
++            f"{WINDOW_LENGTHS[arm]}-block: {equalities[contrast_id(arm, HISTORICAL)]}"
++            f"/{load['paired_seeds']}"
++            for arm in WINDOW_ARMS
++        )
++        lines.extend(["", f"Exact all-scalar ties versus historical: {equality_text}."])
++        for group in load["metric_groups"]:
++            lines.extend(
++                [
++                    "",
++                    f"### {group['label']} — versus the historical window",
++                    "",
++                    (
++                        "| Metric | Unit | Historical mean "
++                        "| 10-block − hist | 13-block − hist | 15-block − hist | 20-block − hist |"
++                    ),
++                    "|---|---:|---:|---:|---:|---:|---:|",
++                ]
++            )
++            for metric in group["metrics"]:
++                cells = " | ".join(
++                    interval_text(
++                        metric["contrasts"][contrast_id(arm, HISTORICAL)],
++                        metric["digits"],
++                    )
++                    for arm in WINDOW_ARMS
++                )
++                lines.append(
++                    f"| {metric['label']} | {metric['unit']} "
++                    f"| {plain(metric['arm_means'][HISTORICAL], metric['digits'])} "
++                    f"| {cells} |"
++                )
++            lines.extend(
++                [
++                    "",
++                    f"### {group['label']} — versus flat fee",
++                    "",
++                    (
++                        "| Metric | Unit | Flat-fee mean | Historical − flat "
++                        "| 10-block − flat | 13-block − flat | 15-block − flat | 20-block − flat |"
++                    ),
++                    "|---|---:|---:|---:|---:|---:|---:|---:|",
++                ]
++            )
++            for metric in group["metrics"]:
++                cells = " | ".join(
++                    interval_text(
++                        metric["contrasts"][contrast_id(arm, FLAT_FEE)],
++                        metric["digits"],
++                    )
++                    for arm in (HISTORICAL, *WINDOW_ARMS)
++                )
++                lines.append(
++                    f"| {metric['label']} | {metric['unit']} "
++                    f"| {plain(metric['arm_means'][FLAT_FEE], metric['digits'])} "
++                    f"| {cells} |"
++                )
++
++    lines.extend(
++        [
++            "",
++            "## Interpretation notes",
++            "",
++            *[f"- {note}" for note in report["notes"]],
++            "- Positive retained-value, service-rate, and throughput differences are favourable; negative latency, retry, and oscillation differences are favourable.",
++            "- Percentage-point rows are absolute changes in ratios, not relative percentages.",
++            "",
++        ]
++    )
++    return "\n".join(lines)
++
++
++def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument(
++        "--root",
++        type=Path,
++        default=DEFAULT_ROOT,
++        help="directory containing the six load subdirectories",
++    )
++    parser.add_argument(
++        "--manifest",
++        type=Path,
++        default=DEFAULT_MANIFEST,
++        help="committed sweep manifest",
++    )
++    parser.add_argument(
++        "--simulator-sha256",
++        required=True,
++        help="SHA-256 of the executable used for every run",
++    )
++    parser.add_argument(
++        "--markdown-output",
++        type=Path,
++        help="Markdown report path (default: ROOT/comparison.md)",
++    )
++    parser.add_argument(
++        "--json-output",
++        type=Path,
++        help="machine-readable report path (default: ROOT/comparison.json)",
++    )
++    return parser.parse_args(argv)
++
++
++def main(argv: list[str] | None = None) -> int:
++    args = parse_args(argv)
++    simulator_sha256 = args.simulator_sha256.lower()
++    if len(simulator_sha256) != 64 or any(
++        character not in "0123456789abcdef" for character in simulator_sha256
++    ):
++        raise SystemExit("error: --simulator-sha256 must be 64 hexadecimal characters")
++
++    markdown_output = args.markdown_output or args.root / "comparison.md"
++    json_output = args.json_output or args.root / "comparison.json"
++    try:
++        report = build_report(args.root, args.manifest, simulator_sha256)
++        rendered = markdown(report)
++        markdown_output.write_text(rendered, encoding="utf-8")
++        json_output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
++    except (OSError, ValueError) as error:
++        raise SystemExit(f"error: {error}") from error
++    print(f"wrote {markdown_output}")
++    print(f"wrote {json_output}")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/abstract-sim-hs/scripts/run_announcement_semantics_smoke.sh b/abstract-sim-hs/scripts/run_announcement_semantics_smoke.sh
+new file mode 100755
+index 00000000..d11418a0
+--- /dev/null
++++ b/abstract-sim-hs/scripts/run_announcement_semantics_smoke.sh
+@@ -0,0 +1,151 @@
++#!/usr/bin/env bash
++
++set -euo pipefail
++
++script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++project_dir="$(cd -- "$script_dir/.." && pwd)"
++manifest="config/sweeps/announcement-semantics-smoke.json"
++out_dir="sweep-results/announcement-semantics-smoke"
++seed_start=440
++seeds=10
++slots=2000
++
++usage() {
++  cat <<'EOF'
++usage: ./scripts/run_announcement_semantics_smoke.sh [--out DIR] [--seed-start N] [--seeds N] [--slots N]
++
++Run a paired four-arm ablation of the simulator's announcement semantics
++against the CIP's specified semantics:
++
++  historical               announcements occupy standard-window positions;
++                           age-escape count resets at every announcement
++  block-window             the standard controller's 20-entry window is taken
++                           over processed-block summaries only (EbAnnounced
++                           entries filtered out before the window is cut)
++  cert-reset               the age-escape count resets only when a certified
++                           EB is applied, not at announcement
++  block-window-cert-reset  both changes together
++
++Everything else remains fixed at S=.75/U=.50, D16, half-RB threshold, K10.
++
++The default run uses ten paired seeds, 2,000 slots, independent RNG streams,
++the five headline loads, and the 0.1 tx/slot trickle load (where the age
++escape binds). It is sized as a directional smoke test on the development
++machine; it is not confirmatory evidence.
++
++The output directory is reserved before execution and is never overwritten.
++EOF
++}
++
++positive_integer() {
++  [[ "$1" =~ ^[1-9][0-9]*$ ]]
++}
++
++non_negative_integer() {
++  [[ "$1" =~ ^[0-9]+$ ]]
++}
++
++while [[ $# -gt 0 ]]; do
++  case "$1" in
++    -h|--help)
++      usage
++      exit 0
++      ;;
++    --out)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      [[ -n "$2" ]] || { echo "error: --out must not be empty" >&2; exit 2; }
++      out_dir="$2"
++      shift 2
++      ;;
++    --seed-start)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      non_negative_integer "$2" || { echo "error: --seed-start needs a non-negative integer" >&2; exit 2; }
++      seed_start="$2"
++      shift 2
++      ;;
++    --seeds)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --seeds needs a positive integer" >&2; exit 2; }
++      seeds="$2"
++      shift 2
++      ;;
++    --slots)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --slots needs a positive integer" >&2; exit 2; }
++      slots="$2"
++      shift 2
++      ;;
++    *)
++      usage >&2
++      exit 2
++      ;;
++  esac
++done
++
++if (( seeds < 2 )); then
++  echo "error: --seeds must be at least 2 for paired intervals" >&2
++  exit 2
++fi
++
++cd "$project_dir"
++
++if [[ -e "$out_dir" ]]; then
++  echo "error: refusing to overwrite existing output directory: $out_dir" >&2
++  echo "choose another directory with --out DIR" >&2
++  exit 2
++fi
++
++SECONDS=0
++stack build
++simulator="$(stack path --local-install-root)/bin/abstract-sim-hs-exe"
++if [[ ! -x "$simulator" ]]; then
++  echo "error: built simulator executable not found: $simulator" >&2
++  exit 2
++fi
++simulator_hash_line="$(sha256sum -- "$simulator")"
++simulator_sha256="${simulator_hash_line%% *}"
++
++mkdir -p "$(dirname -- "$out_dir")"
++if ! mkdir -- "$out_dir"; then
++  echo "error: could not reserve output directory: $out_dir" >&2
++  exit 2
++fi
++
++run_load() {
++  local name="$1"
++  local kind="$2"
++  local value="$3"
++  local args=(
++    sweep "$manifest"
++    --seed-start "$seed_start"
++    --seeds "$seeds"
++    --slots "$slots"
++    --summary-only
++    --out "$out_dir/$name"
++  )
++  case "$kind" in
++    profile) args+=(--load-profile "$value") ;;
++    preset) args+=(--load "$value") ;;
++    *) echo "error: unknown load kind: $kind" >&2; exit 2 ;;
++  esac
++  echo "running $name..."
++  "$simulator" "${args[@]}"
++}
++
++run_load low preset low
++run_load mid-load profile config/loads/mid-load.json
++run_load severe-congestion profile config/loads/severe-congestion.json
++run_load eb-capacity-stress profile config/loads/eb-capacity-stress.json
++run_load launch-day profile config/loads/launch-day.json
++run_load trickle-0p1 profile config/loads/trickle-0p1.json
++
++python3 scripts/compare_announcement_semantics_smoke.py \
++  --root "$out_dir" \
++  --manifest "$manifest" \
++  --simulator-sha256 "$simulator_sha256" \
++  --markdown-output "$out_dir/comparison.md" \
++  --json-output "$out_dir/comparison.json"
++
++echo "announcement-semantics ablation complete in ${SECONDS}s:"
++echo "  report: $out_dir/comparison.md"
++echo "  data:   $out_dir/comparison.json"
+diff --git a/abstract-sim-hs/scripts/run_recommended_headlines.sh b/abstract-sim-hs/scripts/run_recommended_headlines.sh
+new file mode 100755
+index 00000000..ddd03147
+--- /dev/null
++++ b/abstract-sim-hs/scripts/run_recommended_headlines.sh
+@@ -0,0 +1,128 @@
++#!/usr/bin/env bash
++
++set -euo pipefail
++
++script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++project_dir="$(cd -- "$script_dir/.." && pwd)"
++manifest="config/sweeps/recommended-headlines.json"
++out_dir="sweep-results/recommended-headlines"
++seeds=10
++slots=2000
++
++usage() {
++  cat <<'EOF'
++usage: ./scripts/run_recommended_headlines.sh [--out DIR] [--seeds N] [--slots N]
++
++Refresh the CIP's five headline experiments by pairing flat fee with the
++adopted recommended construction: 0.75 standard target, 10-block
++processed-block standard window, age-escape reset at certification.
++
++By default this runs seeds 0-9 for 2,000 slots at low, mid,
++severe-congestion, EB-capacity-stress, and launch-day load (100 summary-only
++simulations), then writes comparison.md and comparison.json.
++
++The script refuses to overwrite an existing output directory. --seeds and
++--slots are intended for quick harness checks; omit them for the headline run.
++EOF
++}
++
++positive_integer() {
++  [[ "$1" =~ ^[1-9][0-9]*$ ]]
++}
++
++while [[ $# -gt 0 ]]; do
++  case "$1" in
++    -h|--help)
++      usage
++      exit 0
++      ;;
++    --out)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      [[ -n "$2" ]] || { echo "error: --out must not be empty" >&2; exit 2; }
++      out_dir="$2"
++      shift 2
++      ;;
++    --seeds)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --seeds needs a positive integer" >&2; exit 2; }
++      seeds="$2"
++      shift 2
++      ;;
++    --slots)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --slots needs a positive integer" >&2; exit 2; }
++      slots="$2"
++      shift 2
++      ;;
++    *)
++      usage >&2
++      exit 2
++      ;;
++  esac
++done
++
++if (( seeds < 2 )); then
++  echo "error: --seeds must be at least 2 for the paired confidence intervals" >&2
++  exit 2
++fi
++
++cd "$project_dir"
++
++if [[ -e "$out_dir" ]]; then
++  echo "error: refusing to overwrite existing output directory: $out_dir" >&2
++  echo "choose another directory with --out DIR" >&2
++  exit 2
++fi
++
++SECONDS=0
++stack build
++simulator="$(stack path --local-install-root)/bin/abstract-sim-hs-exe"
++if [[ ! -x "$simulator" ]]; then
++  echo "error: built simulator executable not found: $simulator" >&2
++  exit 2
++fi
++simulator_hash_line="$(sha256sum -- "$simulator")"
++simulator_sha256="${simulator_hash_line%% *}"
++
++mkdir -p "$(dirname -- "$out_dir")"
++if ! mkdir -- "$out_dir"; then
++  echo "error: could not reserve output directory: $out_dir" >&2
++  exit 2
++fi
++
++run_load() {
++  local name="$1"
++  local kind="$2"
++  local value="$3"
++  local args=(
++    sweep "$manifest"
++    --seeds "$seeds"
++    --slots "$slots"
++    --summary-only
++    --out "$out_dir/$name"
++  )
++  case "$kind" in
++    profile) args+=(--load-profile "$value") ;;
++    preset) args+=(--load "$value") ;;
++    *) echo "error: unknown load kind: $kind" >&2; exit 2 ;;
++  esac
++  echo "running $name..."
++  "$simulator" "${args[@]}"
++}
++
++run_load low preset low
++run_load mid-load profile config/loads/mid-load.json
++run_load severe-congestion profile config/loads/severe-congestion.json
++run_load eb-capacity-stress profile config/loads/eb-capacity-stress.json
++run_load launch-day profile config/loads/launch-day.json
++
++python3 scripts/compare_recommended_headlines.py \
++  --root "$out_dir" \
++  --manifest "$manifest" \
++  --simulator-sha256 "$simulator_sha256" \
++  --markdown-output "$out_dir/comparison.md" \
++  --json-output "$out_dir/comparison.json"
++
++echo "recommended-construction headline refresh complete in ${SECONDS}s:"
++echo "  report: $out_dir/comparison.md"
++echo "  data:   $out_dir/comparison.json"
+diff --git a/abstract-sim-hs/scripts/run_standard_window_confirm.sh b/abstract-sim-hs/scripts/run_standard_window_confirm.sh
+new file mode 100755
+index 00000000..354b4abd
+--- /dev/null
++++ b/abstract-sim-hs/scripts/run_standard_window_confirm.sh
+@@ -0,0 +1,155 @@
++#!/usr/bin/env bash
++
++set -euo pipefail
++
++script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++project_dir="$(cd -- "$script_dir/.." && pwd)"
++manifest="config/sweeps/standard-window-confirm.json"
++out_dir="sweep-results/standard-window-confirm"
++seed_start=500
++seeds=100
++slots=2000
++
++usage() {
++  cat <<'EOF'
++usage: ./scripts/run_standard_window_confirm.sh [--out DIR] [--seed-start N] [--seeds N] [--slots N]
++
++Confirm the standard-window screen's selection on disjoint seeds:
++
++  historical                  announcement-diluted 20-entry window,
++                              announcement-time age reset (reference)
++  flat-fee                    flat-fee baseline (adoption floor)
++  block-window-10-cert-reset  the configuration the CIP will specify:
++                              10-block processed-block window and
++                              age-escape reset at certification
++
++The default run uses one hundred paired seeds (500-599, disjoint from the
++screen's 0-99), 2,000 slots, independent RNG streams, the five headline
++loads, and the 0.1 tx/slot trickle load.
++
++Pre-declared pass criteria (all must hold; evaluated by the compare script):
++  C1  launch day: candidate overall retained value beats historical
++      (95% CI above zero; candidate higher in at least 90% of seed pairs)
++  C2  severe congestion and EB-capacity stress: candidate overall
++      retained-value ratio within 0.05 pp of historical (CI low > -0.05)
++  C3  severe congestion, EB-capacity stress, launch day: candidate overall
++      retained value beats flat fee (95% CI above zero)
++  C4  trickle: candidate standard-lane retained-value ratio within 1 pp of
++      historical (CI low > -1.0)
++
++The output directory is reserved before execution and is never overwritten.
++EOF
++}
++
++positive_integer() {
++  [[ "$1" =~ ^[1-9][0-9]*$ ]]
++}
++
++non_negative_integer() {
++  [[ "$1" =~ ^[0-9]+$ ]]
++}
++
++while [[ $# -gt 0 ]]; do
++  case "$1" in
++    -h|--help)
++      usage
++      exit 0
++      ;;
++    --out)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      [[ -n "$2" ]] || { echo "error: --out must not be empty" >&2; exit 2; }
++      out_dir="$2"
++      shift 2
++      ;;
++    --seed-start)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      non_negative_integer "$2" || { echo "error: --seed-start needs a non-negative integer" >&2; exit 2; }
++      seed_start="$2"
++      shift 2
++      ;;
++    --seeds)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --seeds needs a positive integer" >&2; exit 2; }
++      seeds="$2"
++      shift 2
++      ;;
++    --slots)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --slots needs a positive integer" >&2; exit 2; }
++      slots="$2"
++      shift 2
++      ;;
++    *)
++      usage >&2
++      exit 2
++      ;;
++  esac
++done
++
++if (( seeds < 2 )); then
++  echo "error: --seeds must be at least 2 for paired intervals" >&2
++  exit 2
++fi
++
++cd "$project_dir"
++
++if [[ -e "$out_dir" ]]; then
++  echo "error: refusing to overwrite existing output directory: $out_dir" >&2
++  echo "choose another directory with --out DIR" >&2
++  exit 2
++fi
++
++SECONDS=0
++stack build
++simulator="$(stack path --local-install-root)/bin/abstract-sim-hs-exe"
++if [[ ! -x "$simulator" ]]; then
++  echo "error: built simulator executable not found: $simulator" >&2
++  exit 2
++fi
++simulator_hash_line="$(sha256sum -- "$simulator")"
++simulator_sha256="${simulator_hash_line%% *}"
++
++mkdir -p "$(dirname -- "$out_dir")"
++if ! mkdir -- "$out_dir"; then
++  echo "error: could not reserve output directory: $out_dir" >&2
++  exit 2
++fi
++
++run_load() {
++  local name="$1"
++  local kind="$2"
++  local value="$3"
++  local args=(
++    sweep "$manifest"
++    --seed-start "$seed_start"
++    --seeds "$seeds"
++    --slots "$slots"
++    --summary-only
++    --out "$out_dir/$name"
++  )
++  case "$kind" in
++    profile) args+=(--load-profile "$value") ;;
++    preset) args+=(--load "$value") ;;
++    *) echo "error: unknown load kind: $kind" >&2; exit 2 ;;
++  esac
++  echo "running $name..."
++  "$simulator" "${args[@]}"
++}
++
++run_load low preset low
++run_load mid-load profile config/loads/mid-load.json
++run_load severe-congestion profile config/loads/severe-congestion.json
++run_load eb-capacity-stress profile config/loads/eb-capacity-stress.json
++run_load launch-day profile config/loads/launch-day.json
++run_load trickle-0p1 profile config/loads/trickle-0p1.json
++
++python3 scripts/compare_standard_window_confirm.py \
++  --root "$out_dir" \
++  --manifest "$manifest" \
++  --simulator-sha256 "$simulator_sha256" \
++  --markdown-output "$out_dir/comparison.md" \
++  --json-output "$out_dir/comparison.json"
++
++echo "standard-window confirmation complete in ${SECONDS}s:"
++echo "  report: $out_dir/comparison.md"
++echo "  data:   $out_dir/comparison.json"
+diff --git a/abstract-sim-hs/scripts/run_standard_window_screen.sh b/abstract-sim-hs/scripts/run_standard_window_screen.sh
+new file mode 100755
+index 00000000..fb401b96
+--- /dev/null
++++ b/abstract-sim-hs/scripts/run_standard_window_screen.sh
+@@ -0,0 +1,156 @@
++#!/usr/bin/env bash
++
++set -euo pipefail
++
++script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
++project_dir="$(cd -- "$script_dir/.." && pwd)"
++manifest="config/sweeps/standard-window-screen.json"
++out_dir="sweep-results/standard-window-screen"
++seed_start=0
++seeds=100
++slots=2000
++
++usage() {
++  cat <<'EOF'
++usage: ./scripts/run_standard_window_screen.sh [--out DIR] [--seed-start N] [--seeds N] [--slots N]
++
++Screen the standard controller's window length under the enforceable
++processed-block window semantics:
++
++  historical       announcement-diluted 20-entry window (reference)
++  flat-fee         flat-fee baseline (adoption floor)
++  block-window-10  processed-block window, 10 blocks
++  block-window-13  processed-block window, 13 blocks
++  block-window-15  processed-block window, 15 blocks
++  block-window-20  processed-block window, 20 blocks
++
++The announcement-semantics smoke showed the historical signal's zero-width
++EbAnnounced entries shorten its effective window at contended loads, and
++that a clean 20-processed-block window loses launch-day retained value.
++Announcement entries are not adoptable in the ledger rule (an announcement
++is a costless producer claim), so this screen asks whether a shorter
++processed-block window recovers the historical performance. Everything else
++stays fixed at S=.75/U=.50, D16, half-RB threshold, K10, announcement-time
++age reset.
++
++The default run uses one hundred paired seeds, 2,000 slots, independent RNG
++streams, the five headline loads, and the 0.1 tx/slot trickle load. This is
++a screen: a selected length needs confirmation on disjoint seeds before
++adoption.
++
++The output directory is reserved before execution and is never overwritten.
++EOF
++}
++
++positive_integer() {
++  [[ "$1" =~ ^[1-9][0-9]*$ ]]
++}
++
++non_negative_integer() {
++  [[ "$1" =~ ^[0-9]+$ ]]
++}
++
++while [[ $# -gt 0 ]]; do
++  case "$1" in
++    -h|--help)
++      usage
++      exit 0
++      ;;
++    --out)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      [[ -n "$2" ]] || { echo "error: --out must not be empty" >&2; exit 2; }
++      out_dir="$2"
++      shift 2
++      ;;
++    --seed-start)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      non_negative_integer "$2" || { echo "error: --seed-start needs a non-negative integer" >&2; exit 2; }
++      seed_start="$2"
++      shift 2
++      ;;
++    --seeds)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --seeds needs a positive integer" >&2; exit 2; }
++      seeds="$2"
++      shift 2
++      ;;
++    --slots)
++      [[ $# -ge 2 ]] || { usage >&2; exit 2; }
++      positive_integer "$2" || { echo "error: --slots needs a positive integer" >&2; exit 2; }
++      slots="$2"
++      shift 2
++      ;;
++    *)
++      usage >&2
++      exit 2
++      ;;
++  esac
++done
++
++if (( seeds < 2 )); then
++  echo "error: --seeds must be at least 2 for paired intervals" >&2
++  exit 2
++fi
++
++cd "$project_dir"
++
++if [[ -e "$out_dir" ]]; then
++  echo "error: refusing to overwrite existing output directory: $out_dir" >&2
++  echo "choose another directory with --out DIR" >&2
++  exit 2
++fi
++
++SECONDS=0
++stack build
++simulator="$(stack path --local-install-root)/bin/abstract-sim-hs-exe"
++if [[ ! -x "$simulator" ]]; then
++  echo "error: built simulator executable not found: $simulator" >&2
++  exit 2
++fi
++simulator_hash_line="$(sha256sum -- "$simulator")"
++simulator_sha256="${simulator_hash_line%% *}"
++
++mkdir -p "$(dirname -- "$out_dir")"
++if ! mkdir -- "$out_dir"; then
++  echo "error: could not reserve output directory: $out_dir" >&2
++  exit 2
++fi
++
++run_load() {
++  local name="$1"
++  local kind="$2"
++  local value="$3"
++  local args=(
++    sweep "$manifest"
++    --seed-start "$seed_start"
++    --seeds "$seeds"
++    --slots "$slots"
++    --summary-only
++    --out "$out_dir/$name"
++  )
++  case "$kind" in
++    profile) args+=(--load-profile "$value") ;;
++    preset) args+=(--load "$value") ;;
++    *) echo "error: unknown load kind: $kind" >&2; exit 2 ;;
++  esac
++  echo "running $name..."
++  "$simulator" "${args[@]}"
++}
++
++run_load low preset low
++run_load mid-load profile config/loads/mid-load.json
++run_load severe-congestion profile config/loads/severe-congestion.json
++run_load eb-capacity-stress profile config/loads/eb-capacity-stress.json
++run_load launch-day profile config/loads/launch-day.json
++run_load trickle-0p1 profile config/loads/trickle-0p1.json
++
++python3 scripts/compare_standard_window_screen.py \
++  --root "$out_dir" \
++  --manifest "$manifest" \
++  --simulator-sha256 "$simulator_sha256" \
++  --markdown-output "$out_dir/comparison.md" \
++  --json-output "$out_dir/comparison.json"
++
++echo "standard-window screen complete in ${SECONDS}s:"
++echo "  report: $out_dir/comparison.md"
++echo "  data:   $out_dir/comparison.json"
+diff --git a/abstract-sim-hs/src/Design.hs b/abstract-sim-hs/src/Design.hs
+index d05a238d..73744ffc 100644
+--- a/abstract-sim-hs/src/Design.hs
++++ b/abstract-sim-hs/src/Design.hs
+@@ -28,6 +28,13 @@ data Design = Design
+   -- quote, without the one-further-step producer headroom; announced EBs can
+   -- then fail fee validation at the certification check. True in every real
+   -- construction; False exists to measure that failure rate.
++  , designAgeResetAtCertification :: Bool
++  -- ^ When the EB age-escape count restarts. False (the historical policy)
++  -- resets it at every EB announcement, including announcements whose EB is
++  -- later dropped without certifying. True resets it only when a certified
++  -- EB is applied, matching the specified rule's "Ranking Blocks since an EB
++  -- certificate last entered the chain". The announcement decision still
++  -- reads the same counter either way.
+   }
+   deriving stock (Eq, Show)
+ 
+@@ -42,6 +49,7 @@ instance FromJSON Design where
+         <*> obj .: "priorityPremiumScope"
+         <*> obj .: "controllers"
+         <*> obj .:? "producerHeadroom" .!= True
++        <*> obj .:? "ageResetAtCertification" .!= False
+ 
+ data SelectionPolicy
+   = Fifo
+@@ -142,6 +150,7 @@ defaultDesign =
+     , designPriorityPremiumScope = PremiumEverywhere
+     , designControllers = defaultControllerConfig
+     , designProducerHeadroom = True
++    , designAgeResetAtCertification = False
+     }
+ 
+ data Eip1559Controller = Eip1559Controller
+@@ -164,6 +173,14 @@ instance FromJSON Eip1559Controller where
+ data ControllerSignal
+   = CapacityWeightedUtil
+   | CapacityWeightedWindow Int
++  | -- | Comparison arm: as 'CapacityWeightedWindow', except the window is
++    -- taken over processed-block summaries only — EB announcements are
++    -- filtered out before the window is cut, so a zero-width announcement
++    -- summary cannot occupy a window position. Certificate-carrying RBs
++    -- stay in the window as zero-capacity entries: they are processed
++    -- blocks. This is the spec-faithful reading of the CIP's
++    -- "twenty most recent block summaries".
++    CapacityWeightedBlockWindow Int
+   | PriorityReservationUtil
+   | PriorityReservationWindow Int
+   | -- | Sample-and-hold comparison arm: the controller updates only in a
+@@ -186,6 +203,7 @@ instance FromJSON ControllerSignal where
+       , ("priority-reservation-util", Nullary PriorityReservationUtil)
+       , ("priority-reservation-window", WithFields \obj -> PriorityReservationWindow <$> obj .: "window")
+       , ("capacity-weighted-window", WithFields \obj -> CapacityWeightedWindow <$> obj .: "window")
++      , ("capacity-weighted-block-window", WithFields \obj -> CapacityWeightedBlockWindow <$> obj .: "window")
+       , ("cert-gated-capacity-util", Nullary CertGatedCapacityUtil)
+       , ("cert-void-capacity-window", WithFields \obj -> CertVoidCapacityWindow <$> obj .: "window" <*> obj .: "voidBytes" <*> obj .: "voidExUnits")
+       ]
+diff --git a/abstract-sim-hs/src/Pricing.hs b/abstract-sim-hs/src/Pricing.hs
+index fd52c853..c6aed00d 100644
+--- a/abstract-sim-hs/src/Pricing.hs
++++ b/abstract-sim-hs/src/Pricing.hs
+@@ -308,6 +308,8 @@ controllerUtilisation lane input controller =
+       Just (capacityWeightedUtilisation lane input.currentProduction)
+     signal@CapacityWeightedWindow{} ->
+       Just (capacityWeightedWindowUtilisation lane (signalWindow signal) input.recentBlocks)
++    CapacityWeightedBlockWindow windowSize ->
++      Just (capacityWeightedBlockWindowUtilisation lane (max 1 windowSize) input.recentBlocks)
+     PriorityReservationUtil ->
+       Just (priorityReservationUtilisation input.currentProduction)
+     PriorityReservationWindow windowSize ->
+@@ -337,6 +339,10 @@ signalWindow :: ControllerSignal -> Int
+ signalWindow = \case
+   CapacityWeightedUtil -> 0
+   CapacityWeightedWindow windowSize -> max 1 windowSize
++  -- Every block production contributes at least one processed-block summary
++  -- and at most one announcement summary, so twice the window always retains
++  -- enough history to fill it after announcements are filtered out.
++  CapacityWeightedBlockWindow windowSize -> 2 * max 1 windowSize
+   PriorityReservationUtil -> 0
+   PriorityReservationWindow windowSize -> 3 * max 1 windowSize
+   CertGatedCapacityUtil -> 0
+@@ -368,6 +374,20 @@ capacityWeightedWindowUtilisation :: Lane -> Int -> Seq BlockSummary -> Double
+ capacityWeightedWindowUtilisation lane windowSize recentBlocks =
+   capacityWeightedUtilisation lane (takeLast windowSize recentBlocks)
+ 
++{- | 'capacityWeightedWindowUtilisation' over processed blocks only: EB
++announcements are filtered out before the window is cut, so a zero-width
++announcement summary cannot occupy a window position or push a
++capacity-bearing block out of the window. Certificate-carrying RBs remain
++as zero-capacity entries — they are processed blocks.
++-}
++capacityWeightedBlockWindowUtilisation :: Lane -> Int -> Seq BlockSummary -> Double
++capacityWeightedBlockWindowUtilisation lane windowSize recentBlocks =
++  capacityWeightedUtilisation lane (takeLast windowSize (filter isProcessedBlock (Foldable.toList recentBlocks)))
++ where
++  isProcessedBlock = \case
++    EbAnnounced _ _ -> False
++    _ -> True
++
+ capacityWeightedUtilisation :: (Foldable f) => Lane -> f BlockSummary -> Double
+ capacityWeightedUtilisation =
+   capacityWeightedUtilisationWith \case
+diff --git a/abstract-sim-hs/src/Sim.hs b/abstract-sim-hs/src/Sim.hs
+index 4b4f22cd..8dbe2277 100644
+--- a/abstract-sim-hs/src/Sim.hs
++++ b/abstract-sim-hs/src/Sim.hs
+@@ -12,7 +12,7 @@ module Sim (
+ import Actor (Actor (..), ActorId, SubmissionEnv (..), TxSubmission (TxSubmission), generateTransaction, resubmitTransaction)
+ import Block (BlockSummary (..), EbId, EndorserBlock (..), InclusionPoint (..), PendingEb (..), mkBlockUsage, nextEbId, prioritySignalCapacity, selectRbTxs, selectTxsByPolicy, txsBytes)
+ import Config (SimConfig (..))
+-import Control.Monad (join, replicateM)
++import Control.Monad (join, replicateM, when)
+ import Control.Monad.Reader (MonadReader (..), ReaderT, asks)
+ import Control.Monad.State.Strict (MonadState (..), State, gets, modify')
+ import Data.Either (partitionEithers)
+@@ -436,18 +436,23 @@ produceRankingBlock = do
+   design <- asks simConfigDesign
+   slot <- gets _simSlot
+   let rbSignalCapacity = prioritySignalCapacity design.designReservationPolicy rbCapacity
+-  rbEvents <- case pendingEb of
++  (rbEvents, certifiedNow) <- case pendingEb of
+     Just pending -> do
+       certEb <- ebCertifiedAt slot pending
+       ebValid <- pendingEbStillValid design slot pending
+       modify' \st -> st{_simPendingEb = Nothing}
+       if certEb && ebValid
+-        then certifyPendingEb slot rbSignalCapacity pending
+-        else producePraosBlock design slot rbCapacity
++        then (,True) <$> certifyPendingEb slot rbSignalCapacity pending
++        else (,False) <$> producePraosBlock design slot rbCapacity
+     Nothing ->
+-      producePraosBlock design slot rbCapacity
++      (,False) <$> producePraosBlock design slot rbCapacity
+   -- the RB just produced counts toward the EB-announcement age
+   modify' \st -> st{_simRbsSinceEbAnnounce = st._simRbsSinceEbAnnounce + 1}
++  -- under cert-inclusion reset semantics the certifying RB itself is the
++  -- interval boundary, so the count restarts at zero after this production
++  -- (the announcement-time reset in 'announceEndorserBlock' is then off)
++  when (design.designAgeResetAtCertification && certifiedNow) $
++    modify' \st -> st{_simRbsSinceEbAnnounce = 0}
+   ebEvents <- announceEndorserBlock slot rbSignalCapacity
+   pure (rbEvents >< ebEvents)
+ 
+@@ -591,7 +596,10 @@ announceEndorserBlock slot rbSignalCapacity = do
+           { _simMempool = feeCheckedMempool
+           , _simEbs = Map.insert ebId eb st._simEbs
+           , _simPendingEb = Just (PendingEb ebId slot)
+-          , _simRbsSinceEbAnnounce = 0
++          , _simRbsSinceEbAnnounce =
++              if design.designAgeResetAtCertification
++                then st._simRbsSinceEbAnnounce
++                else 0
+           }
+       pure $ evictionEvents |> BlockProduced slot summary
+ 
