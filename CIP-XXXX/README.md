@@ -8,7 +8,7 @@ Authors:
 Implementors: []
 Discussions:
     -   Original PR: https://github.com/cardano-foundation/CIPs/pull/1282/
-    -   CIP-203 PR: https://github.com/cardano-foundation/CIPs/pull/1276/
+    -   CIP-0203 PR: https://github.com/cardano-foundation/CIPs/pull/1276/
 Created: 2026-09-29
 License: CC-BY-4.0
 ---
