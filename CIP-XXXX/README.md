@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: "Node Identifier Payloads"
+Title: "Block Producer Payloads"
 Category: "Tools"
 Status: Proposed
 Authors:
