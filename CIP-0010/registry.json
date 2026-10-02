@@ -68,6 +68,10 @@
     "description": "finitum.io token bridge transactions metadata"
   },
   {
+    "transaction_metadatum_label": 1113,
+    "description": "OriLife Covenant - CIP-0113 asset operation record"
+  },
+  {
     "transaction_metadatum_label": 1226,
     "description": "Oracle related transaction metadata"
   },
