@@ -1,0 +1,61 @@
+{
+    "@context": {
+        "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+        "CIP185": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#",
+        "GovernanceActionUpdate": "CIP185:GovernanceActionUpdate",
+        "hashAlgorithm": "CIP100:hashAlgorithm",
+        "body": {
+            "@id": "CIP185:body",
+            "@context": {
+                "governanceActionId": "CIP185:governanceActionId",
+                "updateType": "CIP185:updateType",
+                "sequenceNumber": "CIP185:sequenceNumber",
+                "supersedes": "CIP185:supersedes",
+                "updateContext": "CIP185:updateContext",
+                "bindingStatements": {
+                    "@id": "CIP185:bindingStatements",
+                    "@container": "@set",
+                    "@context": {
+                        "field": "CIP185:bindingStatement-field",
+                        "originalText": "CIP185:bindingStatement-originalText",
+                        "revisedText": "CIP185:bindingStatement-revisedText",
+                        "rationale": "CIP185:bindingStatement-rationale"
+                    }
+                },
+                "references": {
+                    "@id": "CIP185:references",
+                    "@container": "@set",
+                    "@context": {
+                        "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+                        "Other": "CIP100:OtherReference",
+                        "label": "CIP100:reference-label",
+                        "uri": "CIP100:reference-uri",
+                        "referenceHash": {
+                            "@id": "CIP185:referenceHash",
+                            "@context": {
+                                "hashDigest": "CIP185:hashDigest",
+                                "hashAlgorithm": "CIP100:hashAlgorithm"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "authors": {
+            "@id": "CIP100:authors",
+            "@container": "@set",
+            "@context": {
+                "did": "@id",
+                "name": "http://xmlns.com/foaf/0.1/name",
+                "witness": {
+                    "@id": "CIP100:witness",
+                    "@context": {
+                        "witnessAlgorithm": "CIP100:witnessAlgorithm",
+                        "publicKey": "CIP100:publicKey",
+                        "signature": "CIP100:signature"
+                    }
+                }
+            }
+        }
+    }
+}
