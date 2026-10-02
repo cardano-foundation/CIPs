@@ -1,0 +1,216 @@
+{
+ "_comment": "Known-answer test vectors for the instances of this CIP. The normative vectors are the 'permutation' entries: they pin the built-in itself, bls12_381_poseidonPermutation variant_index input_state == output_state. The 'hashes' entries are secondary and demonstrative: each shows the CORRECT construction of the instance ecosystem's hash out of permutation calls, as a full trace (every permutation call's input and output state) ending in the digest, following the framing encoded in the instance's constants file. Re-derive everything with check-constants.py.",
+ "midnight_width3": {
+  "constants": "midnight-poseidon-constants.json",
+  "variant_index": 0,
+  "permutation": {
+   "input_state": [
+    1,
+    2,
+    3
+   ],
+   "output_state": [
+    42739176831222744601351189768647402530126631525647633889963058519155127388954,
+    46658607099440038490901505304394142050340509471711703355306894912210352993754,
+    23346409755515467342303752938632006079855330979846092405107661684387401837642
+   ],
+   "output_state_hex": [
+    "0x5e7d844fc6e217cb53a21928cdd831c73fe626f0b62fe012e9e3883a05b88b1a",
+    "0x6727d5f45b85a106452257dab75c34fab4edec2544ba49a4c7b73edef7a7f5da",
+    "0x339d99829dc3bb8b18fcc17a2dc7cda7628f2fcdc6c7f71f83c3f5e5466e2c4a"
+   ]
+  },
+  "hashes": {
+   "_comment": "the midnight-zk hash per the framing in the constants file: init state [0, 0, arity] (capacity last = input count), absorb rate-2 chunks with one permutation call each, digest = first lane of the final output",
+   "vectors": [
+    {
+     "message": [
+      1,
+      2
+     ],
+     "trace": [
+      {
+       "permutation_input_state": [
+        1,
+        2,
+        2
+       ],
+       "permutation_output_state": [
+        33852961970927025159829408976690548924952885524395353086236132427166834970999,
+        3939714347492956910064432176192648807657130878941949775514761553730106462950,
+        1911806661785286735974042641799574786956305172400684573554104410484129105208
+       ],
+       "permutation_output_state_hex": [
+        "0x4ad818f39d91567d105c5bea1ec4b5ac201dc45b784e39a2beef781790bf5177",
+        "0x08b5cc9ee58facfbe809c95352295373759bf58e69d2d86a82c2c2a2528692e6",
+        "0x043a0b5249c6eeca594cd13a21e03977aea7332f574843047be2ac956fdf8538"
+       ]
+      }
+     ],
+     "digest": 33852961970927025159829408976690548924952885524395353086236132427166834970999,
+     "digest_hex": "0x4ad818f39d91567d105c5bea1ec4b5ac201dc45b784e39a2beef781790bf5177"
+    },
+    {
+     "message": [
+      1,
+      2,
+      3
+     ],
+     "trace": [
+      {
+       "permutation_input_state": [
+        1,
+        2,
+        3
+       ],
+       "permutation_output_state": [
+        42739176831222744601351189768647402530126631525647633889963058519155127388954,
+        46658607099440038490901505304394142050340509471711703355306894912210352993754,
+        23346409755515467342303752938632006079855330979846092405107661684387401837642
+       ],
+       "permutation_output_state_hex": [
+        "0x5e7d844fc6e217cb53a21928cdd831c73fe626f0b62fe012e9e3883a05b88b1a",
+        "0x6727d5f45b85a106452257dab75c34fab4edec2544ba49a4c7b73edef7a7f5da",
+        "0x339d99829dc3bb8b18fcc17a2dc7cda7628f2fcdc6c7f71f83c3f5e5466e2c4a"
+       ]
+      },
+      {
+       "permutation_input_state": [
+        42739176831222744601351189768647402530126631525647633889963058519155127388957,
+        46658607099440038490901505304394142050340509471711703355306894912210352993754,
+        23346409755515467342303752938632006079855330979846092405107661684387401837642
+       ],
+       "permutation_output_state": [
+        16323296787651812390833595953902584438731345731750798730514972659803187358587,
+        10406938084826613343012454278028743502903967432980834233438228844865271820462,
+        8002878662839612277232593634438862637457054066080438365871913314805563042751
+       ],
+       "permutation_output_state_hex": [
+        "0x2416a898714a84833f3690e09279c3b175418c956399a8c8928b8d1d4150ab7b",
+        "0x17021e438a661a840d19479cbd1ed0cecdd5ac4597a7826b00719779edeaf0ae",
+        "0x11b178039816d133176927453fd576d1e3d3a6a1c3a42a29142503816f0cabbf"
+       ]
+      }
+     ],
+     "digest": 16323296787651812390833595953902584438731345731750798730514972659803187358587,
+     "digest_hex": "0x2416a898714a84833f3690e09279c3b175418c956399a8c8928b8d1d4150ab7b"
+    }
+   ]
+  }
+ },
+ "circom_bls_t3": {
+  "constants": "circom-bls-t3-poseidon-constants.json",
+  "variant_index": 1,
+  "permutation": {
+   "_comment": "state in the instance file lane order (partial S-box on the first lane); for the conjugated_form, reverse input and output",
+   "input_state": [
+    0,
+    1,
+    2
+   ],
+   "output_state": [
+    28821147804331559602169231704816259064962739503761913593647409715501647586810,
+    30754388626296368040468298266549616538028692312414349123487035395142135348698,
+    2299091558249312604371495294586620648216137258024480884964079017093457283751
+   ],
+   "output_state_hex": [
+    "0x3fb8310b0e962b75bffec5f9cfcbf3f965a7b1d2dcac8d95ccb13d434e08e5fa",
+    "0x43fe5dfa886bfae59d015ed8b2a8c9328230f299203c89b9c78d8b40ccdc7dda",
+    "0x05153d5d7d0f9122550ecc902c0f5248d8ddcacfa1b911699c982099efc48aa7"
+   ]
+  },
+  "hashes": {
+   "_comment": "the circom 2-input hash per the framing in the constants file: single permutation of [0, in1, in2] (capacity first = 0), digest = first lane",
+   "vectors": [
+    {
+     "message": [
+      1,
+      2
+     ],
+     "trace": [
+      {
+       "permutation_input_state": [
+        0,
+        1,
+        2
+       ],
+       "permutation_output_state": [
+        28821147804331559602169231704816259064962739503761913593647409715501647586810,
+        30754388626296368040468298266549616538028692312414349123487035395142135348698,
+        2299091558249312604371495294586620648216137258024480884964079017093457283751
+       ],
+       "permutation_output_state_hex": [
+        "0x3fb8310b0e962b75bffec5f9cfcbf3f965a7b1d2dcac8d95ccb13d434e08e5fa",
+        "0x43fe5dfa886bfae59d015ed8b2a8c9328230f299203c89b9c78d8b40ccdc7dda",
+        "0x05153d5d7d0f9122550ecc902c0f5248d8ddcacfa1b911699c982099efc48aa7"
+       ]
+      }
+     ],
+     "digest": 28821147804331559602169231704816259064962739503761913593647409715501647586810,
+     "digest_hex": "0x3fb8310b0e962b75bffec5f9cfcbf3f965a7b1d2dcac8d95ccb13d434e08e5fa"
+    }
+   ]
+  }
+ },
+ "circom_bls_t4": {
+  "constants": "circom-bls-t4-poseidon-constants.json",
+  "variant_index": "unregistered candidate",
+  "permutation": {
+   "_comment": "state in the instance file lane order (partial S-box on the first lane); for the conjugated_form, reverse input and output",
+   "input_state": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "output_state": [
+    41091099622722973056082071867846799679887891223501702244297781245659866568853,
+    1776774748964864933333768173227113265426942117338085689743239126299237483728,
+    28917959374938117190629179875901739748963807711832981187100453666359104125968,
+    9821177478592450987462087330924490305531323909522538010399274987291051493237
+   ],
+   "output_state_hex": [
+    "0x5ad8bcfa9754b5bc043cc74dea65ae15e3fdb0c2295970aaacfc116c802d9895",
+    "0x03ed9e6e45c050ecfa18b36cb8fa3ad18247f12897a2cbdc4afd565d2f5d04d0",
+    "0x3feefc27c9dac582d1ef7a70d4fdc89ca20fddbebc1bf92781d142b71be23c10",
+    "0x15b696e71b1ae2d964b6cb41b41cec75f7fb9587571945300e9631e139fb0775"
+   ]
+  },
+  "hashes": {
+   "_comment": "the circom 3-input hash per the framing in the constants file: single permutation of [0, in1, in2, in3] (capacity first = 0), digest = first lane",
+   "vectors": [
+    {
+     "message": [
+      1,
+      2,
+      3
+     ],
+     "trace": [
+      {
+       "permutation_input_state": [
+        0,
+        1,
+        2,
+        3
+       ],
+       "permutation_output_state": [
+        41091099622722973056082071867846799679887891223501702244297781245659866568853,
+        1776774748964864933333768173227113265426942117338085689743239126299237483728,
+        28917959374938117190629179875901739748963807711832981187100453666359104125968,
+        9821177478592450987462087330924490305531323909522538010399274987291051493237
+       ],
+       "permutation_output_state_hex": [
+        "0x5ad8bcfa9754b5bc043cc74dea65ae15e3fdb0c2295970aaacfc116c802d9895",
+        "0x03ed9e6e45c050ecfa18b36cb8fa3ad18247f12897a2cbdc4afd565d2f5d04d0",
+        "0x3feefc27c9dac582d1ef7a70d4fdc89ca20fddbebc1bf92781d142b71be23c10",
+        "0x15b696e71b1ae2d964b6cb41b41cec75f7fb9587571945300e9631e139fb0775"
+       ]
+      }
+     ],
+     "digest": 41091099622722973056082071867846799679887891223501702244297781245659866568853,
+     "digest_hex": "0x5ad8bcfa9754b5bc043cc74dea65ae15e3fdb0c2295970aaacfc116c802d9895"
+    }
+   ]
+  }
+ }
+}
