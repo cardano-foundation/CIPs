@@ -1,0 +1,77 @@
+{
+  "specVersion": "0.3.0",
+  "title": "Cardano Incentives Working Group: Budget 2026",
+  "description": "Decide the 2026 working-group budget envelope and the per-track allocation across the four candidate workstreams.",
+  "questions": [
+    {
+      "questionId": "budget-envelope-2026",
+      "question": "Approve the 2026 working-group budget envelope of 5,000,000 ADA?",
+      "description": "A simple binary vote on the working-group budget envelope.",
+      "method": "single-choice",
+      "options": [
+        {
+          "label": "Approve",
+          "value": 1
+        },
+        {
+          "label": "Reject",
+          "value": 2
+        },
+        {
+          "label": "Abstain",
+          "value": 0
+        }
+      ],
+      "requireAnswer": false,
+      "contentHash": "815d74ff47b1c028b66905bc5d3ddebee54ab17aa96ad735d7e7cb17d5c06fbc"
+    },
+    {
+      "questionId": "track-allocation-2026",
+      "question": "Allocate 100 points across the working-group tracks for FY2026.",
+      "description": "Distribute exactly 100 points across the four candidate workstreams. Sum must equal the budget.",
+      "method": "weighted",
+      "options": [
+        {
+          "label": "Education & Outreach",
+          "value": 1
+        },
+        {
+          "label": "Technical Standards",
+          "value": 2
+        },
+        {
+          "label": "Developer Tools",
+          "value": 3
+        },
+        {
+          "label": "Documentation & QA",
+          "value": 4
+        }
+      ],
+      "budget": 100,
+      "contentHash": "4e79201cd820000f31cdc0bfb07ce73e3ef0aa1a56aa8c54a728a04911a55287"
+    }
+  ],
+  "roleWeighting": {
+    "drep": "CredentialBased",
+    "pool": "StakeBased",
+    "stake": "StakeBased"
+  },
+  "endEpoch": 612,
+  "ekklesia": {
+    "namespace": "vote.ekklesia.intersect.budget2026",
+    "votingAuthority": "addr1qxy2fxv2d8lp286dft6kc2vr9yu3mhyasjhm0g3q8f8lquprwlav3gxsv3v7k67tljfq2ky9r9kcgy5r8f0xt5qqxue2sng3rrj",
+    "context": "hydra-head",
+    "acceptedCredentials": [
+      "drep",
+      "pool",
+      "stake"
+    ],
+    "merkleRoot": "86d49d38c6f8de486e2c34267f57f41e876dfb5adec095f64d49d3c77cf32dcf",
+    "ballotIpfsCid": "QmRsYEp3qm4oQa47mvDVfWcsXynMLWjhixNF3ybZnGaWSB",
+    "votingWindow": {
+      "open": "2026-06-01T00:00:00Z",
+      "close": "2026-06-08T00:00:00Z"
+    }
+  }
+}

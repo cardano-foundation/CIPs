@@ -1,0 +1,446 @@
+{
+  "specVersion": "0.3.0",
+  "ballotId": "00259a2072386e56d8c3e598bfb4b1b003e972cbcdadbce07e0b779330082077",
+  "tallies": {
+    "budget-envelope-2026": {
+      "results": [
+        {
+          "id": "1",
+          "label": "Approve",
+          "count": 580,
+          "votingPower": 0
+        },
+        {
+          "id": "2",
+          "label": "Reject",
+          "count": 270,
+          "votingPower": 0
+        },
+        {
+          "id": "0",
+          "label": "Abstain",
+          "count": 50,
+          "votingPower": 0
+        },
+        {
+          "id": "abstain",
+          "count": 100,
+          "votingPower": 0
+        }
+      ],
+      "resultsByGroup": {
+        "drep": {
+          "totalVotes": 600,
+          "results": [
+            {
+              "id": "1",
+              "label": "Approve",
+              "count": 370,
+              "votingPower": 0
+            },
+            {
+              "id": "2",
+              "label": "Reject",
+              "count": 170,
+              "votingPower": 0
+            },
+            {
+              "id": "0",
+              "label": "Abstain",
+              "count": 30,
+              "votingPower": 0
+            },
+            {
+              "id": "abstain",
+              "count": 30,
+              "votingPower": 0
+            }
+          ]
+        },
+        "pool": {
+          "totalVotes": 250,
+          "results": [
+            {
+              "id": "1",
+              "label": "Approve",
+              "count": 140,
+              "votingPower": 0
+            },
+            {
+              "id": "2",
+              "label": "Reject",
+              "count": 70,
+              "votingPower": 0
+            },
+            {
+              "id": "0",
+              "label": "Abstain",
+              "count": 15,
+              "votingPower": 0
+            },
+            {
+              "id": "abstain",
+              "count": 25,
+              "votingPower": 0
+            }
+          ]
+        },
+        "stake": {
+          "totalVotes": 150,
+          "results": [
+            {
+              "id": "1",
+              "label": "Approve",
+              "count": 70,
+              "votingPower": 0
+            },
+            {
+              "id": "2",
+              "label": "Reject",
+              "count": 30,
+              "votingPower": 0
+            },
+            {
+              "id": "0",
+              "label": "Abstain",
+              "count": 5,
+              "votingPower": 0
+            },
+            {
+              "id": "abstain",
+              "count": 45,
+              "votingPower": 0
+            }
+          ]
+        }
+      }
+    },
+    "track-allocation-2026": {
+      "results": [
+        {
+          "id": "1",
+          "label": "Education & Outreach",
+          "count": 720,
+          "votingPower": 0
+        },
+        {
+          "id": "2",
+          "label": "Technical Standards",
+          "count": 810,
+          "votingPower": 0
+        },
+        {
+          "id": "3",
+          "label": "Developer Tools",
+          "count": 645,
+          "votingPower": 0
+        },
+        {
+          "id": "4",
+          "label": "Documentation & QA",
+          "count": 480,
+          "votingPower": 0
+        },
+        {
+          "id": "abstain",
+          "count": 100,
+          "votingPower": 0
+        }
+      ],
+      "resultsByGroup": {
+        "drep": {
+          "totalVotes": 600,
+          "results": [],
+          "weighted": {
+            "results": [
+              {
+                "option": 1,
+                "totalPoints": 16200,
+                "voterCount": 432
+              },
+              {
+                "option": 2,
+                "totalPoints": 21600,
+                "voterCount": 486
+              },
+              {
+                "option": 3,
+                "totalPoints": 10800,
+                "voterCount": 387
+              },
+              {
+                "option": 4,
+                "totalPoints": 5400,
+                "voterCount": 288
+              }
+            ]
+          }
+        },
+        "pool": {
+          "totalVotes": 250,
+          "results": [],
+          "weighted": {
+            "results": [
+              {
+                "option": 1,
+                "totalPoints": 6750,
+                "voterCount": 180
+              },
+              {
+                "option": 2,
+                "totalPoints": 9000,
+                "voterCount": 203
+              },
+              {
+                "option": 3,
+                "totalPoints": 4500,
+                "voterCount": 161
+              },
+              {
+                "option": 4,
+                "totalPoints": 2250,
+                "voterCount": 120
+              }
+            ]
+          }
+        },
+        "stake": {
+          "totalVotes": 150,
+          "results": [],
+          "weighted": {
+            "results": [
+              {
+                "option": 1,
+                "totalPoints": 4050,
+                "voterCount": 108
+              },
+              {
+                "option": 2,
+                "totalPoints": 5400,
+                "voterCount": 121
+              },
+              {
+                "option": 3,
+                "totalPoints": 2700,
+                "voterCount": 97
+              },
+              {
+                "option": 4,
+                "totalPoints": 1350,
+                "voterCount": 72
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "questionTallies": [
+    {
+      "questionId": "budget-envelope-2026",
+      "method": "single-choice",
+      "roleResults": {
+        "raw": {
+          "method": "single-choice",
+          "results": [
+            {
+              "option": 1,
+              "count": 580
+            },
+            {
+              "option": 2,
+              "count": 270
+            },
+            {
+              "option": 0,
+              "count": 50
+            }
+          ]
+        },
+        "drep": {
+          "method": "single-choice",
+          "results": [
+            {
+              "option": 1,
+              "count": 370
+            },
+            {
+              "option": 2,
+              "count": 170
+            },
+            {
+              "option": 0,
+              "count": 30
+            }
+          ]
+        },
+        "pool": {
+          "method": "single-choice",
+          "results": [
+            {
+              "option": 1,
+              "count": 140
+            },
+            {
+              "option": 2,
+              "count": 70
+            },
+            {
+              "option": 0,
+              "count": 15
+            }
+          ]
+        },
+        "stake": {
+          "method": "single-choice",
+          "results": [
+            {
+              "option": 1,
+              "count": 70
+            },
+            {
+              "option": 2,
+              "count": 30
+            },
+            {
+              "option": 0,
+              "count": 5
+            }
+          ]
+        }
+      },
+      "abstainedByRole": {
+        "raw": 100,
+        "drep": 30,
+        "pool": 25,
+        "stake": 45
+      }
+    },
+    {
+      "questionId": "track-allocation-2026",
+      "method": "weighted",
+      "roleResults": {
+        "raw": {
+          "method": "weighted",
+          "results": [
+            {
+              "option": 1,
+              "totalPoints": 27000,
+              "voterCount": 720
+            },
+            {
+              "option": 2,
+              "totalPoints": 36000,
+              "voterCount": 810
+            },
+            {
+              "option": 3,
+              "totalPoints": 18000,
+              "voterCount": 645
+            },
+            {
+              "option": 4,
+              "totalPoints": 9000,
+              "voterCount": 480
+            }
+          ]
+        },
+        "drep": {
+          "method": "weighted",
+          "results": [
+            {
+              "option": 1,
+              "totalPoints": 16200,
+              "voterCount": 432
+            },
+            {
+              "option": 2,
+              "totalPoints": 21600,
+              "voterCount": 486
+            },
+            {
+              "option": 3,
+              "totalPoints": 10800,
+              "voterCount": 387
+            },
+            {
+              "option": 4,
+              "totalPoints": 5400,
+              "voterCount": 288
+            }
+          ]
+        },
+        "pool": {
+          "method": "weighted",
+          "results": [
+            {
+              "option": 1,
+              "totalPoints": 6750,
+              "voterCount": 180
+            },
+            {
+              "option": 2,
+              "totalPoints": 9000,
+              "voterCount": 203
+            },
+            {
+              "option": 3,
+              "totalPoints": 4500,
+              "voterCount": 161
+            },
+            {
+              "option": 4,
+              "totalPoints": 2250,
+              "voterCount": 120
+            }
+          ]
+        },
+        "stake": {
+          "method": "weighted",
+          "results": [
+            {
+              "option": 1,
+              "totalPoints": 4050,
+              "voterCount": 108
+            },
+            {
+              "option": 2,
+              "totalPoints": 5400,
+              "voterCount": 121
+            },
+            {
+              "option": 3,
+              "totalPoints": 2700,
+              "voterCount": 97
+            },
+            {
+              "option": 4,
+              "totalPoints": 1350,
+              "voterCount": 72
+            }
+          ]
+        }
+      },
+      "abstainedByRole": {
+        "raw": 100,
+        "drep": 30,
+        "pool": 25,
+        "stake": 45
+      }
+    }
+  ],
+  "totalVoters": 1000,
+  "headId": "d6e4c66a14cd710fe5891b78cabe147ee8c271d519b21b16444e41b9",
+  "finalizedAt": "2026-06-08T00:32:14Z",
+  "votersByRole": {
+    "drep": 600,
+    "pool": 250,
+    "stake": 150
+  },
+  "excludedVoters": [
+    {
+      "tokenName": "22a97132992280ab675b8d55ef8368dcd30bd36fa6622524840859b2af",
+      "reason": "evidence file missing on IPFS"
+    }
+  ]
+}

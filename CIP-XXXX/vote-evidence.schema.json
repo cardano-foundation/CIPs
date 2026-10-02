@@ -1,0 +1,386 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.ekklesia.vote/cip/hydra-voting-tokens/v0.3.0/vote-evidence.schema.json",
+  "title": "VoteEvidence",
+  "description": "Per-voter evidence record pinned to IPFS. blake2b_256 of its compact serialization (see the 'JSON canonicalization' section) equals the on-chain vote_hash recorded in the voter datum (see the 'Voter datum' section).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specVersion",
+    "responderRole",
+    "answers",
+    "ekklesia"
+  ],
+  "properties": {
+    "specVersion": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "responderRole": {
+      "type": "string",
+      "enum": [
+        "drep",
+        "pool",
+        "stake"
+      ],
+      "description": "Canonical role derived server-side from credentialHrp. Calidus voters MUST report 'pool'."
+    },
+    "answers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/VoteSelection"
+      }
+    },
+    "ekklesia": {
+      "$ref": "#/$defs/EkklesiaExtension"
+    }
+  },
+  "$defs": {
+    "Hex": {
+      "type": "string",
+      "pattern": "^[0-9a-f]*$"
+    },
+    "Hex32": {
+      "type": "string",
+      "description": "32-byte value as 64 lowercase hex characters.",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "Hex28": {
+      "type": "string",
+      "description": "28-byte value as 56 lowercase hex characters.",
+      "pattern": "^[0-9a-f]{56}$"
+    },
+    "Hex64": {
+      "type": "string",
+      "description": "64-byte value as 128 lowercase hex characters.",
+      "pattern": "^[0-9a-f]{128}$"
+    },
+    "Bech32": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+1[a-z0-9]+$",
+      "description": "Bech32-encoded identifier (voter ID, pool ID, etc.)."
+    },
+    "IpfsCid": {
+      "type": "string",
+      "minLength": 1,
+      "description": "IPFS CID (v0 'Qm...' or v1 'bafy...')."
+    },
+    "SelectionEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option",
+        "value"
+      ],
+      "properties": {
+        "option": {
+          "type": "integer"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "VoteSelection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId"
+      ],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "abstain": {
+          "const": true
+        },
+        "selection": {
+          "oneOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/SelectionEntry"
+              }
+            }
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "abstain"
+          ],
+          "not": {
+            "required": [
+              "selection"
+            ]
+          }
+        },
+        {
+          "required": [
+            "selection"
+          ],
+          "not": {
+            "required": [
+              "abstain"
+            ]
+          }
+        }
+      ]
+    },
+    "SignedVotePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ballotId",
+        "nonce",
+        "votes"
+      ],
+      "properties": {
+        "ballotId": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "nonce": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "votes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/VoteSelection"
+          }
+        }
+      }
+    },
+    "CoseWitness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coseSign1Hex",
+        "coseKeyHex",
+        "key",
+        "signature"
+      ],
+      "properties": {
+        "coseSign1Hex": {
+          "$ref": "#/$defs/Hex"
+        },
+        "coseKeyHex": {
+          "$ref": "#/$defs/Hex"
+        },
+        "key": {
+          "$ref": "#/$defs/Hex28"
+        },
+        "signature": {
+          "$ref": "#/$defs/Hex64"
+        }
+      }
+    },
+    "NativeScript": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "keyHash"
+          ],
+          "properties": {
+            "type": {
+              "const": "sig"
+            },
+            "keyHash": {
+              "$ref": "#/$defs/Hex28"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "scripts"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "all",
+                "any"
+              ]
+            },
+            "scripts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/NativeScript"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "required",
+            "scripts"
+          ],
+          "properties": {
+            "type": {
+              "const": "atLeast"
+            },
+            "required": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "scripts": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/NativeScript"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "type",
+            "slot"
+          ],
+          "properties": {
+            "type": {
+              "enum": [
+                "before",
+                "after"
+              ]
+            },
+            "slot": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      ]
+    },
+    "CalidusDeclaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "calidusId"
+      ],
+      "description": "Identifies the CIP-151 calidus hot key that signed on behalf of a pool. The pool binding is resolved by on-chain lookup of calidusId (a self-contained binding declaration arrives in specVersion 0.4.0).",
+      "properties": {
+        "calidusId": {
+          "$ref": "#/$defs/Bech32"
+        }
+      }
+    },
+    "MerkleProofSteps": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "root",
+        "steps"
+      ],
+      "properties": {
+        "root": {
+          "$ref": "#/$defs/Hex32"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "siblingHex"
+            ],
+            "properties": {
+              "siblingHex": {
+                "$ref": "#/$defs/Hex32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "EkklesiaExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "voterId",
+        "credentialHrp",
+        "nonce",
+        "signedPayload",
+        "witnesses",
+        "merkleProof"
+      ],
+      "properties": {
+        "voterId": {
+          "$ref": "#/$defs/Bech32"
+        },
+        "credentialHrp": {
+          "type": "string",
+          "enum": [
+            "drep",
+            "pool",
+            "calidus",
+            "stake",
+            "stake_test"
+          ]
+        },
+        "nonce": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signedPayload": {
+          "$ref": "#/$defs/SignedVotePayload"
+        },
+        "witnesses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/CoseWitness"
+          }
+        },
+        "nativeScript": {
+          "$ref": "#/$defs/NativeScript"
+        },
+        "calidusDeclaration": {
+          "$ref": "#/$defs/CalidusDeclaration"
+        },
+        "merkleProof": {
+          "$ref": "#/$defs/MerkleProofSteps"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "credentialHrp": {
+                "const": "calidus"
+              }
+            },
+            "required": [
+              "credentialHrp"
+            ]
+          },
+          "then": {
+            "required": [
+              "calidusDeclaration"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
