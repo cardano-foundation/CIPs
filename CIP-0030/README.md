@@ -6,6 +6,7 @@ Status: Active
 Authors:
   - rooooooooob <https://github.com/github.com>
 Implementors:
+  - 1AM <https://1am.xyz/>
   - Begin <https://begin.is/>
   - Eternl <https://eternl.io/>
   - Flint <https://flint-wallet.com/>
