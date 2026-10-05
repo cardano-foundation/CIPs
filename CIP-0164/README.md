@@ -1403,6 +1403,7 @@ title: LeiosNotify
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
    style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StQuit fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
    StIdle -->|MsgLeiosNotificationRequestNext| StBusy
@@ -1410,8 +1411,9 @@ graph LR
    StBusy -->|MsgLeiosBlockOffer| StIdle
    StBusy -->|MsgLeiosBlockTxsOffer| StIdle
    StBusy -->|MsgLeiosVotes| StIdle
+   StBusy -->|MsgCanceled| StIdle
 
-   StIdle -->|MsgDone| StDone
+   StIdle -->|MsgQuit| StQuit -->|MsgDone| StDone
 ```
 
 <em>Figure 6: LeiosNotify mini-protocol state machine</em>
@@ -1425,6 +1427,20 @@ the client requests the next notification and the server replies with whichever
 is available — and is intended to run pipelined, so that the client has
 requests outstanding at all times and the server can send the moment it has
 something to send.
+
+**Terminating.** The client only has agency in StIdle, so once it has asked for
+a notification it waits in StBusy for a reply the server may have no reason to
+send: under light load there may be nothing to announce for some time. A node
+whose peer governor is demoting an upstream peer from hot to warm has a bounded
+window to close the protocol cleanly, and missing it costs the whole
+connection rather than this mini-protocol alone.
+
+MsgCanceled lets the server answer "nothing for you" and hand agency back,
+so the client is never stranded. MsgQuit lets the client declare it is
+leaving without first draining the replies it has outstanding — it may be
+pipelining many requests, and waiting for each in turn would make shutdown
+latency a function of pipeline depth. MsgDone then closes from StQuit, so
+termination is a handshake rather than a unilateral act by either side.
 
 Votes are delivered directly by LeiosNotify rather than offered and then
 fetched. A vote is small enough that a separate offer/request round-trip would
@@ -1533,6 +1549,9 @@ not yet received MsgLeiosBlockTxsOffer.
 | ←Server | MsgLeiosBlockOffer              | slot, EB hash, and EB size                                   | The server can immediately deliver this block. The declared size lets the client budget its receive buffers before requesting; it duplicates the announcement's `announced_eb_size` and may be dropped once that is relied upon.     |
 | ←Server | MsgLeiosBlockTxsOffer           | slot and EB hash                                             | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
 | ←Server | MsgLeiosVotes                   | non-empty list of votes                                      | Votes the server has received and considers worth relaying.                                                                                                                                                                           |
+| ←Server | MsgCanceled                     | $\emptyset$                                                  | The server has nothing to notify, and returns agency so the client is not left waiting on a reply that may never come.                                                                                                              |
+| Client→ | MsgQuit                         | $\emptyset$                                                  | The client is leaving. It may send this with replies still outstanding, so shutdown does not wait on the pipeline to drain.                                                                                                         |
+| ←Server | MsgDone                         | $\emptyset$                                                  | The server acknowledges the quit and the mini-protocol ends.                                                                                                                                                                          |
 | Client→ | MsgLeiosBlockRequest            | slot and EB hash                                             | The server must now deliver this block.                                                                                                                                                                                               |
 | ←Server | MsgLeiosBlock                   | EB block                                                     | The block from an earlier MsgLeiosBlockRequest.                                                                                                                                                                                       |
 | Client→ | MsgLeiosBlockTxsRequest         | slot, EB hash, and map from 16-bit index to 64-bit bitmap    | The server must now deliver these transactions. The given bitmap identifies which of 64 contiguous transactions are requested, and the offset of the transaction corresponding to the bitmap's first bit is 64 times the given index. |
