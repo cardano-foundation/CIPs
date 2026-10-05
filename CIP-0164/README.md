@@ -1460,12 +1460,10 @@ graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
    style StBlock fill:PowderBlue,stroke:DarkBlue;
    style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
-   style StBlockRange fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
    StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
    StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
-   StIdle -->|MsgLeiosBlockRangeRequest| StBlockRange -->|MsgLeiosNextBlockAndTxsInRange| StBlockRange -->|MsgLeiosLastBlockAndTxsInRange| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1481,12 +1479,10 @@ fair manner based on 64 kB segments, hence the transfer latency is determined
 by the bandwidth-RTT-product as well as the size of the configured TCP send and
 receive buffers.
 
-A caught-up node fetches an announced EB with `MsgLeiosBlockRequest` and then
-the referenced transactions it does not already hold with
-`MsgLeiosBlockTxsRequest`. A syncing node instead uses
-`MsgLeiosBlockRangeRequest` to stream the EBs certified over a range of RBs
-together with all of their transactions, which it will not have in its mempool
-anyway.
+A node fetches an announced EB with `MsgLeiosBlockRequest` and then the
+referenced transactions it does not already hold with
+`MsgLeiosBlockTxsRequest`. A syncing node uses the same two messages; it simply
+holds few of the transactions already, so it asks for most of them.
 
 Transactions are addressed by their index within the EB, in a compact bitmap
 form: a map from a 16-bit window index to a 64-bit presence bitmap, where the
@@ -1498,11 +1494,13 @@ would have to send a request about as large as the EB itself.
 
 > [!NOTE]
 >
-> `MsgLeiosBlockRangeRequest`, `MsgLeiosNextBlockAndTxsInRange` and
-> `MsgLeiosLastBlockAndTxsInRange` are specified here but are not yet
-> implemented in the Leios prototype; see the
-> [LeiosFetch codec](https://cardano-scaling.github.io/cardano-blueprint/network/node-to-node/leios-fetch/index.html)
-> in the Cardano Blueprint for the prototype's current message set.
+> Earlier drafts also carried batch messages for syncing nodes
+> (`MsgLeiosBlockRangeRequest` and its replies), to amortise the per-message
+> overhead over a whole range of certified EBs. They were never implemented
+> and are no longer planned, so they are not specified here. The cost they
+> were meant to avoid is real and remains open: a node catching up fetches
+> historical EBs one at a time, over messages shaped for the freshest-first
+> live path.
 
 Both mini-protocols should be combined with pipelining, meaning that the
 request for the next response should be sent before the previous one has been
@@ -1556,9 +1554,6 @@ not yet received MsgLeiosBlockTxsOffer.
 | ←Server | MsgLeiosBlock                   | EB block                                                     | The block from an earlier MsgLeiosBlockRequest.                                                                                                                                                                                       |
 | Client→ | MsgLeiosBlockTxsRequest         | slot, EB hash, and map from 16-bit index to 64-bit bitmap    | The server must now deliver these transactions. The given bitmap identifies which of 64 contiguous transactions are requested, and the offset of the transaction corresponding to the bitmap's first bit is 64 times the given index. |
 | ←Server | MsgLeiosBlockTxs                | slot, EB hash, the requested bitmap, and list of transactions | The transactions from an earlier MsgLeiosBlockTxsRequest.                                                                                                                                                                             |
-| Client→ | MsgLeiosBlockRangeRequest       | two slots and two RB header hashes                           | The server must now deliver the EBs certified by the given range of RBs, in order.                                                                                                                                                   |
-| ←Server | MsgLeiosNextBlockAndTxsInRange  | an EB and all of its transactions                            | The next certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
-| ←Server | MsgLeiosLastBlockAndTxsInRange  | an EB and all of its transactions                            | The last certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
 
 <em>Table 4: Leios Information Exchange Requirements table (IER table)</em>
 
@@ -1575,11 +1570,11 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   mini-protocols.
 - Depending on how severely the node must prioritize Praos over Leios, the
   separation of their mini-protocols may simplify the prioritization mechanism.
-  However, urgency inversion means that at least MsgLeiosBlockRangeRequest,
-  MsgLeiosNextBlockAndTxsInRange, and MsgLeiosLastBlockAndTxsInRange may
-  occasionally need to have the same priority as Praos. If it would benefit the
-  prioritization implementation, those three messages could be isolated in a
-  third Leios mini-protocol that has equal priority as the Praos mini-protocols.
+  However, urgency inversion means a fetch for an EB that a selectable RB
+  certifies may occasionally need the same priority as Praos: that RB cannot be
+  selected without it. If it would benefit the prioritization implementation,
+  such fetches could be isolated in a third Leios mini-protocol with equal
+  priority to the Praos mini-protocols.
 - LeiosNotify and LeiosFetch can also progress independently, because they are
   separate mini-protocols. A client can therefore receive notifications about
   new Leios data and when it could be fetched from this peer even while a large
@@ -1601,16 +1596,15 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   been bundled — so a server should bundle during the early phase of voting on
   a block for bandwidth efficiency and switch to individual sends as the quorum
   approaches, to optimize for minimal latency.
-- MsgLeiosBlockRangeRequest lets syncing nodes avoid wasting resources on
-  overhead due to the (hopefully) high rate of EBs per RB. BlockFetch already
-  bundles its RB requests when syncing, and this message lets LeiosFetch do the
-  same. The starvation detection and avoidance mechanism used by Ouroboros
-  Genesis' Devoted BlockFetch variant can be easily copied for
-  MsgLeiosBlockRangeRequest if Ouroboros Genesis is enabled.
-- Recall that the `certified_eb` bit enables the client to correctly predict the
-  total payload size of the valid replies to a MsgLeiosBlockRangeRequest. This
-  enables the client to manage its receive buffers, balance load across peers,
-  etc.
+- Syncing is the weak point of this pair. BlockFetch bundles its RB requests
+  when syncing, and LeiosFetch has no equivalent: a node catching up asks for
+  historical EBs one at a time, over messages shaped for the freshest-first
+  live path, and pays the per-message overhead at the (hopefully) high rate of
+  EBs per RB. Earlier drafts proposed batch messages for exactly this and they
+  were never implemented. The `certified_eb` bit still lets a client predict
+  the total payload of the EBs certified over a range of RBs, so it can manage
+  receive buffers and balance load across peers whatever shape the eventual
+  remedy takes.
 - A server should disconnect if the client requests an EB (or its transactions)
   the server does not have. For young EBs, a client can avoid this by waiting
   for MsgLeiosBlockOffer (or MsgLeiosBlockTxsOffer) before sending a request.
@@ -1618,16 +1612,11 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   predecessor's EB would also imply the server has selected that EB, and so must
   be able to serve it. Whether additional restrictions would be useful is not
   yet clear. For example, it seems natural to restrict MsgLeiosBlockRequest and
-  MsgLeiosBlockTxsRequest to young EBs (and perhaps also
-  MsgLeiosBlockRangeRequest to old EBs), but it's not already clear what the
-  benefit would be.
-- If MsgLeiosBlockRequest and MsgLeiosBlockTxsRequest were restricted to young
-  EBs, then MsgLeiosBlockRangeRequest would not only enable syncing nodes but
-  also the unfortunate node that suffers from a $\Delta^\text{W}_\text{EB}$
-  violation. The protocol design requires that that event is rare or at least
-  confined to a small portion of honest stake at a time. But it will
-  occasionally happen to some honest nodes, and they must be able to recover
-  automatically and with minimal disruption.
+  MsgLeiosBlockTxsRequest to young EBs, but it's not already clear what the
+  benefit would be -- and it would need an answer for the node that suffers a
+  $\Delta^\text{W}_\text{EB}$ violation, which must recover automatically and
+  with minimal disruption even though the event should be rare and confined to
+  a small portion of honest stake at a time.
 - Every Leios object is associated with the slot of an EB, and so has an
   explicit age. This enables freshest-first delivery prioritization. In
   addition, votes of a certain age should no longer diffuse; they are no longer
