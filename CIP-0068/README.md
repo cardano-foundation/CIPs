@@ -303,7 +303,7 @@ to lookup. The steps are
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
-5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+5. Convert to JSON as described in [Converting metadata to JSON](#converting-metadata-to-json).
 6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
@@ -439,7 +439,7 @@ to lookup. The steps are
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
-5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+5. Convert to JSON as described in [Converting metadata to JSON](#converting-metadata-to-json).
 6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
@@ -601,7 +601,7 @@ to lookup. The steps are
 2. Look up `reference NFT` and find the output it's locked in.
 3. Get the datum from the output and lookup metadata by going into the first field of constructor 0.
 4. Determine whether this is direct metadata (map without "721" key) or nested map format (map with "721" key).
-5. Convert to JSON and encode all string entries to UTF-8 if possible, otherwise leave them in hex.
+5. Convert to JSON as described in [Converting metadata to JSON](#converting-metadata-to-json).
 6. For nested map format metadata, return only the metadata inside the matching path: map["721"][policy_id][asset_name], where policy_id and asset_name are matched without the asset_name_label prefix.
 
 ##### Retrieve metadata from a Plutus validator
@@ -615,6 +615,42 @@ the Plutus validator context. To do this we
 3. Reference the output in the transaction. (off-chain)
 4. Verify validity of datum of the referenced output by checking if policy ID of `reference NFT` and `user token` and
    their asset names without the `asset_name_label` prefix match. (on-chain)
+
+### Converting metadata to JSON
+
+The "Retrieve metadata as 3rd party" steps convert the metadata to JSON. Metadata is Plutus data, and any value in
+it, including the values of additional properties, is a byte string, an integer, a list, a map or a constructor.
+They are converted as follows:
+
+| Plutus data | JSON |
+|---|---|
+| byte string | a string: the bytes decoded as UTF-8 if they are valid UTF-8, otherwise as hexadecimal |
+| integer | a number |
+| list | an array of the converted elements |
+| map | an object, with the converted byte-string keys as property names; an entry whose key is not a byte string is left out |
+| constructor | an object `{"constructor": <index>, "fields": [<converted fields>]}`, the property names the datum examples in this CIP already use |
+
+For example, the constructor value `Constr 0 [Constr 0 [h'883c5cd1fdbf9d2b2fbd30982e9fb974cf07201bd55e6871e4294f83'], Constr 1 []]`
+(an address with no stake credential) converts to:
+
+```json
+{
+  "constructor": 0,
+  "fields": [
+    {
+      "constructor": 0,
+      "fields": ["883c5cd1fdbf9d2b2fbd30982e9fb974cf07201bd55e6871e4294f83"]
+    },
+    {
+      "constructor": 1,
+      "fields": []
+    }
+  ]
+}
+```
+
+The hash is not valid UTF-8, so it is left as hexadecimal. See
+[Rationale: Non-string values in metadata](#rationale-non-string-values-in-metadata).
 
 ### Extending & Modifying this CIP
 
@@ -737,6 +773,20 @@ This allows:
 * Full backward compatibility.
 * No disruptive changes for current indexers or marketplaces.
 * Opt-in use where economic relief is necessary.
+
+### Rationale: Non-string values in metadata
+
+The metadata map allows additional properties, and nothing limits their values to strings: they can be integers,
+lists, maps and constructors. The conversion step used to say only that string entries are encoded as UTF-8 if
+possible and otherwise left as hexadecimal, so for every other kind of value it was left to each implementation to
+decide what the JSON looks like.
+
+This is not hypothetical. Mainnet tokens put all of these in metadata, and constructors are among them: a Plutus
+address as an `owner`, a pair of a hash and a number as a `seed`, a `contractData` structure. An indexer that
+converted additional properties to JSON had no JSON form for a constructor and dropped the whole metadata of every
+token that had one, which hid hundreds of tokens (see yaci-store issue 1159). Stating the conversion once lets
+implementations agree. The constructor form reuses `constructor` and `fields`, the names this CIP's own JSON examples
+already use for constructors.
 
 ### Backward Compatibility
 
