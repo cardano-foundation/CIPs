@@ -183,9 +183,10 @@ metadata =
   {
     name : bounded_bytes, ; UTF-8
 
-    ; The image URI must point to a resource with media type (mime type) `image/*`
+    ; The image URI, when there is one, must point to a resource with media type (mime type) `image/*`
     ; (for example `image/png`, `image/jpeg`, `image/svg+xml`, etc.)
-    image : uri,
+    ; Optional: a token with nothing meaningful to show can omit it or set it to an empty bytestring.
+    ? image : uri,
 
     ? description : bounded_bytes, ; UTF-8
     ? files : [* files_details]
@@ -208,7 +209,7 @@ metadata_field =
   / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
-; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave), `iagon` (Iagon) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
 uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
   
@@ -221,6 +222,9 @@ datum = #6.121([metadata_field, version, extra])
 
 version = 1 / 2 / 3 / 4
 ```
+
+An absent `image` and an empty one both mean that the token has no image, and consumers MUST treat them alike.
+See [Rationale: Optional image and the `iagon` URI scheme](#rationale-optional-image-and-the-iagon-uri-scheme).
 
 Example datum as JSON (direct metadata):
 
@@ -383,7 +387,7 @@ metadata_field =
   / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
-; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave), `iagon` (Iagon) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
 uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
 
@@ -503,9 +507,10 @@ metadata =
   {
     name : bounded_bytes, ; UTF-8
 
-    ; The image URI must point to a resource with media type (mime type) `image/*`
+    ; The image URI, when there is one, must point to a resource with media type (mime type) `image/*`
     ; (for example `image/png`, `image/jpeg`, `image/svg+xml`, etc.)
-    image : uri,
+    ; Optional: a token with nothing meaningful to show can omit it or set it to an empty bytestring.
+    ? image : uri,
 
     ? description : bounded_bytes, ; UTF-8
     ? decimals: int,
@@ -529,7 +534,7 @@ metadata_field =
   / metadata_map    ; Nested map format with "721" key (version 4)
 
 ; A valid Uniform Resource Identifier (URI) as a UTF-8 encoded bytestring.
-; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave) or `data` (on-chain).
+; The URI scheme must be one of `https` (HTTP), `ipfs` (IPFS), `ar` (Arweave), `iagon` (Iagon) or `data` (on-chain).
 ; Data URLs (on-chain data) must comply to RFC2397.
 uri = bounded_bytes / [ * bounded_bytes ] ; UTF-8
 
@@ -542,6 +547,9 @@ datum = #6.121([metadata_field, version, extra])
 
 version = 3 / 4
 ```
+
+An absent `image` and an empty one both mean that the token has no image, and consumers MUST treat them alike.
+See [Rationale: Optional image and the `iagon` URI scheme](#rationale-optional-image-and-the-iagon-uri-scheme).
 
 Example datum as JSON:
 
@@ -737,6 +745,33 @@ This allows:
 * Full backward compatibility.
 * No disruptive changes for current indexers or marketplaces.
 * Opt-in use where economic relief is necessary.
+
+### Rationale: Optional image and the `iagon` URI scheme
+
+Two things found on-chain differ from what this CIP used to require, and tokens that do this exist today.
+
+#### Tokens with no image
+
+`image` was required for the 222 NFT and the 444 RFT. Some NFTs have nothing meaningful to show, and their minters leave `image` out or put an empty bytestring in it, which the earlier text made non-compliant. Examples of tokens where an image may not make sense:
+
+* **Identity and registration records.** A DID registration whose metadata is a `did`, a `serviceEndpoint` and a `status`. Mainnet has such NFTs: a single policy minted twelve "DID registration" NFTs for sensors, each declaring `mediaType: image/svg+xml` and an empty `image`.
+* **Tickets, passes and vouchers**, where the value is in the datum or in the validator that checks the token, not in a picture.
+* **Certificates, attestations and receipts**, which record a fact and are read by a program.
+* **Data or oracle snapshots**, where each token carries a reading or a measurement as its metadata.
+
+How common these are is not known beyond the example above. Making `image` optional lets the metadata describe such tokens honestly, and avoids minters inventing a placeholder image only to satisfy the field.
+
+An absent `image` and an empty one are treated alike, so a consumer needs a single rule. Anything that was a valid datum before remains valid. A consumer that assumed `image` is always present has to handle its absence.
+
+#### The `iagon` scheme
+
+NFTs whose images are stored on [Iagon](https://iagon.com/) decentralized storage use `iagon://` URIs, and the scheme was not among the allowed ones. Examples seen on mainnet:
+
+* `iagon://6911e6dd275fee62fb8917ba`: a bare identifier
+* `iagon://675816de7e3fc1.26175981_ReserveChardonnayPG`: an identifier followed by a file name
+* a percent-encoded path, for example `iagon://images%2F<id>%2Fwines%2F<file>`
+
+This CIP only lists the scheme. What follows `iagon://` is defined by Iagon, not here.
 
 ### Backward Compatibility
 
