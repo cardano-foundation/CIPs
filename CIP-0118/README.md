@@ -175,7 +175,12 @@ allows other transactions to run it without also including it in its own scripts
     3. scripts in transaction outputs (see
     [CIP-0172](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0172)).
 
-    In contrast, datums are not shared within a single batch.
+    In contrast, datums are not shared within a single batch: every transaction must include
+    in its own witnesses the datums required to spend its own inputs. Outside the legacy mode for
+    PlutusV1 - PlutusV3 scripts (see below), the top-level transaction may, however, include
+    supplemental datums for the outputs of its sub-transactions and for the outputs that their
+    reference inputs point to, in addition to those for its own outputs and reference inputs.
+    A sub-transaction may only include supplemental datums for its own outputs and reference inputs.
 
 6. All inputs of all transactions in a single batch must be contained in the UTxO set before any of the
 batch transactions are applied. This ensures that operation of scripts is not disrupted, for example, by
@@ -195,6 +200,7 @@ It is usually not possible to make new features that are added to a transaction 
 In order to make this a reality we propose a special mode for the top level transaction validation. This mode will be enabled automatically when a top level transaction uses any of the older PlutusV1, PlutusV2 or PlutusV3 scripts. This special mode will validate the top level transaction in isolation from all of the sub-transactions that were included in it. In particular:
 * top level transaction will have to balance out by itself and all of the sub-transactions will have to balance each other, without relying on the top level transaction.
 * top level transaction itself cannot use any of the new features. Eg. guards list cannot contain any script hashes at the top level.
+* top level transaction cannot include supplemental datums for the outputs or reference inputs of its sub-transactions, only for its own outputs and reference inputs.
 
 With this slight modification to the rules we will be able to guarantee backwards compatibility for PlutusV1 - PlutusV3 scripts. The only change visible to the older scripts in the script context would be potentially slightly higher than usual transaction fee, which is not disallowed today.
 
