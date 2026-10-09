@@ -123,7 +123,6 @@ step has an answer.
 sequenceDiagram
   participant W as Wallet
   participant S as Services (k drawn)
-  participant N as Service's cardano-node
   participant C as Cardano chain
 
   W->>C: read registry
@@ -133,11 +132,11 @@ sequenceDiagram
   Note over W: build and sign sub-transaction(s)
   W->>S: POST /offers
   S-->>W: 202, or a refusal with its reason
-  S->>N: resolve inputs, chain-state checks
+  S->>C: resolve inputs, chain-state checks
   W->>S: GET /offers/{id}
   S-->>W: offer state, including a later rejection
-  S->>N: submit batch
-  N->>C: batch lands
+  S->>C: submit batch
+  Note over C: batch lands
   W->>C: follow the chain waiting for offer to land/finalize
 ```
 
@@ -149,7 +148,6 @@ sequenceDiagram
   participant W as Wallet
   participant R as Nostr relays (top R)
   participant S as Services
-  participant N as Service's cardano-node
   participant C as Cardano chain
 
   Note over R,S: services subscribe in advance, by kind and tags
@@ -160,8 +158,8 @@ sequenceDiagram
   R-->>W: OK (this relay stored it, does not imply propagation)
   R->>S: event, to every matching subscription
   Note over S: verify and check (a refusal is silent)
-  S->>N: submit batch
-  N->>C: batch lands
+  S->>C: submit batch
+  Note over C: batch lands
   W->>C: follow the chain waiting for offer to land/finalize
 ```
 
