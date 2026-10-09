@@ -37,13 +37,7 @@ until some other party finds it, judges it worth completing, and builds the
 top-level transaction that carries it. That party, and the means of reaching it, are
 entirely off-chain, and no such mechanism exists.
 
-This CIP specifies such a mechanism, including all the relevant on-chain 
-infrastructure: the offer- and interest-communication protocol, service discovery and customization, 
-and batch construction.
-For each of these functionalities, we indicate what functions each of the three roles 
-involved in this infrastructure performs. The three roles (which a single party may combine) are:
-anonymous publishers of sub-transactions (wallets), services 
-(babel aggregators of sub-txs into top-level txs), and relay nodes. 
+This CIP specifies such a mechanism, including all the relevant on-chain infrastructure: the offer- and interest-communication protocol, service discovery and customization, and batch construction. For each of these functionalities, we indicate what functions each of the two roles involved in this infrastructure performs. The two roles are anonymous publishers of sub-transactions (wallets) and services (babel aggregators of sub-txs into top-level txs). 
 
 
 ## Motivation: Why is this CIP necessary?
@@ -95,47 +89,81 @@ infrastructure:
 
 ### Architecture
 
-Outer boxes are machines. What shares a box is expected to share a host. A service
-must run beside a full node and talks to it locally.
+A service must run beside a full node and talks to it locally. Nostr relays are
+third-party infrastructure, not a role this CIP defines. Wallets read the
+registry through whatever chain provider they already use.
 
-```text
-  ┌─ USER'S MACHINE ─────────┐        ┌─ RELAY HOST ──────────────┐
-  │                          │        │                           │
-  │  wallet / publisher      │        │  relay                    │
-  │  builds and signs one    │        │  stateless checks, dedup, │
-  │  sub-transaction         │        │  rate limit, forward      │
-  │                          │        │                           │
-  └────┬──────────────┬──────┘        └──┬─────────────────┬──────┘
-       │              │                  │                 │
-       │              └── gossipsub ─────┤                 └─► other relays,
-       │                 topic = a       │                     drawn from the
-  HTTPS│                 routing key     │ gossipsub           registry each
-  POST /offers                           │                     epoch
-  GET  /offers/{id}                      ▲
-       │            ┌────────────────────┤  gossipsub, once an epoch:
-       ▼            ▼                    │  the signed registry statement
-  ┌─ SERVICE OPERATOR'S MACHINE ─────────┴──────────────┐
-  │                                                     │
-  │  babel fee service                                  │
-  │  verifies, selects, builds the batch, submits it    │
-  │           │                     ▲                   │
-  │           │ submit              │ blocks, rollbacks,│
-  │           │                     │ the registry,     │
-  │           ▼                     │ UTxOs, params     │
-  │      ┌────┴─────────────────────┴────┐              │
-  │      │  cardano-node (full)          │              │
-  │      │  local socket, or cardano-cli │              │
-  │      └───────────────┬───────────────┘              │
-  └──────────────────────┼──────────────────────────────┘
-                         │ node-to-node
-                         ▼
-                   Cardano chain
-        registrations, batches, and the answer
-        to "did my offer land"
+```mermaid
+flowchart TB
+  subgraph user["User's machine"]
+    wallet["Wallet / publisher"]
+  end
+
+  relay["Nostr relays<br/>(third parties)"]
+
+  subgraph operator["Service operator's machine"]
+    service["Babel fee service"]
+    node["cardano-node (full)"]
+  end
+
+  chain[("Cardano chain")]
+
+  wallet -->|"Binding A: HTTPS"| service
+  wallet -->|"Binding B: publish"| relay
+  relay -->|"subscribe"| service
+  service <-->|"local socket"| node
+  node <-->|"node-to-node"| chain
+  chain -.->|"registry, via<br/>chain provider"| wallet
 ```
 
-A publisher reaches a service directly over HTTPS, or reaches services it has
-never heard of by publishing to the mesh.
+**Binding A — HTTPS.** The publisher talks to services it has chosen, and every
+step has an answer.
+
+```mermaid
+sequenceDiagram
+  participant W as Wallet
+  participant S as Services (k drawn)
+  participant N as Service's cardano-node
+  participant C as Cardano chain
+
+  W->>C: read registry
+  Note over W: draw k services, weighted by deposit
+  W->>S: GET /hints, or POST /quote
+  S-->>W: indicative terms, or a signed firm quote
+  Note over W: build and sign sub-transaction(s)
+  W->>S: POST /offers
+  S-->>W: 202, or a refusal with its reason
+  S->>N: resolve inputs, chain-state checks
+  W->>S: GET /offers/{id}
+  S-->>W: offer state, including a later rejection
+  S->>N: submit batch
+  N->>C: batch lands
+  W->>C: follow the chain waiting for offer to land/finalize
+```
+
+**Binding B — Nostr.** The publisher hands the offer to relays and hears
+nothing back from services.
+
+```mermaid
+sequenceDiagram
+  participant W as Wallet
+  participant R as Nostr relays (top R)
+  participant S as Services
+  participant N as Service's cardano-node
+  participant C as Cardano chain
+
+  Note over R,S: services subscribe in advance, by kind and tags
+  W->>C: read registry
+  Note over W: rank relays by deposit
+  Note over W: build and sign sub-transaction(s)
+  W->>R: publish event: envelope, routing-key tags, expiration
+  R-->>W: OK (this relay stored it, does not imply propagation)
+  R->>S: event, to every matching subscription
+  Note over S: verify and check (a refusal is silent)
+  S->>N: submit batch
+  N->>C: batch lands
+  W->>C: follow the chain waiting for offer to land/finalize
+```
 
 ### Terminology
 
@@ -160,15 +188,13 @@ guards*, *isolation mode*.
 
 **binding** — A concrete transport for carrying offers: how an envelope travels, and what the transport itself checks before handing it over. 
 
-**message** — What a binding carries when it carries an offer. Its payload is then always an envelope; a binding may carry other traffic of its own. On a transport that routes by topic, a message is a topic and a payload together, and the topic is not part of the envelope; see [Forwarding].
+**message** — What a binding carries when it carries an offer. Its payload is then always an envelope; a binding may carry other traffic of its own. On a transport that routes by topic, a message is a topic and a payload together, and the topic is not part of the envelope.
 
 **publisher** — Any party that emits an envelope. 
 
 **service** (equivalently **aggregator**, **babel fee service**) — A party that ingests offers, verifies them, selects a jointly satisfiable set, builds a top-level transaction, and submits it.
 
-**mesh** — A network in which every publisher propagates messages to all participants, rather than one in which designated parties forward to designated recipients. 
-
-**backbone** / **open edge** — The two halves of the topology. The **backbone** is the set of services, which may register. The **open edge** is everything else — wallets and other publishers — which never register and reach the backbone through any provider.
+**open transport** — A binding in which a publisher propagates messages to as many services as possible, rather than specific recipients. 
 
 **interest filter** — A service's advertised intake specification: either a set of filter keys it accepts or the marker *all*, together with a set it rejects, rejection taking precedence.
 
@@ -178,7 +204,7 @@ guards*, *isolation mode*.
 
 **satisfier** — The search a service runs to find out whether it can complete a batch that makes a constraint hold, and what to add if so. 
 
-**registration** / **registry** — A **registration** is the on-chain record of a service: one UTxO, one NFT, and a registration record as its datum. The **registry** is all of them together, and is both how a party is discovered and the set peers are drawn from. 
+**registration** / **registry** — A **registration** is the on-chain record of a service: one UTxO, one NFT, and a registration record as its datum. The **registry** is all of them together, and is both how a party is discovered and the set entry points are drawn from. 
 
 **declared constraint** — A constraint expressed in this CIP's constraint language (constraint DSL) and carried in a guard datum. 
 
@@ -219,7 +245,7 @@ offer identity.
 
 ### Network topology and roles
 
-The goal this design aims to achieve is that every offer must reach at least one honest service whose profile matches it before its validity bound, and no service should be systematically starved of offers. We will achieve this goal by relying on the DMQ functionality introduced in [CIP-0137]. 
+The goal this design aims to achieve is that every offer must reach at least one honest service whose profile matches it before its validity bound, and no service should be systematically starved of offers. We will achieve this goal by relying on an open set of Nostr relays; publishers may publish to those relays, and services may read from them.
 
 **Roles.**
 
@@ -228,51 +254,33 @@ The goal this design aims to achieve is that every offer must reach at least one
 | Publisher | Construct offers that pass the [offer checks](#stateless-checks--performed-by-publishers-services), which needs chain state a wallet has anyway. No identity, no registration, nothing ongoing. |
 | Service | Every check, including [chain-state](#chain-state-checks--performed-by-publishers-services) and [pre-inclusion](#pre-inclusion-checks--performed-by-services) checks, and honouring its own [advertised interest](#routing-and-filtering). |
 
-**Open edge vs. backbone.**
-Publishers are many, anonymous, short-lived and mostly offline. Services are few, long-lived, and addressable. These populations want different treatment. The network has an **open edge** of publishers, which never registers and reaches the network through any service or open entry point. It also has a **backbone** of services which maintain standing links to each other.
+**Publishers vs. services.**
+Publishers are many, anonymous, short-lived and mostly offline. Services are few, long-lived, and addressable. These populations want different treatment. Publishers never register; they find services and relays through the registry, and connect only for as long as it takes to submit an offer. Services may register, so that publishers can find them, and stay connected to the relays they read.
 
 **Full node usage**
 A service must be able to resolve inputs, run scripts, follow rollbacks, etc. For this reason, it must run beside a full node at all times (communicating with the node frequently).
 
-**Registration** is optional, and requires an on-chain deposit. Services may register an endpoint and a profile on-chain. 
+**Registration** is optional, and requires an on-chain deposit. Services may register an endpoint, a set of relays, and a profile on-chain. 
 
 The registry is a discovery aid; what a registration contains is in [Service profile](#service-profile). Running an unregistered service is possible, as long as consumers have some other way to find it.
 
 **Censorship resistance**
-The CIP-0137 DMQ functionality is served by a large network of Cardano SPOs, operating independently of this CIP's services. No offer is censored from any set of services, and no service is systematically starved of offers, as long as a sufficient number of honest SPOs continue to follow the DMQ protocol.
+The Nostr protocol is served by an open network of relays, operating independently of this CIP's services. Nostr has no general expectation that relays will forward messages to each other, so publishers are expected to publish to several relays, and services are expected to read from many. No offer is censored from any set of services, and no service is systematically starved of offers, as long as a sufficient number of honest relays are available.
 
-The initial motivating use case for CIP-0137 is Mithril, so a large number of Cardano SPOs are already operating it.
+Nostr is an existing and popular protocol, so there are a large number of general-purpose public relays. However, due to the nature of the protocol, these relays may aggressively ratelimit or ultimately block large volumes of protocol traffic (see [Security considerations](#security-considerations)). To mitigate this, we expect some Cardano operators to run their own Nostr relays.
 
 **Service selection**
-**Entrypoint selection.** Publishers will come and go, with short-lived connections
-to the rest of the network. Connnecting to a "well known" service or set of services
-would give those services disproportionate censorship/price-setting power. To counter
-this, those publishers will be able to consult the on-chain service registry; they 
-will connect to *k* (configurable) services, drawn from the registry using on-chain
-randomness, so that anyone can recompute the draw and nobody can steer it. The
-draw takes *k* distinct registrations, each with probability proportional to the
-deposit it holds.
+**Entrypoint selection (HTTPS).** Publishers will come and go, with short-lived connections to the rest of the network. Connnecting to a "well known" service or set of services would give those services disproportionate censorship/price-setting power. To counter this, those publishers will be able to consult the on-chain service registry; they will connect to *k* (configurable) services, drawn from the registry using on-chain randomness, so that anyone can recompute the draw and nobody can steer it. The draw takes *k* distinct registrations, each with probability proportional to the deposit it holds.
 
-Weighting by deposit rather than counting entries makes the draw indifferent to
-how a party splits itself: one registration of *D* and ten of *D/10* carry the
-same weight in total, so buying draw share costs the same however it is
-arranged. A uniform draw prices share by entry count instead, which makes the
-cheapest way to buy it a large number of minimum-sized registrations. It also
-removes the need for a floor, since a small operator registers a small deposit
-and is drawn in proportion rather than being priced out. 
+Weighting by deposit rather than counting entries makes the draw indifferent to how a party splits itself: one registration of *D* and ten of *D/10* carry the same weight in total, so buying draw share costs the same however it is arranged. A uniform draw prices share by entry count instead, which makes the cheapest way to buy it a large number of minimum-sized registrations. It also removes the need for a floor, since a small operator registers a small deposit and is drawn in proportion rather than being priced out. 
 
-**Peers set by hand.** An operator may pin peers, which are kept alongside the
-drawn set rather than replacing it. This functionality is required to 
-initialize or re-configure a (possibly wrong) registry, 
-see [security considerations](#security-considerations).
+**Relay selection (Nostr).** Nostr relays are shared infrastructure, but we must ensure that publishers can discover a large and dynamic set of relays to publish across. To support this, the registry includes information about which relays each service is listening on.
 
-**Running on DMQ.** If a [CIP-0137][] message queue carries offers, there are two ways to arrange it:
+Publishers may build a weighted list of relays from the registry, and select the top *R* from that list, plus a few randomly-selected entries with less weight. Our recommendation is to weight all *N* of a registry entry's relays with *1/N* of that entry's deposit. Publishers should connect to these relays in ranked order, skipping unreachable relays, to cope with system outages.
 
-*Bundle* into the DMQ network stake pools already run: offers reach every node that is already there, so the relay population is large from the first day, and nobody is obligated to use infrastructure. The cost is that those operators may end up carrying anonymous, unmetered traffic, and spam (which we do attempt to mitigate here) lands on them.
+As long as publishers follow this recommendation, it is difficult for any attacker to censor their messages. Popular relays will be weighted by the deposit of many honest services, and an attacker would need *R* times as much deposit to remove relays from the set which all publishers used.
 
-*Separate*, as its own instance with its own network magic: the spam is confined to operators who opted into it, and the parameters are ours to set. The cost is inverted — a relay population that has to be recruited, and which starts small.
-
-We are choosing to bundle into the existing DMQ network. This provides superior censorship resistance, as the relay population is less strictly coupled to the operators who could benefit from imposing censorship.
+**Entrypoints/relays set by hand.** A publisher may pin services and relays, which are kept alongside the drawn set rather than replacing it. This allows publishers to reach unpublished services/relays without a dependency on the registry.
 
 ### Transport bindings
 
@@ -295,7 +303,7 @@ A service running this binding is an HTTPS server. Each row below is one request
 | `GET /status` | Optional. Live operating state: uncommitted liquidity per asset, and a recent inclusion rate. Non-binding, as [hints](#price-hints) are. |
 | `GET /` | Name, network, and the versions a counterparty needs before it builds: the API version, the [protocol revision](#versioning), the interpreter hashes it can satisfy, and any wire versions it accepts beyond what its revision implies. Also the oldest offer bound it still answers about, which is the one local limit nobody can discover by reaching it. |
 
-Price hints are an endpoint. A service cannot negotiate with an offer that is already signed, so it states indicative terms in advance and a wallet reads them and does its own arithmetic. See [Price hints]. `POST /quote` is the optional stronger form, for a wallet that wants the terms committed to before it signs rather than after. It is available only on this binding, because a [firm quote](#firm-quotes) is something a *named* service issues, and on the mesh a publisher does not know who will pick its offer up.
+Price hints are an endpoint. A service cannot negotiate with an offer that is already signed, so it states indicative terms in advance and a wallet reads them and does its own arithmetic. See [Price hints]. `POST /quote` is the optional stronger form, for a wallet that wants the terms committed to before it signs rather than after. It is available only on this binding, because a [firm quote](#firm-quotes) is something a *named* service issues, and on an open transport a publisher does not know who will pick its offer up.
 
 `/interest` is made up of the accept and reject sides of the profile. A service advertising an interest is expected to honour it. See [Routing and filtering] for when each part of a filter applies.
 
@@ -321,7 +329,7 @@ Every offer refusal on this binding carries a machine-readable reason from the c
 
 A refusal reaches the publisher at one of two moments. The stateless checks and the body-derivable half of the interest filter run while the request is open, so those refusals replace the `202`. Chain-state verification is asynchronous, so a refusal after acceptance is recorded against the offer and read from `GET /offers/{offer_id}` — the [`rejected` state](#offer-lifecycle). Same codes either way, so a publisher polls once rather than treating `202` as final.
 
-Binding B has no back-channel. A refusal on the mesh is silence, and indistinguishable from nobody having seen the offer.
+Binding B has no back-channel. A refusal on an open transport is silence, and indistinguishable from nobody having seen the offer.
 
 | Code | Holds when | What the publisher should do |
 |---|---|---|
@@ -341,68 +349,61 @@ Binding B has no back-channel. A refusal on the mesh is silence, and indistingui
 
 Rejection reasons are not verifiable. The set exists so that an honest refusal is actionable, not so that a dishonest one can be detected.
 
-#### Binding B — DMQ miniprotocol
+#### Binding B — Nostr
 
-This mesh binding allows an offer to reach services its publisher does not choose.
+This open transport allows an offer to reach services its publisher does not choose. A message on this binding is a Nostr event ([NIP-01][]), published to one or more relays.
 
-| Setting | Value |
+| Field | Value |
 |---|---|
-| Topic | A routing key |
-| Message payload | Envelope bytes |
-| Message identifier | Blake2b-256 of the envelope bytes (the same value as the transport dedup key, so identical arrivals collapse without anyone parsing them) |
-| Signing mode | `StrictNoSign` - no signatures accepted |
-| Maximum message size | [Protocol constants] |
+| `kind` | [`NOSTR_OFFER_KIND`](#protocol-constants), a regular (stored) kind |
+| `content` | The envelope bytes, base64-encoded ([RFC 4648][]) |
+| `tags` | One [`NOSTR_TOPIC_TAG`](#protocol-constants) tag per routing key the offer is published under, and one `expiration` tag ([NIP-40][]) |
+| `pubkey`, `sig` | Any key; see below. Meaningless to recipients |
+| `created_at` | Time of publication |
 
-A peer re-announces offers it holds that have not expired. Gossip keeps nothing, so without re-announcement a service that joins late sees only what is published after it arrives.
+**Topics are tags.** Each routing key the offer is published under is carried as `["<NOSTR_TOPIC_TAG>", "<routing key>"]`. Relays index single-letter tags, so a service subscribes to its accept side with a filter on `kind` and the tag's values. Relays may cap the size of a filter, so a service with a large accept side may split it across subscriptions, or filter on `kind` alone and apply its interest filter locally. The reject side is always applied locally.
 
-Nothing may be assumed about ordering or delivery. Mesh parameters — degree, heartbeat, scoring — are the operator's, and the DMQ miniprotocol's.
+**Expiration.** The `expiration` tag is the sub-transaction's validity upper bound converted to POSIX seconds, rounded down, and is never set independently. Relays discard expired events without having to parse the offer.
+
+**The event key.** Nostr requires every event to be signed, but that signature authenticates nothing this protocol uses: an offer's own witnesses remain its only authentication. The key MUST NOT be one used for anything else, in particular a user's Nostr identity key (e.g. one held by a [NIP-07][] signer), which would publicly tie the offer to that identity. A fresh key per offer, per session or per installation all comply.
+
+**Event ids are not offer identity.** The event id covers the event, not the offer: two events carrying the same envelope have different ids and the same transport dedup key. Recipients deduplicate by transport dedup key and offer identity, never by event id.
+
+**Where to publish and where to read.** A relay is not assumed to forward events to other relays, so an offer reaches a service only through a relay both of them use. A publisher publishes to several relays, chosen as described under [Relay selection](#network-topology-and-roles). A service reads the relays listed in live registrations, as many as it can, plus any others it chooses.
+
+**Missed offers.** Relays store events until they expire, so a service that connects late can query for events still live. A service SHOULD periodically reconcile what it holds against the relays it reads using [NIP-77][], which is how this binding lets a consumer tell that it has missed something.
+
+**Message size** is set by each relay. [`MAX_SUBTX_BYTES`](#protocol-constants) should leave the encoded envelope within common relay limits.
+
+Nothing may be assumed about ordering or delivery. A relay's `OK` reply means only that this relay accepted the event, not that any service has seen it.
 
 #### Further bindings
 
 A transport qualifies if it can carry anonymous publishers, carry an envelope whole, and let a consumer tell that it has missed something. The last is the one that decides between candidates, because it is what distinguishes a quiet network from one that is cutting a service off.
 
-The cost of additional bindings is extra integration effort for services; they will need to integrate with any binding to receive offers from that binding. This protocol does not rely on gossip (except where a binding itself is doing so), so a node which doesn't e.g. listen to the DMQ will never see offers made over it.
+The cost of additional bindings is extra integration effort for services; they will need to integrate with any binding to receive offers from that binding. This protocol does not rely on gossip (unless a future binding itself does so), so a service which doesn't listen to any Nostr relays will never see offers published over them.
+
+We evaluated [CIP-0137][] (the Cardano Decentralized Message Queue), and found it currently unfit for this purpose. Every DMQ message must be signed with the KES key of a stake pool in the current stake distribution, so only SPOs can publish, which fails the first criterion above. The network is carried by `dmq-node`, a separate binary from `cardano-node` which in practice is run by SPOs. Its reference implementation also accepts at most one message per pool every 60 seconds, with message bodies of at most 2000 bytes and lifetimes of at most 30 minutes. CIP-0137 could only be adopted here if it gained an authentication mode admitting anonymous publishers, and limits suited to offer traffic.
 
 ### Validation
 
 #### Transport-binding checks — imposed by the binding
 
-These are properties of the binding rather than of the offer, performed by
-whatever software terminates the protocol — a `dmq-node`, a gossipsub
-implementation. An implementation inherits whichever set belongs to the
-transport it uses, and they neither replace nor satisfy any check below.
+These are properties of the binding rather than of the offer, performed by whatever software terminates the protocol. An implementation inherits whichever set belongs to the transport it uses, and they neither replace nor satisfy any check below.
 
-A message-queue binding of the kind under consideration in
-[Transport bindings] would contribute:
+[Binding B](#binding-b--nostr) contributes:
 
-- **Message well-formed** under the instance's CDDL.
-- **`expiresAt` not passed**, and no further ahead than the instance's maximum
-  TTL, which is the same ceiling as the maximum offer TTL in
-  [Protocol constants].
-- **Body size** within the per-instance cap.
-- **Network magic** matches the instance.
+- **Event well-formed:** NIP-01 event id and signature valid, `kind` is [`NOSTR_OFFER_KIND`](#protocol-constants), and `content` decodes as base64.
+- **`expiration` present and not passed**, and no later than the value [derived from the validity upper bound](#binding-b--nostr).
+- **Event size** within the relay's limit.
 
-A binding may carry a TTL of its own, as this is what DMQ's `expiresAt` does.
-It is useful because a
-transport has to discard stale messages without parsing a sub-transaction to
-learn when they expire. It is derived from the sub-transaction's validity
-upper bound and never set independently: set shorter it drops offers that are
-still good, set longer it keeps ones already dead. This is a rule for whoever
-publishes, not a check the binding performs.
+Relays may not enforce these, so services re-check them on receipt.
 
-An HTTPS binding contributes nothing about the offer — only transport framing,
-which the checks below do not depend on.
-
-A gossipsub binding contributes:
-
-- **No author signature fields present.** StrictNoSign rejects messages
-  carrying `from`, `signature`, or `seqno`.
-- **Message size** within the binding maximum.
-
+[Binding A](#binding-a--https) contributes nothing about the offer — only transport framing, which the checks below do not depend on.
 
 #### Stateless checks — performed by publishers, services
 
-Publishers must construct offers satisfying every offer check. Services must apply the offer checks before storing or forwarding an offer, and must also perform the recipient checks. None require chain state.
+Publishers must construct offers satisfying every offer check. Services must apply the offer checks before storing an offer, and must also perform the recipient checks. None require chain state.
 
 **Offer checks** 
 
@@ -462,12 +463,12 @@ sent as. Three separate things do that work (see details below)
 What each role does with each:
 
 | Activity | Publisher | Service |
-|---|---|---|---|
+|---|---|---|
 | Declare a filter key | never | never |
 | Derive body-only keys | its own |yes |
 | Derive chain-state keys | its own | yes |
 | Check the arrival topic against the offer's keys | — | must, all keys |
-| Choose which topics to publish on | yes | forwards on the arrival topic |
+| Choose which topics to publish on | yes | — |
 | Subscribe to topics | — | yes, its accept side |
 | Define an interest filter | — | yes |
 | Advertise one | — | yes, both sides |
@@ -478,14 +479,14 @@ A dash means the activity is not part of that role at all.
 
 Posting keys on-chain is advertisement and never subscription. 
 
-What is relayed across what type of network:
+What is carried over each kind of channel:
 
-| What travels | HTTPS | Gossip mesh | Unfiltered stream (DMQ) | On-chain |
-|---|---|---|---|---|
-| Filter key | never | never | never | never |
-| Routing key | as the advertised accept side | as the message topic | never — no topics | in a registered profile, as advertisement only |
-| Interest filter | both sides, from `GET /interest` | never | never | both sides of a registered profile |
-| Envelope | request body | message payload | message payload | never (its sub-transaction may end up on-chain later) |
+| What travels | HTTPS | Open transport | On-chain |
+|---|---|---|---|
+| Filter key | never | never | never |
+| Routing key | as the advertised accept side | as the message topic | in a registered profile, as advertisement only |
+| Interest filter | both sides, from `GET /interest` | never | both sides of a registered profile |
+| Envelope | request body | message payload | never (its sub-transaction may end up on-chain later) |
 
 Routing keys and topics exist only on bindings that route by topic; interest
 filters, as the HTTPS column shows, do not depend on them.
@@ -549,7 +550,6 @@ kind        = "offered/" policy-id
             / "exunits/" band
             / "feature/direct-deposits"
             / "feature/balance-intervals"
-            / "registry"                  ; registry statements, not offers
 
 band        = "none" / "low" / "medium" / "high"
 policy-id   = 56lc-hex
@@ -565,11 +565,9 @@ The `network` segment puts each network on its own topics, so a mainnet subscrib
 
 An offer whose keys span several kinds is published under every corresponding routing key; subscribers deduplicate by offer identity.
 
-**Not every binding has routing keys.** A binding distributing one unfiltered stream — as DMQ does by design — has no topics to address, so a service derives filter keys as usual and applies its interest filter locally on ingest.
+**Firehose**. There is no catch-all routing key. A service wanting everything subscribes without a topic filter, where its binding allows it (on [Binding B](#binding-b--nostr), a filter on `kind` alone), and applies its interest filter locally on ingest. 
 
-**Firehose**. There is no catch-all routing key. A service wanting everything subscribes to the union of the keys it wants. Connecting to a relay that polices nothing does not substitute: it declines to drop, but it still only carries the topics it subscribed to. 
-
-**Interest filters.** An interest filter is an accept side — either a set of filter keys or the marker **all** — and a set of rejected keys. An offer is ingested when none of its keys is rejected, and either the accept side is *all* or at least one of its keys is accepted. Offers on HTTP  allow the publisher to learn about their offer's rejection from the `POST /offers` response. On a gossip network, rejection is silent.
+**Interest filters.** An interest filter is an accept side — either a set of filter keys or the marker **all** — and a set of rejected keys. An offer is ingested when none of its keys is rejected, and either the accept side is *all* or at least one of its keys is accepted. Offers on HTTP  allow the publisher to learn about their offer's rejection from the `POST /offers` response. On an open transport, rejection is silent.
 
 **Further refinement.** Services can implement additional local filters that can be posted on-chain as part of their [service profile](#service-profile), as well as without any announcement strategy. 
 
@@ -798,14 +796,24 @@ or may not have a satisfying strategy for the custom guard.
 |---|---|---|---|
 | `ENVELOPE_VERSION` | `envelope_version` | 1 | The first revision of this specification. |
 | — | `era_tag` values | TBD | Needed to know what CDDL a sub-transaction conforms to |
-| `MAX_SUBTX_BYTES` | Sub-transaction size ceiling | TBD | Must leave room for several sub-transactions plus the top-level body and guard witnesses inside `maxTxSize` |
+| `MAX_SUBTX_BYTES` | Sub-transaction size ceiling | TBD | Must leave room for several sub-transactions plus the top-level body and guard witnesses inside `maxTxSize`, and keep a base64-encoded envelope within common Nostr relay size limits |
 | `MAX_OFFER_TTL` | Maximum offer TTL | TBD | Long enough for a service to see an offer, plan, and submit; short enough that an abandoned offer clears without intervention |
-| `MAX_ENVELOPE_OVERHEAD_BYTES` | Maximum envelope overhead in bytes | Proposed `16` | The envelope is two small integers and a tag-24 wrapper, so its cost over `subtx_bytes` is bounded. Fixing it makes the largest gossip message computable |
+| `MAX_ENVELOPE_OVERHEAD_BYTES` | Maximum envelope overhead in bytes | Proposed `16` | The envelope is two small integers and a tag-24 wrapper, so its cost over `subtx_bytes` is bounded. Fixing it makes the largest message computable |
 
 All of these are released with the (versioned) specification revision and enforced by the
 [stateless checks](#stateless-checks--performed-by-publishers-services).
 An offer breaching one stops at the first
 recipient rather than travelling. 
+
+**Binding B.**
+
+| Code name | Constant | Value | Basis |
+|---|---|---|---|
+| `NOSTR_OFFER_KIND` | Nostr event kind carrying offers | TBD, a regular kind per NIP-01 | Regular events are stored until they expire, which late-joining services and reconciliation depend on; ephemeral events are not stored |
+| `NOSTR_TOPIC_TAG` | Single-letter tag carrying routing keys | TBD | Relays index only single-letter tags. Must not collide with tags in common use, such as `t` (hashtags) or `k` (referenced kinds) |
+
+Also released with the specification revision, and checked among the
+[transport-binding checks](#transport-binding-checks--imposed-by-the-binding).
 
 **Constraint language.**
 
@@ -820,7 +828,7 @@ stateless checks.
 
 **Diffusion, pool and service.** 
 
-`HINT_TTL` must be agreed network-wide, because a party applying a different one refuses what others accept. `MAX_REGISTRATION_BYTES` and `REGISTRATION_DEPOSIT` must be too. Nobody enforces either on chain, so two parties applying different ones compile different registries. `MAX_REGISTRATION_PERIOD` is network-wide for the same reason, and is the one constant here the chain enforces itself. The rest are internal to the party that sets them (the two rate limits, `MAX_LIVE_OFFERS_PER_UTXO`, the three blacklist constants, the pool ceilings, `MAX_CONCURRENT_BATCHES`, `FUNDING_HOLD_TTL` and `STATUS_RETENTION`), bounding either what a party spends on itself or what it will accept from others. This CIP fixes values for the first kind and floors for the second.
+`HINT_TTL` must be agreed network-wide, because a party applying a different one refuses what others accept. `MAX_REGISTRATION_BYTES` and `REGISTRATION_DEPOSIT` must be too. Nobody enforces either on chain, so two parties applying different ones compile different registries. `MAX_REGISTRATION_PERIOD` is network-wide for the same reason, and is the one constant here the chain enforces itself. The rest are internal to the party that sets them (`MAX_LIVE_OFFERS_PER_UTXO`, the pool ceilings, `MAX_CONCURRENT_BATCHES`, `FUNDING_HOLD_TTL` and `STATUS_RETENTION`), bounding either what a party spends on itself or what it will accept from others. This CIP fixes values for the first kind and floors for the second.
 
 **Activation is read off the registry.** Every [registration](#on-chain-registration-of-services) carries the [protocol revision](#versioning) its holder runs. A revision's values take effect once most of the registry has upgraded to it, counted by the number of valid registrations. 
 
@@ -828,10 +836,9 @@ stateless checks.
 |---|---|---|---|---|
 | `MAX_LIVE_OFFERS_PER_UTXO` | Number of live offers allowed per UTxO | Only one can ever land, so a higher cap only allows re-pricing | Not announced; the refusal says when to try again | By the recipient |
 | `POOL_MAX_OFFERS`, `POOL_MAX_BYTES` | Number of offers a pool may hold, and their total size in bytes | When the pool starts evicting | Not announced | By the holder |
-| `MAX_REGISTRATION_BYTES` | Size in bytes of the largest registration datum | Two parties with different ceilings enumerate different registries and draw different peers | Released with the specification revision | By every reader |
+| `MAX_REGISTRATION_BYTES` | Size in bytes of the largest registration datum, relay list included | Two parties with different ceilings enumerate different registries, draw different entry points and rank relays differently | Released with the specification revision | By every reader |
 | `MAX_CONCURRENT_BATCHES` | Number of batches a service may have in flight | Each holds offers and wallet inputs out of circulation | Not announced | By the service |
 | `FUNDING_HOLD_TTL` | How long an input held for a batch under construction stays held | Long enough to build and submit; short enough that a crashed build does not strand liquidity until restart. | Not announced | By the service, on itself |
-| `REGISTRY_WAIT` | How long a party waits for registry statements after an epoch boundary before giving up on the new registry | Long enough for statements to arrive over a mesh nobody guarantees delivery on; short enough that the draw is not stale for a useful part of the epoch |  Released with the specification revision | Not enforced |
 | `REGISTRATION_DEPOSIT` | Smallest deposit a registration may hold | A registration's draw weight is its deposit, so this bounds registry bloat rather than the draw | Released with the specification revision | By each service for itself (when compiling valid registration entries) |
 | `MIN_REGISTRATION_PERIOD` | Nearest a registration may set its `expiry` | The deposit cannot be released before expiry, so this is the least time it stays locked | Released with the specification revision | By the registration script, at mint and at every renewal |
 | `MAX_REGISTRATION_PERIOD` | Furthest ahead a registration may set its `expiry` | Long enough that renewal is routine; short enough that an abandoned entry leaves the draw while anyone still cares | Released with the specification revision | By the registration script, at mint and at every renewal |
@@ -1136,7 +1143,8 @@ registration =
   #6.121([ schema_version    : uint
          , protocol_revision : uint
          , accepts           : accepted_versions
-         , endpoint          : endpoint
+         , endpoint          : maybe<endpoint>  ; HTTPS binding
+         , relays            : [* relay_url]    ; relays this service reads
          , expiry            : uint          ; POSIX milliseconds
          , commitment
          , standing
@@ -1147,11 +1155,14 @@ registration =
 endpoint     = #6.121([url : text])          ; absolute https:// URL
              / #6.122([domain : text])       ; bare domain, resolved via SRV
 
+; Canonical wss:// URL
+relay_url    = text
+
 ; What the asset name hashes, restated so a reader can check it. The role is
 ; the constructor, since it is what the spellings differ by.
 commitment   = #6.121([key : hash28, seed : hash28])   ; service
 
-; Whether the holder is in the draw, and its profile if it is a service
+; Whether the holder is in the draw, and its profile
 standing     = #6.121([maybe<service_profile>])   ; in the draw
              / #6.122([])                         ; withdrawn
 
@@ -1204,18 +1215,24 @@ budgets      = #6.121([ max_value_exposure : { * asset => uint }
 maybe<a>     = #6.121([]) / #6.122([a])
 ```
 
-Every text field (either spelling of the endpoint, a feed reference, and a disclosure's note) is UTF-8 carried as a byte string.
+Every text field (either spelling of the endpoint, a relay URL, a feed reference, and a disclosure's note) is UTF-8 carried as a byte string.
 
 **Registrations expire.** A registration states an `expiry` and is live until it passes. Renewing moves the field forward, bounded each time by `MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`. A party compiling the registry ignores an expired entry. `expiry` is POSIX milliseconds, matching the units a script reads the validity range in, where an offer's validity bounds are slots. 
 
-**Where the endpoint points.** Either an absolute URL, or a bare domain resolved through a DNS `SRV` record at `_subtx._tcp.<domain>`. `SRV` also carries priority and weight, so a party can publish a failover order. The cost is a resolver in the path, see [Security considerations](#security-considerations). 
+**Where the endpoint points.** The endpoint is optional, for services reachable only through [Binding B](#binding-b--nostr). When present, it is either an absolute URL, or a bare domain resolved through a DNS `SRV` record at `_subtx._tcp.<domain>`. `SRV` also carries priority and weight, so a party can publish a failover order. The cost is a resolver in the path, see [Security considerations](#security-considerations). 
+
+**Where the relays point.** A duplicate-free set of URLs in a canonical form (wss:// only, lower-case host, no default port, no trailing slash). Relays are compared in this form, so that one relay listed by many registrations is counted as one.
+
+**Reachable by at least one binding.** A registration must carry an endpoint, at least one relay, or both. A party compiling the registry ignores one that carries neither.
+
+**Which registrations count.** Only live registrations — not expired, and with `standing` in the draw — take part in the [entry-point draw or the relay ranking](#network-topology-and-roles). In the ranking, each contributes its deposit split evenly across the relays it lists.
 
 **The datum must be readable from the chain alone.** 
 Either inline, or supplied with the transaction that created it, so that anyone following the chain has it without asking anyone. 
 
 **Updating a registration.** Spend the UTxO holding the NFT and re-create it with the new datum. Changing the role or the key means minting a new registration NFT.
 
-**The deposit.** Because the draw weights by deposit rather than admitting on a floor, the deposit is not the parameter the draw's security rests on, and no figure has to be calibrated against *k*: an entry's influence is already proportional to what it holds. What remains is a minimum large enough to deter registry bloat, which is a size question rather than a security one, and which can therefore be raised in a later revision without stranding anyone.
+**The deposit.** Because the draw weights by deposit rather than admitting on a floor, the deposit is not the parameter the draw's security rests on, and no figure has to be calibrated against *k*: an entry's influence is already proportional to what it holds, in the relay ranking as in the draw. What remains is a minimum large enough to deter registry bloat, which is a size question rather than a security one, and which can therefore be raised in a later revision without stranding anyone.
 
 **Possible extension** 
 Note that *voting on updates* to the min-deposit (either via an off-chain mechanism processing the registry, or on-chain directly) requires a thorough design that is out of scope.
@@ -1226,7 +1243,7 @@ Note that *voting on updates* to the min-deposit (either via an off-chain mechan
 
 A **service profile** is a service's announced configuration of the policy of what offers it intends to engage with. It is different from its [interest filter](#routing-and-filtering), because publishers are not obligated to act on this information. How a service chooses among the offers it accepts, including whether it does so differently from the default design, is not specified anywhere in this document and may be private. It can be changed at any time by posting on-chain, potentially resulting in the service dropping some of its offers.
 
-**Contents.** Every registration carries a schema version, the [protocol revision](#versioning) its holder runs, an endpoint, and which of the two things it is. The service profile fields are as follows:
+**Contents.** Every registration carries a schema version, the [protocol revision](#versioning) its holder runs, an endpoint, a relay list, or both, and its standing. The service profile fields are as follows:
 
 | Code name | Field | What it says |
 |---|---|---|
@@ -1311,11 +1328,13 @@ Hints remain the general mechanism, and the only one on Binding B.
 
 Spam may be coming from service providers also. The constant `MIN_REGISTRATION_PERIOD` is meant to prevent registration for very short amounts of time, for the purpose of spamming, by forcing those planning to do so to commit a deposit for the minimum allowed duration of the registration period.
 
-Finally, the DMQ miniprotocols impose limits on the amount of data which nodes will forward,
+Finally, Nostr relays themselves will apply their own rate limits through existing mechanisms (per-IP/key/message size, potentially NIP-13 proof of work).
 
 **Collateral griefing.** A sub-transaction whose scripts fail at phase 2 validation wastes the service's resources. We address this with the service's own `max_ex_units_*` budget, which bounds what it will spend pre-executing before giving up; the ExUnits band additionally lets a service subscribe away from the offers it does not want to try at all. Script validation is done once, and the frequency of incoming transactions is limited by a service's own parameter. For this reason it is sensible to expect that phase-2 invalid sub-txs, while not actually paid for, will not significantly interfere with the service's operations.
 
 As for guards, the limits on the constraint structure are a proxy for limiting ExUnits of the execution of the guard Plutus script on the constraints encoded as its datum. The service is expected to have enough computational power to execute guards sufficiently fast given that it sets its own parameters on the constraints it is willing to accept.
+
+**Carrier blocking.** Sub-transactions will be sent across public relays which are not exclusively used for the purposes of this CIP; if an attacker spams messages of our offer type, those relays may start blocking these messages. Publishers can mitigate this by publishing across a variety of relays, including some dedicated to this protocol which will never blanket-block the message category.
 
 **Satisfier attacks.** A satisfier attack forces the satisfier to run for so long that it interferes with the service's operations. We address this by using caps on the shape of the constraints passed to the guard.
 
@@ -1324,7 +1343,7 @@ Refusing anything but the canonical encoding removes associated problems such as
 
 **Malleability.** A sub-transaction's TxId covers the body, so a third party can produce a different envelope (with different dedup key) carrying the same offer. What lies outside that hash is the witness set and the auxiliary data, and either can be altered. Adding to either costs the batcher more fee, so an incoming offer with the same TxId but smaller in size always replaces a previously seen bigger one. 
 
-**Front-running.** An offer diffused over a public mesh is visible to everyone before it lands, which exposes an underlying or future opportunity. An author who cares can submit to one service over HTTPS instead of broadcasting.
+**Front-running.** An offer diffused over an open transport is visible to everyone before it lands, which exposes an underlying or future opportunity. An author who cares can submit to one service over HTTPS instead of broadcasting.
 
 **Hint baiting**: hints bind nothing, so a service can advertise attractive terms purely to attract signed offers it never intends to include. This is a means of gathering intelligence, of which front-running is one use. Others are competitive intelligence with no trade attached, linking a publisher's offers to each other, and simply letting them lapse. 
 
@@ -1338,7 +1357,11 @@ Limiting intelligence gathering can be done via adjusting the quotes, not publis
 **Flash-loan-shaped batches.** Flash-loan attacks are expected to be addressed at the ledger level.
 
 **Sybil attacks on the registry.**
-Peers are drawn with probability proportional to deposit, so an attacker's expected share of any peer set is its share of the registry's total deposit, however many registrations it spreads that deposit over. Controlling a publisher's access requires controlling all of its *k* selected entry points, which costs a corresponding share of everything staked. What the weighting removes is the cheaper route: buying links by entry count under a uniform draw, at whatever the floor happened to be.
+Entry points are drawn with probability proportional to deposit, so an attacker's expected share of any entrypoint set is its share of the registry's total deposit, however many registrations it spreads that deposit over. Controlling a publisher's access requires controlling all of its *k* selected entry points, which costs a corresponding share of everything deposited. What the weighting removes is the cheaper route: buying links by entry count under a uniform draw, at whatever the floor happened to be.
+
+Relays are also ranked with score proportional to deposit; a service's deposit is distributed evenly across all of its relays, and the score for each relay is the sum of its portion from each service. An attacker with many small deposits is more likely to get selected as an additional relay, but to displace a popular relay from a publisher's top *R* it must put more deposit behind its own relay than every honest service listing the popular one combined, and roughly *R* times that to take every slot. 
+
+**Selective dropping.** A malicious relay could accept a publisher's event, show it to that publisher (to make it appear confirmed), and hide it from services. There is no simple way for a publisher to detect this, as clever relays could detect services based on e.g. traffic patterns. To mitigate this, publishers should publish to several relays, as is common practice for Nostr. The set of relays is open, and composed of both Cardano-aware relays and general-purpose public relays, so it is unlikely that *R* relays would all be compromised in this way.
 
 **Subsidised filling.** A party with capital can price below its own cost to take offers others decline. Users gain in the short run and the market concentrates, since nobody without that capital can match the price. Nothing here prevents it, and a service's [hints](#price-hints) are what make it visible.
 
@@ -1348,18 +1371,17 @@ Peers are drawn with probability proportional to deposit, so an attacker's expec
 
 **Arithmetic.** A planner adds up numbers an attacker chose, so overflow must resolve to "does not fit" rather than wrapping into a small number that does. A valid implementation may saturate everywhere.
 
-**Censorship.** We address systematic censorship of certain kinds of transactions by certain parties, and censorship of parties by other parties via our entrypoint selection process.
+**Censorship.** We address systematic censorship of certain kinds of transactions by certain parties, and censorship of parties by other parties via our entrypoint selection process. Censorship by relay operators is addressed by publishing across several relays drawn from the [relay ranking](#network-topology-and-roles).
 
-**Eclipse and partition attacks.** Registry-based entrypoint selection does not prove that a selected endpoint is independent or reachable. A publisher must use diverse network paths where possible and detect unreachable services, and permit direct publication to independently chosen services.
+**Eclipse and partition attacks.** Registry-based entrypoint selection does not prove that a selected endpoint is independent or reachable. A publisher must use diverse network paths where possible and detect unreachable services, and permit direct publication to independently chosen services. The same holds for the relay ranking: a highly ranked relay is not thereby independent or reachable, so publishers skip relays they cannot reach and may pin relays of their own.
 
-**Untrusted registration data.** Endpoints, profiles, and reference-script locations read from the registry are attacker-controlled. Implementations must bound datum and response sizes, validate schemes and addresses, apply connection timeouts, and prevent access to loopback, link-local, and private infrastructure unless explicitly configured. Registry discovery must not become an SSRF path.
+**Untrusted registration data.** Endpoints, relay URLs, profiles, and reference-script locations read from the registry are attacker-controlled. Relay URLs must be `wss://` and of bounded length, and a URL not in canonical form is ignored rather than repaired. Implementations must bound datum and response sizes, validate schemes and addresses, apply connection timeouts, and prevent access to loopback, link-local, and private infrastructure unless explicitly configured. Registry discovery must not become an SSRF path.
 
-**Resolvers in the discovery path.** A registration naming a
-[bare domain](#on-chain-registration-of-services) puts whoever answers the `SRV` query in control of which host a drawn peer reaches, with no on-chain trace and an honest datum. Use DNSSEC where available and several independent resolvers otherwise. A resolved host is attacker-controlled input, exactly as a registered endpoint is. A party unwilling to accept this registers a URL.
+**Resolvers in the discovery path.** A registration naming a [bare domain](#on-chain-registration-of-services) puts whoever answers the `SRV` query in control of which host a drawn entry point reaches, with no on-chain trace and an honest datum. Use DNSSEC where available and several independent resolvers otherwise. A resolved host is attacker-controlled input, exactly as a registered endpoint is. A party unwilling to accept this registers a URL.
 
 **Resource exhaustion below the rate limit.** Many identities, slow HTTP bodies, large SSE backlogs, decompression, CBOR nesting, signature checks, input resolution, and script evaluation can exhaust different resources independently. Implementations must impose byte and time limits before allocation, bound all queues and concurrent work, and isolate expensive validation from intake. A single per-peer message rate is not sufficient.
 
-**Offer privacy and linkage.** Offers reveal intended trades, inputs, validity bounds, guards, and signing keys before inclusion. Routing topics reveal asset interest to observers, while status and streaming endpoints can reveal service inventory. Implementations should minimize logs and retention, avoid exposing pool contents through status errors or streams, and document that HTTPS protects only the hop to the chosen service, not that service itself.
+**Offer privacy and linkage.** Offers reveal intended trades, inputs, validity bounds, guards, and signing keys before inclusion. Routing topics reveal asset interest to observers, while status and streaming endpoints can reveal service inventory. Implementations should minimize logs and retention, avoid exposing pool contents through status errors or streams, and document that HTTPS protects only the hop to the chosen service, not that service itself. Every relay a publisher connects to sees its network address, including relays an attacker listed in the registry. Where appropriate, publishers should take steps to anonymize themselves to prevent linkage (i.e. don't sign messages with a key linked to their own identity).
 
 **Conflicting offers and batch races.** Re-pricing and cancellation deliberately create conflicting offers. An attacker can also race a service by spending an input after pre-execution or by submitting the same offer through another service. Builders must re-resolve every selected input and reserve their own funding and collateral immediately before submission; failures must release all local reservations. This bounds wasted work but cannot remove the race.
 
@@ -1372,7 +1394,7 @@ The [Specification](#specification) requires four main components for an off-cha
 #### Components specified
 
 **Off-chain network protocol for offer and interest communication** 
-We discussed the possible [transport bindings](#transport-bindings) for the off-chain network across which offers are communicated. We gave options (DMQ, HTTPS), which are not mutually exclusive, and indicated which ones are the best options for the different use cases of our mechanism. Entrypoint services are drawn at random from an on-chain [registry](#on-chain-registration-of-services) for the HTTPS binding, and are not necessary for the DMQ binding. We defined the [envelope](#offer-envelope) an offer travels in across the network(s), which can be submitted by an anonymous publisher, outlining why its  contents are necessary and sufficient for both security and expressiveness. Offer deduplication and modification is also addressed. To ensure that offers being communicated get to the recipients interested in filling them (more on this below), as well as to reduce spam, we provided support for [routing and filtering](#routing-and-filtering) on relevant transport bindings. Services are expected to perform different levels of tx and offer [validation](#validation) at different points in its lifecycle. We also discuss tracking the offer across the various stages of its [lifecycle](#offer-lifecycle), including inclusion, supersession, cancellation, and rollbacks.
+We discussed the possible [transport bindings](#transport-bindings) for the off-chain network across which offers are communicated. We gave two, HTTPS and Nostr, which are not mutually exclusive, and indicated which suits which use of our mechanism; CIP-0137's message queue was evaluated and set aside for now (see [Further bindings](#further-bindings)). Both bindings are discovered through the same on-chain [registry](#on-chain-registration-of-services): entry-point services are drawn from it for HTTPS, and relays are ranked from it for Nostr. We defined the [envelope](#offer-envelope) an offer travels in across the network(s), which can be submitted by an anonymous publisher, outlining why its  contents are necessary and sufficient for both security and expressiveness. Offer deduplication and modification is also addressed. To ensure that offers being communicated get to the recipients interested in filling them (more on this below), as well as to reduce spam, we provided support for [routing and filtering](#routing-and-filtering) on relevant transport bindings. Services are expected to perform different levels of tx and offer [validation](#validation) at different points in its lifecycle. We also discuss tracking the offer across the various stages of its [lifecycle](#offer-lifecycle), including inclusion, supersession, cancellation, and rollbacks.
 
 **Service registration for discovery**
 Service registration is tracked via optional [on-chain registration](#on-chain-registration-of-services). The registration requires posting a UTxO containing an NFT under a single shared policy, whose asset name commits to the party's role, its signing key, and the input spent to forge it.
@@ -1384,7 +1406,7 @@ The publisher of an offer has some say about what kind of batch their offer can 
 
 
 **Service customization**.
-We provide support for publicly customizing services both off-chain and on-chain. Setting an [interest filter](#routing-and-filtering) ensures that well-behaved parties will forward the service only the types of offers configured in the interest filter. The [service profile](#service-profile) is an on-chain schema with operator-authored contents, stating further constraints on what offers an operator is willing to entertain. Parties relaying offers are not aware of the constraints in the service profile. It is announced via the *datum of the registration UTxO*, and can also be queried off-chain. Prices services will accept are deliberately not in the on-chain registry: registration requires a transaction, and a rate moving faster than a block should not be fixed on-chain. Instead they are served off-chain via HTTPS, see [price hints](#price-hints). 
+We provide support for publicly customizing services both off-chain and on-chain. Setting an [interest filter](#routing-and-filtering) ensures that well-behaved publishers send the service, and the service subscribes to, only the types of offers configured in the interest filter. The [service profile](#service-profile) is an on-chain schema with operator-authored contents, stating further constraints on what offers an operator is willing to entertain. Nostr relays carrying offers are not aware of the constraints in the service profile. It is announced via the *datum of the registration UTxO*, and can also be queried off-chain. Prices services will accept are deliberately not in the on-chain registry: registration requires a transaction, and a rate moving faster than a block should not be fixed on-chain. Instead they are served off-chain via HTTPS, see [price hints](#price-hints). 
 
 We also discuss [protocol constants](#protocol-constants). Some are fixed at the time of service implementation release (as they are required for interoperability), some are or kept private as they are not relevant to other users or un-enforcable. Some constants can be queries via HTTPS.
 
@@ -1448,7 +1470,7 @@ This CIP fixes an interface and leaves the economics to the operator, so market 
 
 #### Alternatives, prior art and compatibility
 
-Alternatives are argued where the decision they bear on is made, rather than gathered here: declared economics against derived filter keys under [Routing and filtering](#routing-and-filtering), reservations against races under [Offer lifecycle](#offer-lifecycle), a shared reputation record against local drops under [Security considerations](#security-considerations), and a fourth envelope field against the fixed three, also there. Request-for-quote against non-binding hints was argued under [Price hints](#price-hints) and is settled the other way by [firm quotes](#firm-quotes), an earlier draft having held that quoting requires a session and so an identity — which is true of a stateful quote and not of a signed bearer token. Prior art is in the References, and the two pieces that shaped the design are named where they bear: the original Babel Fees paper's packing result under [Batch construction](#batch-construction) and Cavefish in the light-client discussion at the end of this section.
+Alternatives are argued where the decision they bear on is made, rather than gathered here: declared economics against derived filter keys under [Routing and filtering](#routing-and-filtering), reservations against races under [Offer lifecycle](#offer-lifecycle), a shared reputation record against local drops under [Security considerations](#security-considerations), and a fourth envelope field against the fixed three, also there. The message queue of CIP-0137 against Nostr as the open transport is argued under [Further bindings](#further-bindings). Request-for-quote against non-binding hints was argued under [Price hints](#price-hints) and is settled the other way by [firm quotes](#firm-quotes), an earlier draft having held that quoting requires a session and so an identity — which is true of a stateful quote and not of a signed bearer token. Prior art is in the References, and the two pieces that shaped the design are named where they bear: the original Babel Fees paper's packing result under [Batch construction](#batch-construction) and Cavefish in the light-client discussion at the end of this section.
 
 Backward compatibility does not arise. This specifies an off-chain layer that does not exist yet, over a ledger feature that is itself new, so there is no deployed behaviour to preserve.
 
@@ -1494,7 +1516,7 @@ Backward compatibility does not arise. This specifies an off-chain layer that do
 - [ ] settle restrictions of assets supported in initial release (e.g. only certain stablecoins) 
 - [ ] upstream ledger dependencies (blocker list; filed flags)
 - [ ] ecosystem coordination (wallets, explorers, db-sync)
-- [ ] network transports
+- [ ] open transport binding
 
 
 ## Versioning
@@ -1522,22 +1544,13 @@ Some additional notes on versioning :
 
 ### Cardano Improvement Proposals and Problem Statements
 
-- [CIP-0001][] — CIP process and document structure; this proposal follows its
-  format requirements.
-- [CIP-0118][] "Nested Transactions" (Ledger, Proposed) — the ledger feature this
-  proposal supplies an off-chain layer for; source of sub-transactions, guards,
-  and fields 23/24.
-- [CPS-0015][] "Intents for Cardano" (unmerged, PR #779) — the problem statement
-  this proposal is a solution to: price discovery, fulfilment status, spam and
-  MEV concerns.
-- CIP-0131 "Transaction swaps" (PR #880) — sibling design; source of the
-  construction-time-computable offer identity argument.
-- [CIP-0137][] "Decentralized Message Queue" — candidate future transport
-  binding; pull-based diffusion, and the precedent for the Network category.
-- CIP-0089 — Beacon tokens (PR #466) — on-chain discovery by token; cited in the
-  discovery appendix.
-- CIP-0159 — Accounts and direct deposits; interacts with imbalance derivation
-  and the direct-deposits filter key.
+- [CIP-0001][] — CIP process and document structure; this proposal follows its format requirements.
+- [CIP-0118][] "Nested Transactions" (Ledger, Proposed) — the ledger feature this proposal supplies an off-chain layer for; source of sub-transactions, guards, and fields 23/24.
+- [CPS-0015][] "Intents for Cardano" (unmerged, PR #779) — the problem statement this proposal is a solution to: price discovery, fulfilment status, spam and MEV concerns.
+- CIP-0131 "Transaction swaps" (PR #880) — sibling design; source of the construction-time-computable offer identity argument.
+- [CIP-0137][] "Decentralized Message Queue" — evaluated as the open transport and set aside for now, see Further bindings; the precedent for the Network category.
+- CIP-0089 — Beacon tokens (PR #466) — on-chain discovery by token; cited in the discovery appendix.
+- CIP-0159 — Accounts and direct deposits; interacts with imbalance derivation and the direct-deposits filter key.
 - CIP-0133 — references Mithril certificate verification; context only.
 
 ### External standards
@@ -1546,6 +1559,10 @@ Some additional notes on versioning :
   sub-transaction payload in the envelope.
 - [RFC 2119][] and [RFC 8174][] — requirement keywords.
 - [RFC 5234][] — ABNF, used for the routing-key grammar.
+- [RFC 4648][] — base64, used for the envelope in a Nostr event's `content`.
+- Nostr: [NIP-01][] (events, relays and subscriptions), [NIP-07][] (browser
+  signers, whose keys an offer must not use), [NIP-40][] (event expiration),
+  and [NIP-77][] (negentropy set reconciliation).
 
 ### Academic and cryptographic references
 
@@ -1563,10 +1580,11 @@ Some additional notes on versioning :
 
 ### Prior art and related implementations
 
-- IOG `babel-fees` prototype (2024) — earlier broker/gossip implementation;
-  source of the gossipsub configuration precedent.
-- [Decentralized Message Queue implementation overview][dmq-impl] —
-  `dmq-node` architecture and deployment model.
+- IOG `babel-fees` prototype (2024) — earlier broker/gossip implementation.
+- [dmq-node][] — the reference implementation of CIP-0137, whose message
+  authentication and per-pool limits are cited under Further bindings.
+- [strfry][] — a Nostr relay implementing NIP-77 and pluggable write policies,
+  the kind of software a Cardano-aware relay could run.
 - Anoma Resource Machine — intent and enforcement-predicate architecture.
 - Bitcoin [Miniscript][] — the tractability requirement for a constraint
   language: non-Turing-complete, satisfier succeeds whenever a solution exists.
@@ -1576,7 +1594,7 @@ Some additional notes on versioning :
   rejected as a model.
 - Radix transaction manifests — pointer only.
 - [cardano-ledger issue #5123][ledger-5123] — Dijkstra era tracking.
-<!-- - [Reference implementation][babel-impl] — the service, relay and client this
+<!-- - [Reference implementation][babel-impl] — the service and client this
   document is written against, with the machine-readable schema for
   [Binding A](#binding-a--https) (`openapi.yaml`), the published test vectors
   (`test-vectors/`), the draft on-chain scripts (`onchain/`), and the
@@ -1597,7 +1615,13 @@ Some additional notes on versioning :
 [pbs]: #academic-and-cryptographic-references
 [mithril-doc]: https://mithril.network/doc/
 [mithril-repo]: https://github.com/IntersectMBO/mithril
-[dmq-impl]: https://github.com/IntersectMBO/ouroboros-network/wiki/Decentralized-Message-Queue-(DMQ)-Implementation-Overview
+[dmq-node]: https://github.com/IntersectMBO/dmq-node
+[strfry]: https://github.com/hoytech/strfry
+[RFC 4648]: https://www.rfc-editor.org/rfc/rfc4648
+[NIP-01]: https://github.com/nostr-protocol/nips/blob/master/01.md
+[NIP-07]: https://github.com/nostr-protocol/nips/blob/master/07.md
+[NIP-40]: https://github.com/nostr-protocol/nips/blob/master/40.md
+[NIP-77]: https://github.com/nostr-protocol/nips/blob/master/77.md
 [Miniscript]: https://bitcoin.sipa.be/miniscript/
 [ERC-7521]: https://eips.ethereum.org/EIPS/eip-7521
 [ledger-5123]: https://github.com/IntersectMBO/cardano-ledger/issues/5123
@@ -1611,7 +1635,6 @@ This CIP is licensed under [CC-BY-4.0][].
 [CC-BY-4.0]: https://creativecommons.org/licenses/by/4.0/legalcode
 [Transport bindings]: #transport-bindings
 [Readiness]: #binding-a--https
-[Forwarding]: #forwarding
 [Routing and filtering]: #routing-and-filtering
 [Validation]: #validation
 [Price hints]: #price-hints
