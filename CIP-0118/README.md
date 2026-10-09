@@ -179,8 +179,7 @@ allows other transactions to run it without also including it in its own scripts
     In contrast, datums are not shared within a single batch: every transaction must include
     in its own witnesses the datums required to spend its own inputs. Outside the legacy mode for
     PlutusV1 - PlutusV3 scripts (see below), the top-level transaction may, however, include
-    supplemental datums for the outputs of its sub-transactions and for the outputs that their
-    reference inputs point to, in addition to those for its own outputs and reference inputs.
+    supplemental datums for the outputs and reference inputs of its sub-transactions, in addition to those for its own.
     A sub-transaction may only include supplemental datums for its own outputs and reference inputs.
 
 6. All inputs of all transactions in a single batch must be contained in the UTxO set before any of the
