@@ -367,7 +367,9 @@ This open transport allows an offer to reach services its publisher does not cho
 
 **Event ids are not offer identity.** The event id covers the event, not the offer: two events carrying the same envelope have different ids and the same transport dedup key. Recipients deduplicate by transport dedup key and offer identity, never by event id.
 
-**Where to publish and where to read.** A relay is not assumed to forward events to other relays, so an offer reaches a service only through a relay both of them use. A publisher publishes to several relays, chosen as described under [Relay selection](#network-topology-and-roles). A service reads the relays listed in live registrations, as many as it can, plus any others it chooses.
+**Where to publish and where to read.** A relay is not assumed to forward events to other relays, so an offer reaches a service only through a relay both of them use. This is how Nostr works rather than a choice of this CIP: relays are independent stores, and while operators may configure relays to sync with each other, for example by periodic relay-to-relay [NIP-77][] reconciliation or by streaming events between chosen relays, this is not default behaviour, and this CIP does not rely on it.
+
+To reach services, a publisher therefore publishes to several relays, chosen as described under [Relay selection](#network-topology-and-roles). A service reads the relays listed in live registrations, as many as it can, plus any others it chooses.
 
 **Missed offers.** Relays store events until they expire, so a service that connects late can query for events still live. A service SHOULD periodically reconcile what it holds against the relays it reads using [NIP-77][], which is how this binding lets a consumer tell that it has missed something.
 
