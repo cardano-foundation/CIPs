@@ -734,15 +734,15 @@ RBs are Praos blocks extended to support Leios by optionally announcing EBs in
 their headers and embedding EB certificates in their bodies.
 
 1. **Header additions**:
-   - `announced_eb` (optional): Hash of the EB created by this block producer
-   - `announced_eb_size` (optional): Size in bytes of the announced EB itself
-     — its encoded reference map, not the closure of transactions it refers
-     to (4 bytes). It lets a peer budget the EB fetch before requesting it;
-     the closure's size is the sum of the reference sizes the EB carries, so
-     it is known once the EB has arrived.
-   - `certified_eb` (optional): Single bit indicating whether this RB certifies
-     the EB announced by the previous RB (the EB hash is already available via
-     the previous header's `announced_eb` field)
+   - `eb_references_announcement` (nullable): Hash of the EB created by this
+     block producer, paired with its `eb_size` — the size in bytes of that EB
+     itself: its encoded reference map, not the closure of transactions it
+     refers to (4 bytes). It lets a peer budget the EB fetch before requesting
+     it; the closure's size is the sum of the reference sizes the EB carries,
+     so it is known once the EB has arrived.
+   - `block_body_contains_leios_cert`: Single bit indicating whether this RB
+     certifies the EB announced by the previous RB (the EB hash is already
+     available via the previous header's `eb_references_announcement`)
 
 2. **Body additions**:
    - `eb_certificate` (optional): aggregated certificate proving EB validity
@@ -752,14 +752,14 @@ A [CDDL for ranking blocks](#ranking-block-cddl) is available in Appendix B.
 
 <a id="rb-inclusion-rules" href="#rb-inclusion-rules"></a>**Inclusion Rules**:
 
-- When an RB header sets `certified_eb` to true, the corresponding body must
+- When an RB header sets `block_body_contains_leios_cert`, the body must
   include a matching `eb_certificate`
 - The content rules for RBs are detailed as part of
   [Step 5: Chain Inclusion](#step-5-chain-inclusion)
-- The `certified_eb` bit enables syncing nodes to predict the total size of
-  valid responses to their requests for batches of EBs certified on the
-  historical chain.
-- If the `announced_eb_size` field of an RB header is incorrect, then neither
+- The `block_body_contains_leios_cert` bit enables syncing nodes to predict
+  the total size of valid responses to their requests for batches of EBs
+  certified on the historical chain.
+- If the `eb_size` of an RB header's announcement is incorrect, then neither
   the RB header nor the RB are invalid. But no honest node should vote for the
   EB.
 
@@ -778,8 +778,8 @@ simple structure:
 
 A [CDDL for endorser blocks](#endorser-block-cddl) is available in Appendix B.
 
-The hash referenced in RB headers (`announced_eb` field) is computed from the
-complete EB structure and serves as the unique identifier for the EB.
+The hash referenced in RB headers (`eb_references_announcement`) is computed
+from the complete EB structure and serves as the unique identifier for the EB.
 
 #### Votes and Certificates
 
@@ -933,7 +933,7 @@ cast on EB announcements, which uniquely identifies an EB extending a
 Praos chain and have the following structure:
 
 - `announcing_rb_hash`: Announcement to vote on; a hash of the RB header
-  pointing to an EB via `announced_eb`.
+  pointing to an EB via `eb_references_announcement`.
 - `voter_id`: Index into the epoch's stake-based committee (pools ordered by
   descending stake at the epoch boundary; see [Committee
   Selection](#committee-selection))
@@ -1278,8 +1278,9 @@ requires additional message types to:
 As described in [Node Behavior](#node-behavior), existing Praos mini-protocols
 continue to operate with only minor modifications to support Leios. ChainSync
 exchanges RB headers that now include optional fields for EB announcements
-(`announced_eb`) and certifications (`certified_eb`). BlockFetch retrieves RB
-bodies that may contain BLS aggregate certificates (`eb_certificate`) alongside
+(`eb_references_announcement`) and certifications
+(`block_body_contains_leios_cert`). BlockFetch retrieves RB bodies that may
+contain BLS aggregate certificates (`eb_certificate`) alongside
 standard transactions. TxSubmission remains unchanged except for expanded
 mempool capacity to support both RB and EB transaction pools.
 
@@ -1544,7 +1545,7 @@ not yet received MsgLeiosBlockTxsOffer.
 | ------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Client→ | MsgLeiosNotificationRequestNext | $\emptyset$                                                  | Requests one Leios notification: the announcement of an EB, a delivery offer for a block or its transactions, or votes.                                                                                                              |
 | ←Server | MsgLeiosBlockAnnouncement       | RB header that announces an EB                               | The server has seen this EB announcement.                                                                                                                                                                                             |
-| ←Server | MsgLeiosBlockOffer              | slot, EB hash, and EB size                                   | The server can immediately deliver this block, at the declared size. The size is not redundant with the announcement's `announced_eb_size`: the point alone does not say which announcement is being offered, and two announcements can name one EB in one slot at different sizes.     |
+| ←Server | MsgLeiosBlockOffer              | slot, EB hash, and EB size                                   | The server can immediately deliver this block, at the declared size. The size is not redundant with the announcement's `eb_size`: the point alone does not say which announcement is being offered, and two announcements can name one EB in one slot at different sizes.     |
 | ←Server | MsgLeiosBlockTxsOffer           | slot and EB hash                                             | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
 | ←Server | MsgLeiosVotes                   | non-empty list of votes                                      | Votes the server has received and considers worth relaying.                                                                                                                                                                           |
 | ←Server | MsgCanceled                     | $\emptyset$                                                  | The server has nothing to notify, and returns agency so the client is not left waiting on a reply that may never come.                                                                                                              |
@@ -1601,10 +1602,10 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   historical EBs one at a time, over messages shaped for the freshest-first
   live path, and pays the per-message overhead at the (hopefully) high rate of
   EBs per RB. Earlier drafts proposed batch messages for exactly this and they
-  were never implemented. The `certified_eb` bit still lets a client predict
-  the total payload of the EBs certified over a range of RBs, so it can manage
-  receive buffers and balance load across peers whatever shape the eventual
-  remedy takes.
+  were never implemented. The `block_body_contains_leios_cert` bit still lets
+  a client predict the total payload of the EBs certified over a range of RBs,
+  so it can manage receive buffers and balance load across peers whatever
+  shape the eventual remedy takes.
 - A server should disconnect if the client requests an EB (or its transactions)
   the server does not have. For young EBs, a client can avoid this by waiting
   for MsgLeiosBlockOffer (or MsgLeiosBlockTxsOffer) before sending a request.
@@ -3356,38 +3357,40 @@ proofs-of-possession) used by Leios voting and certification.
    ]
 
  block_header_body =
-   [ block_number             : uint
-   , slot                     : slot_no
-   , prev_hash                : hash32
-   , issuer_vkey              : vkey
-   , vrf_vkey                 : vrf_vkey
-   , vrf_result               : vrf_cert
-   , block_body_size          : uint
-   , block_body_hash          : hash32
+   [ block_number                   : uint
+   , slot                           : slot_no
+   , prev_hash                      : hash32
+   , issuer_vkey                    : vkey
+   , vrf_vkey                       : vrf_vkey
+   , vrf_result                     : vrf_cert
+   , block_body_size                : uint
+   , block_body_hash                : hash32
    , operational_cert
-   , protocol_version
-+  , certified_eb             : bool
-+  , announced_eb             : eb_announcement/ nil
+-  , protocol_version
++  , header_version_info
++  , block_body_contains_leios_cert : bool
++  , eb_references_announcement     : eb_references_announcement/ nil
    ]
 
-+eb_announcement =
-+  [ eb_hash                  : hash32
-+  , eb_size                  : uint32   ; size of the encoded EB
++eb_references_announcement =
++  [ eb_hash : hash32
++  , eb_size : uint .size 4 ; size of the EB references
 +  ]
 ```
 
 The certificate is likewise a **nullable field that is always present**, not
 an optional trailing item, and the same holds in the header. Both header
 fields are present in every Dijkstra header rather than optional trailing
-items: `certified_eb` is a plain `bool` and `announced_eb` is a
-nullable group. A header is fixed-shape, so a decoder never has to infer
-which trailing field it is looking at, and the announcement's two components
-travel together as one group that is either wholly there or `nil`.
+items: `block_body_contains_leios_cert` is a plain `bool` and
+`eb_references_announcement` is a nullable group. A header is fixed-shape, so
+a decoder never has to infer which trailing field it is looking at, and the
+announcement's two components travel together as one group that is either
+wholly there or `nil`.
 
 <a id="endorser-block-cddl" href="#endorser-block-cddl">**Endorser Block**</a>
 
 ```cddl
-endorser_block = omap<hash32, uint32>   ; transaction references
+endorser_block = omap<hash32, uint .size 4>   ; transaction references
 
 ; Ordered map type definition
 ; An omap behaves like a map but preserves insertion order and prevents duplicate keys
@@ -3397,7 +3400,7 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ; Legacy reference structure (for documentation)
 ; tx_reference =
 ;   [ tx_hash                  : hash32     ; Hash of complete transaction bytes
-;   , tx_size                  : uint32     ; Transaction size in bytes
+;   , tx_size                  : uint .size 4 ; Transaction size in bytes
 ;   ]
 ```
 
@@ -3416,7 +3419,7 @@ Certificates**</a>
 ```cddl
 leios_certificate =
   [ signers               : bytes .size (0 .. 8192)  ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
-  , aggregated_signature  : leios_bls_signature
+  , signature             : leios_signature
   ]
 
 leios_vote =
@@ -3460,7 +3463,8 @@ wire at vote time.
 ```cddl
 ; BLS12-381 MinSig encodings for Leios
 leios_bls_verification_key = bytes .size 96
-leios_bls_signature        = bytes .size 48
+leios_bls_signature        = bytes .size 48  ; a vote's, on the wire
+leios_signature            = bytes .size 48  ; a certificate's, on the chain
 leios_bls_pop              = bytes .size 48
 ```
 
