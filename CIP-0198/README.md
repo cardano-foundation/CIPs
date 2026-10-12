@@ -349,10 +349,11 @@ Rejection reasons are not verifiable. The set exists so that an honest refusal i
 
 #### Binding B — Nostr
 
-This open transport allows an offer to reach services its publisher does not choose. A message on this binding is a Nostr event ([NIP-01][]), published to one or more relays.
+This open transport allows an offer to reach services its publisher does not choose. A message on this binding is a Nostr event ([NIP-01][]), published to one or more relays. The fields of this event are described below.
 
-| Field | Value |
+| Nostr event field | Value |
 |---|---|
+| id | As NIP-01 computes it. Not the offer's identity; see below |
 | `kind` | [`NOSTR_OFFER_KIND`](#protocol-constants), a regular (stored) kind |
 | `content` | The envelope bytes, base64-encoded ([RFC 4648][]) |
 | `tags` | One [`NOSTR_TOPIC_TAG`](#protocol-constants) tag per routing key the offer is published under, and one `expiration` tag ([NIP-40][]) |
@@ -830,7 +831,7 @@ stateless checks.
 
 `HINT_TTL` must be agreed network-wide, because a party applying a different one refuses what others accept. `MAX_REGISTRATION_BYTES` and `REGISTRATION_DEPOSIT` must be too. Nobody enforces either on chain, so two parties applying different ones compile different registries. `MAX_REGISTRATION_PERIOD` is network-wide for the same reason, and is the one constant here the chain enforces itself. The rest are internal to the party that sets them (`MAX_LIVE_OFFERS_PER_UTXO`, the pool ceilings, `MAX_CONCURRENT_BATCHES`, `FUNDING_HOLD_TTL` and `STATUS_RETENTION`), bounding either what a party spends on itself or what it will accept from others. This CIP fixes values for the first kind and floors for the second.
 
-**Activation is read off the registry.** Every [registration](#on-chain-registration-of-services) carries the [protocol revision](#versioning) its holder runs. A revision's values take effect once most of the registry has upgraded to it, counted by the number of valid registrations. 
+**Activation is read off the registry,** using the latest snapshot of chain state at the moment a consumer needs it. Every [registration](#on-chain-registration-of-services) carries the [protocol revision](#versioning) its holder runs. A revision's values take effect once most of the registry has upgraded to it, counted by the number of valid registrations. 
 
 | Code name | Constant | Basis | How announced | How enforced |
 |---|---|---|---|---|
