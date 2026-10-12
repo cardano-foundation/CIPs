@@ -536,12 +536,14 @@ There are three key parameters related to time, which are important for
 [protocol security](#protocol-security). All relevant quantities are depicted in
 [Figure 4](#figure-4).
 
-These three are **wall-clock durations in seconds**, not slot counts, specified
-the way the genesis `slotLength` is (see [CIP-0009][cip-9]). Each is derived from
-a network propagation time from [Table 1](#table-1), which is a wall-clock
-quantity, so expressing them in slots would couple Leios timing to `slotLength`
-and silently retune the protocol whenever that changed. At mainnet's
-`slotLength` of one second the two readings coincide, which is why the values in
+These three are **wall-clock durations in milliseconds**, not slot counts,
+specified the way the genesis `slotLength` is (see [CIP-0009][cip-9]) and
+encoded as a `uint .size 4` of milliseconds. Each is derived from a network
+propagation time from [Table 1](#table-1), which is a wall-clock quantity, so
+expressing them in slots would couple Leios timing to `slotLength` and silently
+retune the protocol whenever that changed. Durations are quoted in seconds
+throughout the text below where that reads better; at mainnet's `slotLength` of
+one second the slot and wall-clock readings coincide, which is why the values in
 [Table 7](#table-7) are unchanged from earlier slot-denominated drafts.
 
 <a id="equivocation-detection"></a>
