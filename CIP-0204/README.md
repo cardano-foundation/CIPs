@@ -296,7 +296,7 @@ could be folded into it.
 
 ### Acceptance Criteria
 
-- [ ] The metadata label is registered in CIP-10.
+- [x] The metadata label is registered in CIP-0010.
 - [x] A tally implementation reads and counts records by the rules above, and
       its code is public: https://github.com/GS1973/voice-of-ada-holders
       (Apache-2.0).
