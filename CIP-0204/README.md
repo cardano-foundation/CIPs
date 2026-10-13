@@ -312,7 +312,7 @@ could be folded into it.
       the chain. Live on mainnet since 2026-09-25.
 - [x] Publish the code of the site and of the tally:
       https://github.com/GS1973/voice-of-ada-holders, since 2026-09-25.
-- [ ] Register label `1695` in CIP-10 (in the pull request of this CIP).
+- [x] Register label `1695` in CIP-0010 (in the pull request of this CIP).
 
 ## Appendix
 
