@@ -171,6 +171,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0187 | [Utilization-Scaled Pledge Bonus](./CIP-0187) | Proposed |
 | 0188 | [Token-Owned Addresses](./CIP-0188) | Proposed |
 | 0190 | [Proof of Existence Transaction Metadata](./CIP-0190) | Proposed |
+| 0195 | [Data Encoding of Plutus V4 Ledger Types](./CIP-0195) | Proposed |
 | 0381 | [Plutus Support for Pairings Over BLS12-381](./CIP-0381) | Active |
 | 1694 | [A First Step Towards On-Chain Decentralized Governance](./CIP-1694) | Active |
 | 1852 | [HD (Hierarchy for Deterministic) Wallets for Cardano](./CIP-1852/) | Active |
@@ -179,7 +180,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 1855 | [Forging policy keys for HD Wallets](./CIP-1855/) | Proposed |
 | 9999 | [Cardano Problem Statements](./CIP-9999/) | Active |
 
-<p align="right"><i>Last updated on 2026-09-29</i></p>
+<p align="right"><i>Last updated on 2026-10-13</i></p>
 
 > [!NOTE]
 > For more details about CIP statuses, see [CIP-0001 > Statuses](./CIP-0001/README.md#statuses).
