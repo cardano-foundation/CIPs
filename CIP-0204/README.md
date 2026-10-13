@@ -297,9 +297,9 @@ could be folded into it.
 ### Acceptance Criteria
 
 - [x] The metadata label is registered in CIP-0010.
-- [x] A tally implementation reads and counts records by the rules above, and
-      its code is public: https://github.com/GS1973/voice-of-ada-holders
-      (Apache-2.0).
+- [ ] Three independent tally implementations read and count records by the
+      rules above. The first is public:
+      https://github.com/GS1973/voice-of-ada-holders (Apache-2.0).
 - [x] Wallets from at least two different vendors have been shown to sign such
       a transaction on mainnet: Eternl, Gero, Lace, Typhon and VESPR, each with
       a real transaction on 2026-09-24 (listed in the Appendix).
