@@ -321,6 +321,8 @@ could be folded into it.
 - [x] Wallets from at least two different vendors have been shown to sign such
       a transaction on mainnet: Eternl, Gero, Lace, Typhon and VESPR, each with
       a real transaction on 2026-09-24 (listed in the Appendix).
+- [ ] At least one mainstream wallet can prepare and submit an answer
+      transaction itself, without a site preparing the metadata.
 
 ### Implementation Plan
 
