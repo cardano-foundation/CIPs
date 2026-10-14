@@ -64,7 +64,7 @@ the question: is the scope check worth it?
 
 [^bench-code]: [Plutus contract validation benchmarks](https://github.com/IntersectMBO/plutus/tree/master/plutus-benchmark/validation)
 [^bench]: [Original issue](https://github.com/IntersectMBO/plutus/issues/7368)
-[^modules] [CIP: Modules in UPLC](https://cips.cardano.org/cip/CIP-0152)
+[^modules]: [CIP: Modules in UPLC](https://cips.cardano.org/cip/CIP-0152)
 [^2030-strategy]: [Cardano 2030 Strategy](https://product.cardano.intersectmbo.org/vision/strategy-2030/)
 
 
