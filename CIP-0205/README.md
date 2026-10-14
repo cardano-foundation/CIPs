@@ -47,18 +47,24 @@ behaviour. This "wasn't a conscious choice"[^bench].
 
 ### The scope check is costly
 
-Benchmarks show that the scope check accounts for roughly 20% of script
-preparation time (decoding, version check and scope check), and about 3% of
-total transaction validation time[^bench]. Such work is charged for only
-indirectly, with size-based fee parameters such as `minFeeRefScriptCostPerByte`.
-A removal reduces work per script execution and hence leaves room for future
-parameter recalibration and reduced fees.
+The plutus validation benchmark[^bench-code] shows[^bench] that the scope check
+accounts for roughly 20% of script preparation time (decoding, version check and
+scope check), and about 3% of total transaction validation time. Such work is
+charged for only indirectly, with size-based fee parameters such as
+`minFeeRefScriptCostPerByte`. A removal reduces work per script execution and
+hence leaves room for future parameter recalibration and reduced fees.
+
+For scripts that are large but fast to execute, the benefit could be much more
+than 3%, especially since the fee associated with script size is exponential.
+With the implementation of modules[^modules], more such script could arise.
 
 Transaction throughput and developer adoption (which is hindered by high fees)
 are both core pillars of Cardano's 2030 strategy[^2030-strategy]. This raises
 the question: is the scope check worth it?
 
+[^bench-code]: [Plutus contract validation benchmarks](https://github.com/IntersectMBO/plutus/tree/master/plutus-benchmark/validation)
 [^bench]: [Original issue](https://github.com/IntersectMBO/plutus/issues/7368)
+[^modules] [CIP: Modules in UPLC](https://cips.cardano.org/cip/CIP-0152)
 [^2030-strategy]: [Cardano 2030 Strategy](https://product.cardano.intersectmbo.org/vision/strategy-2030/)
 
 
