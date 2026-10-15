@@ -71,7 +71,14 @@ the question: is the scope check worth it?
 
 ### The scope check has limited benefit
 
-A removal of the check introduces one new failure mode in the UPLC semantics: an
+The scope check statically guarantees that the CEK machine's environment will
+have a value for each variable that is ever evaluated. This means that indexing
+into the environment data structure always succeeds and is therefore
+memory-safe. But since the data structure used by the CEK machine deals with
+lookup failure, the operation is memory-safe, regardless of whether a variable
+is free or bound. The scope check does not add additional safety.
+
+A removal of the check does introduce one new case in the UPLC semantics: an
 unbound variable cannot be evaluated, causing the CEK machine to terminate with
 an error. Let us consider what the change means for ill-scoped and well-scoped
 terms:
@@ -93,6 +100,9 @@ Moreover, any program logic that can be written as an open term can already be
 written with well-scoped UPLC: replace each free variable by `error`, and you
 obtain a well-scoped program that behaves equivalently.
 
+One may wonder if the underlying data structure for variable lookup could be
+changed to exploit a scope check for performance. See the section
+[below](#a-scope-check-for-array-based-cek-environments) for a discussion.
 
 ### The implementation does not rely on the scope check
 
@@ -281,13 +291,46 @@ the check fails.
 
 #### Keeping well-scopedness for CEK performance
 
-There is no evidence that the well-scopedness invariant can result in speed-ups
-in the CEK machine implementation.
+There is currently no evidence that the well-scopedness invariant can result in
+speed-ups in the CEK machine implementation.
 
-If in the future an optimisation is found that makes a scope check worthwhile,
-this proposal does not prevent it. Before script execution, the node could still
-perform the scope check and use the optimised CEK machine on success, or fall
-back to the un-optimised one when the check fails.
+If, however, in the future an optimisation is found that makes a scope check
+worthwhile for script execution, this proposal does not prevent it. Before
+execution, the node can perform the check and use an optimised CEK machine that
+exploits the well-scopedness property. Otherwise, it can fall back to the
+machine proposed in this CIP, which deals with open terms. Alternatively, the
+scope check pass could replace free variables by `error` and proceed to evaluate
+a now well-scoped term. That preserves free variable semantics as outlined in
+this CIP.
+
+#### A scope check for array-based CEK environments
+
+The scope check statically determines that any variable will be bound to a value
+at CEK machine run-time. More precisely, any variable lookup in the
+_environment_[^spec-environments] (which maps in-scope variables to their bound
+value) will succeed. The question arises whether environments can be implemented
+in such a way that this guarantee is exploited for improved performance.
+
+In the current Haskell CEK machine, environments do not exploit this guarantee
+because the implementation is based on a linked data structure[^sbral-impl],
+which as part of the lookup operation establishes whether a variable is present.
+
+In contrast, a data structure that is based on contiguous memory (e.g. arrays),
+can perform variable lookup efficiently with pointer arithmetic, which is only
+memory-safe when indexing within array bounds. The scope check guarantees that
+no run-time bounds check is required, and lookup will always be memory-safe.
+That cost is now accounted for upfront, during the scope check.
+
+However, it is unclear whether an array-based data structure is necessarily
+better than the current environment structure, because while lookup may become
+cheaper, extension of environments is constant time in the current data
+structure, whereas arrays involve (linear) copying. Moreover, this proposal does
+not prevent such an optimisation if it turned out to be beneficial (see the
+[above section](#keeping-well-scopedness-for-cek-performance)).
+
+[^spec-environments]: [Plutus Core Specification, Section 2.4 "The CEK Machine"](https://plutus.cardano.intersectmbo.org/resources/plutus-core-spec.pdf)
+[^sbral-impl]: [Plutus implementation of environments](https://github.com/IntersectMBO/plutus/blob/master/plutus-core/index-envs/src/Data/RandomAccessList/SkewBinary.hs)
+
 
 #### Fusing the scope check with script deserialization
 
