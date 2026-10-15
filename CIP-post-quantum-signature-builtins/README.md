@@ -7,9 +7,9 @@ Authors:
     - Quantova Inc <Quantovaorg@gmail.com>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/?
-Solution-To:
-    - CPS-0027
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1300
+Solution To:
+    - CPS-0027: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0027
 Created: 2026-10-15
 License: CC-BY-4.0
 ---
