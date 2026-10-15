@@ -409,7 +409,10 @@ has elapsed. See also Figure 4. Concretely, the inclusion rules are:
 
    slots after `RB`.
 
-4. Regardless of whether `RB'` includes a certificate, it may optionally
+4. A certificate may only be included if `RB'` is in the same epoch as `RB`.
+   An EB announced by the last RB of an epoch is therefore never certified.
+
+5. Regardless of whether `RB'` includes a certificate, it may optionally
    announce its own EB for future certification.
 
 where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
@@ -434,6 +437,16 @@ timing constraints to ensure [protocol security](#protocol-security).
 
 If the next RB is produced before this minimum delay has elapsed, the EB
 certificate cannot be included and the EB is discarded.
+
+The epoch restriction discards an EB to buy simplicity. An epoch boundary
+already concentrates a great deal of work — snapshots, rewards, ratification,
+enactment, committee selection — and an announcement that outlived it would be
+one more thing to carry across. An *era* boundary is worse: certifying across
+one would require the announcement, the certificate and the EB to stay
+syntactically compatible across exactly the format change a new era exists to
+make. Every era transition falls on an epoch boundary, so this one rule covers
+both, and at most one EB per boundary — roughly one in 21,600 on mainnet —
+pays for it.
 
 ### Protocol Parameters
 
@@ -964,7 +977,9 @@ following before accepting the block:
 
 3. **Voter Eligibility**: Each signing voter must be a member of the epoch's
    stake-based committee, selected from the active stake distribution at the
-   epoch boundary.
+   epoch boundary. The announcing and the certifying RB share an epoch by
+   [Step 5](#step-5-chain-inclusion), so only one committee is ever in
+   question.
 
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
@@ -1200,6 +1215,13 @@ stake distribution available at the epoch boundary. The procedure is:
 
 Nodes complete this computation well before voting begins in the new epoch to
 ensure seamless participation.
+
+<a id="pending-announcement" href="#pending-announcement"></a>**Pending
+announcement**: Crossing into a new epoch also retires the announcement the
+chain's tip was carrying. Nodes must reject an RB in the new epoch that
+certifies it, so the first RB of an epoch never carries a certificate, and
+votes already cast for that EB can no longer be redeemed. See
+[Step 5](#step-5-chain-inclusion).
 
 #### Operational certificate issue numbers
 
