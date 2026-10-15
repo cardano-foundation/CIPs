@@ -1109,13 +1109,13 @@ many. The result is as follows:
 
 Registration is optional for services, and is what allows for their discovery.
 
-**What a registration is.** One UTxO, holding one NFT, carrying the record as its datum. The NFT is retained across updates to the `registration`. 
+**What a registration is.** One UTxO, holding one NFT, carrying the record as its inline datum. The NFT is retained across updates to the `registration`. 
 
 **Registration address**. The registration NFT enforces (via its minting policy) that it must go to a specific address, a script hash that is the same for all valid registration entries. This script address requires that, when spent, 
 1. the NFT either goes to a new UTxO with the same address, or is burned
 2. the registration key signs the transaction (key looked up in the datum)
 - If the NFT is not burned, check 3-4
-3. new datum has same role and key
+3. the new output satisfies the same output requirements as at minting (inline datum, only the NFT and ADA, no reference script), and its datum has the same role and key
 4. the new datum's `expiry` is between [`MIN_REGISTRATION_PERIOD` and `MAX_REGISTRATION_PERIOD`](#protocol-constants) ahead of now: at least the former past the validity **upper** bound, and at most the latter past the validity **lower** bound
 - If the NFT is burned, check 5
 5. The validity lower bound must be at or past the datum's `expiry`
@@ -1133,9 +1133,12 @@ An NFT that correctly identifies a party is minted under a **single shared polic
 - the asset name contains 1-3 above
 - the minting redeemer carries the asset name hash's preimage, and the asset name is its hash
 - the key named in the preimage signs, at minting and at burning 
-- the datum (see below) is present, decodes as expected, and restates the role, and party's public key
+- the datum (see below) is inline, decodes as expected, and restates the role, and party's public key
 - the address credential is the script described above
 - the NFT must be put at the registration script address described above
+- exactly one unit of the asset name is minted
+- the NFT must be in an output that contains only that NFT itself and ADA. There must be no additional assets, including other NFTs from the same policy
+- the NFT's output must not have a reference script
 
 **The datum.**
 
@@ -1228,8 +1231,8 @@ Every text field (either spelling of the endpoint, a relay URL, a feed reference
 
 **Which registrations count.** Only live registrations — not expired, and with `standing` in the draw — take part in the [entry-point draw or the relay ranking](#network-topology-and-roles). In the ranking, each contributes its deposit split evenly across the relays it lists.
 
-**The datum must be readable from the chain alone.** 
-Either inline, or supplied with the transaction that created it, so that anyone following the chain has it without asking anyone. 
+**The datum must be inline.** 
+Anyone should be able to compute the state of the registry by only observing the UTxOs holding a registration NFT. Forbidding datum hashes makes that simpler.
 
 **Updating a registration.** Spend the UTxO holding the NFT and re-create it with the new datum. Changing the role or the key means minting a new registration NFT.
 
