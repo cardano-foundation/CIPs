@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 330" width="860" height="330" role="img" aria-labelledby="t d">
+<title id="t">One node's links under M2</title>
+<desc id="d">The same three layers as the M1 figure with the colours exchanged. The top row's filled peers are the RF forwarders the current node drew, links it initiated. The bottom row's filled peers drew this node as a forwarder; they initiated those links. Messages still flow downward.</desc>
+<rect width="860" height="330" rx="8" fill="#fcfcfb"/>
+<text x="38.0" y="62.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Upstream</text>
+<text x="38.0" y="80.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">this node initiates: the RF forwarders it drew</text>
+<line x1="38.0" y1="116.0" x2="822.0" y2="116.0" stroke="#e2e0d8" stroke-width="1.2" stroke-dasharray="5 6"/>
+<text x="38.0" y="170.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Current node</text>
+<circle cx="556.0" cy="165.0" r="11.0" fill="#fcfcfb" stroke="#1a1a19" stroke-width="2.2"/>
+<line x1="38.0" y1="214.0" x2="822.0" y2="214.0" stroke="#e2e0d8" stroke-width="1.2" stroke-dasharray="5 6"/>
+<text x="38.0" y="262.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">Downstream</text>
+<text x="38.0" y="280.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">they initiate: nodes whose draw included this one</text>
+<circle cx="300.0" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="334.1" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="368.3" cy="72.0" r="5.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="402.4" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="436.5" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="470.7" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="504.8" cy="72.0" r="5.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="538.9" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="573.1" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="607.2" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="641.3" cy="72.0" r="5.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="675.5" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="709.6" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="743.7" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="777.9" cy="72.0" r="5.2" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="812.0" cy="72.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<line x1="379.5" y1="82.0" x2="534.5" y2="144.4" stroke="#4a3aa7" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="541.0,147.0 533.2,147.6 535.8,141.1" fill="#4a3aa7"/>
+<line x1="507.9" y1="82.0" x2="548.0" y2="141.2" stroke="#4a3aa7" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="551.9,147.0 545.1,143.2 550.9,139.2" fill="#4a3aa7"/>
+<line x1="636.2" y1="82.0" x2="568.1" y2="142.4" stroke="#4a3aa7" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="562.8,147.0 565.7,139.7 570.4,145.0" fill="#4a3aa7"/>
+<line x1="764.6" y1="82.0" x2="580.4" y2="144.7" stroke="#4a3aa7" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="573.7,147.0 579.2,141.4 581.5,148.1" fill="#4a3aa7"/>
+<circle cx="300.0" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="334.1" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="368.3" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="402.4" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="436.5" cy="272.0" r="5.2" fill="#6f6d66" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="470.7" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="504.8" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="538.9" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="573.1" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="607.2" cy="272.0" r="5.2" fill="#6f6d66" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="641.3" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="675.5" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="709.6" cy="272.0" r="5.2" fill="#6f6d66" stroke="#fcfcfb" stroke-width="1.5"/>
+<circle cx="743.7" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="777.9" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<circle cx="812.0" cy="272.0" r="4.6" fill="#fcfcfb" stroke="#e2e0d8" stroke-width="1.5"/>
+<line x1="546.4" y1="183.0" x2="449.3" y2="257.7" stroke="#6f6d66" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="443.7,262.0 447.1,255.0 451.4,260.5" fill="#6f6d66"/>
+<line x1="560.1" y1="183.0" x2="600.7" y2="255.9" stroke="#6f6d66" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="604.1,262.0 597.7,257.6 603.8,254.2" fill="#6f6d66"/>
+<line x1="568.3" y1="183.0" x2="694.4" y2="258.4" stroke="#6f6d66" stroke-width="1.6" stroke-linecap="round"/>
+<polygon points="700.4,262.0 692.6,261.4 696.2,255.4" fill="#6f6d66"/>
+</svg>
