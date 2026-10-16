@@ -192,6 +192,10 @@
     "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
   },
   {
+    "transaction_metadatum_label": 22092,
+    "description": "VitaLedger - food product record anchor (Merkle root of issuer-signed records)"
+  },
+  {
     "transaction_metadatum_label": 37326,
     "description": "Eternl Pro - license metadata"
   },
