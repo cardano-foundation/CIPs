@@ -1,0 +1,17 @@
+{
+  "status": "illustrative migration target; no verification run is claimed",
+  "lean": "4.24.0",
+  "solver": {
+    "name": "Z3",
+    "version": "4.15.4",
+    "timeoutSeconds": 60
+  },
+  "Blaster": {
+    "revision": "bafdd4f7976037cd7bd8e443df04af096dc5b96e"
+  },
+  "requiredBeforeExecution": [
+    "Pin the implementing checker and evaluator revisions, including local patches.",
+    "Implement the draft interface and checking-context profile.",
+    "Pin the complete standard library and cryptographic models."
+  ]
+}

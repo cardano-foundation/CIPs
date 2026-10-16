@@ -1,0 +1,78 @@
+{
+  "$schema": "https://cips.cardano.org/cips/cipXXXX/schemas/assurance-v2.json",
+  "preamble": {
+    "title": "Illustrative compiled helper assurance",
+    "description": "Proposed metadata layout. The existing UAL 0.5 checker does not implement this checking-context profile.",
+    "version": "1.0.0",
+    "authors": [
+      "Plutus contributors"
+    ],
+    "created": "2026-09-29",
+    "license": "Apache-2.0"
+  },
+  "blueprint": {
+    "uri": "interface-game-blueprint.json",
+    "hash": {
+      "alg": "sha256",
+      "digest": "27f985959bae0ef3a1ec3a5ebb12ceb78c987bf18a1510e54218d843c64a410c"
+    },
+    "mediaType": "application/json"
+  },
+  "languages": {
+    "ual": {
+      "name": "Universal Annotation Language",
+      "description": "Property specification language used by Blaster.",
+      "version": "0.6-draft",
+      "uri": "https://github.com/input-output-hk/UniversalAnnotationLanguage"
+    }
+  },
+  "properties": [
+    {
+      "id": "outbids_exact",
+      "scope": {
+        "functions": [
+          "outbids"
+        ]
+      },
+      "checkingContext": "outbids",
+      "statement": {
+        "text": "The separately compiled helper returns the integer comparison result.",
+        "formal": {
+          "language": "ual",
+          "source": "\u2200 (old proposed : Integer), outbids_returns old proposed (decide (old < proposed))"
+        }
+      }
+    }
+  ],
+  "checkingContexts": {
+    "outbids": {
+      "uri": "function-checking.json",
+      "hash": {
+        "alg": "sha256",
+        "digest": "8d017e199c63f39dbc13a75d489870fab890b5532946d69c379d63628e30b6bc"
+      }
+    }
+  },
+  "functions": {
+    "outbids": {
+      "arguments": [
+        {
+          "dataType": "#integer"
+        },
+        {
+          "dataType": "#integer"
+        }
+      ],
+      "compiledCode": "4a01010022337100040021",
+      "hash": {
+        "alg": "sha256",
+        "digest": "264d481d68647619542971000e727b145b21600e612476ea09841dce094752a8"
+      },
+      "plutusVersion": "v3",
+      "result": {
+        "dataType": "#boolean"
+      },
+      "serialization": "cbor-flat"
+    }
+  }
+}
