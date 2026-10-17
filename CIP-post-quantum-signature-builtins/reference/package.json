@@ -1,9 +1,0 @@
-{
-  "name": "cip-pq-signature-builtins-reference",
-  "version": "0.1.0",
-  "type": "module",
-  "license": "CC-BY-4.0",
-  "scripts": { "test": "vitest run" },
-  "dependencies": { "@noble/post-quantum": "0.7.1", "@noble/hashes": "2.0.1" },
-  "devDependencies": { "vitest": "3.2.4" }
-}
