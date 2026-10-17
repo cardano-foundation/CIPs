@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/cip-xxxx/payload-definition.schema.json",
+  "title": "Block Producer Payload Definition",
+  "description": "Machine-readable definition for interpreting the 22-bit implementation-defined payload of a block producer signal.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format"
+  ],
+  "properties": {
+    "format": {
+      "type": "integer",
+      "const": 1,
+      "description": "Version of the payload-definition format defined by this specification."
+    },
+    "fields": {
+      "$ref": "#/$defs/fields",
+      "description": "Direct interpretation of the 22-bit payload."
+    },
+    "selector": {
+      "$ref": "#/$defs/selector",
+      "description": "Selects one of multiple implementation-defined payload layouts."
+    }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "fields"
+      ],
+      "not": {
+        "required": [
+          "selector"
+        ]
+      }
+    },
+    {
+      "required": [
+        "selector"
+      ],
+      "not": {
+        "required": [
+          "fields"
+        ]
+      }
+    }
+  ],
+  "$defs": {
+    "bitRange": {
+      "type": "array",
+      "description": "Inclusive range of bits within the 22-bit payload. Bit 0 is the least-significant bit and bit 21 is the most-significant bit.",
+      "prefixItems": [
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 21
+        },
+        {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 21
+        }
+      ],
+      "items": false,
+      "minItems": 2,
+      "maxItems": 2
+    },
+
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/field"
+      }
+    },
+
+    "field": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/integerField"
+        },
+        {
+          "$ref": "#/$defs/booleanField"
+        },
+        {
+          "$ref": "#/$defs/enumField"
+        }
+      ]
+    },
+
+    "integerField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "bits"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "not": {
+            "enum": [
+              "name",
+              "id",
+              "scheme",
+              "format"
+            ]
+          },
+          "description": "Implementation-defined name exposed to downstream consumers."
+        },
+        "type": {
+          "const": "integer"
+        },
+        "bits": {
+          "$ref": "#/$defs/bitRange"
+        }
+      }
+    },
+
+    "booleanField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "bits"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Implementation-defined name exposed to downstream consumers."
+        },
+        "type": {
+          "const": "boolean"
+        },
+        "bits": {
+          "$ref": "#/$defs/bitRange",
+          "description": "A boolean field occupies exactly one bit; the beginning and end of the range MUST therefore be equal."
+        }
+      }
+    },
+
+    "enumField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type",
+        "bits",
+        "values"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Implementation-defined name exposed to downstream consumers."
+        },
+        "type": {
+          "const": "enum"
+        },
+        "bits": {
+          "$ref": "#/$defs/bitRange"
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^(0|[1-9][0-9]*)$"
+          },
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Maps unsigned integer field values, represented as decimal JSON object keys, to implementation-defined labels."
+        }
+      }
+    },
+
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bits",
+        "values"
+      ],
+      "properties": {
+        "bits": {
+          "$ref": "#/$defs/bitRange",
+          "description": "Bits interpreted as an unsigned integer used to select the payload layout."
+        },
+        "values": {
+          "type": "object",
+          "minProperties": 1,
+          "propertyNames": {
+            "pattern": "^(0|[1-9][0-9]*)$"
+          },
+          "additionalProperties": {
+            "$ref": "#/$defs/layout"
+          },
+          "description": "Maps selector values, represented as decimal JSON object keys, to payload layouts."
+        }
+      }
+    },
+
+    "layout": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fields"
+      ],
+      "properties": {
+        "fields": {
+          "$ref": "#/$defs/fields"
+        }
+      }
+    }
+  }
+}
