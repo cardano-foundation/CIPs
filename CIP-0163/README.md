@@ -70,9 +70,9 @@ This risk must be assessed for time-bound delegation on its own. Its activation 
 
 ### Relationship to Dynamic Rewards
 
-The companion **Dynamic Rewards** proposal is being extracted from the [original CIP-163 discussion](https://github.com/cardano-foundation/CIPs/pull/1077). It proposes full-pot reward distribution to eligible delegators and pools. The two proposals can be reviewed, ratified, and activated independently.
+The companion **Dynamic Rewards** proposal is being extracted from the [original CIP-163 discussion](https://github.com/cardano-foundation/CIPs/pull/1077). It removes the reward reduction attributable to the inactive-stake ratio while retaining the existing pledge, saturation, performance, and residual-return rules. The two proposals can be reviewed, ratified, and activated independently.
 
-If both proposals are adopted, time-bound delegation limits eligibility to reward accounts with a qualifying witness within their activity period, while Dynamic Rewards distributes the full rewards pot among eligible participants. Under that combination, per-unit yields rise when active stake falls and compress when it rises, providing an incentive for delegation to return. This potential balancing effect is conditional on the separate adoption of Dynamic Rewards; time-bound delegation alone does not provide it.
+If both proposals are adopted, time-bound delegation limits eligibility to reward accounts with a qualifying witness within their activity period, while Dynamic Rewards scales the existing pool reward calculation by the inverse of the active-stake ratio. The separate pledge and other residual-return rules still apply. Under that combination, the inverse-ratio reward factor rises when active stake falls and falls when it rises, providing an incentive for delegation to return. This potential balancing effect is conditional on the separate adoption of Dynamic Rewards; time-bound delegation alone does not provide it.
 
 ## Path to Active
 
