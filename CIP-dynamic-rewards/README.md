@@ -14,9 +14,9 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano’s reward rules leave rewards unallocated when stake is inactive or exceeds a pool’s reward saturation cap. This CIP redistributes those amounts among participating pools using their capped reward weights, rather than returning those amounts to reserves. The cap continues to constrain each pool’s relative reward weight, while changes to k or an independently adopted CIP-50 pledge-leverage parameter L shift rewards toward pools less constrained by those caps.
+Cardano’s reward rules leave rewards unallocated when stake is inactive, exceeds a pool’s reward saturation cap, or belongs to a pool that fails its declared-pledge check. This CIP redistributes that reward capacity among eligible pools using their capped reward weights, rather than reserving a share for those excluded portions. The cap continues to constrain each pool’s relative reward weight, while changes to k or an independently adopted CIP-50 pledge-leverage parameter L shift rewards toward pools less constrained by those caps.
 
-The proposal retains the pledge-dependent reward expression, including its `1 + a₀` denominator, the declared-pledge check, observed block performance, and the network-wide production adjustment. Rewards forgone through the retained pledge term or a failed pledge declaration can still return to reserves. It introduces no reward-account expiry and does not change governance voting power or the stake used for block leader election.
+The proposal retains the pledge-dependent reward expression, including its `1 + a₀` denominator, the declared-pledge check, observed block performance, and the network-wide production adjustment. A pool that fails its declared pledge receives zero; its excluded weight makes reward capacity available to eligible pools under their own pledge-dependent reward terms. Rewards forgone through those retained terms can still return to reserves. It introduces no reward-account expiry and does not change governance voting power or the stake used for block leader election.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -30,7 +30,7 @@ Redistributing rewards associated with inactive and capped-out stake provides tw
 
 The maximum pool reward function uses pool stake and declared pledge relative to total stake. It caps reward-bearing stake at the applicable saturation limit. Actual pool rewards also depend on meeting declared pledge and observed block production. Unallocated residual rewards return to reserves under the reward-update rules (SL-D5 §11.10).
 
-Inactive stake, reward-bearing stake capped by k or an adopted pledge-leverage rule, and the pledge-dependent reward term are distinct contributors to that residual. This CIP redistributes the first two while retaining the pledge-dependent reward term and declared-pledge check.
+Inactive stake, reward-bearing stake capped by k or an adopted pledge-leverage rule, failed declared pledge, and the pledge-dependent reward term are distinct contributors to that residual. This CIP redistributes the reward capacity excluded by the first three while retaining the pledge-dependent reward term and the zero-reward outcome for a pool that fails its declared-pledge check.
 
 ### Capped reward weights
 
@@ -58,13 +58,13 @@ $$
 
 CIP-50 is not a prerequisite for this proposal. Neither cap changes the pool stake used for block leader election. An oversaturated pool's entire delegated stake can still contribute to leader election, while only its capped portion enters the reward expression.
 
-Let the common normalization denominator be:
+Let $E$ be the set of registered pools in the rewards snapshot that pass the existing declared-pledge check. Let the common normalization denominator be:
 
 $$
-N=\sum_j \pi_j c_j.
+N=\sum_{j\in E} \pi_j c_j.
 $$
 
-The sum covers the registered pools in the rewards snapshot. Include the capped weight of a block-producing pool even if it fails its declared-pledge check; otherwise that separate forfeiture would be redistributed as well. Do not include the pledge bonus or the full pool reward entitlement in $N$.
+Exclude pools that fail their declared-pledge check from $N$, as well as giving them zero rewards. This makes their excluded reward capacity available to the remaining eligible pools. Do not include the pledge bonus or the full pool reward entitlement in $N$.
 
 Use observed performance in this denominator, not just the unweighted sum of capped stake. This keeps the common payout budget consistent with the same performance multipliers used to pay pools, including epochs with very uneven production. Compute $N$ with exact arithmetic before rounding individual rewards.
 
@@ -92,9 +92,9 @@ $$
 
 All eligible pools can receive normalized rewards, including oversaturated pools through their capped weights. There is no separate eligibility cliff at saturation: stake above the cap adds no reward weight, and delegators share the resulting pool reward under the existing allocation rules. Pool costs and margins are unchanged.
 
-A failed declared pledge still gives zero pool rewards. Its weight remains in $N$, so that forfeiture is not redistributed. If $N=0$, including when there are no block-producing pools with positive capped weight, distribute no pool rewards and retain the existing residual-return behavior. Never divide by zero.
+A failed declared pledge still gives zero pool rewards. Its weight is excluded from $N$, so the remaining eligible pools share the available reward capacity under their own retained pledge terms. This does not guarantee that the additional payout equals the failed pool's hypothetical reward: each recipient's pledge-dependent reduction still applies. If $N=0$, including when every block-producing pool fails its declared pledge or has zero capped weight, distribute no pool rewards and retain the existing residual-return behavior. Never divide by zero.
 
-This changes where the rewards associated with inactive and capped-out stake go: they increase normalized pool rewards instead of being returned merely because those stake portions earn no reward weight. The separate pledge-dependent reductions remain. The residual $\Delta r_2$ and final accounting rules are retained, including the existing treatment of rounding and unregistered reward accounts.
+This changes where the reward capacity associated with inactive stake, capped-out stake, and failed-pledge pools goes: it increases normalized rewards for eligible pools instead of being reserved for excluded weights. The recipients' pledge-dependent reductions remain. The residual $\Delta r_2$ and final accounting rules are retained, including the existing treatment of rounding and unregistered reward accounts.
 
 ### Budget and limiting cases
 
@@ -104,9 +104,9 @@ $$
 Q_i=R\left(\frac{\pi_i c_i}{N}\right)h_i.
 $$
 
-The weights $\pi_i c_i/N$ sum to one when $N>0$. Consequently, total unrounded pool rewards cannot exceed $R$, and the existing rounding cannot increase that total. The unearned pledge-dependent and failed-pledge portions can remain unallocated and return to reserves.
+The weights $\pi_i c_i/N$ over $i\in E$ sum to one when $N>0$; pools outside $E$ receive zero. Consequently, total unrounded pool rewards cannot exceed $R$, and the existing rounding cannot increase that total. The recipients' unearned pledge-dependent portions can remain unallocated and return to reserves.
 
-Under the current performance rule, $\pi_i=\beta_i/(\sigma_i/\alpha)$ for a block-producing pool, where $\beta_i$ is its share of blocks actually produced. If no saturation cap binds, $c_i=\sigma_i$ and $N=\alpha$. The formula then reduces to inverse-active-stake normalization. If active stake is also 100%, it reproduces current rewards. With oversaturated pools, $N$ reflects the capped weights, so saturation-related rewards are redistributed even when all stake is active.
+Under the current performance rule, $\pi_i=\beta_i/(\sigma_i/\alpha)$ for a block-producing pool, where $\beta_i$ is its share of blocks actually produced. If no saturation cap binds, $c_i=\sigma_i$ and $N=\alpha\sum_{i\in E}\beta_i$. When all block-producing pools meet their declared pledge, this gives $N=\alpha$ and inverse-active-stake normalization. If active stake is also 100%, it reproduces current rewards. Failed-pledge pools instead reduce $N$ so their excluded capacity is shared by eligible pools. With oversaturated pools, $N$ reflects the capped weights, so saturation-related rewards are redistributed even when all stake is active.
 
 This is not normalization by $\sum_i B_i$. It does not force total payouts to $R$ or to $R/(1+a_0)$ independently of the retained pledge term. It adds no protocol parameter, requires no adoption of Time-Bound Delegation, and does not change governance voting power.
 
@@ -118,7 +118,7 @@ This is not normalization by $\sum_i B_i$. It does not force total payouts to $R
 
 For example, a pool with 75M ADA in total stake and a declared, fulfilled pledge of 5M ADA has 70M ADA of unpledged delegated stake. It meets its pledge. The rewards it could earn by pledging more are a separate matter from failing the declared-pledge check. The 70M ADA should not be described as an "unmet pledge," nor should all rewards attributable to that delegated stake be described as returning to reserves.
 
-The [ledger's pledge-fulfillment check](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/impl/src/Cardano/Ledger/Shelley/Rewards.hs) and [pledge-dependent maximum reward function](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/libs/cardano-ledger-core/src/Cardano/Ledger/State/SnapShots.hs) implement these two different concepts. This CIP redistributes the reductions attributable to inactive and capped-out stake. It retains the pledge-dependent reward expression and the withholding caused by a failed declared-pledge check.
+The [ledger's pledge-fulfillment check](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/impl/src/Cardano/Ledger/Shelley/Rewards.hs) and [pledge-dependent maximum reward function](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/libs/cardano-ledger-core/src/Cardano/Ledger/State/SnapShots.hs) implement these two different concepts. This CIP retains the pledge-dependent reward expression and zero rewards for a failed declaration, while excluding failed-pledge pools from the redistribution weights.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -128,7 +128,7 @@ The [ledger's pledge-fulfillment check](https://github.com/IntersectMBO/cardano-
 
 ### Option to adjust Rho
 
-Redistributing rewards associated with inactive and capped-out stake reduces the corresponding return to reserves. With Rho unchanged, reserves deplete faster by the extra amount paid out. The retained pledge term, failed-pledge withholding, and existing final accounting can still leave residual returns. The network-wide production adjustment remains in place before the rewards pot is formed. If the community prefers to preserve its current rate of emissions, it can reduce Rho through a separate governance action, trading away some or all of the yield uplift. This CIP leaves that choice and any new Rho value out of scope.
+Redistributing reward capacity associated with inactive stake, capped-out stake, and failed-pledge pools reduces the corresponding return to reserves. With Rho unchanged, reserves deplete faster by the extra amount paid out. The recipients' retained pledge terms and existing final accounting can still leave residual returns. If no eligible pool has positive normalization weight, no pool rewards are paid. The network-wide production adjustment remains in place before the rewards pot is formed. If the community prefers to preserve its current rate of emissions, it can reduce Rho through a separate governance action, trading away some or all of the yield uplift. This CIP leaves that choice and any new Rho value out of scope.
 
 ### Prior rationale and revised censorship assessment
 
@@ -147,7 +147,7 @@ These factors support redistributing the rewards associated with inactive and ca
 
 [CIP-0163: Time-Bound Delegation](../CIP-0163/README.md) and this proposal were originally presented together in the [original CIP-163 discussion](https://github.com/cardano-foundation/CIPs/pull/1077). They can be reviewed, ratified, and activated independently.
 
-If both proposals are adopted, reward-account expiry excludes long-dormant accounts from the active stake and reward eligibility used by the ledger. Dynamic Rewards then redistributes rewards over the remaining performance-adjusted capped weights, retaining the pledge-dependent reward expression and failed-pledge withholding. Dynamic Rewards alone continues to reward long-dormant accounts that remain eligible under the prevailing ledger rules.
+If both proposals are adopted, reward-account expiry excludes long-dormant accounts from the active stake and reward eligibility used by the ledger. Dynamic Rewards then redistributes reward capacity over the remaining eligible performance-adjusted capped weights, retaining the recipients' pledge-dependent reward expressions and zero rewards for failed-pledge pools. Dynamic Rewards alone continues to reward long-dormant accounts that remain eligible under the prevailing ledger rules.
 
 ### Evidence and modeling
 
@@ -219,7 +219,7 @@ $$
 \approx 4.1390\%.
 $$
 
-The difference in this assumed scenario is about **1.4675 percentage points**, not a network-wide APY prediction. When no cap binds, $N=\alpha$; when active stake is also 100%, $N=1$ and current rewards are unchanged. The `1 + a₀` denominator is present in both calculations; the uplift comes from the normalization of performance-adjusted capped weights.
+The difference in this assumed scenario is about **1.4675 percentage points**, not a network-wide APY prediction. When no cap binds and all block-producing pools meet their declared pledge, $N=\alpha$; when active stake is also 100%, $N=1$ and current rewards are unchanged. The `1 + a₀` denominator is present in both calculations; the uplift comes from the normalization of eligible performance-adjusted capped weights.
 
 #### Effect of tightening a saturation cap
 
@@ -240,13 +240,17 @@ For the $a_0=0$ cap-only example, the same caps and allocations result if the gl
 
 With $a_0=0.3$, Pool B's reward increases from approximately 225.38 to 361.37 ADA in the k example, and from approximately 222.42 to 345.98 ADA in the L example. The retained pledge term leaves part of the pot unallocated in these cases.
 
-The [SPO Incentives simulator](https://spo-incentives.vercel.app/) explores related policies, but its published [Full and Max calculations](https://github.com/Cerkoryn/SPO-Incentives/blob/7186366e70f79d50268e8a4482369005626ab509/src/lib/utils/graphs.ts) normalize by full pool factors. Full retains the `1 + a₀` denominator and sets a modeled aggregate budget of $R/(1+a_0)$; Max removes it and sets a budget of $R$. This CIP instead normalizes performance-adjusted capped stake before the retained pledge term and declared-pledge withholding. The simulator also omits actual block-performance and owner-pledge-fulfillment checks, so neither mode is a reference implementation of this specification.
+The [SPO Incentives simulator](https://spo-incentives.vercel.app/) explores related policies, but its published [Full and Max calculations](https://github.com/Cerkoryn/SPO-Incentives/blob/7186366e70f79d50268e8a4482369005626ab509/src/lib/utils/graphs.ts) normalize by full pool factors. Full retains the `1 + a₀` denominator and sets a modeled aggregate budget of $R/(1+a_0)$; Max removes it and sets a budget of $R$. This CIP instead normalizes eligible performance-adjusted capped stake before applying the recipients' retained pledge terms. The simulator also omits actual block-performance and owner-pledge-fulfillment checks, so neither mode is a reference implementation of this specification.
+
+The simulator's CIP-50 mode also substitutes the pool-specific cap for $z_0$ throughout its pledge term. This specification retains the global $z_0=1/k$ and applies the leverage cap to $c_i$, following the ledger reward expression above. Historical outputs for L must therefore also be checked against that distinction.
+
+The author's [October 2, 2025 clarification](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3358613174) explicitly describes recycling saturation-related rewards after changes to k or CIP-50 L, while retaining the contribution of oversaturated stake to block production. The [seminar slides](https://docs.google.com/presentation/d/1m_s0yymahQjyE21s1VgC6CgYC0K4mjP2YgjnIGzUhNo/htmlpresent) and earlier bundled proposal use “full-pot” as a broad description. This independent specification clarifies that description: reward capacity excluded by inactivity, saturation, and failed declared pledge is shared among eligible pools, but their own pledge-dependent reductions remain variable. It therefore does not promise either a 100% payout or the simulator Full mode's fixed payout fraction. Its activation requires modeling and review of this formula, rather than treating historical simulator outputs as forecasts.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
-- **Reward conformance** – Tests must cover redistribution after tighter k and CIP-50 L caps, oversaturated pools sharing only through capped weights, preserved pledge-related reserve returns, failed declared pledge, zero normalization weight, uneven block production, and conservation of the rewards pot. With no binding cap, the current performance rule must reproduce inverse-active-stake normalization; with full active stake and no binding cap, current rewards must be unchanged.
+- **Reward conformance** – Tests must cover redistribution after tighter k and CIP-50 L caps, oversaturated pools sharing only through capped weights, preserved recipient pledge-related reserve returns, failed-pledge pools receiving zero and being excluded from normalization, redistribution to the remaining eligible pools, all pools failing pledge, zero normalization weight, uneven block production, and conservation of the rewards pot. When all block-producing pools meet their declared pledge and no cap binds, the current performance rule must reproduce inverse-active-stake normalization; with full active stake as well, current rewards must be unchanged.
 - **CIP Editor Approval** – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs.
 - **Endorsement by Technical Bodies** – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
 - **Stakeholder Concurrence** – A majority of stake pool operators (SPOs), ecosystem tooling maintainers, dReps, and other infrastructure providers must signal readiness to upgrade.
