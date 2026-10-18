@@ -14,9 +14,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano’s reward rules leave rewards unallocated when stake is inactive, exceeds a pool’s reward saturation cap, or belongs to a pool that fails its declared-pledge check. This CIP redistributes that reward capacity among eligible pools using their capped reward weights, rather than reserving a share for those excluded portions. The cap continues to constrain each pool’s relative reward weight, while changes to k or an independently adopted CIP-50 pledge-leverage parameter L can shift rewards toward pools less constrained by those caps.
-
-The proposal retains the pledge-dependent reward expression, including its `1 + a₀` denominator, the declared-pledge check, observed block performance, and the network-wide production adjustment. A pool that fails its declared pledge receives zero; its excluded weight makes reward capacity available to eligible pools under their own pledge-dependent reward terms. Rewards forgone through those retained terms can still return to reserves. It introduces no reward-account expiry and does not change governance voting power or the stake used for block leader election.
+Cardano’s reward rules leave rewards unallocated when stake is inactive, exceeds a pool’s reward saturation cap, or belongs to a pool that fails its declared-pledge check. This CIP redistributes that reward capacity among eligible pools using their capped reward weights, rather than reserving a share for those excluded portions. The cap continues to constrain each pool’s relative reward weight, while changes to the saturation cap (stakePoolTargetNum or maxPledgeLeverage parameters) can shift rewards toward pools less constrained by those caps.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -30,7 +28,7 @@ Redistributing rewards associated with inactive and capped-out stake provides tw
 
 The maximum pool reward function uses pool stake and declared pledge relative to total stake. It caps reward-bearing stake at the applicable saturation limit. Actual pool rewards also depend on meeting declared pledge and observed block production. Unallocated residual rewards return to reserves under the reward-update rules (SL-D5 §11.10).
 
-Inactive stake, reward-bearing stake capped by k or an adopted pledge-leverage rule, failed declared pledge, and the pledge-dependent reward term are distinct contributors to that residual. This CIP redistributes the reward capacity excluded by the first three while retaining the pledge-dependent reward term and the zero-reward outcome for a pool that fails its declared-pledge check.
+Inactive stake, reward-bearing stake capped by stakePoolTargetNum or maxPledgeLeverage, failed declared pledge, and the pledge-dependent reward term are distinct contributors to that residual. This CIP redistributes the reward capacity excluded by the first three while retaining the pledge-dependent reward term and the zero-reward outcome for a pool that fails its declared-pledge check.
 
 ### How to read the reward calculation
 
