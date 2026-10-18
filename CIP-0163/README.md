@@ -41,14 +41,28 @@ This CIP intentionally limits itself to reward-account inactivity expiry and its
 - Add a **single protocol parameter** (measured in epochs), to be set via governance:
   - `delegatorActivity`
 - **Scope & terminology.** A *reward account* (i.e., staking credential) is the object that delegates, accrues, and withdraws rewards. The ledger maintains an `expirationEpoch` for each registered reward account.
-- **Inactivity rule.** During epoch transitions, when stake and voting power are computed, **expired reward accounts** (those with `expirationEpoch < currentEpoch`) are **ignored** for pool leader election, rewards distribution, and governance tallying.
+- **Inactivity rule.** During epoch transitions, when stake and voting power are computed, **expired reward accounts** (those with `expirationEpoch < currentEpoch`) are **ignored** for pool leader election, rewards distribution, and governance tallying. An account remains unexpired throughout its stored `expirationEpoch`; it first becomes expired in the following epoch.
 - **Proof-of-life.** Any action that requires a **witness by the reward account** resets its expiration to `currentEpoch + delegatorActivity`. Examples include reward withdrawal, (re)delegation to an SPO or dRep, stake-key deregistration, stake-key registration where its certificate requires that witness, and pool registration or updates requiring a witness from that credential as a pool owner. Ordinary wallet usage can renew automatically when the wallet includes a qualifying action such as a reward withdrawal.
 - **Ineligible for rewards.** For epochs in which a reward account is inactive, its epoch reward share is **not credited** to that account. The existing reward-distribution rules, including the return of undistributed residual rewards to reserves, continue to apply. This CIP does not redistribute those uncredited rewards to other accounts.
-- **Migration.** On activation, determine the epoch that the last witness occurred for each reward account. Then initialize each account's `expirationEpoch` to that epoch plus `delegatorActivity`.
+- **Parameter changes.** Updating `delegatorActivity` does not retime existing stored expiration dates or reactivate expired accounts. The next qualifying witness resets the date using the period then in force. The reset remains `currentEpoch + delegatorActivity`, so a shorter period can move a previously stored future expiration earlier.
+- **Migration.** On activation, determine the epoch of the last qualifying staking-credential witness for each registered reward account. Initialize its `expirationEpoch` to that epoch plus the activation value of `delegatorActivity`. If no historical qualifying witness exists, initialize it to `activationEpoch + delegatorActivity`, giving the account a full activity period from activation. Apply the same expiry comparison to both cases; a historically witnessed account can therefore already be expired at activation.
 
 Only authorization required for the staking credential counts. Receiving funds or spending an output using only its payment credential does not itself renew the reward account. A legacy Shelley stake-registration certificate does not require the staking-credential witness and therefore does not qualify merely by registering the account; the Conway registration form that specifies the deposit does require it. This follows the [ledger review's distinction between direct proof and indirect activity](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3458476624). It clarifies the existing witness rule rather than requiring explicit periodic redelegation.
 
 **Note:** The initial numeric value for `delegatorActivity` is intentionally **left undefined** here and will be chosen through community governance and deliberation. Potential jittering or lottery mechanisms to stagger per-epoch expiries are not mentioned in this proposal, but may be considered separately if operational data warrants it.
+
+### Epoch boundaries
+
+Let a qualifying witness occur in epoch $t$, with activity period $d$. The stored expiration is $t+d$, the last unexpired epoch is $t+d$, and the first expired epoch is $t+d+1$. The qualifying epoch and the following $d$ epochs are therefore included. For an illustrative $t=100$ and $d=2$:
+
+| Epoch | Stored expiration | Account status under the expiry rule |
+| --- | --- | --- |
+| 100 | 102 | Unexpired |
+| 101 | 102 | Unexpired |
+| 102 | 102 | Unexpired |
+| 103 | 102 | Expired |
+
+This example does not select an initial parameter value. If governance permits $d=0$, the account is unexpired in the qualifying epoch and expires in the next one. An account with no qualifying witness history uses activation as $t$ for the migration initialization above.
 
 ### Eligibility and reward calculation
 
@@ -94,6 +108,7 @@ If both proposals are adopted, time-bound delegation first determines account pa
 
 ### Acceptance Criteria
 
+- **Expiry conformance** – Tests must cover the inclusive expiration epoch and the following expired epoch; zero-period arithmetic; renewal of active and expired accounts; migration with a historical qualifying witness, including dates before and equal to activation; the full activation period for accounts without a qualifying witness history; and parameter increases and decreases leaving stored dates unchanged until a qualifying witness uses the new period. Stake and voting snapshot tests must apply the same comparison to the epoch for which eligibility is computed.
 - **CIP Editor Approval** – Cardano CIP Editors must confirm that the specification is complete, unambiguous, and internally consistent with existing CIPs.
 - **Consensus on initial parameter value** – An initial value for the new protocol parameter `delegatorActivity` in epochs must be agreed upon before hard-fork combinator (HFC) activation. The choice should consider operational viability, empirical analyses, and community feedback.
 - **Endorsement by Technical Bodies** – The Cardano Parameter-Change Proposals (PCP) Committee and the Intersect Technical Steering Committee (TSC) should both recommend the proposal as technically sound and aligned with the protocol’s long-term roadmap.
