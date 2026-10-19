@@ -153,8 +153,8 @@ sequenceDiagram
   S->>R: publish signed price hints (replaced on each update)
   W->>C: read registry
   Note over W: rank relays by deposit
-  W->>R: query hints for the assets it would pay in
-  R-->>W: stored hint events, at most one per service
+  W->>R: query hints by the routing keys its offer will carry
+  R-->>W: stored hint events, at most one per service and scope
   Note over W: verify hints, shortlist services
   W->>R: subscribe to quotes referencing its requests
   W->>R: one price request per shortlisted service: description of intended offer
@@ -303,7 +303,7 @@ A service running this binding is an HTTPS server. Each row below is one request
 | `GET /offers/{offer_id}` | The offer's state. |
 | `GET /interest` | The advertised interest filter: accept side, reject side, and whether it accepts everything. |
 | `GET /profile` | The [service profile](#service-profile), off chain — the same policy the (optional) on-chain registration carries. |
-| `GET /hints` | The service's current price hints: what it would indicatively charge to carry an offer, quoted per accepted asset. |
+| `GET /hints` | The service's current price hints: what it would indicatively charge to carry an offer, quoted per accepted asset, for all offers or for those [in a scope](#price-hints). |
 | `POST /quote` | Optional. Asks the service what it would charge for one intended offer, described by its assets, its size and ExUnits estimate, and any filter keys it will carry. Answers a signed [quote](#quotes) or declines. |
 | `GET /offers/stream` | A feed of accepted offers, so services can source from each other rather than only from publishers. |
 | `GET /health` | Whether the party is *able* to act on an offer right now, which is not the same question as whether it is reachable. See [Readiness]. |
@@ -320,7 +320,7 @@ Nothing on this binding relays, so an offer reaches exactly the services its pub
 
 This binding follows the conventions Cardano tooling already uses over HTTP, so a wallet can reuse what it has for [CIP-0030][] and chain indexers.
 
-- **A body that is exactly one CBOR item** is sent as raw bytes with `Content-Type: application/cbor`. These are the envelope a wallet sends to `POST /offers`, the [`quote_request`](#quotes) it sends to `POST /quote` and the [`quote`](#quotes) that comes back, the [`hints`](#price-hints) from `GET /hints`, and the [`service_profile`](#on-chain-registration-of-services) from `GET /profile`.
+- **A body that is exactly one CBOR item** is sent as raw bytes with `Content-Type: application/cbor`. These are the envelope a wallet sends to `POST /offers`, the [`quote_request`](#quotes) it sends to `POST /quote` and the [`quote`](#quotes) that comes back, the array of [`hints`](#price-hints) from `GET /hints`, and the [`service_profile`](#on-chain-registration-of-services) from `GET /profile`.
 - **Every other body is JSON** (`application/json`). Within JSON, a CBOR item or any other binary value is a string of lowercase hex, with no `0x` prefix. These are the offer state, the interest filter, readiness, status, `GET /`, and every refusal.
 - **Identifiers are hex** wherever they appear, including the `offer_id` (the sub-transaction's TxId) in a path.
 - **Filter keys in JSON are routing-key strings.** The interest filter from `GET /interest` lists its accept and reject sides as [routing keys](#routing-keys), the same strings Binding B uses as topics, rather than as CBOR.
@@ -421,18 +421,20 @@ Either step may be skipped. A publisher may sign against a hint without asking, 
 |---|---|
 | `kind` | [`NOSTR_HINT_KIND`](#protocol-constants), an addressable kind |
 | `content` | The CBOR encoding of a signed [`hints`](#price-hints) structure, base64-encoded |
-| `tags` | `["d", <registration asset name, hex>]`; one [`NOSTR_TOPIC_TAG`](#protocol-constants) tag per routing key the service accepts, so that a publisher can query for the services that take its assets; and one `expiration` tag, `HINT_TTL` after the hints were produced |
+| `tags` | A `d` tag identifying the set, as below; one [`NOSTR_TOPIC_TAG`](#protocol-constants) tag per routing key in its [scope](#price-hints), or, for an unscoped set, per routing key the service accepts, or the single [catch-all hint tag](#routing-keys) if it accepts everything, so that a publisher can query for the hints that might apply to its offer; and one `expiration` tag, `HINT_TTL` after the hints were produced |
 | `pubkey`, `sig` | The service's event key. Requests are addressed to it, so the service keeps it stable for as long as it publishes hints under it, and for `MAX_QUOTE_TTL` after |
 
-An addressable event is replaced, not added to, when its author publishes a newer one with the same `d` tag, so a relay holds at most one hint event per service key and registration however often the service reprices. The `expiration` tag lets relays drop hints that have gone stale on their own.
+Each set of hints a service publishes is its own event. The `d` tag is the registration asset name in hex for the unscoped set, and for a scoped set that name, a `/`, and the hex Blake2b-256 hash of the CBOR encoding of the `scope` as it appears in the hints. An addressable event is replaced, not added to, when its author publishes a newer one with the same `d` tag, so a relay holds at most one event per service and scope however often the service reprices.
+
+The `d` tag exists only for that replacement, and nothing queries by it. A publisher finds hints through their topic tags instead, in one query listing every routing key its intended offer will carry, plus the [catch-all hint tag](#routing-keys). A Nostr tag filter matches an event carrying *any* of the listed values, so the query returns every set whose scope (or, for an unscoped set, whose service's accept side) shares at least one key with the offer. The publisher then keeps the sets whose whole scope its offer carries, and discards the rest. An offer that invokes scripts A and B and pays to script C needs one query, not one per combination of its keys. It may also receive a set scoped to C and some script D, which it discards. The `expiration` tag lets relays drop hints that have gone stale on their own.
 
 A service publishes its hint event only to relays it reads, so that a publisher who found the hint on a relay can reach the service through that relay.
 
-**Verifying a hint.** As for a [quote](#verifying-a-quote): the signature verifies under the `issuer_vkey` the hints carry, that key's hash is the `key` of the live registration they name (or a key the publisher has pinned), and the hints are younger than `HINT_TTL`. The event's `d` tag must name the same registration. A publisher ignores a hint event that fails any of these, which is how it discards hint events published by anyone other than the service they claim to be from.
+**Verifying a hint.** As for a [quote](#verifying-a-quote): the signature verifies under the `issuer_vkey` the hints carry, that key's hash is the `key` of the live registration they name (or a key the publisher has pinned), and the hints are younger than `HINT_TTL`. The event's `d` tag must be the one derived from the registration and scope the hints carry. A publisher ignores a hint event that fails any of these, which is how it discards hint events published by anyone other than the service they claim to be from.
 
 **The exchange.**
 
-1. The publisher queries its relays for hint events whose topic tags match the assets it would pay in, verifies them, and shortlists the services whose hints look best. How many it shortlists is its own choice.
+1. The publisher queries its relays for hint events whose topic tags match any routing key its intended offer will carry or the catch-all hint tag, verifies them, keeps the sets whose scope its offer satisfies, and shortlists the services whose hints look best. How many it shortlists is its own choice.
 2. It builds a [`quote_request`](#quotes) and, for each shortlisted service, signs a request event addressed to that service's event key.
 3. On each relay it will send requests through, it subscribes to `{"kinds": [NOSTR_QUOTE_KIND], "#e": [<request event ids>]}`, then publishes the requests. Subscribing first matters because both kinds are ephemeral: a quote that arrives before the subscription is lost.
 4. A service answers a request addressed to it with at most one quote event, published to the relay it received the request from.
@@ -687,6 +689,8 @@ An offer whose keys span several kinds is published under every corresponding ro
 
 **Firehose**. There is no catch-all routing key. A service wanting everything subscribes without a topic filter, where its binding allows it (on [Binding B](#binding-b--nostr), a filter on `kind` alone), and applies its interest filter locally on ingest. 
 
+**Catch-all hint tag.** [Hint events](#price-discovery) need one tag value that offers never use: `subtx/v1/<network>/any`, for example `subtx/v1/mainnet/any`. A service whose accept side is *all* tags its unscoped hints with it, having no accept keys to tag them with, and every publisher includes it when querying for hints, so those hints are found by the same single query as everyone else's. It is not a routing key. An offer event carrying it is not addressed to anyone by it, and services ignore it there. Its version and network segments mean the same as in a routing key.
+
 **Interest filters.** An interest filter is an accept side — either a set of filter keys or the marker **all** — and a set of rejected keys. An offer is ingested when none of its keys is rejected, and either the accept side is *all* or at least one of its keys is accepted. Offers on HTTP  allow the publisher to learn about their offer's rejection from the `POST /offers` response. On an open transport, rejection is silent.
 
 **Further refinement.** Services can implement additional local filters that can be posted on-chain as part of their [service profile](#service-profile), as well as without any announcement strategy. 
@@ -932,7 +936,7 @@ recipient rather than travelling.
 | `NOSTR_OFFER_KIND` | Nostr event kind carrying offers | TBD, a regular kind per NIP-01 | Regular events are stored until they expire, which late-joining services and reconciliation depend on; ephemeral events are not stored |
 | `NOSTR_TOPIC_TAG` | Single-letter tag carrying routing keys | TBD | Relays index only single-letter tags. Must not collide with tags in common use, such as `t` (hashtags) or `k` (referenced kinds) |
 | `NOSTR_PRICE_REQUEST_KIND` | Nostr event kind carrying [price requests](#price-discovery) | TBD, an ephemeral kind per NIP-01 | A request is worth answering only while its publisher waits, so relays need not store it |
-| `NOSTR_HINT_KIND` | Nostr event kind carrying [price hints](#price-hints) | TBD, an addressable kind per NIP-01 | Each new set replaces the last, so a relay holds at most one per service and stored hints are always the latest |
+| `NOSTR_HINT_KIND` | Nostr event kind carrying [price hints](#price-hints) | TBD, an addressable kind per NIP-01 | Each new set replaces the last with the same scope, so a relay holds at most one per service and scope, and stored hints are always the latest |
 | `NOSTR_QUOTE_KIND` | Nostr event kind carrying quotes | TBD, an ephemeral kind per NIP-01 | Its only reader is already subscribed when it is sent |
 | `QUOTE_REQUEST_VERSION` | `request_version` in a [`quote_request`](#quotes) | 1 | The first revision of this specification |
 | `MAX_PRICE_REQUEST_TTL` | Longest a price request's `expiration` may be after its `created_at` | TBD, on the order of seconds | Long enough for services to price and reply across relays; short enough that a publisher is not kept waiting and a service does not answer a request its publisher has given up on |
@@ -1406,7 +1410,8 @@ hints =
 
 hints_body =
   [ produced_at  : uint                     ; POSIX milliseconds
-  , rates        : { + asset => rational }  ; lovelace per unit, margin folded in
+  , scope        : [* filter_key]           ; offers these hints apply to; empty is all
+  , rates        : { * asset => rational }  ; lovelace per unit, margin folded in
   , pairs        : [* [asset, asset, rational]]  ; direct pairs: units of the
                                             ; second per unit of the first
   , fee_terms    : [ intercept : uint       ; in lovelace
@@ -1423,7 +1428,11 @@ rational = [numerator : uint, denominator : uint .gt 0]
 
 The signature is under the registration key, as a [quote's](#quotes) is, so that a hint relayed by a third party can still be tied to the service it claims to be from.
 
-**Arithmetic is the wallet's.** A wallet computes what it must cover — its own outputs, plus the fee terms applied to its own size and declared execution units — and converts at the rate to decide what to put on the offered side. 
+**Scope.** A set of hints applies to the offers that carry every [filter key](#filter-key-kinds) in its `scope`, encoded as in the [registration CDDL](#on-chain-registration-of-services); an empty scope applies to every offer. A service may publish one unscoped set and any number of scoped ones, so that it can advertise different terms for some offers than for the rest. A sponsor covering fees for one DApp's users publishes a set scoped to [`PaysToScript`](#filter-key-kinds) with that DApp's script, with every fee term zero. For an offer that needs nothing beyond fee and collateral, the arithmetic then comes to nothing. Such a set may leave `rates` empty: a wallet with something to cover and no rate for its asset treats the set as not applying to it.
+
+When several of one service's sets apply to an offer, the wallet may use whichever gives it the best terms. A service that does not mean its unscoped terms to undercut a scoped set should not publish them that way. `GET /hints` returns every set the service currently publishes, as `[* hints]`.
+
+**Arithmetic is the wallet's.** Using a set of hints whose scope its offer satisfies, a wallet computes what it must cover — its own outputs, plus the fee terms applied to its own size and declared execution units — and converts at the rate to decide what to put on the offered side. 
 
 **Every hint carries when it was produced**, and a wallet should treat an old one as absent rather than as current. Rates move, and a service has no way to push a correction to a wallet it does not know exists. A service should drop its own stale hints rather than serve them, for the same reason from the other side: a wallet that receives no hint asks elsewhere, where one that receives a stale hint may sign against it, and a signed offer cannot be taken back.
 
@@ -1520,11 +1529,11 @@ A wallet that wants a signal beforehand asks for a [quote](#quotes), over HTTPS 
 
 **Quote baiting.** [Quotes bind nothing](#quotes), so a service can quote attractively and then never batch, exactly as it can with hints. What it cannot do is deny having made the quote: the publisher holds it, signed under a registration key with a deposit behind it. This CIP does not act on that evidence, and a single failed quote proves nothing, since an honest service can fail to batch for reasons it cannot show; it is useful only in aggregate, to a reputation system this CIP does not define. A publisher that shortlists several services sees them compete on the same request, which makes a service that habitually quotes and never batches easier to notice.
 
-**Amplification.** Offers and requests are both cheap to make, but an offer draws no reply, so it adds to relay traffic only what its publisher sends. A design in which one request draws replies from many services would let an attacker multiply its traffic by the number of services, on public relays, which may then block the protocol's kinds outright (see Carrier blocking). Binding B prevents this structurally: a request names exactly one recipient, and a service ignores one naming more, so no event draws more than one reply. The whole-market view comes instead from hint events, which relays serve from storage and hold at most one of per service.
+**Amplification.** Offers and requests are both cheap to make, but an offer draws no reply, so it adds to relay traffic only what its publisher sends. A design in which one request draws replies from many services would let an attacker multiply its traffic by the number of services, on public relays, which may then block the protocol's kinds outright (see Carrier blocking). Binding B prevents this structurally: a request names exactly one recipient, and a service ignores one naming more, so no event draws more than one reply. The whole-market view comes instead from hint events, which relays serve from storage and hold at most one of per service and scope.
 
 **Request spam.** With amplification removed, a flood of requests is ordinary Nostr spam on the relays, plus load on the services it names: each request asks its recipient for a signature and a published reply. Services rate-limit requests as they would anything else, may ignore requests lacking [NIP-13][] proof of work at a difficulty of their choosing, and may answer only requests whose `needs` fall within their [budgets](#service-profile). Because requests and quotes are ephemeral, relays forward them without storing them, and a flood of either leaves nothing behind once it stops.
 
-**Hint spam and impersonation.** Anyone can publish a hint event claiming any registration, and relays will store it. A publisher discards every hint whose registration-key signature does not verify against the live registration it names, so a forged hint costs the publisher a signature check and nothing else. A flood of forged hints is limited by the relays' own rate limits on publishing, as any other Nostr spam is.
+**Hint spam and impersonation.** Anyone can publish a hint event claiming any registration, and relays will store it. A publisher discards every hint whose registration-key signature does not verify against the live registration it names, so a forged hint costs the publisher a signature check and nothing else. A flood of forged hints is limited by the relays' own rate limits on publishing, as any other Nostr spam is. The same holds for a genuine service publishing many scoped sets: nothing in this protocol limits how many scopes it uses, but a wallet only fetches the sets tagged with keys its own offer carries.
 
 **Request linkage.** A price request reveals an intended trade before the offer exists, including any filter keys the wallet lists, such as which DApp the offer touches, and the quoted offer that follows carries the request inside its `quote` tag, so the two are linked by construction. The request key, the offer's event key and any key used for anything else must all be distinct. A request is addressed to one service but carried in the clear, so every relay it passes through, and anyone reading those relays, can see it. A publisher that does not want that asks over HTTPS instead.
 
@@ -1653,7 +1662,7 @@ This CIP fixes an interface and leaves the economics to the operator, so market 
 
 Alternatives are argued where the decision they bear on is made, rather than gathered here: declared economics against derived filter keys under [Routing and filtering](#routing-and-filtering), reservations against races under [Offer lifecycle](#offer-lifecycle), a shared reputation record against local drops under [Security considerations](#security-considerations), and a fourth envelope field against the fixed three, also there. The message queue of CIP-0137 against Nostr as the open transport is argued under [Further bindings](#further-bindings). Request-for-quote against hints alone was argued under [Price hints](#price-hints), and this CIP keeps both: [quotes](#quotes) bind no more than hints do, but are priced per offer and attributable. An earlier draft had held that quoting requires a session and so an identity, which is true of a stateful quote and not of a self-contained signed one.
 
-On Binding B there were two ways to give a wallet prices from the whole market: services could publish price ladders (a schedule of rates and fee terms per asset, refreshed periodically), or wallets could broadcast requests and services answer them. Broadcast requests were preferred at first, because a quote is computed for one described offer and can depend on anything the request and the service's state say, where a ladder can express only what its format has columns for. They were rejected because one request would draw a reply from every service, an [amplifier](#security-considerations) on relays this protocol does not control. This CIP takes both halves instead. The ladder is the [hint](#price-hints), published as an addressable event, so the whole-market view costs relays a stored event per service and wallets a read. The request is [directed](#price-discovery) at one service at a time, so per-offer pricing survives with at most one reply per request. What a service gives up is being asked when its published hint is uncompetitive even though its quote would have won; a service that prices in ways hints cannot express can publish hints that approximate its model, to make shortlists, and price precisely in its quotes.
+On Binding B there were two ways to give a wallet prices from the whole market: services could publish price ladders (a schedule of rates and fee terms per asset, refreshed periodically), or wallets could broadcast requests and services answer them. Broadcast requests were preferred at first, because a quote is computed for one described offer and can depend on anything the request and the service's state say, where a ladder can express only what its format has columns for. They were rejected because one request would draw a reply from every service, an [amplifier](#security-considerations) on relays this protocol does not control. This CIP takes both halves instead. The ladder is the [hint](#price-hints), published as an addressable event, so the whole-market view costs relays a stored event per service and scope, and wallets a read. The request is [directed](#price-discovery) at one service at a time, so per-offer pricing survives with at most one reply per request. What a service gives up is being asked when its published hint is uncompetitive even though its quote would have won; a service that prices in ways hints cannot express can publish hints that approximate its model, to make shortlists, and price precisely in its quotes.
 
 Prior art is in the References, and the two pieces that shaped the design are named where they bear: the original Babel Fees paper's packing result under [Batch construction](#batch-construction) and Cavefish in the light-client discussion at the end of this section.
 
