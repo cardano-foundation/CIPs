@@ -304,7 +304,7 @@ A service running this binding is an HTTPS server. Each row below is one request
 | `GET /interest` | The advertised interest filter: accept side, reject side, and whether it accepts everything. |
 | `GET /profile` | The [service profile](#service-profile), off chain — the same policy the (optional) on-chain registration carries. |
 | `GET /hints` | The service's current price hints: what it would indicatively charge to carry an offer, quoted per accepted asset. |
-| `POST /quote` | Optional. Asks the service what it would charge for one intended offer, described by its assets and its size and ExUnits estimate. Answers a signed [quote](#quotes) or declines. |
+| `POST /quote` | Optional. Asks the service what it would charge for one intended offer, described by its assets, its size and ExUnits estimate, and any filter keys it will carry. Answers a signed [quote](#quotes) or declines. |
 | `GET /offers/stream` | A feed of accepted offers, so services can source from each other rather than only from publishers. |
 | `GET /health` | Whether the party is *able* to act on an offer right now, which is not the same question as whether it is reachable. See [Readiness]. |
 | `GET /status` | Optional. Live operating state: uncommitted liquidity per asset, and a recent inclusion rate. Non-binding, as [hints](#price-hints) are. |
@@ -409,7 +409,7 @@ Nothing may be assumed about ordering or delivery. A relay's `OK` reply means on
 On Binding A a publisher can only ask the *k* services it drew, so the best price it sees is the best of a sample. This binding lets a publisher see the whole market's prices, and then ask the most competitive services for prices on its own offer, in two steps:
 
 1. **Read hints.** Every service publishes its [price hints](#price-hints) to the relays it reads, as an addressable event that each new set replaces. A publisher reads them with an ordinary relay query, and so sees the indicative prices of every service on its relays without sending anything.
-2. **Ask a shortlist.** While it is still building its offer, the publisher sends a *price request* to each of the few services whose hints look best. A request describes the intended offer (the assets it needs and would pay in, and bounds on its size and execution units), not the sub-transaction itself. Each request is addressed to exactly one service, which may answer with a [quote](#quotes) priced for that offer.
+2. **Ask a shortlist.** While it is still building its offer, the publisher sends a *price request* to each of the few services whose hints look best. A request describes the intended offer (the assets it needs and would pay in, bounds on its size and execution units, and any filter keys it wants priced), not the sub-transaction itself. Each request is addressed to exactly one service, which may answer with a [quote](#quotes) priced for that offer.
 
 Either step may be skipped. A publisher may sign against a hint without asking, publish an offer without either, or send a request to a service it learned of some other way. A service may publish no hints and ignore every request.
 
@@ -481,7 +481,7 @@ A quoted offer is still published under its routing keys, and any service may ba
 
 **Silence.** A request that draws no verifiable quote by the publisher's deadline tells it nothing: the service chose not to answer, was not connected, or the relay dropped the request. The publisher may ask further down its shortlist, sign against the hints it already holds, or publish an offer at a price of its own choosing and accept that it may not be taken.
 
-**What a service may price on.** Hints are what every service shows the whole market, and they are as expressive as their [format](#price-hints) allows. A quote is priced for one described offer, so it can depend on anything the request says (the assets involved, their amounts, the offer's size and execution units) and on anything the service knows at that moment: its inventory, the depth of its pool, market conditions, or how much it wants this particular flow. A service whose pricing model does not fit the hint format can still publish hints that approximate it, to make the shortlist, and price precisely in its quotes.
+**What a service may price on.** Hints are what every service shows the whole market, and they are as expressive as their [format](#price-hints) allows. A quote is priced for one described offer, so it can depend on anything the request says (the assets involved, their amounts, the offer's size and execution units, and the filter keys it will carry, such as which DApp it pays into) and on anything the service knows at that moment: its inventory, the depth of its pool, market conditions, or how much it wants this particular flow. A service whose pricing model does not fit the hint format can still publish hints that approximate it, to make the shortlist, and price precisely in its quotes.
 
 #### Further bindings
 
@@ -1455,6 +1455,7 @@ quote_request =
   , pay_with        : [+ asset]             ; assets the wallet would offer, any one of
   , max_size_bytes  : uint                  ; bound on the offer's subtx_bytes
   , max_ex_units    : [mem : uint, steps : uint]  ; bound on its declared ExUnits
+  , keys            : [* filter_key]        ; keys the offer will carry
   , nonce           : bytes .size 16        ; makes every request distinct
   ]
 
@@ -1474,7 +1475,11 @@ quote_body =
 
 `needs` is the negative side of the intended offer's [imbalance](#chain-state-checks--performed-by-publishers-services), together with the fee and collateral the wallet expects the batch to cover. `terms` names a subset of `pay_with`: for each asset the service is willing to be paid in, the least of it the offer must give its batch. Carrying the request and the body as bytes means each signature covers exactly the bytes that travel, with no re-encoding.
 
-**Matching a quote.** An offer matches a quote when its needed side is covered by `needs` asset for asset, its offered side gives at least the `terms` amount of some asset in `terms`, its size is within `max_size_bytes`, its declared execution units are within `max_ex_units`, and it arrives before `valid_until`. A quote that the offer does not match tells the issuer nothing about it. An offer that matches is still subject to every check that applies to any other offer.
+`keys` lists [filter keys](#filter-key-kinds) the intended offer will carry, in the encoding of the [registration CDDL](#on-chain-registration-of-services). It lets a service price on what an offer *does*, not only on what it costs: a sponsor covering fees for one DApp quotes only for requests listing [`PaysToScript`](#filter-key-kinds) with that DApp's script. A wallet lists the keys it wants priced and may omit the rest; an empty list asks for a price that depends on none.
+
+A `terms` entry of 0 asks for nothing of that asset, so any offer that otherwise matches qualifies. This is how a sponsor quotes a free fill.
+
+**Matching a quote.** An offer matches a quote when its needed side is covered by `needs` asset for asset, its offered side gives at least the `terms` amount of some asset in `terms`, its size is within `max_size_bytes`, its declared execution units are within `max_ex_units`, it carries every key in `keys`, and it arrives before `valid_until`. Keys that need chain state are checked once the offer's inputs resolve, alongside the other [chain-state checks](#chain-state-checks--performed-by-publishers-services). An offer may carry keys the request did not list; an issuer that does not want an offer for what those keys say about it declines it, as it may decline any offer, since [quotes bind nothing](#quotes). A quote that the offer does not match tells the issuer nothing about it. An offer that matches is still subject to every check that applies to any other offer.
 
 **Stateless.** The service stores nothing, and the service recognises a returning quote by checking its own signature. 
 
@@ -1521,7 +1526,7 @@ A wallet that wants a signal beforehand asks for a [quote](#quotes), over HTTPS 
 
 **Hint spam and impersonation.** Anyone can publish a hint event claiming any registration, and relays will store it. A publisher discards every hint whose registration-key signature does not verify against the live registration it names, so a forged hint costs the publisher a signature check and nothing else. A flood of forged hints is limited by the relays' own rate limits on publishing, as any other Nostr spam is.
 
-**Request linkage.** A price request reveals an intended trade before the offer exists, and the quoted offer that follows carries the request inside its `quote` tag, so the two are linked by construction. The request key, the offer's event key and any key used for anything else must all be distinct. A request is addressed to one service but carried in the clear, so every relay it passes through, and anyone reading those relays, can see it. A publisher that does not want that asks over HTTPS instead.
+**Request linkage.** A price request reveals an intended trade before the offer exists, including any filter keys the wallet lists, such as which DApp the offer touches, and the quoted offer that follows carries the request inside its `quote` tag, so the two are linked by construction. The request key, the offer's event key and any key used for anything else must all be distinct. A request is addressed to one service but carried in the clear, so every relay it passes through, and anyone reading those relays, can see it. A publisher that does not want that asks over HTTPS instead.
 
 Limiting intelligence gathering can be done via adjusting the quotes, not publishing a [live status](#binding-a--https), not naming a [rate source](#service-profile) or declaring its [arrangements](#service-profile). 
 
