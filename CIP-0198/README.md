@@ -538,7 +538,7 @@ Publishers must construct offers satisfying every offer check. Services must app
 **Recipient checks** — obligations of whoever receives the offer:
 
 - **Duplicate.** An arrival whose transport dedup key the recipient is currently suppressing must not be stored again. A service ignores the offers it currently holds, as well as any offers the chain has settled. An offer dropped for any other reason loses its key with it, and is readmitted on re-arrival — see [Offer lifecycle]. 
-- **Filter-key policing.** A routing key is an address and never evidence. On transports where the publisher chooses where to send an offer, a service may re-derive the keys that need no chain state — guard, ExUnits band, and the two feature keys — and drop an offer whose [arrival topic](#routing-keys) is not among them.
+- **Filter-key policing.** A routing key is an address and never evidence. On transports where the publisher chooses where to send an offer, a service may re-derive the keys that need no chain state — guard, paid script, ExUnits band, and the two feature keys — and drop an offer whose [arrival topic](#routing-keys) is not among them.
 
 
 #### Chain-state checks — performed by publishers, services
@@ -624,11 +624,12 @@ out which kinds apply and derives a key for each. The kinds are:
 | `Priority` | Priority | nothing | needs nothing and offers value: paying for inclusion rather than asking for it | yes |
 | `Guard` | Guard | a `credential`, key or script | a credential in required top-level guards | no |
 | `InvokesScript` | Invoked script | a `script_hash` | a script the sub-transaction itself runs | yes |
+| `PaysToScript` | Paid script | a `script_hash` | the script payment credential of one of the sub-transaction's outputs | no |
 | `ExUnits` | ExUnits band | one of `none`, `low`, `medium`, `high` | declared execution units, banded | no |
 | `UsesDirectDeposits` | Direct deposits | nothing | uses direct deposits | no |
 | `UsesAccountBalanceIntervals` | Balance intervals | nothing | uses account balance intervals | no |
 
-**`Guard` and `InvokesScript` name different scripts.** `Guard` names a script the *batch* must satisfy. `InvokesScript` names one the *sub-transaction* runs for its own reasons.
+**`Guard`, `InvokesScript` and `PaysToScript` name different scripts.** `Guard` names a script the *batch* must satisfy. `InvokesScript` names one the *sub-transaction* runs for its own reasons. `PaysToScript` names one the sub-transaction sends value to without running it, such as a DApp's order or escrow validator, which is how an offer that creates an order for a DApp is recognised: creating the order runs no script, so `InvokesScript` does not see it. Only an output's payment credential counts; a script in the stake part of an address, or an account credited by direct deposit, does not.
 
 A kind that carries a payload defines a family, one key per distinct payload. `ExUnits` carries a *band* rather than a number of execution units. The [routing-key grammar](#routing-keys) is the wire spelling of exactly these payloads.
 
@@ -665,6 +666,7 @@ kind        = "offered/" policy-id
             / "guard/key/" hash28
             / "guard/script/" hash28
             / "invokes/" hash28
+            / "pays/" hash28
             / "exunits/" band
             / "feature/direct-deposits"
             / "feature/balance-intervals"
@@ -1313,14 +1315,15 @@ accepted_versions =
 
 accept       = #6.121([]) / #6.122([[* filter_key]])  ; all / these keys
 
-; The ten kinds under Filter-key kinds
-; alternatives 7, 8 and 9 are tags 1280, 1281 and 1282, not 128, 129 and 130.
+; The eleven kinds under Filter-key kinds
+; alternatives 7, 8, 9 and 10 are tags 1280, 1281, 1282 and 1283, not 128, 129, 130 and 131.
 filter_key   = #6.121([hash28]) / #6.122([hash28])  ; offered / needed policy
              / #6.123([]) / #6.124([]) / #6.125([]) ; pure babel / sponsorship / priority
              / #6.126([credential])                 ; guard
              / #6.127([band])                       ; ExUnits band
              / #6.1280([]) / #6.1281([])            ; the two feature markers
              / #6.1282([hash28])                    ; invoked script
+             / #6.1283([hash28])                    ; paid script
 band         = #6.121([]) / #6.122([]) / #6.123([]) / #6.124([])
                                               ; none / low / medium / high
 
@@ -1373,7 +1376,7 @@ A **service profile** is a service's announced configuration of the policy of wh
 
 | Code name | Field | What it says |
 |---|---|---|
-| `accept` | accept side | What the service will take: a set of [filter keys](#filter-key-kinds), or the marker meaning everything. Keys rather than assets, since six of the ten kinds are not assets: a service taking only scriptless offers, offers guarded by one DApp, or offers touching one DApp's validator. |
+| `accept` | accept side | What the service will take: a set of [filter keys](#filter-key-kinds), or the marker meaning everything. Keys rather than assets, since all but two of the eleven kinds are not assets: a service taking only scriptless offers, offers guarded by one DApp, offers touching one DApp's validator, or offers paying into it. |
 | `rejected_keys` | rejected keys | Exclusions, which win over the accept side however it is set. |
 | `rate_source` | rate source | Where rates come from (not what they are): either quoted by the service itself, meaning read them from `GET /hints`, or a named feed it prices off.  |
 | `budgets` | budgets | The operator's risk limits, published so an author can tell whether its offer is even in range. `max_value_exposure` is the most of an asset the service will find **for one offer**, per asset with ADA included, keyed by asset rather than by filter key. `max_ex_units_mem` and `max_ex_units_steps` are ceilings on **the whole batch**, so an offer exceeding one alone can never be included, while an offer under them may still be refused for what it would have to share a batch with. `max_collateral` is what it will post. |
@@ -1535,6 +1538,8 @@ Relays are also ranked with score proportional to deposit; a service's deposit i
 **Selective dropping.** A malicious relay could accept a publisher's event, show it to that publisher (to make it appear confirmed), and hide it from services. There is no simple way for a publisher to detect this, as clever relays could detect services based on e.g. traffic patterns. To mitigate this, publishers should publish to several relays, as is common practice for Nostr. The set of relays is open, and composed of both Cardano-aware relays and general-purpose public relays, so it is unlikely that *R* relays would all be compromised in this way.
 
 **Subsidised filling.** A party with capital can price below its own cost to take offers others decline. Users gain in the short run and the market concentrates, since nobody without that capital can match the price. Nothing here prevents it, and a service's [hints](#price-hints) are what make it visible.
+
+**Sponsorship drain.** A service sponsoring a DApp's users, for example by covering fees for any offer that [pays into](#filter-key-kinds) the DApp's order script, pays exactly what it would pay for any other offer: the offer's negative [imbalance](#chain-state-checks--performed-by-publishers-services), its share of the batch fee, and its collateral exposure. Where the offer's outputs go does not matter; outputs funded by the author's own inputs cost the sponsor nothing, and the drain to guard against is an offer that also *needs* value from the batch, which the sponsor would then supply. `PaysToScript` identifies an offer as the DApp's but says nothing about what it needs. A sponsor intending to cover fees only should therefore also require the offer to be `SponsorshipOnly`, or cap its needed side explicitly, and set [`max_value_exposure`](#service-profile) for sponsored traffic rather than for trading. An accept side matches on any one of its keys, so that combination cannot be advertised; the sponsor applies it as a local [refinement](#routing-keys).
 
 **Replay.** Replay is possible and indistinguishable from normal operation of parties. The dedup keys allow parties to refuse offers they already have.
 
