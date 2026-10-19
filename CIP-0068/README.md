@@ -1,23 +1,23 @@
 ---
 CIP: 68
 Title: Datum Metadata Standard
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Alessandro Konrad <alessandro.konrad@live.de>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Implementors:
-  - Alessandro Konrad (SpaceBudz)
-  - 5Binaries (Blockfrost)
-  - Smaug (Pool.pm)
+  - Alessandro Konrad (SpaceBudz) <https://spacebudz.io/>
+  - 5Binaries (Blockfrost) <https://blockfrost.io/>
+  - Smaug (Pool.pm) <https://pool.pm/>
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/299
-  - https://github.com/cardano-foundation/CIPs/pull/359
-  - https://github.com/cardano-foundation/CIPs/pull/458
-  - https://github.com/cardano-foundation/CIPs/pull/471
-  - https://github.com/cardano-foundation/CIPs/pull/494
-  - https://github.com/cardano-foundation/CIPs/issues/520
-  - https://github.com/cardano-foundation/CIPs/pull/586
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/299
+  - CIP-0068 | Small change in 333 FT sub standard: https://github.com/cardano-foundation/CIPs/pull/359
+  - CIP-0068 | Extra field: https://github.com/cardano-foundation/CIPs/pull/458
+  - CIP-0068 | Clarify label prefixes: https://github.com/cardano-foundation/CIPs/pull/471
+  - CIP-0068 | Add RFT Rich-fungible token support: https://github.com/cardano-foundation/CIPs/pull/494
+  - GitHub Issue: https://github.com/cardano-foundation/CIPs/issues/520
+  - CIP-0067, CIP-0068 | Add Clarification for Edits and Modification: https://github.com/cardano-foundation/CIPs/pull/586
 Created: 2022-07-13
 License: CC-BY-4.0
 ---
@@ -27,7 +27,7 @@ License: CC-BY-4.0
 This proposal defines a metadata standard for native assets making use of output datums not only for NFTs but any asset
 class.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This proposal addresses a few shortcomings
 of [CIP-0025](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0025):
@@ -683,7 +683,7 @@ versions of the affected tokens. `asset_name_labels` **MUST** only be marked obs
 
 - Add support for nested map format following CIP-0025's policy_id -> asset_name structure, allowing multiple assets' metadata in a single datum. This format is backwards-compatible with versions 1-3, which only support direct metadata format.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Without separation of `reference NFT` and `user token` you lose all flexibility and moving the `user token` would be
 quite cumbersome as you would need to add the metadata everytime to the new output where the `user token` is sent to.

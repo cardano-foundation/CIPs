@@ -1,0 +1,20 @@
+{
+  "name": "error_003_user_rejected",
+  "spec_section": "Callback contract; Appendix A (-1)",
+  "category": "error_response",
+  "input": {
+    "scenario": "user_dismissed_signing_prompt",
+    "redirect": "https://aegis.example/cb"
+  },
+  "expected": {
+    "response_url_query": {
+      "response": "rejected",
+      "errorCode": "-1",
+      "errorMessage": "user%20rejected"
+    },
+    "errorCode": -1,
+    "errorName": "UserRejected"
+  },
+  "should_reject": true,
+  "rejection_reason": "user_rejected"
+}

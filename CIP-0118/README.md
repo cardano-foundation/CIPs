@@ -9,9 +9,10 @@ Authors:
     - Alexey Kuleshevich <alexey.kuleshevich@iohk.io>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/780
-    - https://github.com/cardano-foundation/CIPs/pull/862
-    - https://github.com/cardano-foundation/CIPs/pull/880
+    - CIP-0118? | Validation zones: https://github.com/cardano-foundation/CIPs/pull/780
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/862
+    - CIP-0131? | Transaction swaps: https://github.com/cardano-foundation/CIPs/pull/880
+    - Supplemental datums: https://github.com/cardano-foundation/CIPs/pull/1290
 Created: 2024-03-11
 License: CC-BY-4.0
 ---
@@ -30,10 +31,10 @@ to make and accept swap offers without the need for a centralized exchange or tw
 It gives non-ADA holders a way to engage with the Cardano ecosystem. It also creates new business opportunities
 for users willing to make and accept offers, run aggregator services, subsidize the use of their DApps, etc.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 This CIP provides a partial solution to the problems described in
-[CPS-15](https://github.com/cardano-foundation/CIPs/pull/779).
+[CPS-0015?](https://github.com/cardano-foundation/CIPs/pull/779).
 In particular, it describes some ledger changes that allow settlement
 of intents that require *counterparty irrelevance*, including many of the swap use cases
 and DApp fee sponsorship. *Counterparty irrelevance* is a property of a transaction batching protocol
@@ -168,11 +169,18 @@ batch fails, none of the transactions in the batch are applied, only the collate
 4. Transactions using new features are not allowed to run scripts of PlutusV3 or earlier.
 
 5. All scripts are shared across all transactions within a single batch, so attaching one script to either a sub- or a top-level-transaction
-allows other transactions to run it without also including it in its own scripts. This includes references scripts that are sourced from the
-outputs to which reference inputs point in the UTxO. These referenced UTxO entries could be outputs of preceding transactions in the batch.
-Datums (both from reference inputs and ones attached to other transactions) are also shared in this way. As before, only the datums fixed by the
-executing transaction are included in the `TxInfo` constructed for its scripts, however, now they don't necessarily have to be attached to
-that transaction.
+allows other transactions to run it without also including it in its own scripts. This includes:
+    1. reference scripts that are sourced from the outputs to which reference
+    inputs point in the UTxO,
+    2. scripts in transaction witnesses, and
+    3. scripts in transaction outputs (see
+    [CIP-0172](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0172)).
+
+    In contrast, datums are not shared within a single batch: every transaction must include
+    in its own witnesses the datums required to spend its own inputs. Outside the legacy mode for
+    PlutusV1 - PlutusV3 scripts (see below), the top-level transaction may, however, include
+    supplemental datums for the outputs and reference inputs of its sub-transactions, in addition to those for its own.
+    A sub-transaction may only include supplemental datums for its own outputs and reference inputs.
 
 6. All inputs of all transactions in a single batch must be contained in the UTxO set before any of the
 batch transactions are applied. This ensures that operation of scripts is not disrupted, for example, by
@@ -191,8 +199,8 @@ It is usually not possible to make new features that are added to a transaction 
 
 In order to make this a reality we propose a special mode for the top level transaction validation. This mode will be enabled automatically when a top level transaction uses any of the older PlutusV1, PlutusV2 or PlutusV3 scripts. This special mode will validate the top level transaction in isolation from all of the sub-transactions that were included in it. In particular:
 * top level transaction will have to balance out by itself and all of the sub-transactions will have to balance each other, without relying on the top level transaction.
-* top level transaction cannot use any of the sub-transactions as the source of actual scripts or datums. They will have to be supplied at the top level through the usual means of reference inputs or through the witness set.
 * top level transaction itself cannot use any of the new features. Eg. guards list cannot contain any script hashes at the top level.
+* top level transaction cannot include supplemental datums for the outputs or reference inputs of its sub-transactions, only for its own outputs and reference inputs.
 
 With this slight modification to the rules we will be able to guarantee backwards compatibility for PlutusV1 - PlutusV3 scripts. The only change visible to the older scripts in the script context would be potentially slightly higher than usual transaction fee, which is not disallowed today.
 
@@ -335,7 +343,7 @@ transactions and also satisfy the batch-level constraints imposed by these scrip
 An additional high-level language may be beneficial to specify what the guard scripts
 actually require of the batch, as Plutus script constraints may be difficult to work with directly.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The primary purpose of this CIP is to enable Cardano node support for a specific kind of transaction
 batching which we call *nested transactions*. The specification we presented includes the features
@@ -409,7 +417,7 @@ guard scripts, `guardScript0`, `guardScript1`, which do get to see `txInfoSubTxs
 
 ### Comparison with Other Designs
 
-#### CIP-0131 "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
+#### CIP-0131? "[Transaction Swaps](https://github.com/cardano-foundation/CIPs/pull/880)"
 
 Transaction swaps achieve almost exactly the same goals as this CIP. The main differences
 are :

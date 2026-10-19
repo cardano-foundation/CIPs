@@ -1,0 +1,21 @@
+{
+  "name": "replay_004_post_ttl_window_gc_then_reuse",
+  "spec_section": "Replay protection (cache GC after ttl + 600s)",
+  "category": "replay_nonce",
+  "input": {
+    "dappKey_b64url": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+    "nonce_b64url": "CAgICAgICAgICAgICAgICAgICAgICAgI",
+    "ttl_unix": 1810000300,
+    "now_unix": 1810000950,
+    "nonce_cache_before": [
+      {"dappKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE", "nonce": "CAgICAgICAgICAgICAgICAgICAgICAgI", "ttl_unix": 1810000300}
+    ],
+    "note": "Cache entry recorded ttl=1810000300; now=1810000950 > ttl+600=1810000900 so entry may be GC'd. However TTL still applies and now > original ttl, so wallet MUST reject with -6 TtlExpired regardless."
+  },
+  "expected": {
+    "errorCode": -6,
+    "errorName": "TtlExpired"
+  },
+  "should_reject": true,
+  "rejection_reason": "ttl_expired"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "cip-0186-conformance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify": "tsx verify.ts"
+  },
+  "dependencies": {
+    "@noble/hashes": "^1.7.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "tweetnacl": "^1.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

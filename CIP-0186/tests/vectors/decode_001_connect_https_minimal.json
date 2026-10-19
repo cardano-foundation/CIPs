@@ -1,0 +1,24 @@
+{
+  "name": "decode_001_connect_https_minimal",
+  "spec_section": "URI format; connect; Appendix C.1",
+  "category": "deep_link_decode",
+  "input": {
+    "url": "https://lace.io/cip30dl/v1/connect?v=1&dapp=eyJuYW1lIjoiQWVnaXMiLCJ1cmwiOiJodHRwczovL2FlZ2lzLmV4YW1wbGUiLCJpY29uVXJsIjoiaHR0cHM6Ly9hZWdpcy5leGFtcGxlL2ljb24ucG5nIn0&dappKey=AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&redirect=https%3A%2F%2Faegis.example%2Fcb&chain=cardano%3Apreprod&nonce=AgICAgICAgICAgICAgICAgICAgICAgICAgIC"
+  },
+  "expected": {
+    "form": "https",
+    "wallet_domain": "lace.io",
+    "wallet_id": null,
+    "method": "connect",
+    "params": {
+      "v": "1",
+      "dapp": "eyJuYW1lIjoiQWVnaXMiLCJ1cmwiOiJodHRwczovL2FlZ2lzLmV4YW1wbGUiLCJpY29uVXJsIjoiaHR0cHM6Ly9hZWdpcy5leGFtcGxlL2ljb24ucG5nIn0",
+      "dappKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+      "redirect": "https://aegis.example/cb",
+      "chain": "cardano:preprod",
+      "nonce": "AgICAgICAgICAgICAgICAgICAgICAgICAgIC"
+    }
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

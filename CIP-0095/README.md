@@ -18,9 +18,9 @@ Implementors:
   - Vespr <https://vespr.xyz/>
   - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-  - https://github.com/cardano-foundation/cips/pulls/509
-  - https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
-  - https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/509
+  - Discord: https://discord.com/channels/826816523368005654/1101547251903504474/1101548279277309983
+  - Discord: https://discord.com/channels/826816523368005654/1143258005354328156/1143272934966837309
 Created: 2022-02-24
 License: CC-BY-4.0
 ---
@@ -41,7 +41,7 @@ holders and DReps in the Conway Ledger era, this specification is based on the
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 CIP-1694 introduces many new concepts, entities and actors to Cardano;
 describing their implementation at the ledger level. This creates the need for
@@ -77,7 +77,7 @@ connector, this specification could be applied to similar standards.
 #### CIP-30 Inherited Data Types
 
 From
-[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/tree/master/CIP-003/README.md#data-types)
+[CIP-30's Data Types](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#data-types)
 we inherit:
 
 ##### [Address](https://github.com/cardano-foundation/CIPs/blob/master/CIP-0030/README.md#address)
@@ -595,7 +595,7 @@ the user is not a registered DRep.
    the app can use this to track the status of the transaction on-chain and
    provide feedback to the user.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The principle aim for this design is to reduce the complexity for wallet
 implementors whilst maintaining backwards compatibility with CIP-30

@@ -1,0 +1,15 @@
+{
+  "name": "cbor_001_commit_blake2b256_of_txbody",
+  "spec_section": "Terminology (Commit); Conway transaction body extraction",
+  "category": "cbor_commit",
+  "input": {
+    "tx_body_cbor_hex": "a0",
+    "note": "Minimal CBOR map (definite-length, zero entries) used as a tx_body stand-in to exercise BLAKE2b-256 over canonical bytes. Real tx_body has required map keys per Conway CDDL; the hash operation is identical."
+  },
+  "expected": {
+    "commit_hex": "d36a2619a672494604e11bb447cbcf5231e9f2ba25c2169177edc941bd50ad6c",
+    "commit_base64url": "02omGaZySUYE4Ru0R8vPUjHp8rolwhaRd-3JQb1QrWw"
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

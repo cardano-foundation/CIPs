@@ -4,20 +4,20 @@ Title: Catalyst Registration Transaction Metadata Format
 Category: Metadata
 Status: Active
 Authors:
-    - Sebastien Guillemot <sebastien@dcspark.io>, 
-    - Rinor Hoxha <rinor.hoxha@iohk.io>, 
+    - Sebastien Guillemot <sebastien@dcspark.io>
+    - Rinor Hoxha <rinor.hoxha@iohk.io>
     - Mikhail Zabaluev <mikhail.zabaluev@iohk.io>
 Implementors:
-    - Daedalus <https://daedaluswallet.io/>,
-    - DcSpark <https://www.dcspark.io/>,
-    - Eternl <https://eternl.io/>,
-    - Flint <https://flint-wallet.com/>,
-    - Project Catalyst <https://projectcatalyst.io/>,
-    - Typhon <https://typhonwallet.io/>,
+    - Daedalus <https://daedaluswallet.io/>
+    - DcSpark <https://www.dcspark.io/>
+    - Eternl <https://eternl.io/>
+    - Flint <https://flint-wallet.com/>
+    - Project Catalyst <https://projectcatalyst.io/>
+    - Typhon <https://typhonwallet.io/>
     - Yoroi <https://yoroi-wallet.com/>
 Discussions:
-    - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
-    - https://github.com/cardano-foundation/cips/pulls/58
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/58
+    - Cardano Forum: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
 Created: 2020-01-05
 License: CC-BY-4.0
 ---
@@ -26,7 +26,7 @@ License: CC-BY-4.0
 
 This CIP details a transaction metadata format, used by Cardano's [Project Catalyst](https://projectcatalyst.io) for voter registrations.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Project Catalyst uses a sidechain for it's voting system.
 One of the desirable properties of this sidechain is that even if its' safety is compromised, it doesn't cause a loss of funds on Cardano mainnet. 
@@ -106,7 +106,7 @@ Catalyst Fund 4:
 It was planned that since Fund 4, `registration_signature` and the `staking_pub_key` entry inside the `key_registration` field will be deprecated.
 This has been deferred to a future revision of the protocol.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 The described metadata format allows for the association of a voting key with a stake credential on a Cardano network.
 

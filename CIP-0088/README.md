@@ -5,12 +5,12 @@ Category: Tokens
 Status: Active
 Authors:
     - Adam Dean <adam@crypto2099.io>
-Implementors: 
-    - VeriGlyph Nexus: https://nexus.veriglyph.io
-    - VeriGlyph Seninel: https://seninel.veriglyph.io
-    - Cardano Signer: https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode
+Implementors:
+    - VeriGlyph Nexus <https://nexus.veriglyph.io>
+    - VeriGlyph Seninel <https://seninel.veriglyph.io>
+    - Cardano Signer <https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-88v2-calidus-pool-key-mode>
 Discussions:
-    - https://github.com/cardano-foundation/cips/pull/467
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/467
 Created: 2023-02-27
 License: CC-BY-4.0
 ---
@@ -72,11 +72,11 @@ for NFT projects. As such, much information must be manually provided to individ
 creating an undue burden on the project creators to provide a largely static amount of information via different web
 forms and authentication schemes rather than simply publishing this information to the blockchain directly.
 
-### CPS-0001: Metadata Discoverability and Trust
+### CPS-0001?: Metadata Discoverability and Trust
 
-[CPS-0001](https://github.com/cardano-foundation/CIPs/pull/371) presents a problem of metadata discoverability and
+[CPS-0001?](https://github.com/cardano-foundation/CIPs/pull/371) presents a problem of metadata discoverability and
 trust.
-This CIP attempts to address and solve several of the issues proposed in CPS-0001 but is most likely not a "complete"
+This CIP attempts to address and solve several of the issues proposed in CPS-0001? but is most likely not a "complete"
 solution and is rather narrowed (for the time being) to the scope of token projects although with some refinement to
 the schema could potentially be expanded to support additional scopes.
 
@@ -171,7 +171,7 @@ standard.
 
 | Index | Name                                        | Type   | Required | Notes/Examples                                                                                                                                                                                                                                    |
 |-------|---------------------------------------------|--------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 1     | Scope                                       | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
+| 1     | Scope                                       | Array  | Yes      | An array defining the scope of this registration (for greater compatibility with CPS-0001?). The first entry should be an unsigned integer value identifying the type of scope while the second entry addresses the specific scope of registration |
 | 2     | Feature Set                                 | Array  | Yes      | An array of unsigned integers specifying none or more CIP standards utilized by the tokens of this project. Should reference the assigned CIP number.                                                                                             |
 | 3     | Validation Method                           | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
 | 4     | Nonce                                       | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
@@ -182,7 +182,7 @@ The following fields are required in all token registration submissions.
 
 ##### 1. Scope
 
-Currently, this CIP concerns itself with the scope of *Tokens* with relation to CPS-0001 as described in the Motivation
+Currently, this CIP concerns itself with the scope of *Tokens* with relation to CPS-0001? as described in the Motivation
 section. However, the specification is left flexible to encapsulate additional scopes and contexts (Stake Pools, dApps,
 etc.) should the specification become adopted and the community desire to expand the scope of this CIP.
 
@@ -262,7 +262,7 @@ the content is well-formed and easily parseable.
 | 25  | Token Metadata                | 1       | Active | [CIP25_v1.cddl](./CIPs/0025/CIP25_v1.cddl) | [CIP-25](./CIPs/0025) |
 | 26  | Fungible Token Information    | 1       | Active | [CIP26_v1.cddl](./CIPs/0026/CIP26_v1.cddl) | [CIP-26](./CIPs/0026) |
 | 27  | Token Royalties               | 1       | Active | [CIP27_v1.cddl](./CIPs/0027/CIP27_v1.cddl) | [CIP-27](./CIPs/0027) |
-| 48  | Metadata References           | 1       | Draft  | [CIP48_v1.cddl](./CIPs/0048/CIP48_v1.cddl) | [CIP-48](./CIPs/0048) |
+| 48  | Metadata References           | 1       | Draft  | [CIP48_v1.cddl](./CIPs/0048/CIP48_v1.cddl) | [CIP-48?](./CIPs/0048) |
 | 60  | Music Token Metadata          | 1       | Draft  | [CIP60_v1.cddl](./CIPs/0060/CIP60_v1.cddl) | [CIP-60](./CIPs/0060) |
 | 68  | Datum Token Metadata          | 1       | Active | [CIP68_v1.cddl](./CIPs/0068/CIP68_v1.cddl) | [CIP-68](./CIPs/0068) |
 | 86  | Token Metadata Update Oracles | 1       | Active | [CIP86_v1.cddl](./CIPs/0086/CIP86_v1.cddl) | [CIP-86](./CIPs/0086) |
@@ -526,7 +526,7 @@ Below is a complete example of the hypothetical metadata payload for an NFT proj
 }
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 For this specification, I have drawn inspiration from
 [CIP-36: Catalyst/Voltaire Registration Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0036)

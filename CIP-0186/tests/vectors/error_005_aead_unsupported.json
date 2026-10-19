@@ -1,0 +1,15 @@
+{
+  "name": "error_005_aead_unsupported",
+  "spec_section": "Methods (AEAD envelope); Appendix A (-9)",
+  "category": "error_response",
+  "input": {
+    "request_aead_param": "chacha20poly1305-ietf",
+    "wallet_supports_only": ["xsalsa20poly1305"]
+  },
+  "expected": {
+    "errorCode": -9,
+    "errorName": "UnsupportedVersion"
+  },
+  "should_reject": true,
+  "rejection_reason": "aead_unsupported"
+}

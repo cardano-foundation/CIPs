@@ -1,0 +1,13 @@
+{
+  "name": "decode_005_missing_required_field",
+  "spec_section": "URI format; connect",
+  "category": "deep_link_decode",
+  "input": {
+    "url": "https://lace.io/cip30dl/v1/connect?v=1&dapp=eyJuYW1lIjoiQWVnaXMifQ&redirect=https%3A%2F%2Faegis.example%2Fcb&chain=cardano%3Apreprod&nonce=AgICAgICAgICAgICAgICAgICAgICAgICAgIC"
+  },
+  "expected": {
+    "missing_param": "dappKey"
+  },
+  "should_reject": true,
+  "rejection_reason": "missing_required_param"
+}

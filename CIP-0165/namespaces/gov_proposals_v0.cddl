@@ -24,8 +24,10 @@
 ;        doc: governance action index
 ;        type: u2
 ;  ```
-;
-record_entry = proposal
+; 
+record_entry = [word64, proposal]
+
+word64 = uint .size 8
 
 proposal =
   { drep_votes         : {* credential => vote}
@@ -33,9 +35,8 @@ proposal =
   , expires_after      : epoch_no
   , committee_votes    : {* committee_cold_credential => vote}
   , stake_pool_votes   : {* pool_keyhash => vote}
-  , proposal_procedure : proposal_procedure
+  , proposal_procedure : bytes .cbor proposal_procedure 
   }
-
 
 credential = [0, addr_keyhash// 1, script_hash]
 
@@ -61,12 +62,12 @@ committee_cold_credential = credential
 
 pool_keyhash = hash28
 
-proposal_procedure =
-  { anchor         : anchor
-  , deposit        : coin
-  , gov_action     : gov_action
+proposal_procedure = 
+  [ deposit        : coin          
   , return_address : reward_account
-  }
+  , gov_action     : gov_action    
+  , anchor         : anchor        
+  ]
 
 
 ;
@@ -99,7 +100,6 @@ gov_action =
   , purpose      : gov_action_id/ nil
   , constitution : constitution
   // 6
-  , nil
   ]
 
 

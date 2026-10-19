@@ -1,0 +1,20 @@
+{
+  "name": "replay_002_repeat_rejected",
+  "spec_section": "Replay protection; Appendix A (-5)",
+  "category": "replay_nonce",
+  "input": {
+    "dappKey_b64url": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+    "nonce_b64url": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF",
+    "ttl_unix": 1810000300,
+    "now_unix": 1810000010,
+    "nonce_cache_before": [
+      {"dappKey": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE", "nonce": "BQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUF", "ttl_unix": 1810000300}
+    ]
+  },
+  "expected": {
+    "errorCode": -5,
+    "errorName": "NonceReplay"
+  },
+  "should_reject": true,
+  "rejection_reason": "nonce_replay"
+}

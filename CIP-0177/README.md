@@ -7,8 +7,8 @@ Authors:
  - Duncan Coutts <duncan@well-typed.com>
  - Philipp Kant <philipp@ensurable.systems>
 Implementors:
- - Well-Typed LLP
- - Ensurable Systems Ltd
+ - Well-Typed <https://www.well-typed.com>
+ - Ensurable Systems <https://ensurable.systems>
 Discussions:
  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1149
 Created: 2026-02-06

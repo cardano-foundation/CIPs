@@ -10,10 +10,10 @@ Authors:
 Implementors:
   - cardano-signer <https://github.com/gitmachtl/cardano-signer>
 Discussions:
-  - https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
-  - https://github.com/cardano-foundation/CIPs/pull/188
-  - https://github.com/cardano-foundation/CIPs/pull/349
-  - https://github.com/cardano-foundation/CIPs/pull/373
+  - Cardano Forum: https://forum.cardano.org/t/cip-catalyst-registration-metadata-format/44038
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/188
+  - CIP-0036 | Adding the deregistration metadata format: https://github.com/cardano-foundation/CIPs/pull/349
+  - CIP-0036 | Change reward address field for Fund 10: https://github.com/cardano-foundation/CIPs/pull/373
 Created: 2021-12-06
 License: CC-BY-4.0
 ---
@@ -23,7 +23,7 @@ License: CC-BY-4.0
 Cardano uses a sidechain for its treasury system. One needs to "register" to participate on this sidechain by submitting a registration transaction on the mainnet chain. This CIP details the registration transaction format.
 This is a revised version of the original [CIP-15 | Registration Transaction Metadata Format](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0015).
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano uses a sidechain for its treasury system ("Catalyst") and for other voting purposes. One of the desirable properties of this sidechain is that even if its safety is compromised, it doesn't cause loss of funds on the main Cardano chain. To achieve this, instead of using your wallet's recovery phrase on the sidechain, we need to use a brand new "voting key".
 
@@ -217,7 +217,7 @@ See the [schema file](./schema.cddl).
 
 See [test vector file](./test-vector.md).
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Associating voting power with a voting key
 

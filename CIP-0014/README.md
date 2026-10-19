@@ -1,14 +1,14 @@
 ---
 CIP: 14
 Title: User-Facing Asset Fingerprint
-Status: Active
 Category: Tokens
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@iohk.io>
   - Rodney Lorrimar <rodney.lorrimar@iohk.io>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/64
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/64
 Created: 2020-02-01
 License: CC-BY-4.0
 ---
@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 This specification defines a user-facing asset fingerprint as a bech32-encoded blake2b-160 digest of the concatenation of the policy id and the asset name.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 The Mary era of Cardano introduces the support for native assets. On the blockchain, native assets are uniquely identified by both their so-called policy id and asset name. Neither the policy id nor the asset name are intended to be human-readable data. 
 
@@ -149,7 +149,7 @@ mkAssetFingerprint (PolicyId policyId) (AssetName assetName)
   asset_fingerprint: asset1pkpwyknlvul7az0xx8czhl60pyel45rpje4z8w
 ```
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Design choices
 

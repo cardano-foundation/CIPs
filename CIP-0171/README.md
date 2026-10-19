@@ -9,13 +9,14 @@ Implementors: []
 Discussions:
     - Forum Discussion: https://forum.cardano.org/t/cip-idea-smart-contract-source-code-verification-metadata/152403
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1136
+    - Add env field: https://github.com/cardano-foundation/CIPs/pull/1252
 Created: 2026-01-19
 License: CC-BY-4.0
 ---
 
 ## Abstract
 
-This CIP defines a decentralized, on-chain metadata standard for linking Cardano script hashes to their published source code. Using transaction metadata label `1984`, anyone can publish records containing the source repository URL, git commit hash, compiler type and version, and script parameters. Verifiers can then independently compile the source and confirm that the resulting script hash matches an on-chain script, establishing a verified link between the deployed script and its source code origin.
+This CIP defines a decentralized, on-chain metadata standard for linking Cardano script hashes to their published source code. Using transaction metadata label `1984`, anyone can publish records containing the source repository URL, git commit hash, compiler type and version, the build environment used to compile the script (for Aiken), and script parameters. Verifiers can then independently compile the source and confirm that the resulting script hash matches an on-chain script, establishing a verified link between the deployed script and its source code origin.
 
 Unlike centralized verification services that act as trusted intermediaries, this standard enables permissionless verification where anyone can submit and validate records without relying on third parties. The design is intentionally spam-resistant: invalid or fabricated submissions are harmless because non-matching script hashes simply have no corresponding on-chain scripts to link to.
 
@@ -82,7 +83,7 @@ Compilers and their metadata schema versions are identified by PlutusData constr
 
 | Constructor ID | Compiler | Schema Version | Language |
 |----------------|----------|----------------|----------|
-| 0 | Aiken | 1 | Aiken |
+| 0 | Aiken | 2 | Aiken |
 | 1 | Plutarch | 1 | Haskell |
 | 2 | PlutusTx | 1 | Haskell |
 | 3 | Scalus | 1 | Scala |
@@ -93,7 +94,61 @@ This design allows each compiler's metadata schema to evolve independently. If a
 
 New compilers or schema versions may be added by submitting a pull request to this CIP. Constructor IDs are assigned sequentially and MUST NOT be reused or reassigned.
 
+#### Versioning note: in-place revision of the Aiken schema
+
+Constructor 0 carries schema version 2 while keeping constructor ID 0. This
+departs from the two rules stated immediately above:
+
+> If a compiler requires changes to its field layout (adding, removing, or
+> reordering fields), a new constructor ID is assigned for the updated schema
+> version.
+
+> Constructor IDs are assigned sequentially and MUST NOT be reused or
+> reassigned.
+
+Both rules remain in force. This revision is a **one-time exception**, narrowed
+to constructor 0 and to this revision only, granted on three grounds:
+
+1. **Single implementation.** Constructor 0 has one known implementation, and
+   it is the reference implementation named in the Implementation Plan.
+2. **The prior records were replaced, not stranded.** Every record that existed
+   on mainnet under the previous Aiken layout has been re-published by its
+   author in the revised layout, with one exception: a duplicate submission for
+   a repository and commit already covered by a re-published record, which
+   carried no parameters and never completed verification. No consumer is left
+   holding a record that this document no longer describes.
+
+Consumers MUST parse constructor 0 as a fixed six-element list per this
+document. Records under any constructor that do not decode to that
+constructor's field layout — wrong element count, wrong element types, or CBOR
+that does not decode at all — MUST be ignored rather than treated as an error;
+metadata label 1984 is shared with unrelated payloads and non-conforming data
+under the label is expected, not exceptional.
+
+Any future change to any compiler's field layout, constructor 0 included, MUST
+use the standard mechanism and be assigned a new constructor ID. This exception
+is not a precedent and is not available again.
+
 ### Field Layout
+
+Field layout is per-constructor. Aiken (constructor 0, schema version 2) uses a
+fixed six-element list; the remaining compilers use the five-field layout below.
+
+#### Constructor 0 (Aiken)
+
+The constructor's fields form a fixed six-element list. All fields are always
+present; optionality is expressed through empty values rather than omission.
+
+| Index | Field | Type | Description |
+|-------|-------|------|-------------|
+| 0 | sourceUrl | Bytes (UTF-8) | Git-compatible repository URL |
+| 1 | commitHash | Bytes | Git commit hash (20 bytes for SHA-1, 32 bytes for SHA-256) |
+| 2 | sourcePath | Bytes (UTF-8) | Path to the project directory within the repository; empty bytes = repository root |
+| 3 | compilerVersion | Bytes (UTF-8) | Exact compiler version string (e.g., "v1.1.3") |
+| 4 | env | Bytes (UTF-8) | Build environment identifier; for Aiken, the module name passed to `aiken build --env`. Empty bytes = built without an environment flag |
+| 5 | parameters | Map | Script hash to parameter data mappings; may be empty |
+
+#### Constructors 1–5 (Plutarch, PlutusTx, Scalus, plu-ts, OpShin)
 
 The constructor's fields contain the following data in order:
 
@@ -104,6 +159,8 @@ The constructor's fields contain the following data in order:
 | 2 | sourcePath | Bytes (UTF-8) | No | Path to source file within repository (empty if root) |
 | 3 | compilerVersion | Bytes (UTF-8) | Yes | Exact compiler version string (e.g., "v1.1.3") |
 | 4 | parameters | Map | No | Script hash to parameter data mappings |
+
+These layouts are unchanged by this revision.
 
 #### Source URL
 
@@ -125,18 +182,37 @@ The `commitHash` field contains the raw bytes of the git commit hash. Standard g
 
 The `compilerVersion` field MUST contain the exact version string required to reproduce the compilation. Partial versions (e.g., "v1.x" or "latest") are invalid.
 
+#### Env
+
+The `env` field applies to constructor 0 (Aiken) only. It records the build
+environment used to compile the script: the environment module name passed via
+`aiken build --env <name>`.
+
+Empty bytes indicate the build was invoked **without** the `--env` flag. This
+is not shorthand for `--env default`: a build that explicitly uses the default
+environment module MUST record `default`. Verifiers reproduce the build by
+invoking the compiler with `--env <env>` when the field is non-empty, and with
+no environment flag when it is empty. A verifier that rebuilds an empty-`env`
+record with no environment flag and obtains a different script hash has a
+**failed verification claim**, not a record with a missing field: it MUST NOT
+retry with a guessed environment, and MUST report the record as unverified.
+
+A non-empty value MUST match, in full, `[a-z][a-z0-9_]*` — treat the expression
+as anchored at both ends, so the whole value must be consumed by it — and MUST NOT
+exceed 64 bytes.
+
 #### Parameters
 
 The `parameters` field maps script hashes to their initialization parameters. This supports parameterized scripts where the same source code produces different script hashes depending on input parameters.
 
 Structure:
 ```
-Map<ScriptHash, List<PlutusData>>
+Map<ScriptHash, List<Bytes>>
 ```
 
 Where:
 - `ScriptHash` is the 28-byte Blake2b-224 hash of the compiled script
-- `List<PlutusData>` contains the parameters applied to produce that specific script
+- `List<Bytes>` contains the parameters applied to produce that specific script, in application order; each list element is a bytestring wrapping the CBOR encoding of one parameter
 
 ### CDDL Schema
 
@@ -149,7 +225,7 @@ bounded_bytes = bytes .size (1..64)
 
 ; When chunks are concatenated and decoded as CBOR:
 ; Constructor ID encodes both compiler and schema version
-verification_data = #6.121([compiler_fields])  ; Constructor 0 = Aiken, schema v1
+verification_data = #6.121([aiken_fields])     ; Constructor 0 = Aiken, schema v2
                   / #6.122([compiler_fields])  ; Constructor 1 = Plutarch, schema v1
                   / #6.123([compiler_fields])  ; Constructor 2 = PlutusTx, schema v1
                   / #6.124([compiler_fields])  ; Constructor 3 = Scalus, schema v1
@@ -157,22 +233,21 @@ verification_data = #6.121([compiler_fields])  ; Constructor 0 = Aiken, schema v
                   / #6.126([compiler_fields])  ; Constructor 5 = OpShin, schema v1
                   ; Future schema versions will be assigned new constructor IDs
 
-compiler_fields = [
-    source_url,
-    commit_hash,
-    source_path / null,
-    compiler_version,
-    ? parameters
-]
+aiken_fields = [ source_url, commit_hash, source_path, compiler_version, env, parameters ]
+
+compiler_fields = [ source_url, commit_hash, source_path / null, compiler_version, ? parameters ]
+
+env = bytes .size (0..64)    ; UTF-8; empty = built without an environment flag;
+                             ; non-empty values match [a-z][a-z0-9_]* in full
+parameters = { * script_hash => parameter_list }
+script_hash = bytes .size 28
+parameter_list = [ * bytes ]  ; each element is a bytestring wrapping the CBOR
+                              ; encoding of one parameter
 
 source_url = bytes          ; UTF-8 encoded URL
 commit_hash = bytes         ; 20 or 32 bytes
 source_path = bytes         ; UTF-8 encoded path
 compiler_version = bytes    ; UTF-8 encoded version string
-
-parameters = { * script_hash => parameter_list }
-script_hash = bytes .size 28
-parameter_list = [ * plutus_data ]
 
 plutus_data = #6.121([* plutus_data])   ; Constr 0
             / #6.122([* plutus_data])   ; Constr 1
@@ -190,7 +265,7 @@ To verify a script using this metadata:
 2. **Reassemble chunks**: Concatenate the bytestring array and decode as CBOR PlutusData
 3. **Extract fields**: Parse the constructor ID (compiler type) and fields
 4. **Clone source**: Clone the repository at the specified commit hash
-5. **Compile**: Using the specified compiler and version, compile the source with any provided parameters
+5. **Compile**: Using the specified compiler and version, compile the source with any provided parameters and with the recorded build environment — for Aiken, `aiken build --env <env>` when the `env` field is non-empty, and with no environment flag when `env` is empty
 6. **Compute script hash**: Calculate the Blake2b-224 hash of the resulting UPLC bytecode
 7. **Match**: If the computed script hash matches an on-chain script hash, the link is verified
 
@@ -267,6 +342,47 @@ This ensures the standard remains useful regardless of where developers choose t
 This CIP introduces a new metadata label and does not modify any existing standards. Scripts deployed before this standard's adoption can still have their source linked by submitting metadata referencing their original source repositories and commits.
 
 The standard is purely additive and has no impact on existing scripts, wallets, or infrastructure that do not implement it.
+
+### Residual Limits on Reproducibility
+
+Recording the build environment closes the largest remaining gap between a
+recorded build and a verifier's rebuild, but it does not close all of them. Two
+known sources of drift remain for Aiken: dependency versions in `aiken.toml`
+may be pinned to mutable git references, so a rebuild can resolve a dependency
+to different source than the original build did; and trace flags are governed
+by convention and defaults rather than being recorded in the metadata, so a
+build that departed from the default convention will not be reproduced. Both
+limits are fail-closed. The verification assertion is byte-equality between the
+rebuilt script hash and the on-chain script hash, so a mismatch caused by either
+source produces a **non-verification** — the record simply does not verify. No
+combination of these limits can produce a false verification, because no
+sequence of them can make an unequal pair of hashes compare equal.
+
+### Compatibility Impact of the Aiken Schema Revision
+
+The in-place revision of constructor 0 was assessed against the deployed record
+corpus rather than argued in the abstract. At the time of this revision,
+exactly six CIP-0171 records existed on Cardano mainnet under metadata label
+1984, all submitted through the reference implementation:
+
+- `7e6d7d45f072ad01b2ad3ced26c328f7afd0f7fefc6a490a914496f8f0f27bf2`
+- `36f3377e558c8b8c7fa02be5bf117f02e318c3ac0008655cc7c7fe16d07f50d4`
+- `f7e919f17c4842ce267e4606b7d6b6a5639fdb3d4848426f3240fdfa38f75a26`
+- `ac5a74fe08d069b7a8993a4da46f212a5118823ff195a0df282e64fbe415008f`
+- `2a88dd41f1fb85235fe97ab00fc0ea4ecfe11ea8ce13ba60cf9d10c0bec00e83`
+- `5f6bf196a5d6388c699ac60ae878ff56288066797efdf95883ddcfeab63dd8a4`
+
+All six were re-published by their author in the revised layout. The set of
+records this document leaves undescribed is therefore empty, and the
+compatibility cost of the revision is zero rather than small.
+
+The same survey found 46 further transactions carrying metadata label 1984 from
+unrelated projects, which use the label for their own purposes and do not
+follow this standard. Label sharing is observed reality on mainnet, not a
+hypothetical. This is why implementations MUST ignore records that do not
+decode to a layout described here rather than treat them as errors: a
+conforming reader will encounter non-conforming payloads under this label
+routinely, and must remain unbothered by them.
 
 ### Related Work
 

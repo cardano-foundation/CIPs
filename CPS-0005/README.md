@@ -11,7 +11,7 @@ Proposed Solutions:
   - CIP-0069: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0069
   - CIP-0087?: https://github.com/cardano-foundation/CIPs/pull/440
 Discussions:
-  - Original pull request: https://github.com/cardano-foundation/CIPs/pull/497
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/497
   - Developer Experience Working Group: https://github.com/input-output-hk/Developer-Experience-working-group
 Created: 2023-04-04
 License: CC-BY-4.0

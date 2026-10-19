@@ -1,0 +1,17 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/EntitiesStakePoolsVRFKeyHashes.hs
+
+;  The key for the namespace
+; 
+;  ```
+;  meta:
+;    endian: be
+; 
+;  seq:
+;    - id: vrf_keyhash_stakepool
+;          doc: keyhash of the stake pool VRF
+;          size: 32
+;  ```
+record_entry = positive_int
+
+positive_int = 1 .. 18446744073709551615

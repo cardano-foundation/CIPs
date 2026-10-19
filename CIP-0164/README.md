@@ -1,8 +1,8 @@
 ---
 CIP: 164
 Title: Ouroboros Linear Leios - Greater transaction throughput
-Status: Proposed
 Category: Consensus
+Status: Proposed
 Authors:
   - William Wolff <william.wolff@iohk.io>
   - Brian W Bush <brian.bush@iohk.io>
@@ -12,13 +12,17 @@ Authors:
   - Andre Knipsel <andre.knispel@iohk.io>
   - Yves Hauser <yves.hauser@iohk.io>
   - Simon Gellis <simon@sundae.fi>
+  - Paul Clark <paul.clark@iohk.io>
 Implementors:
-  - Input Output Engineering
+  - Input Output Engineering <https://iohk.io>
 Discussions:
-  - https://github.com/input-output-hk/ouroboros-leios/discussions
-  - https://github.com/cardano-foundation/CIPs/pull/1078
-Solution-To:
-  - CPS-0018
+  - GitHub Discussion: https://github.com/input-output-hk/ouroboros-leios/discussions
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1078
+  - Update post Buidler Fest: https://github.com/cardano-foundation/CIPs/pull/1167
+  - Update committee selection: https://github.com/cardano-foundation/CIPs/pull/1196
+  - Update voting + parameter list: https://github.com/cardano-foundation/CIPs/pull/1250
+Solution To:
+  - CPS-0018: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0018
 Created: 2025-03-07
 License: Apache-2.0
 ---
@@ -109,7 +113,9 @@ technical resources, visit the Leios Innovation R&D site at
 - [Figure 3: Leios chain structure showing Ranking Blocks, Endorser Blocks, and Certificates](#figure-3)
 - [Figure 4: Detailed timing mechanism showing timing constraints for EB certification](#figure-4)
 - [Figure 5: Up- and downstream interactions of a node](#figure-5)
-- [Figure 6: LeiosNotify mini-protocol state machine](#figure-6)
+- [Figure 6: LeiosAnnounce mini-protocol state machine](#figure-6a)
+- [Figure 6: LeiosVotes mini-protocol state machine](#figure-6b)
+- [Figure 6: LeiosBlockNotify mini-protocol state machine](#figure-6c)
 - [Figure 7: LeiosFetch mini-protocol state machine](#figure-7)
 - [Figure 8: SPO profitability forecast under Leios](#figure-8)
 - [Figure 9: Time for transaction to reach the ledger](#figure-9)
@@ -136,13 +142,14 @@ technical resources, visit the Leios Innovation R&D site at
 - [Table 5: Performance Metrics](#table-5)
 - [Table 6: Leios efficiency at different throughputs](#table-6)
 - [Table 7: Feasible Protocol Parameters](#table-7)
+- [Table 7a: Seats needed to reach each stake percentile](#table-7a)
 - [Table 8: Operating Costs by Transaction Throughput](#table-8)
 - [Table 9: Required TPS for Infrastructure Cost Coverage](#table-9)
 - [Table 10: Required TPS for Current Reward Maintenance](#table-10)
 
 </details>
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano's current throughput generally satisfies the immediate needs of its
 users. However, the Ouroboros Praos consensus protocol imposes inherent
@@ -280,6 +287,10 @@ EB inclusion is therefore opportunistic rather than guaranteed, depending on the
 random timing of block production relative to the certification process. The
 precise timing mechanism is detailed in the following section.
 
+Additionally, the reader should note the following implication: any RB that
+does not include a certificate may itself include transactions directly, so
+not all transactions go through EBs, even under congestion.
+
 ### Protocol Flow
 
 The protocol operates through five sequential steps that involve three critical
@@ -341,11 +352,10 @@ Minimal validation includes basic structural and cryptographic integrity checks
 #### Step 3: Committee Validation
 
 After the [equivocation detection period](#equivocation-detection) of
-$3 L_\text{hdr}$ slots, a voting committee of stake pools validates the EB and
+$3 L_\text{hdr}$, a voting committee of stake pools validates the EB and
 votes within a [voting period](#voting-period) $L_\text{vote}$. Committee
-members are [selected via sortition](#committee-structure) based on the slot
-number of the RB that announced the EB. A committee member votes for an EB only
-if:
+members are [determined by stake-based truncation](#committee-structure) at the
+epoch boundary. A committee member votes for an EB only if:
 
 1. The RB header arrived within $L_\text{hdr}$,
 2. It has **not** detected any equivocating RB header for the same slot,
@@ -353,14 +363,13 @@ if:
    slots after the EB slot,
 4. The EB is the one announced by the latest RB in the voter's current chain,
 5. The EB's transactions form a **valid** extension of the RB that announced it,
-6. For non-persistent voters, it is eligible to vote based on sortition using
-   the announcing RB's slot number as the election identifier,
-7. The EB contains at least one transaction (i.e., is not empty), as specified
+6. The EB contains at least one transaction (i.e., is not empty), as specified
    in the [formal specification][leios-formal-spec-empty-eb].
 
 where $L_\text{hdr}$ and $L_\text{vote}$ are
-<a href="#protocol-parameters">protocol parameters</a> represented by a number
-of slots.
+<a href="#protocol-parameters">protocol parameters</a> expressed as wall-clock
+durations. Voting is a node-local timer rather than a chain rule, so these two
+are used as durations directly, with no conversion to slots.
 
 #### Step 4: Certification
 
@@ -397,15 +406,23 @@ has elapsed. See also Figure 4. Concretely, the inclusion rules are:
    [Certificate Validation](#certificate-validation).
 
 3. A certificate may only be included if `RB'` is at least
-   $3 \times
-   L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after `RB`.
+
+   $$\left\lceil \frac{3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}}{\texttt{slotLength}} \right\rceil$$
+
+   slots after `RB`.
 
 4. Regardless of whether `RB'` includes a certificate, it may optionally
    announce its own EB for future certification.
 
 where $L_\text{hdr}$, $L_\text{vote}$ and $L_\text{diff}$ are
-<a href="#protocol-parameters">protocol parameters</a> represented by a number
-of slots.
+<a href="#protocol-parameters">protocol parameters</a> expressed as wall-clock
+durations. Because the decision compares the slots of two blocks, that total is
+converted to a whole number of slots using the genesis `slotLength`, **rounded
+up**: rounding down would admit a certificate before the durations the
+[security argument](#protocol-security) relies on have actually elapsed. The
+rounding is the only place slot granularity enters the timing rules, and at
+mainnet's `slotLength` the division is exact for the values in
+[Table 7](#table-7).
 
 The certificate inclusion delay ensures certified EBs have sufficient time to
 diffuse throughout the network and do not impact
@@ -481,18 +498,18 @@ availability:
 <div align="center">
 <a name="table-3" id="table-3"></a>
 
-| Parameter                                                      |      Symbol      |    Units     | Description                                                                                 | Rationale                                                                                                                                                                                                                                        |
-| -------------------------------------------------------------- | :--------------: | :----------: | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$  |     slot     | Duration for RB headers to propagate network-wide                                           | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                                                           |
-| <a id="l-vote" href="#l-vote"></a>Voting period length         | $L_\text{vote}$  |     slot     | Duration during which committee members can vote on endorser blocks                         | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                                                             |
-| <a id="l-diff" href="#l-diff"></a>Diffusion period length      | $L_\text{diff}$  |     slot     | Additional period after voting to ensure network-wide EB availability                       | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                                                   |
-| Ranking block max size                                         |  $S_\text{RB}$   |    bytes     | Maximum size of a ranking block                                                             | Limits RB size to ensure timely diffusion                                                                                                                                                                                                        |
-| Endorser-block referenceable transaction size                  | $S_\text{EB-tx}$ |    bytes     | Maximum total size of transactions that can be referenced by an endorser block              | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                                                                  |
-| Endorser block max size                                        |  $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                    | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                                                                          |
-| Mean committee size                                            |       $n$        |   parties    | Average number of stake pools selected for voting                                           | Ensures sufficient decentralization and security                                                                                                                                                                                                 |
-| Quorum size                                                    |      $\tau$      |   fraction   | Minimum fraction of committee votes required for certification                              | High threshold ensures certified EBs are known to >25% of honest nodes even with 50% adversarial stake. This widespread initial knowledge enables the network assumption that certified EBs will reach all honest parties within $L_\text{diff}$ |
-| Maximum Plutus steps per endorser block                        |        -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block           | Limits computational resources per EB to ensure timely validation                                                                                                                                                                                |
-| Maximum Plutus memory per endorser block                       |        -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                        | Limits memory resources per EB to ensure timely validation                                                                                                                                                                                       |
+| Parameter                                                      |      Symbol       |    Units     | Description                                                                                      | Rationale                                                                                                                                                                                                                          |
+|----------------------------------------------------------------|:-----------------:|:------------:|--------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Committee size                                                 |       $N_c$       |    seats     | Number of top-stake pools seated on the epoch's voting committee                                 | Directly bounds votes per EB and certificate size. Governed from the stake distribution so that covered stake $\sigma(N_c)$ exceeds $\tau$ with headroom; see [feasible values](#table-7).                                         |
+| Quorum stake threshold                                         |      $\tau$       |   fraction   | Minimum fraction of total active stake that must be represented by votes in a certificate        | Safety-critical. Must satisfy $0.5 < \tau < \sigma(N_c)$, and leave a sizable $\tau - \sigma_a$ of honest stake for the $\Delta_\text{EB}^{\text{W}}$ assumption; see [choosing the quorum threshold](#choosing-quorum-threshold). |
+| <a id="l-hdr" href="#l-hdr"></a>Header diffusion period length |  $L_\text{hdr}$   |   seconds    | Duration for RB headers to propagate network-wide                                                | Per [equivocation detection](#equivocation-detection): must accommodate header propagation for equivocation detection.                                                                                                             |
+| <a id="l-vote" href="#l-vote"></a>Voting period length         |  $L_\text{vote}$  |   seconds    | Duration during which committee members can vote on endorser blocks                              | Per [voting period](#voting-period): must accommodate EB propagation and validation time. Set to minimum value that ensures honest parties can participate in voting                                                               |
+| <a id="l-diff" href="#l-diff"></a>Diffusion period length      |  $L_\text{diff}$  |   seconds    | Additional period after voting to ensure network-wide EB availability                            | Per [diffusion period](#diffusion-period): derived from the fundamental safety constraint. Leverages the network assumption that data known to >25% of nodes propagates fully within this time                                     |
+| Maximum endorser block size                                    |   $S_\text{EB}$   |    bytes     | Maximum size of an endorser block itself                                                         | Limits EB size to ensure timely diffusion; prevents issues with many small transactions                                                                                                                                            |
+| Maximum total transaction size per endorser block              | $S_\text{EB-tx}$  |    bytes     | Maximum total size of transactions that can be endorsed by an endorser block                     | Limits total transaction payload to ensure timely diffusion within stage length                                                                                                                                                    |
+| Maximum reference script size per endorser block               | $S_\text{EB-ref}$ |    bytes     | Maximum total size of reference scripts used by the transactions endorsed by an endorser block   | The EB analogue of the Praos per-block `maxRefScriptSizePerBlock`: bounds the script bytes that must be loaded from the UTxO and evaluated per EB, which the EB's own size does not account for.                                   |
+| Maximum Plutus steps per endorser block                        |         -         |  step units  | Maximum computational steps allowed for Plutus scripts in a single endorser block                | Limits computational resources per EB to ensure timely validation                                                                                                                                                                  |
+| Maximum Plutus memory per endorser block                       |         -         | memory units | Maximum memory allowed for Plutus scripts in a single endorser block                             | Limits memory resources per EB to ensure timely validation                                                                                                                                                                         |
 
 <em>Table 3: Protocol Parameters</em>
 
@@ -520,6 +537,14 @@ availability:
 There are three key parameters related to time, which are important for
 [protocol security](#protocol-security). All relevant quantities are depicted in
 [Figure 4](#figure-4).
+
+These three are **wall-clock durations in seconds**, not slot counts, specified
+the way the genesis `slotLength` is (see [CIP-0009][cip-9]). Each is derived from
+a network propagation time from [Table 1](#table-1), which is a wall-clock
+quantity, so expressing them in slots would couple Leios timing to `slotLength`
+and silently retune the protocol whenever that changed. At mainnet's
+`slotLength` of one second the two readings coincide, which is why the values in
+[Table 7](#table-7) are unchanged from earlier slot-denominated drafts.
 
 <a id="equivocation-detection"></a>
 
@@ -561,7 +586,7 @@ reliable detection before voting begins. This constraint is derived from the
 network model where headers must propagate within $L_\text{hdr}$ to maintain
 Praos security assumptions.
 
-**Security Guarantee**: By waiting $3 L_\text{hdr}$ slots before voting begins,
+**Security Guarantee**: By waiting $3 L_\text{hdr}$ before voting begins,
 the protocol ensures that if any equivocation occurred soon enough to matter,
 all honest nodes will have detected it and will refuse to vote for any EB from
 an RB slot where equivocation was detected. This prevents adversaries from
@@ -605,9 +630,14 @@ time to:
 **Diffusion Period ($L_\text{diff}$)**
 
 The diffusion period ensures network-wide EB availability through a combination
-of factors: the high quorum threshold ensures certified EBs are initially known
-to >25% of honest nodes, and the network assumption that data with such
-widespread initial knowledge propagates fully within this period. The diffusion
+of factors: the high quorum stake threshold ensures certified EBs are initially
+known to holders of at least $\tau - \sigma_a$ of honest stake. That is, >25% at
+$\tau = 0.75$ against the $\sigma_a = 0.5$ adversarial stake of the threat
+model, since an honest pool votes only after fully validating the EB. This
+enables the network assumption about data that was provably present with such
+widespread initial knowledge propagates fully to the remaining stake within this
+period. Keeping that remainder sizable is therefore a constraint on $\tau$ (see
+[choosing the quorum threshold](#choosing-quorum-threshold)). The diffusion
 period must satisfy:
 
 $$L_\text{diff} \geq \Delta_\text{EB}^{\text{W}} + \Delta_\text{reapply} - \Delta_\text{RB} - 3 \times L_\text{hdr} - L_\text{vote}$$
@@ -617,13 +647,16 @@ includes their certificate needs processing.
 
 #### Size parameters
 
-Two separate parameters control EB sizes:
+Three separate parameters control EB sizes:
 
 - $S_\text{EB}$ limits the size of the EB data structure itself, preventing
   issues when many small transactions create large numbers of transaction
   references (32 bytes each)
 - $S_\text{EB-tx}$ limits the total size of transactions that can be referenced,
   controlling the actual transaction payload
+- $S_\text{EB-ref}$ limits the total size of reference scripts those transactions
+  use, controlling script bytes that are loaded from the UTxO rather than carried
+  by the EB
 
 Note that $S_\text{EB-tx}$ does not change the maximum size of individual
 transactions. The existing `maxTxSize` parameter remains unchanged and continues
@@ -631,6 +664,13 @@ to limit individual transaction sizes. The purpose of $S_\text{EB-tx}$ is to
 limit the total computational work required for validation and ledger state
 updates when processing an EB, since the EB size itself does not account for the
 full size of all referenced transaction data that must be validated.
+
+$S_\text{EB-ref}$ stands in the same relation to `maxRefScriptSizePerBlock` as
+$S_\text{EB-tx}$ does to `maxBlockBodySize`: reference scripts live in the UTxO
+and so are counted by neither $S_\text{EB}$ nor $S_\text{EB-tx}$, yet they must be
+loaded and evaluated to validate an EB. The per-transaction
+`maxRefScriptSizePerTx` likewise remains unchanged, and the Praos per-block limit
+continues to apply to RBs.
 
 For example, an EB referencing 10,000 transactions of 100 bytes each would have
 $S_\text{EB-tx} = 1$ MB but the EB itself would be at least 320 KB for the
@@ -665,18 +705,23 @@ already computed the ledger state that this RB extends.
 
 The argument proceeds as follows: (i) The certified EB that the RB references
 will be received within $\Delta_\text{RB} - \Delta_\text{applyTxs}$ from the
-initial diffusion time of the RB. This follows directly from
-[Constraint 2](#certified-eb-transmission-constraint) and the fact that the RB
-was generated at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$
-slots after the EB was generated. (ii) The RB will be processed within
-$\Delta_\text{RB}$ slots, due to the fact that it is received within
-$\Delta_\text{RB} - \Delta_\text{applyTxs}$ from its initial diffusion time, and
-processing in the worst-case takes
-$\Delta_\text{reapply} (< \Delta_\text{applyTxs})$ slots according to
-[Constraint 1](#eb-reapplication-constraint).
+initial diffusion time of the RB. This follows directly from [Constraint
+2](#certified-eb-transmission-constraint) and the fact that the RB was generated
+at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ after the
+EB was generated. (ii) The RB will be processed within $\Delta_\text{RB}$ slots,
+due to the fact that it is received within $\Delta_\text{RB} -
+\Delta_\text{applyTxs}$ from its initial diffusion time, and processing in the
+worst-case takes $\Delta_\text{reapply} (< \Delta_\text{applyTxs})$ slots
+according to [Constraint 1](#eb-reapplication-constraint).
 
 Given that nodes are caught up when they are about to produce or process an RB,
 Praos safety and liveness is thus preserved.
+
+Note that a sizable remainder of $\tau - \sigma_a$ — the honest stake that must
+have received and fully validated a certified EB in order to vote for it — is
+what makes $\Delta_\text{EB}^{\text{W}}$ attainable in the first place, together
+with concrete stake-based sampling of the committee and an appropriate fetching
+policy; see [choosing the quorum threshold](#choosing-quorum-threshold).
 
 ### Protocol Artifacts
 
@@ -752,44 +797,113 @@ voting scheme alongside their existing VRF and KES keys. In the BLS
 implementation described here, this would be a BLS key over the BLS12-381
 elliptic curve.
 
+<a id="key-registration" href="#key-registration"></a>**Key Registration and
+Rotation**: The proposed mechanism is to extend the existing stake pool
+registration certificate to carry the voting key, rather than introduce a
+dedicated certificate or place the key in the block header. Extending the pool
+registration certificate binds the voting key's lifecycle to the pool's —
+registered, re-registered, and retired together — and reuses the authorization
+already required to register a pool, adding no new certificate type or
+witnessing rule. A dedicated certificate would also work but adds a new type
+and lifecycle to specify and maintain; a header-carried key (analogous to the
+VRF key and signed by the KES key) was likewise considered and would let the
+key ride the operational-certificate path, at the cost of requiring the ledger
+to observe block headers.
+
+The registered key material is a public key together with a proof of possession
+carried in an optional `bls_key` field of the pool registration certificate (see
+[Pool Registration](#pool-registration-cddl) in Appendix B). The proof of
+possession is mandatory and verified at registration: BLS aggregate signatures
+are otherwise vulnerable to rogue-key attacks, in which an adversary registers a
+key crafted relative to others' keys so that an aggregate appears to include
+voters who never signed. Only a key with a valid proof of possession may occupy
+a committee seat or contribute to a certificate. Because committee membership is
+stake-based (see [Committee Structure](#committee-structure)), a pool may be
+selected by stake without having registered a valid voting key; such a seat is
+*keyless* — it cannot sign, and any certificate marking a keyless seat as a
+signer must be rejected.
+
+Voting keys **rotate** on a cadence comparable to KES *key rotation* (~90 days
+on Cardano mainnet), which a corresponding key time-to-live should enforce.
+This is distinct from KES *key evolution* (~12 hours): evolution provides
+forward secrecy within a single key's lifetime and is not required for voting
+keys. Unlike a KES key, which takes effect immediately on the chain it is used
+to build, a voting key must be **activated at an epoch boundary**, because the
+committee is fixed once per epoch from the stake distribution — so a voting
+key's activation resembles that of a VRF key.
+
+A voting key could in principle activate sooner than a VRF key: VRF keys are
+held back to prevent grinding of the leader-election nonce, a concern voting
+keys do not share, so a registered voting key could become active as soon as
+the stake snapshot it appears in stabilizes. The recommended design nonetheless
+**aligns voting-key activation with VRF-key rotation**. Activation is not merely
+an on-chain event — an operator must install the newly-active key on the hot,
+block-producing machine for the epoch in which it becomes effective — so a
+staggered schedule would force an operator who rotates both keys in one epoch to
+perform two separate hot-key swaps in consecutive epochs. Aligning the two
+schedules collapses this into a single swap, trading a slightly longer window in
+which the new key is registered but not yet active for materially simpler key
+handling. A newly registered or rotated key is not eligible to vote until the
+snapshot in which it appears becomes active; a committee that must be live from
+the first epoch (e.g. at genesis) therefore requires its keys to be present in
+the initial stake snapshots.
+
 <a id="committee-structure" href="#committee-structure"></a>**Committee
-Structure**: Two types of voters validate EBs, balancing security,
-decentralization, and efficiency:
+Structure**: The voting committee for an epoch is determined by **stake-based
+truncation** of the active stake distribution: it is the **top $N_c$ pools by
+active stake**, where $N_c$ is the `committeeSize` protocol parameter. At the
+epoch boundary, pools are ordered by active stake in descending order (ties
+broken by pool ID in ascending order) and the first $N_c$ are seated; if fewer
+than $N_c$ pools are registered, all of them are seated. The resulting committee
+is fixed for the entire epoch; every committee member is eligible to vote on
+every EB produced within that epoch, and every vote carries the weight of its
+pool's active stake.
 
-- **Persistent Voters**: Selected once per epoch using [Fait Accompli
-  sortition][fait-accompli-sortition], vote in every election, identified by
-  compact identifiers
-- **Non-persistent Voters**: Selected per EB via local sortition with
-  Poisson-distributed stake-weighted probability
+Because each seat carries its own pool's stake and the quorum $\tau$ is a
+predicate on stake, a seat count cannot mis-weight or under-represent any pool. It
+only decides how much active stake is *eligible* to vote, and that is the whole of
+what setting it wrong can do: if $N_c$ is too low, the seated pools together hold
+less than $\tau$ of active stake, and then no certificate can meet the threshold
+even when every single committee member votes in favour of the same EB
+announcement.
 
-This dual approach prevents linear certificate size growth by leveraging
-non-uniform stake distribution, enabling faster certificate diffusion while
-maintaining broad participation. With efficient aggregate signature schemes like
-BLS, certificate sizes remain compact (under 10 kB) even with large committees,
-as shown in the [BLS certificates specification][bls-spec].
+What $N_c$ does leave to governance is *coverage*: the share of active stake held
+by the top $N_c$ pools, written $\sigma(N_c)$, drifts as stake moves between
+pools, and liveness requires it to stay above $\tau$ with headroom for members
+that are offline, [keyless](#key-registration), or too slow to vote within
+$L_\text{vote}$.
 
-<a id="vote-structure" href="#vote-structure"></a>**Vote Structure**: All votes
-include the `endorser_block_hash` field that uniquely identifies the target EB:
+$N_c$ is accordingly a **liveness** parameter, not a safety-critical one: it
+decides which pools may vote, never whether a certificate is valid. The quorum
+threshold $\tau$ is the safety-critical parameter of the voting layer: it is the
+predicate a certificate must prove, and must exceed $0.5$ by a clear margin.
+[Feasible Protocol Parameters](#feasible-protocol-parameters) gives the guidance
+for choosing both, and the rationale for this scheme over the alternatives
+considered is recorded in [Design Decisions](#voting-committee-selection).
 
-- **Persistent votes**:
-  - `election_id`: Identifier for the voting round (derived from the slot number
-    of the RB that announced the target EB)
-  - `persistent_voter_id`: Epoch-specific pool identifier
-  - `endorser_block_hash`: Hash of the RB header that announced the target EB
-  - `vote_signature`: Cryptographic signature (BLS in this implementation)
-- **Non-persistent votes**:
-  - `election_id`: Identifier for the voting round (derived from the slot number
-    of the RB that announced the target EB)
-  - `pool_id`: Pool identifier
-  - `eligibility_signature`: Cryptographic proof of sortition eligibility (BLS
-    in this implementation)
-  - `endorser_block_hash`: Hash of the RB header that announced the target EB
-  - `vote_signature`: Cryptographic signature (BLS in this implementation)
+The certificate accordingly consists of a bitfield indicating which committee
+members signed plus a single aggregated BLS signature. Its size grows linearly
+in committee size, dominated by the bitfield ($\lceil N_c/8 \rceil$ bytes) plus
+a fixed signature and overhead.
 
-The `endorser_block_hash` identifies the header that announces the EB instead of
-identifying the EB's hash directly. This ensures the voters validated the EB
-against the same ledger state that it extends when certified on chain; recall
-that multiple RB headers could announce the same EB.
+<a id="vote-structure" href="#vote-structure"></a>**Vote Structure**: Votes are
+cast on EB announcements, which uniquely identifies an EB extending a
+Praos chain and have the following structure:
+
+- `announcing_rb_hash`: Announcement to vote on; a hash of the RB header
+  pointing to an EB via `announced_eb`.
+- `voter_id`: Index into the epoch's stake-based committee (pools ordered by
+  descending stake at the epoch boundary; see [Committee
+  Selection](#committee-selection))
+- `vote_signature`: BLS signature over `announcing_rb_hash`
+
+Votes do not carry eligibility proofs. Eligibility is determined by epoch-level
+committee membership and verified by direct lookup against the committee derived
+at the epoch boundary.
+
+Binding the vote to `announcing_rb_hash` ensures voters validated the EB against
+the same ledger state it extends when certified on chain; recall that multiple
+RB headers could announce the same EB.
 
 A [CDDL for votes and certificates](#votes-certificates-cddl) is available in
 Appendix B.
@@ -804,29 +918,22 @@ following before accepting the block:
 2. **Cryptographic Signatures**: The cryptographic signature is valid (BLS
    signatures in this implementation)
 
-3. **Voter Eligibility**:
-   - Persistent voters must have been selected as such by the [Fait Accompli
-     scheme][fait-accompli-sortition] for the current epoch
-   - Non-persistent voters have provided valid sortition proofs based on the
-     `election_id`
-
-   **Vote Eligibility Determination**: For non-persistent voters, sortition
-   eligibility is determined using the `election_id` derived from the slot
-   number of the RB that announced the target EB. This ensures that vote
-   eligibility is verifiable and deterministic — nodes can independently agree
-   on which stake pools are eligible to vote for a specific EB based solely on
-   the EB's announcing RB slot, preventing multiple voting opportunities across
-   different slots for the same EB. This requirement stems from the BLS
-   sortition mechanism which uses the election identifier as input to the VRF
-   calculation for non-persistent voter selection.
+3. **Voter Eligibility**: Each signing voter must be a member of the epoch's
+   stake-based committee, selected from the active stake distribution at the
+   epoch boundary.
 
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
-5. **EB Consistency**: Certificate references the correct EB hash announced in
-   the preceding RB
 
-Detailed specifications, performance, and benchmarks are available in the [BLS
-certificates specification][bls-spec].
+5. **Announcement Consistency**: The certificate verifies against the hash of the
+   announcing RB header, which is determined from the certifying RB's chain
+   context rather than carried in the certificate
+
+Formal pen-and-paper algorithms for the voting and certificate scheme are
+given in the [ARC voting crypto review][arc-voting-review] (the scheme in
+this CIP corresponds to "Truncation" in that report). Benchmarks and
+implementation details are available in
+[leios-wfa-ls-demo][leios-wfa-ls-demo].
 
 > [!NOTE]
 >
@@ -874,7 +981,7 @@ accommodate expanded transaction volume:
 
 <div align="center">
 
-$\text{Mempool} \geq 2 \times (S_\text{RB} + S_\text{EB-tx})$
+$\text{Mempool} \geq 2 \times (\texttt{maxBlockBodySize} + S_\text{EB-tx})$
 
 </div>
 
@@ -967,10 +1074,11 @@ redundant fetching and validation.
 #### Voting & Certification
 
 <a id="VotingEB" href="#VotingEB"></a>**Voting Process**: Committee members
-[selected through a lottery process](#votes-and-certificates) vote on EBs as
-soon as [vote requirements](#step-3-committee-validation) are met according to
-protocol (step 9). An honest node casts only one vote for the EB extending its
-current longest chain.
+(determined deterministically at the epoch boundary by [stake-based
+truncation](#committee-structure)) vote on EBs as soon as [vote
+requirements](#step-3-committee-validation) are met according to protocol
+(step 9). An honest node casts only one vote for the EB extending its current
+longest chain.
 
 <a id="VoteDiffusion" href="#VoteDiffusion"></a>**Vote Propagation**: Votes
 propagate through the network during the vote diffusion period $L_\text{diff}$
@@ -998,10 +1106,12 @@ proof that the EB has received sufficient committee approval.
 
 <a id="certificate-inclusion" href="#certificate-inclusion"></a>**Certificate
 Inclusion**: Block producers creating new RBs include certificates for EBs where
-at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots have
-elapsed since the slot of the RB that announced the EB (step 12). This timing
-constraint ensures the certified EB has had sufficient time to diffuse
-throughout the network. See the protocol flow section for detailed
+at least $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ have elapsed
+since the slot of the RB that announced the EB (step 12), rounded up to a whole
+number of slots as specified in
+[Chain Inclusion](#step-5-chain-inclusion). This timing constraint ensures the
+certified EB has had sufficient time to diffuse throughout the network. See the
+protocol flow section for detailed
 [block production and inclusion rules](#step-5-chain-inclusion).
 
 #### Ledger Management
@@ -1033,12 +1143,17 @@ additional propagation delays during fork switches.
 
 #### Epoch Boundary
 
-<a id="persistent-voter-computation" href="#persistent-voter-computation"></a>**Persistent
-Voter Computation**: Nodes must compute the set of persistent voters for each
-epoch using the [Fait Accompli scheme][fait-accompli-sortition]. This
-computation uses the stake distribution that becomes available at the epoch
-boundary and represents a minimal computational overhead based on current
-[BLS certificates benchmarks](https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/crypto-benchmarks.rs/Specification.md#benchmarks-in-rust).
+<a id="committee-selection" href="#committee-selection"></a>**Committee
+Selection**: Nodes must compute the voting committee for each epoch from the
+stake distribution available at the epoch boundary. The procedure is:
+
+1. Order pools by active stake, descending, breaking ties by pool ID ascending
+   (byte-wise on the pool's key hash).
+2. Take the first $N_c$ pools, or all of them if fewer than $N_c$ are
+   registered.
+3. Fix the resulting list as the epoch's voting committee; a pool's position in
+   this order is its seat index, which its votes carry as `voter_id`.
+
 Nodes complete this computation well before voting begins in the new epoch to
 ensure seamless participation.
 
@@ -1215,7 +1330,7 @@ $L_\text{diff}$ even during a burst of withheld-but-valid messages.
 
 **Concrete Proposal and its Feasibility**
 
-The following two new mini-protocols are proposed for the Leios implementation.
+The following four new mini-protocols are proposed for the Leios implementation.
 This is not the only feasible solution, but this CIP should be amended as
 implementors refine these mini-protocols.
 
@@ -1235,29 +1350,131 @@ topology results in each relay having many more downstream peers than upstream
 peers. Syncing peers will be discussed below.
 
 <div align="center">
-<a name="figure-6" id="figure-6"></a>
+<a name="figure-6a" id="figure-6a"></a>
 
 ```mermaid
 ---
-title: LeiosNotify
+title: LeiosAnnounce
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
    style StBusy fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
 
-   StIdle -->|MsgLeiosNotificationRequestNext| StBusy
-   StBusy -->|MsgLeiosBlockAnnouncement| StIdle
-   StBusy -->|MsgLeiosBlockOffer| StIdle
-   StBusy -->|MsgLeiosBlockTxsOffer| StIdle
-   StBusy -->|MsgLeiosVotesOffer| StIdle
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosAnnounceRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosBlockAnnouncement<br>{ if tokens = 1 }"| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
 
-<em>Figure 6: LeiosNotify mini-protocol state machine</em>
+<em>Figure 6a: LeiosAnnounce mini-protocol state machine</em>
 
 </div>
+
+The purpose of this first protocol is to diffuse block announcements as fast as
+possible throughout the network. Since these announcements are small and
+latency is the primary concern, a [reactive streams](https://www.reactive-streams.org)
+style request batching is used to ensure that under normal conditions the
+responder can always send without having to wait for a request (intended usage
+for LeiosVotes (below) is to request 1000 initially, then request 100 more
+after each 100 received). Sending the next request before the previous one has
+been fully responded to is not modeled explicitly but supported implicitly via
+protocol pipelining as usual, see below for a definition.
+
+<div align="center">
+<a name="figure-6b" id="figure-6b"></a>
+
+```mermaid
+---
+title: LeiosVotes
+---
+graph LR
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
+
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosVotesRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosVote<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosVote<br>{ if tokens = 1 }"| StIdle
+
+   StIdle -->|MsgDone| StDone
+```
+
+<em>Figure 6b: LeiosVotes mini-protocol state machine</em>
+
+</div>
+
+Analog to LeiosAnnounce, LeiosVotes serves the purpose of diffusing votes as
+quickly as possible throughout the network. Since votes are small, no
+separate round-trip for requesting them is needed, downstream just keeps
+supplying the upstream with tokens so that under normal conditions the upstream
+can typically send immediately.
+
+<div align="center">
+<a name="figure-6c" id="figure-6c"></a>
+
+```mermaid
+---
+title: LeiosBlockNotify
+---
+graph LR
+   style StIdle fill:PaleGreen,stroke:DarkGreen;
+   style StBusy fill:PowderBlue,stroke:DarkBlue;
+   style StDone fill:SeaShell,stroke:DimGray;
+
+   StBusy["StBusy<br>{ tokens := N }"]
+
+   StIdle -->|"MsgLeiosBlockNotifyRequestNext(N)"| StBusy
+   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens > 1; tokens −= 1}<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens > 1; tokens −= 1}"| StBusy
+   StBusy -->|"MsgLeiosBlockOffer<br>{ if tokens = 1 }<br><br>MsgLeiosBlockTxsOffer<br>{ if tokens = 1 }"| StIdle
+
+   StIdle -->|MsgDone| StDone
+```
+
+<em>Figure 6c: LeiosBlockNotify mini-protocol state machine</em>
+
+</div>
+
+The last forward information diffusion protocol is LeiosBlockNotify, which
+signals downstream that a previously announced block is now ready for download
+or that its set of referenced transactions is now fully available. Both of
+these may trigger the downstraem to fetch information from the upstream using
+the next protocol below.
+
+It is important to note that the protocols above should be combined with
+pipelining, meaning that the request for the next batch of responses should be
+sent before the previous batch has been delivered. This is instrumental in
+eliminating wait times (and therefore dissemination delays) due to round-trip
+latency between peers.
+
+> **Definition of pipelining:**
+>
+> Protocol pipelining with a factor N conceptually runs N instances of a mini-protocol on a
+> single multiplexer subchannel for the given protocol ID. Each instance tracks
+> its own state and agency as per the specification. One protocol state is
+> marked as the switch state; the switch state must be one in which the
+> initiator has agency. The subchannel is governed by a pair of multiplexers,
+> one for sending and one for receiving, that behave in round-robin fashion
+> across the N instances, starting at the first instance. Requests from the
+> node are forwarded by the sending multiplexer to the currently selected
+> instance and sending the resulting protocol message to the network; whenever
+> having sent a message from the switch state, the send multiplexer selects the
+> next instance. The receive multiplexer forwards received messages from the
+> network to the currently selected protocol instance; whenever receiving a
+> message that transitions that instance into the switch state, the receive
+> multiplexer selects the next instance.
+
+In the three mini-protocols above, StIdle is the switch state. In case maximum
+buffering commitment shall be made for 1000 responses, one could e.g. choose a
+pipelining depth of 2 with a request count of 500 each or a depth of 10 with a
+request count of 100 each; the latter would keep the worst-case demand level
+higher than the former at the price of sending slightly more data towards the
+responder.
 
 <div align="center">
 <a name="figure-7" id="figure-7"></a>
@@ -1268,16 +1485,12 @@ title: LeiosFetch
 ---
 graph LR
    style StIdle fill:PaleGreen,stroke:DarkGreen;
-   style StBlock fill:PowderBlue,stroke:DarkBlue;
+   style StMultiBlock fill:PowderBlue,stroke:DarkBlue;
    style StBlockTxs fill:PowderBlue,stroke:DarkBlue;
    style StDone fill:SeaShell,stroke:DimGray;
-   style StVotes fill:PowderBlue,stroke:DarkBlue;
-   style StBlockRange fill:PowderBlue,stroke:DarkBlue;
 
-   StIdle -->|MsgLeiosBlockRequest| StBlock -->|MsgLeiosBlock| StIdle
+   StIdle -->|MsgLeiosMultiBlockRequest| StMultiBlock -->|MsgLeiosBlock| StMultiBlock -->|MsgLeiosNoMoreBlocks| StIdle
    StIdle -->|MsgLeiosBlockTxsRequest| StBlockTxs -->|MsgLeiosBlockTxs| StIdle
-   StIdle -->|MsgLeiosVotesRequest| StVotes -->|MsgLeiosVotes| StIdle
-   StIdle -->|MsgLeiosBlockRangeRequest| StBlockRange -->|MsgLeiosNextBlockAndTxsInRange| StBlockRange -->|MsgLeiosLastBlockAndTxsInRange| StIdle
 
    StIdle -->|MsgDone| StDone
 ```
@@ -1286,13 +1499,28 @@ graph LR
 
 </div>
 
-The primary messages will carry information that is directly required by the
-Leios description above: headers, blocks, transactions referenced by blocks, and
-votes for blocks. However, some lower-level information must also be carried by
-secondary messages, e.g. indicating when the peer is first able to send the
-block.
+The LeiosFetch protocol is used to request large responses from upstream and
+therefore uses the established request-response pattern, possibly with
+mini-protocol pipelining. Note that such bulk transfers will be multiplexed on
+the underlying TCP connection in a fair manner based on 64kB segments, hence
+the transfer latency is determined by the bandwidth-RTT-product as well as the
+size of the configured TCP send and receive buffers.
 
-The required exchanges between two neighboring nodes is captured by the
+While the node is catching up with the chain after a restart, it will see Praos
+blocks referencing EBs and use the MsgLeiosMultiBlockRequest to get not only
+the EB but also all transactions referenced therein. When following the current
+state of the chain, it will instead use the MsgLeiosBlockTxsRequest, which
+allows it to fetch either the EB itself (with an empty transaction ID list)
+or a list of transactions referenced by the EB (identified by their sequence
+index in the EB and transmitted in compressed bitmap format). The initial
+proposal for the bitmap representation is inspired by roaring bitmaps:
+
+- a bitmap is a CBOR byte string with the following internal format
+- it is a concatenation of 9-octet slices, where the first octet C names the
+  chunk (for values `C*64..(C+1)*64`) and the following eight octets contain
+  a bitmap of which values of this chunk are in the requested set
+
+The required exchange between two neighboring nodes is captured by the
 following Information Exchange Requirements table (IER table). For the sake of
 minimizing this proposal, each row is a mini-protocol message, but that
 correspondence does not need to remain one-to-one as the mini-protocols evolve
@@ -1306,28 +1534,26 @@ not yet received MsgLeiosBlockTxsOffer.
 <div align="center">
 <a name="table-4" id="table-4"></a>
 
-| Sender  | Name                            | Arguments                                                    | Semantics                                                                                                                                                                                                                             |
-| ------- | ------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Client→ | MsgLeiosNotificationRequestNext | $\emptyset$                                                  | Requests one Leios notifications, the announcement of an EB or delivery offers for blocks, transactions, and votes.                                                                                                                   |
-| ←Server | MsgLeiosBlockAnnouncement       | RB header that announces an EB                               | The server has seen this EB announcement.                                                                                                                                                                                             |
-| ←Server | MsgLeiosBlockOffer              | slot and Leios hash                                          | The server can immediately deliver this block.                                                                                                                                                                                        |
-| ←Server | MsgLeiosBlockTxsOffer           | slot and Leios hash                                          | The server can immediately deliver any transaction referenced by this block.                                                                                                                                                          |
-| ←Server | MsgLeiosVotesOffer              | list of slot and vote-issuer-id pairs                        | The server can immediately deliver votes with these identifiers.                                                                                                                                                                      |
-| Client→ | MsgLeiosBlockRequest            | slot and Leios hash                                          | The server must now deliver this block.                                                                                                                                                                                               |
-| ←Server | MsgLeiosBlock                   | EB block                                                     | The block from an earlier MsgLeiosBlockRequest.                                                                                                                                                                                       |
-| Client→ | MsgLeiosBlockTxsRequest         | slot, Leios hash, and map from 16-bit index to 64-bit bitmap | The server must now deliver these transactions. The given bitmap identifies which of 64 contiguous transactions are requested, and the offset of the transaction corresponding to the bitmap's first bit is 64 times the given index. |
-| ←Server | MsgLeiosBlockTxs                | list of transactions                                         | The transactions from an earlier MsgLeiosBlockTxsRequest.                                                                                                                                                                             |
-| Client→ | MsgLeiosVotesRequest            | list of slot and vote-issuer-id                              | The server must now deliver these votes.                                                                                                                                                                                              |
-| ←Server | MsgLeiosVoteDelivery            | list of votes                                                | The votes from an earlier MsgLeiosVotesRequest.                                                                                                                                                                                       |
-| Client→ | MsgLeiosBlockRangeRequest       | two slots and two RB header hashes                           | The server must now deliver the EBs certified by the given range of RBs, in order.                                                                                                                                                    |
-| ←Server | MsgLeiosNextBlockAndTxsInRange  | an EB and all of its transactions                            | The next certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
-| ←Server | MsgLeiosLastBlockAndTxsInRange  | an EB and all of its transactions                            | The last certified block from an earlier MsgLeiosBlockRangeRequest.                                                                                                                                                                   |
+| Sender  | Name                            | Arguments                      | Semantics                                                                                                |
+| ------- | ------------------------------- | ------------------------------ | -------------------------------------------------------------------------------------------------------- |
+| Client→ | MsgLeiosAnnounceRequestNext     | integer N                      | Requests N Leios block announcement                                                                      |
+| ←Server | MsgLeiosBlockAnnouncement       | slot, EB hash, block_height    | The server has seen an EB announcement for this point and block_height                                   |
+| Client→ | MsgLeiosVotesRequestNext        | integer N                      | Requests N Leios votes                                                                                   |
+| ←Server | MsgLeiosVote                    | vote                           | A Leios vote                                                                                             |
+| Client→ | MsgLeiosBlockNotifyRequestNext  | integer N                      | Requests N Leios block notifications                                                                     |
+| ←Server | MsgLeiosBlockOffer              | slot, EB hash, block_height    | The server can immediately deliver this block                                                            |
+| ←Server | MsgLeiosBlockTxsOffer           | slot, EB hash, block_height    | The server can immediately deliver any transaction referenced by this block                              |
+| Client→ | MsgLeiosMultiBlockRequest       | list of EB hashes              | Requests the EBs and all referenced transactions for the given EB hashes                                 |
+| ←Server | MsgLeiosBlock                   | EB block, list of transactions | A block requested in the previous MsgLeiosMultiBlockRequest                                              |
+| ←Server | MsgLeiosNoMoreBlocks            | $\emptyset$                    | All blocks from the previous MsgLeiosMultiBlockRequest have been delivered                               |
+| Client→ | MsgLeiosBlockTxsRequest         | EB hash, list of integers      | For the referenced EB, request a list of transactions identified by their sequence number within that EB |
+| ←Server | MsgLeiosBlockTxs                | list of transactions           | The transactions from an earlier MsgLeiosBlockTxsRequest                                                 |
 
 <em>Table 4: Leios Information Exchange Requirements table (IER table)</em>
 
 </div>
 
-This mini-protocol pair satisfies the above requirements in the following ways.
+This set of mini-protocols satisfies the above requirements in the following ways.
 
 - These mini-protocols have less width than the LocalStateQuery mini-protocol
   and less depth than the TxSubmission mini-protocol. Thus, its structure is not
@@ -1338,12 +1564,9 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   mini-protocols.
 - Depending on how severely the node must prioritize Praos over Leios, the
   separation of their mini-protocols may simplify the prioritization mechanism.
-  However, urgency inversion means that at least MsgLeiosBlockRangeRequest,
-  MsgLeiosNextBlockAndTxsInRange, and MsgLeiosLastBlockAndTxsInRange may
-  occasionally need to have the same priority as Praos. If it would benefit the
-  prioritization implementation, those three messages could be isolated in a
-  third Leios mini-protocol that has equal priority as the Praos mini-protocols.
-- LeiosNotify and LeiosFetch can also progress independently, because they are
+  However, urgency inversion means that LeiosFetch may
+  occasionally need to have the same priority as Praos.
+- LeiosAnnounce, LeiosVotes and LeiosFetch can also progress independently, because they are
   separate mini-protocols. A client can therefore receive notifications about
   new Leios data and when it could be fetched from this peer even while a large
   reply is arriving via LeiosFetch. This avoids unnecessary increases in the
@@ -1351,38 +1574,45 @@ This mini-protocol pair satisfies the above requirements in the following ways.
 - The client can prioritize the youngest of outstanding offers from the peer
   when deciding which LeiosFetch request to send next, as freshest-first
   delivery requires.
-- Because the client only has agency in one state, it can pipeline its requests
-  for the sake of latency hiding.
+- For LeiosFetch, latency can be optimized by using the established pipelining
+  technique; for the other three protocols an explicit and more powerful
+  approach is chosen in order to avoid any blocking of the sending under
+  nominal circumstances while still placing a strict bound on the maximally
+  outstanding response size.
 - The client can request multiple transactions at once, which avoids wasting
   resources on overhead due to the potentially thousands of transactions
   exchanged per EB. (Most EBs' transactions will usually have already arrived
   via the Mempool, but the adversary can prevent that for their EBs.) The
-  bitmap-based addressing scheme allows for compact requests for even thousands
-  of transactions: a few hundred bytes of MsgLeiosBlockTxsRequest can request
+  EB index-based addressing scheme allows for compact requests for even thousands
+  of transactions: a few kB of MsgLeiosBlockTxsRequest can request
   every transaction in even the largest EB, while a MsgLeiosBlockTxsRequest for
   a single transaction would only cost tens of bytes. Without a compact
   addressing scheme, a node that requires every transaction for some EB would
   essentially need to send a request that's the same size as the EB itself,
   which is large enough to be considered an unnecessary risk of increased
   latency.
-- The client can request multiple votes at once, which avoids wasting resources
+- The client can request multiple votes at once without having to wait for
+  the reception of their identifiers, which avoids wasting resources
   on overhead due to the hundreds of votes exchanged per EB. Because the first
   vote in a bundle could have arrived sooner than the last vote in a bundle if
   it had not been bundled, maximal bundling risks unnecessary increases in
   latency. Some heuristic will balance the overhead decrease and latency
   increase, such as the client gradually stops bundling its vote requests as its
   set of received votes approaches a quorum.
-- The server can do the same when bundling vote offers, but it should be more
-  conservative, in case the client is already closer to a quorum than the former
-  is.
-- MsgLeiosBlockRangeRequest lets syncing nodes avoid wasting resources on
+- The server can bundle votes when submitting them to the multiplexer during
+  the early phase of voting on a given block in order to achieve better
+  bandwidth utilization, and it can switch to individual submissions during the
+  phase where the quorum is close to optimize for minimal latency.
+- MsgLeiosMultiBlockRequest lets syncing nodes avoid wasting resources on
   overhead due to the (hopefully) high rate of EBs per RB. BlockFetch already
   bundles its RB requests when syncing, and this message lets LeiosFetch do the
   same. The starvation detection and avoidance mechanism used by Ouroboros
   Genesis' Devoted BlockFetch variant can be easily copied for
-  MsgLeiosBlockRangeRequest if Ouroboros Genesis is enabled.
+  MsgLeiosMultiBlockRequest if Ouroboros Genesis is enabled. Since this request
+  type is meant to be used during sync, the response also contains all
+  referenced transactions — the client won't have them in its mempool anyway.
 - Recall that the `certified_eb` bit enables the client to correctly predict the
-  total payload size of the valid replies to a MsgLeiosBlockRangeRequest. This
+  total payload size of the valid replies to a MsgLeiosMultiBlockRequest. This
   enables the client to manage its receive buffers, balance load across peers,
   etc.
 - A server should disconnect if the client requests an EB (or its transactions)
@@ -1393,10 +1623,10 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   be able to serve it. Whether additional restrictions would be useful is not
   yet clear. For example, it seems natural to restrict MsgLeiosBlockRequest and
   MsgLeiosBlockTxsRequest to young EBs (and perhaps also
-  MsgLeiosBlockRangeRequest to old EBs), but it's not already clear what the
+  MsgLeiosMultiBlockRequest to old EBs), but it's not already clear what the
   benefit would be.
-- If MsgLeiosBlockRequest and MsgLeiosBlockTxsRequest were restricted to young
-  EBs, then MsgLeiosBlockRangeRequest would not only enable syncing nodes but
+- If MsgLeiosBlockTxsRequest were restricted to young
+  EBs, then MsgLeiosMultiBlockRequest would not only enable syncing nodes but
   also the unfortunate node that suffers from a $\Delta^\text{W}_\text{EB}$
   violation. The protocol design requires that that event is rare or at least
   confined to a small portion of honest stake at a time. But it will
@@ -1411,7 +1641,7 @@ This mini-protocol pair satisfies the above requirements in the following ways.
   election and Praos elections have a stochastically low arrival rate, this
   memory bound is low enough to admit existing Cardano infrastructure.
 
-The mini-protocol pair does not already address the following challenges, but
+The mini-protocols do not already address the following challenges, but
 the corresponding enrichments — if necessary — would not contradict the
 Tolerable Implementation Complexity requirement.
 
@@ -1430,17 +1660,6 @@ Tolerable Implementation Complexity requirement.
   infrastructure, but only by splitting the mini-protocol's requests and
   responses into different mini-protocols, which might be prohibitively
   obfuscated.
-- With server-side reordering, LeiosFetch could also be free to interleave small
-  replies to vote requests with large replies to block/transaction requests.
-  Without it, however, the collocation of small replies and large replies in a
-  single mini-protocol with granular states incurs head-of-line blocking. That
-  risks occasionally increasing some key latencies, thereby threatening
-  freshest-first delivery or even motivating inflations of $L_\text{vote}$
-  and/or $L_\text{diff}$. One easy mitigation would run two instances of
-  LeiosFetch and reserve one for requests that are small and urgent (e.g., small
-  blocks, a few missing transactions, or perhaps any vote); the existing
-  infrastructure would naturally interleave those with the larger and/or less
-  urgent requests.
 
 ### Incentives
 
@@ -1484,21 +1703,27 @@ TPS, providing clear economic incentives for infrastructure upgrades.
 
 ### Clients
 
-Changes proposed for Ouroboros Leios will require changes to the node-to-client
-(N2C) mini-protocols used by client applications throughout the ecosystem.
-Concrete decisions will likely naturally surface through various
-implementations, however some care should be taken to minimize ecosystem
-disruption.
+Ouroboros Leios introduces certified blocks: a cert block's
+on-chain body is empty by convention, with its transactions delivered out of
+band via the certified EB's closure. To minimise ecosystem disruption,
+Leios-aware nodes serve an *inlined* form of each block over LocalChainSync
+(N2C): cert blocks are delivered with the certified EB's transactions spliced
+into the standard segwit segments (`transaction_bodies`,
+`transaction_witness_sets`, `auxiliary_data_set`, `invalid_transactions`). The
+resulting wire shape reuses the [`ranking_block`](#ranking-block-cddl) CDDL,
+so existing N2C clients work unchanged and do not need to learn the Leios
+protocol. The
+"cert ⇒ empty segments" rule that NTN diffusion follows is a producer-side
+convention; it does not apply to N2C deliveries and is not enforced by the
+CDDL. Re-verifying clients should note that for cert blocks the header's
+`block_body_hash` is computed over the on-chain (empty) body, not the inlined
+body served over N2C.
 
 An [Impact Analysis][impact-analysis] has been done and continued discussion is
-necessary. One recommendation is to serve a modified block with "inline" EB
-transactions over LocalChainSync. Additional queries and ledger state may be
-extended to provide Leios specific information to applications. It is assumed
-nodes providing client interfaces will provide the modified block to clients.
+necessary. Additional queries and ledger state may be extended to provide
+Leios specific information to applications.
 
-A [CDDL for merged blocks](#merged-block-cddl) is available in Appendix B.
-
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Ouroboros Leios introduces a committee-based voting layer over Nakamoto-style
 consensus to handle transaction surplus beyond current Praos block limits,
@@ -1661,7 +1886,7 @@ future implementations of Leios can be assessed in these terms.
 |            | Temporal efficiency, $\epsilon_\text{temporal}(s)$ | Time to include transaction on ledger                                                                 |
 |            | Network efficiency, $\epsilon_\text{network}$      | Ratio of total transaction size to node-averaged network usage                                        |
 |  Protocol  | TX inclusion, $\tau_\text{inclusion}$              | Mean number of slots for a transaction being included in any EB                                       |
-|            | Voting failure, $p_\text{noquorum}$                | Probability of sortition failure to elect sufficient voters for a quorum                              |
+|            | Voting failure, $p_\text{noquorum}$                | Probability of failing to collect sufficient votes for a quorum                                       |
 |  Resource  | Network egress, $q_\text{egress}$                  | Rate of bytes transmitted by a node                                                                   |
 |            | Disk usage, $q_\text{disk}$                        | Rate of persistent bytes stored by a node                                                             |
 |            | I/O operations, $\bar{q}_\text{iops}(b)$           | Mean number of I/O operations per second, where each operation writes a filesystem block of $b$ bytes |
@@ -1718,12 +1943,14 @@ $$
 \tau_\text{inclusion} = \text{mean number of slots for a transaction to be included in any EB}
 $$
 
-**_Voting failure:_** An unlucky set of VRF evaluations might result in
-insufficient voters being selected for a given EB, thus making it impossible to
-certify that EB.
+**_Voting failure:_** Under stake-based truncation the committee is
+deterministic, so quorum failure is not caused by sortition randomness. Instead,
+a quorum may fail to form if vote-diffusion pressure prevents enough votes from
+arriving within $L_\text{vote}$ — for example, when a large committee produces
+more votes per EB than the network can diffuse in time.
 
 $$
-p_\text{noquorum} = \text{probability of sufficient voters to achieve a quorum for a given EB}
+p_\text{noquorum} = \text{probability of failing to collect sufficient votes for a quorum for a given EB}
 $$
 
 **_Network egress:_** Cloud service providers typically charge for network
@@ -1794,31 +2021,41 @@ see [^sim-recreation].
 [^mini]:
     [Leios mini-mainnet topology](https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/data/simulation/pseudo-mainnet/topology-v2.md)
 
-[^ripe]: [RIPE Atlas](https://atlas.ripe.net/)
-
 [^mncp]:
-    https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/analysis/sims/2025w30b/analysis.ipynb
+    <https://github.com/input-output-hk/ouroboros-leios/blob/6d8619c53cc619a25b52eac184e7f1ff3c31b597/analysis/sims/2025w30b/analysis.ipynb>
 
 [^praosp]:
-    https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md
+    <https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md>
 
 The simulation results in the remainder of this section use the Rust simulator
 with a set of protocol parameters suitable for running Leios at 200 kB/s of
 transactions, which corresponds to approximately 150 tx/s of transactions of
 sizes typical on the Cardano mainnet. The maximum size of transactions
 referenced by an EB is 12 MB and the stage lengths are
-$3 \times L_\text{hdr} = 3 \text{ slots}$, $L_\text{vote} = 4$, and
-$L_\text{diff} = 7 \text{ slots}$. In order to illustrate the minimal
+$3 \times L_\text{hdr} = 3 \text{ s}$, $L_\text{vote} = 4 \text{ s}$, and
+$L_\text{diff} = 7 \text{ s}$. In order to illustrate the minimal
 infrastructure resources used by Leios at these throughputs, we have limited
 nodes to 4 virtual CPUs each and limited inter-node bandwidth to 10 Mb/s. We
 vary the throughput to illustrate the protocol's behavior in light vs congested
 transaction loads, and inject transaction from the 60th through 960th slots of
 the simulation; the simulation continues until the 1500th slot, so that the
-effects of clearing the memory pool are apparent. The table below summarizes the
+effects of clearing the memory pool are apparent.
+
+The simulation is based on the "stake-based truncation" committee selection
+algorithm (known as 'top-stake-fraction' in the simulator configuration). With
+the stake distribution in the `mini-mainnet` topology this results in a
+committee size of 208, less than the ideal size. We therefore also ran it with a
+1500 `midi-mainnet`, derived similarly, which produces a committee size of 448 —
+both lower than the $N_c = 900$ seats recommended in [Table 7](#table-7). An
+'everyone votes' mode was run on both topologies to bracket the recommendation
+from above, at 750 and 1500 voters per EB respectively. The results of all these
+tests are documented in the [2026w18 analysis][2026w18].
+
+The table below summarizes the
 results of the simulation experiment. We see that a transaction at the front of
-the memory pool can become referenced by an EB in as few as 20 seconds when the
+the memory pool can become referenced by an EB in as few as 13 seconds when the
 system is lightly or moderately loaded and that it can reach certification on
-the ledger in about one minute. These times more than double under congested
+the ledger in well under a minute. These times almost triple under congested
 conditions. In all cases there is little overhead, relative to the total bytes
 of transactions, in data that must be stored permanently as the ledger history.
 
@@ -1827,11 +2064,11 @@ of transactions, in data that must be stored permanently as the ledger history.
 
 | Throughput [TxMB/s] | TPS at 1500 B/tx | Conditions    | Mempool to EB [s] | Mempool to ledger [s] | Space efficiency [%] |
 | ------------------: | ---------------: | ------------- | ----------------: | --------------------: | -------------------: |
-|               0.150 |            100.0 | light load    |              17.9 |                  55.9 |                 92.3 |
-|               0.200 |            133.3 | moderate load |              22.6 |                  64.5 |                 97.2 |
-|               0.250 |            166.7 | heavy load    |              22.9 |                  62.0 |                 97.5 |
-|               0.300 |            200.0 | congestion    |              43.1 |                  83.8 |                 97.5 |
-|               0.350 |            233.3 | over capacity |             135.5 |                 176.9 |                 96.9 |
+|               0.150 |            100.0 | light load    |              13.2 |                  49.2 |                 95.1 |
+|               0.200 |            133.3 | moderate load |              13.4 |                  49.5 |                 95.6 |
+|               0.250 |            166.7 | heavy load    |              21.5 |                  61.3 |                 95.4 |
+|               0.300 |            200.0 | congestion    |              38.2 |                  76.4 |                 95.8 |
+|               0.350 |            233.3 | over capacity |              95.4 |                 134.2 |                 95.7 |
 
 <em>Table 6: Leios efficiency at different throughputs</em>
 
@@ -1847,7 +2084,7 @@ The variability arises from the randomness of the RB production scheduled.
 First, a transaction may has to wait for an RB to be forged; second, a
 transaction referenced by an EB has to wait for the following RB to be forged.
 The EB is discarded, however, if the second RB is produced in fewer than
-$3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ slots after the first
+$3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff}$ after the first
 RB. Thus, both the time to the next RB and the RB following that introduce
 unpredictability in a transaction reaching the ledger under even lightly loaded
 conditions. When the sortition happens to produce RBs too close together,
@@ -2185,12 +2422,14 @@ Operating Costs for further discussion.
 
 The key relation in the proposed protocol is between the voting threshold
 ($\tau = 75\\%$) and propagation delay of EBs ($\Delta_\text{EB}$). The high
-voting threshold ensures that any certified EB is already known to at least 25%
-of honest nodes by the end of $L_\text{vote}$, even assuming 50% adversarial
-stake. This widespread initial knowledge enables the critical network
-assumption: an EB evidently known to >25% of the network will reach the
-remaining (online) honest stake within $L_\text{diff}$ and $\Delta_\text{RB}$,
-so to not impact blockchain safety and liveness.
+voting threshold ensures that any certified EB is already known to at least
+$\tau - \sigma_a$ of honest stake by the end of $L_\text{vote}$ — 25% at
+$\tau = 75\\%$ under the threat model's $\sigma_a = 50\\%$ adversarial stake.
+This widespread initial knowledge enables the critical network assumption: an EB
+evidently known to >25% of the network will reach the remaining (online) honest
+stake within $L_\text{diff}$ and $\Delta_\text{RB}$, so to not impact blockchain
+safety and liveness. Sustaining that seed fraction is the binding constraint on
+$\tau$; see [choosing the quorum threshold](#choosing-quorum-threshold).
 
 **Example Parameter Calculation**
 
@@ -2211,18 +2450,27 @@ Based on the [network timing measurements](#network-characteristics):
 
 **Timing Parameter Calibration:**
 
-- $L_\text{hdr} = 1$ slot: Header diffusion period, where equivocation detection
-  period is $3 \times L_\text{hdr} = 3$ slots (per
+- $L_\text{hdr} = 1$ second: Header diffusion period, where equivocation
+  detection period is $3 \times L_\text{hdr} = 3$ seconds (per
   [equivocation detection](#equivocation-detection))
-- $L_\text{vote} = 4$ slots: Since voting begins after $3 \times L_\text{hdr}$,
-  and EB propagation can occur during equivocation detection, nodes only need 4
-  additional slots after $3 \times L_\text{hdr}$ for validation plus margin (per
+- $L_\text{vote} = 4$ seconds: Since voting begins after
+  $3 \times L_\text{hdr}$, and EB propagation can occur during equivocation
+  detection, nodes only need 4 additional seconds after $3 \times L_\text{hdr}$
+  for validation plus margin (per
   [voting period](#voting-period))
-- $L_\text{diff} = 7$ slots: Using the [diffusion period](#diffusion-period)
-  constraint with typical values gives minimum of 4 slots, we use 7 for safety
+- $L_\text{diff} = 7$ seconds: Using the [diffusion period](#diffusion-period)
+  constraint with typical values gives minimum of 4 seconds, we use 7 for safety
   margin
 - **Total certificate inclusion delay:**
-  $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} = 3 + 4 + 7 = 14$ slots
+  $3 \times L_\text{hdr} + L_\text{vote} + L_\text{diff} = 3 + 4 + 7 = 14$ seconds
+
+With these example values, a certificate may only be included in an RB at least
+14 slots after the announcing RB at mainnet's one-second slot length. With
+Praos' active slot coefficient of $f = 0.05$, the probability that no RB is
+produced in the intervening 13 slots is $0.95^{13} \approx 51\\%$. Even if every
+RB announces an EB and every timely EB reaches quorum, roughly half of all RBs
+will therefore carry a transaction list directly rather than a certificate. Not
+all transactions go through EBs, even under congestion.
 
 **Simulation-Tested Parameters**
 
@@ -2234,28 +2482,28 @@ consideration of tradeoffs.
 <div align="center">
 <a name="table-7" id="table-7"></a>
 
-| Parameter                                     |      Symbol      |   Feasible value   | Justification                                                                                                                                                                          |
-| --------------------------------------------- | :--------------: | :----------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Header diffusion period length                |  $L_\text{hdr}$  |       1 slot       | Per [equivocation detection](#equivocation-detection): accommodates header propagation for equivocation detection. Equivocation detection period is $3 \times L_\text{hdr}$.           |
-| Voting period length                          | $L_\text{vote}$  |      4 slots       | Per [voting period](#voting-period): accommodates EB propagation and validation time, with equivocation detection handled separately by $3 \times L_\text{hdr}$.                       |
-| Diffusion period length                       | $L_\text{diff}$  |      7 slots       | Per [diffusion period](#diffusion-period): minimum calculated as 4 slots with typical network values, use 7 for safety margin.                                                         |
-| Endorser-block referenceable transaction size | $S_\text{EB-tx}$ |       12 MB        | Simulations indicate that 200 kB/s throughput is feasible at this block size.                                                                                                          |
-| Endorser block max size                       |  $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                             |
-| Maximum Plutus steps per endorser block       |        -         |  2000G step units  | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                        |
-| Maximum Plutus memory per endorser block      |        -         | 7000M memory units | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                        |
-| Ranking block max size                        |  $S_\text{RB}$   |    90,112 bytes    | This is the current value on the Cardano mainnet.                                                                                                                                      |
-| Mean committee size                           |       $n$        |  600 stake pools   | Modeling of the proposed certificate scheme indicates that certificates reach their minimum size of ~8 kB at this committee size, given a realistic distribution of stake among pools. |
-| Quorum size                                   |      $\tau$      |        75%         | High threshold ensures certified EBs are known to >25% of honest nodes even with 50% adversarial stake. This enables the network assumption for safe diffusion within L_diff.          |
+| Parameter                                         |      Symbol       |   Feasible value   | Justification                                                                                                                                                                                                                                                                                                                                        |
+|---------------------------------------------------|:-----------------:|:------------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Committee size                                    |       $N_c$       |     900 seats      | Covers ~99% of mainnet active stake (890 pools reach 99% at epoch 649), with a 113 B certificate bitfield and a vote count inside the simulated range. See [choosing the committee size](#choosing-committee-size).                                                                                                                                  |
+| Quorum stake threshold                            |      $\tau$       |        0.75        | Votes representing ≥75% of total active stake must sign, so $\tau - \sigma_a = 25\\%$ of honest stake holds every certified EB even at 50% adversarial stake — the seed coverage $\Delta_\text{EB}^{\text{W}}$ and $L_\text{diff}$ assume. Must satisfy $0.5 < \tau < \sigma(N_c)$; see [choosing the quorum threshold](#choosing-quorum-threshold). |
+| Header diffusion period length                    |  $L_\text{hdr}$   |      1 second      | Per [equivocation detection](#equivocation-detection): accommodates header propagation for equivocation detection. Equivocation detection period is $3 \times L_\text{hdr}$.                                                                                                                                                                         |
+| Voting period length                              |  $L_\text{vote}$  |     4 seconds      | Per [voting period](#voting-period): accommodates EB propagation and validation time, with equivocation detection handled separately by $3 \times L_\text{hdr}$.                                                                                                                                                                                     |
+| Diffusion period length                           |  $L_\text{diff}$  |     7 seconds      | Per [diffusion period](#diffusion-period): minimum calculated as 4 seconds with typical network values, use 7 for safety margin.                                                                                                                                                                                                                       |
+| Maximum endorser block size                       |   $S_\text{EB}$   |       512 kB       | Endorser blocks must be small enough to diffuse and be validated within the voting period $L_\text{vote}$.                                                                                                                                                                                                                                           |
+| Maximum total transaction size per endorser block | $S_\text{EB-tx}$  |       12 MB        | Simulations indicate that 200 kB/s throughput is feasible at this block size.                                                                                                                                                                                                                                                                        |
+| Maximum reference script size per endorser block  | $S_\text{EB-ref}$ |       12 MB        | ~11× mainnet's 1 MiB `maxRefScriptSizePerBlock` in absolute terms, but capped at $S_\text{EB-tx}$ rather than the ~11.6× of payload Praos permits, since EB validation must finish within $L_\text{vote}$. Needs the same simulation grounding as the Plutus budgets below.                                                                          |
+| Maximum Plutus steps per endorser block           |         -         |  2000G step units  | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                                                                                                                                                                                      |
+| Maximum Plutus memory per endorser block          |         -         | 7000M memory units | Simulations at high transaction-validation CPU usage, but an even higher limit may be possible.                                                                                                                                                                                                                                                      |
 
 <em>Table 7: Feasible Protocol Parameters</em>
 
 </div>
 
 This design trades a slightly longer total certification time (typically 13-15
-slots) for significant protocol simplification by eliminating complex correction
+seconds) for significant protocol simplification by eliminating complex correction
 mechanisms and ensuring all RB transactions are always valid.
 
-Simulations on mainnet-like topologies indicate that seven slots is more than
+Simulations on mainnet-like topologies indicate that seven seconds is more than
 sufficient to diffuse the transactions, blocks, and votes required by Leios.
 Most nodes receive these in one second or less and even the tardiest nodes
 receive them in under two seconds. The additional diffusion period provides
@@ -2300,15 +2548,107 @@ testnet.
 The analysis [Committee size and quorum requirement][committee-size-analysis] in
 the first Leios Technical Report indicates that the Leios committee size should
 be no smaller than 500 votes and the quorum should be at least 60% of those
-votes. However, the proposed [Fait Accompli][fait-accompli-sortition] scheme
-wFA<sup>LS</sup> achieves compact certificates that do not become larger as the
-number of voters increases, so larger committee sizes might be permitted for
-broader SPO participation and higher security. The committee size should be
-large enough that fluctuations in committee membership do not create an
-appreciable probability of an adversarial quorum when the adversarial stake is
-just under 50%. The quorum size should be kept just large enough above 50% so
-that those same fluctuations do not prevent an honest quorum. Larger committees
-require more network traffic, of course.
+votes. Under stake-based truncation, the quorum is expressed directly as a
+fraction of total active stake ($\tau$), which is the predicate the security
+argument actually requires. Certificate size is dominated by a bitfield
+($\lceil N_c/8 \rceil$ bytes) plus a fixed aggregated signature, so larger
+committees add negligible on-chain overhead — the practical constraint on
+committee size shifts from certificate compactness to vote-diffusion traffic
+within $L_\text{vote}$.
+
+<a name="choosing-quorum-threshold" id="choosing-quorum-threshold"></a>**Choosing
+the quorum threshold**
+
+Of the two voting parameters, only $\tau$ is safety-critical, and it is bounded
+from both sides.
+
+**From below, by safety.** Praos assumes adversarial stake $\sigma_a$ of up to
+50%, and an honest pool votes only after receiving and fully validating the EB.
+Whatever $\tau$ exceeds that assumption, $\tau - \sigma_a$, is therefore honest
+stake provably holding every certified EB when $L_\text{vote}$ ends, and it is
+that remainder which enables the Leios security assumption: it is the coverage the
+[certified EB transmission constraint](#certified-eb-transmission-constraint)
+measures $\Delta_\text{EB}^{\text{W}}$ from. Fall short and an adversary can have
+an EB certified while withholding it from all but a sliver of honest stake,
+delaying that EB's closure past the $\Delta_\text{RB}$ bound Praos assumes, which
+is a Praos safety failure rather than a Leios throughput loss. Below $\tau = 0.5$
+the bound fails outright, since two disjoint sets of voters could each reach a
+quorum and certify conflicting EBs; a threshold in the 50s clears that only
+nominally and leaves nothing for the assumption above.
+
+**From above, by liveness.** Certification needs $\tau$ of total active stake to
+vote, and only $\sigma(N_c)$ of it is seated, so an adversary that simply declines
+to vote prevents certification outright with $\sigma(N_c) - \tau$ of stake. Raising
+$\tau$ shrinks that budget one-for-one, and the $1 - \sigma(N_c)$ outside the
+committee has already spent part of it.
+
+$\tau = 0.75$ splits these bounds evenly: 25 points above the 50% adversarial
+stake Praos tolerates, against a ~24 point abstention budget at
+$\sigma(N_c) = 0.99$. It is suggested as a starting value on that basis, to be
+revisited once operational data narrows either side.
+
+<a name="choosing-committee-size" id="choosing-committee-size"></a>**Choosing
+the committee size**
+
+$N_c$, by contrast, is not safety-critical. It cannot admit a certificate that
+$\tau$ would reject, because the quorum predicate is evaluated on stake and the
+certificate proves it; a mis-set $N_c$ only changes which pools may vote, and so
+whether a quorum can be reached at all. Getting it wrong costs Leios liveness
+and thus only throughput, never safety, so it can be governed on observed
+coverage by weighing two factors against each other. Its cost is exact and known
+in advance: $N_c$ votes on the wire per EB and a $\lceil N_c/8 \rceil$-byte
+bitfield per certificate. Its benefit is the stake it covers, $\sigma(N_c)$,
+which fixes the abstention budget $\sigma(N_c) - \tau$: the stake that can
+decline to vote before no quorum can form. Stake outside the committee, $1 -
+\sigma(N_c)$, already counts against reaching $\tau$, so a smaller committee
+spends that budget before an adversary has to do anything.
+
+Both factors are read off the prevailing stake distribution. The table below
+does so for the mainnet active-stake snapshot of epoch 649 (2,680 pools sharing
+21.5 B ADA) taken from a chain explorer ([Kleioscan stake-distribution
+analytics][kleioscan-stake]). Percentile P*n* denotes the smallest committee
+whose coverage reaches *n* percent of active stake, so $\sigma(N_c)$ on each row
+is that percentile.
+
+<div align="center">
+<a name="table-7a" id="table-7a"></a>
+
+| Percentile | Seats $N_c$ | Cert bitfield | Note                                                      |
+|------------|------------:|--------------:|-----------------------------------------------------------|
+| P50        |         160 |          20 B | Nakamoto coefficient; absolute floor for any valid $\tau$ |
+| P75        |         302 |          38 B | Floor at $\tau = 0.75$: quorum would require unanimity    |
+| P90        |         467 |          59 B | 15 points of headroom over $\tau$                         |
+| P95        |         590 |          74 B | 20 points of headroom                                     |
+| P98        |         759 |          95 B | 23 points of headroom                                     |
+| **P99**    |     **890** |     **112 B** | **Recommended ceiling**; remaining 1,790 pools hold <1%   |
+| P99.5      |       1,013 |         127 B | +123 seats buys +0.5 points of coverage                   |
+| P100       |       2,680 |         335 B | Every registered pool ("everyone votes")                  |
+
+<em>Table 7a: Seats needed to reach each stake percentile, and what they cost
+(mainnet epoch 649)</em>
+
+</div>
+
+Two bounds fall out of this:
+
+- **Floor.** $\sigma(N_c)$ must exceed $\tau$, or the abstention budget is
+  negative and no quorum can form at all. Today that is the $\tau$ percentile,
+  P75 ≈ 302 seats, and since $\tau > 0.5$ is itself required the floor never
+  falls below P50, the 160 seats of the Nakamoto coefficient. This is a hard
+  floor rather than an operating point: at exactly $\tau$ every seated pool must
+  vote and be reachable within $L_\text{vote}$, so a practical choice leaves
+  budget for pools that are offline, [keyless](#key-registration), or slow.
+- **Ceiling.** Beyond P99 the distribution has nothing left to give: 1,790 of
+  2,680 pools together hold under 1% of active stake, so each further seat buys a
+  vanishing amount of budget for a full extra vote per EB on the wire.
+
+$N_c = 900$ in [Table 7](#table-7) rounds up the P99 ceiling, buying an
+abstention budget of ~24 points at $\tau = 0.75$. It also stays inside the range
+vote diffusion has been simulated on mainnet-like topologies at, up to 1,500
+voters per EB (see the [caveat](#voting-committee-selection) in Design
+Decisions). Coverage drifts slowly enough that the choice rarely needs
+revisiting: 99% coverage implied ~916 pools at epoch 612 against 890 at epoch
+649.
 
 <a name="operating-costs"></a>**Operating costs**
 
@@ -2446,6 +2786,122 @@ the [Protocol Security](#protocol-security) section and
 
 ### Design Decisions
 
+#### Voting committee selection
+
+A stake cutoff is required: allowing every registered SPO to vote ("Everyone
+votes") leaves the committee size unbounded and vulnerable to an adversary
+registering pools to inflate vote traffic. Moreover, under realistic
+Pareto-distributed stake the marginal security gain of including additional
+small pools diminishes rapidly: on mainnet at epoch 649, 890 pools already cover
+99% of active stake while the remaining 1,790 pools share under 1%. A committee
+size ($N_c$) chosen against that distribution captures this directly.
+
+Given a stake cutoff, two committee-selection schemes were seriously considered:
+**stake-based truncation** (the scheme specified above) and **wFA^LS** (weighted
+Fait Accompli with Local Sortition; the scheme that appeared in earlier drafts
+of CIP-164). A detailed cryptographic analysis of both schemes is available in
+the [ARC voting crypto review][arc-voting-review]; the scheme specified in this
+CIP corresponds to "Truncation" in that report.
+
+| Dimension                             | Stake-based truncation             | wFA^LS                                                              |
+|---------------------------------------|------------------------------------|---------------------------------------------------------------------|
+| Voter set per epoch                   | Top-stake committee (bounded)      | Persistent voters + per-EB non-persistent                           |
+| Certificate format                    | Bitfield + aggregated signature    | Bitfield of PVs + per-NPV eligibility proofs + aggregated signature |
+| Committee size (mainnet ep. 612)      | 916 seats (top-stake at 99% stake) | 481 PV + 94 NPV                                                     |
+| Certificate size                      | ~203 B                             | ~6.8 kB                                                             |
+| Cert verification                     | ~2 ms                              | ~10 ms                                                              |
+| Vote size                             | 94 B                               | 94 B (PV) / 171 B (NPV)                                             |
+| Per-vote eligibility check            | None (membership lookup)           | BLS check + VRF check for NPVs                                      |
+| Network traffic at scale              | Bounded by stake-distribution tail | Bounded by PV + NPV count                                           |
+| Adaptive security (with key rotation) | Yes (in practice)                  | Yes, with NPV non-targetability bonus                               |
+| Implementation complexity             | Small                              | Substantial (sortition, two vote shapes)                            |
+
+(Numbers from [leios-wfa-ls-demo][leios-wfa-ls-demo] benchmarks against mainnet
+stake data.)
+
+**Why stake-based truncation was selected:**
+
+- **Certificate size dominates the design pressure.** Certificates are perpetual
+  on-chain overhead and certificate verification sits on the
+  $\Delta_{\text{RB}}$ critical path. The ~33× certificate-size reduction and
+  ~5× verification-time reduction relative to wFA^LS is a substantial ongoing
+  protocol-level saving.
+- **Simplicity.** No per-EB sortition, one vote shape, one eligibility check.
+  This is "harder to get wrong" across multiple node implementations
+  (cardano-node, amaru, and others). The conformance test surface is
+  correspondingly smaller.
+- **Adaptive security gap is small in practice.** Without BLS key rotation, no
+  scheme is genuinely adaptively secure. With rotation, the one feature wFA^LS
+  uniquely retains is non-targetability of NPVs — but NPVs are drawn from the
+  long tail of small pools, so compromising them yields very little stake per
+  target. A rational adaptive attacker would focus on the large persistent
+  voters regardless, where both schemes are equally exposed.
+- **Reversibility.** The committee scheme can be changed in an intra-era
+  hard-fork via a protocol parameter, provided the parameter is chosen to
+  generalize across schemes. A seat count ($N_c$) does: every scheme considered
+  here is naturally parameterized by how many seats it fills (wFA^LS by its
+  persistent and non-persistent seat counts, wFA^IID by its bounded per-EB vote
+  count), whereas a cumulative-stake target only has a meaning under truncation.
+  Locking in stake-based truncation now does not foreclose future revisitation if
+  simulation or operational data warrant it.
+
+The adaptive-security argument above is contingent on BLS key rotation
+(Appendix A requirement 2). The on-chain mechanism — extending the pool
+registration certificate to carry the voting key, with epoch-boundary
+activation aligned to VRF-key rotation — is specified under [Key Registration
+and Rotation](#key-registration). The static-vs-adaptive distinction applies
+equally to *all* schemes considered here (stake-based truncation, wFA^LS, and
+All-vote alike), so the relative comparison above is unaffected.
+
+**Why the committee is sized directly.** Earlier drafts configured the committee
+by a cumulative-stake target ($\sigma_c$) and let the seat count follow, to guard
+against a flattening stake distribution under-representing active stake in the
+committee. That concern belonged to wFA^LS, not to the cutoff: local sortition
+**sampled** the distribution for its non-persistent seats, so a fixed seat count
+had to be sized against the sampling error, and a flatter distribution really did
+degrade how well the drawn seats represented stake. Stake-based truncation draws
+nothing. Each seat is one pool and carries exactly that pool's stake, the quorum
+$\tau$ is evaluated on stake rather than on head count, and a certificate proves
+the stake predicate directly, so no seat count, fixed or otherwise, can mis-weight
+a pool.
+
+What a seat count does determine is how much stake is eligible at all, which
+under a flattening distribution means less coverage rather than distorted
+coverage. That is a liveness margin, not a security property: it is bounded below
+by $\tau$, has ~24 points of headroom at the recommended value, drifts over
+epochs rather than blocks, and is readable off the chain at any time. Sizing the
+committee directly therefore lets governance hold constant the quantity the
+network must budget for, votes per EB and certificate bytes, and absorb stake
+drift in the quantity that has slack. [Choosing the committee
+size](#choosing-committee-size) works this through on current mainnet stake.
+
+**wFA^IID as a forward-looking option.** A variant **wFA^IID** (Fait Accompli
+with IID stake-proportional sampling for non-persistent seats) is recorded here
+as the natural next step should stake-based truncation prove inadequate. It
+would be invoked specifically in the scenario where post-deployment network
+measurements show the absolute vote count under stake-based truncation placing
+unacceptable pressure on vote diffusion within $L_{\text{vote}}$. wFA^IID
+produces certificates and votes of the **same size** as stake-based truncation.
+Eligibility of a non-persistent seat is established by re-running a
+deterministic public sortition draw at epoch start, not by an in-vote
+eligibility proof, while offering a *bounded number of votes per EB*
+irrespective of how many pools are eligible. This trades implementation
+complexity (the per-seat sortition draw and the bookkeeping for multi-seat
+winners) for tighter network-load control without sacrificing the
+certificate-size advantage.
+
+**Caveat:** Network-level simulations confirming that vote diffusion at the
+expected vote counts does not exceed the $L_{\text{vote}}$ budget have so far
+been run on the [mini-mainnet][mini-mainnet] topology (750 nodes), and also on a
+similarly-derived `midi-mainnet` with 1500 nodes, where both schemes behave
+identically. To push the committee size to its limits, we also simulated an
+'everyone votes' mode - literally everyone, even relays - giving a committee
+size of 750 and 1500 respectively. Even then, the
+protocol performed as expected, showing that committee size is not a significant
+factor in performance. **1500 votes per EB is therefore the largest cardinality
+analysed**, which brackets the $N_c = 900$ seats recommended in [Table
+7](#table-7). Full results are available in the [2026w18 analysis][2026w18].
+
 #### Transaction References in Endorser Blocks
 
 EBs contain transaction references rather than full transaction bodies to avoid
@@ -2568,7 +3024,7 @@ with tombstoning to manage storage efficiency. While offering the greatest
 throughput potential, this pathway requires careful analysis of economic
 incentives and conflict resolution trade-offs.
 
-## Path to active
+## Path to Active
 
 ### Acceptance criteria
 
@@ -2577,11 +3033,13 @@ The proposal will be considered active once the following criteria are met:
 - [ ] Protocol performance validated through load tests in a representative
       environment.
 - [ ] Required changes are documented in an implementation-independent way via
-      the
-      [Cardano blueprint](https://cardano-scaling.github.io/cardano-blueprint/)
-      including conformance tests.
+      the [Cardano
+      blueprint](https://cardano-scaling.github.io/cardano-blueprint/) including
+      conformance tests.
 - [ ] Formal specification of the consensus and ledger changes is available.
 - [ ] ΔQSD model available for Leios parameter selection.
+- [ ] BLS key rotation mechanism specified in this CIP — see Appendix A
+      requirement 2.
 - [ ] Community agreement on initial Leios protocol parameters.
 - [ ] A peer-reviewed implementation of a Leios-enabled node is available.
 - [ ] Successful operation with open participation in testnet environments over
@@ -2637,24 +3095,26 @@ usual mechanisms of governing a hard-fork will be employed.
 
 - **Leios R&D website** — [leios.cardano-scaling.org][leios-website]
 - **Leios Discord channel** — [IOG Discord][leios-discord]
-- **Leios R&D repository** — [GitHub][leios-github]
-- **Leios formal specification** — [GitHub][leios-formal-spec]
-- **Leios Agda formal specification** — [Agda
-  specification][linear-leios-formal-spec]
-- **Leios cryptography prototype** — [GitHub][leioscrypto]
-
-**Technical Specifications**
-
-- **BLS certificates specification** — [Specification][bls-spec]
-- **BLS certificates benchmarks** — [Benchmarks][bls-benchmarks]
-- **Fait Accompli sortition** — [Specification][fait-accompli-sortition]
+- **Leios R&D repository** — [ouroboros-leios][leios-github]
+- **Leios formal specification** — [ouroboros-leios-formal-spec][leios-formal-spec]
+- **Leios Agda formal specification** — [ouroboros-leios-formal-spec][linear-leios-formal-spec]
 
 **Technical Reports**
 
-- **Committee size and quorum requirement** -
-  [Analysis][committee-size-analysis]
-- **Threat model** — [Report #1][threat-model]
-- **Leios attack surface** — [Report #2][threat-model-report2]
+- **Voting scheme analysis** — [leios-wfa-ls-demo][leios-wfa-ls-demo]: explores
+  wFA^LS on mainnet stake data and includes vote/certificate size and
+  verification benchmarks for the stake-based committee scheme
+- **ARC voting crypto review** — [ouroboros-leios/arc-voting-crypto-review.pdf][arc-voting-review]:
+  cryptographic analysis comparing All-vote, Truncation (the scheme in this
+  CIP), and wFA^LS on adaptive-security and overhead grounds
+- **Older cryptography prototype** — [ouroboros-leios/crypto-benchmarks.rs][leioscrypto]:
+  explores wFA^LS BLS certificates and sortition
+- **Older committee size and quorum requirement** —
+  [Analysis][committee-size-analysis]: establishes lower bounds on committee
+  size and quorum fraction; analysis was conducted in terms of vote counts
+  but the bounds apply equally when the quorum is expressed as a stake
+  threshold
+- **Threat model** — [Report][threat-model]
 - **Node operating costs** — [Cost estimate][cost-estimate]
 - **Impact analysis** - [Impact][impact-analysis]
 
@@ -2689,12 +3149,24 @@ usual mechanisms of governing a hard-fork will be employed.
 [cps-18]:
   https://github.com/cardano-foundation/CIPs/blob/master/CPS-0018/README.md
   "CPS-18: Greater transaction throughput"
+[cip-9]:
+  https://github.com/cardano-foundation/CIPs/blob/master/CIP-0009/README.md
+  "CIP-9: Protocol Parameters"
 [leios-paper]:
   https://eprint.iacr.org/2025/1115.pdf
   "Ouroboros Leios: Design Goals and Concepts"
 [fait-accompli-sortition]:
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/crypto-benchmarks.rs/Specification.md#sortition
   "Fait Accompli sortition specification"
+[leios-wfa-ls-demo]:
+  https://github.com/cardano-scaling/leios-wfa-ls-demo
+  "Voting scheme analysis: wFA^LS exploration and stake-based committee benchmarks"
+[arc-voting-review]:
+  https://github.com/input-output-hk/ouroboros-leios/blob/41cefc99a/docs/arc-voting-crypto-review.pdf
+  "ARC voting crypto review: All-vote, Truncation, and wFA^LS comparison"
+[kleioscan-stake]:
+  https://kleioscan.com/#/mainnet/analytics/stake
+  "Kleioscan: mainnet active-stake distribution analytics"
 
 <!-- Project resources -->
 
@@ -2730,13 +3202,10 @@ usual mechanisms of governing a hard-fork will be employed.
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-1.md#committee-size-and-quorum-requirement
   "Committee size and quorum requirement"
 [threat-model]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-1.md#threat-model
-  "Threat model"
-[threat-model-report2]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/technical-report-2.md#notes-on-the-leios-attack-surface
-  "Comments on Leios attack surface"
+  https://github.com/input-output-hk/ouroboros-leios/blob/685cdead10fcd5a790151a7ba3833cff9a888333/docs/threat-model.md
+  "Leios threat model"
 [cost-estimate]:
-  https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/docs/cost-estimate/README.md
+  https://github.com/input-output-hk/ouroboros-leios/blob/685cdead10fcd5a790151a7ba3833cff9a888333/docs/cost-estimate/README.md
   "Leios node operating costs"
 [impact-analysis]:
   https://github.com/input-output-hk/ouroboros-leios/blob/4603cfd0b545cccf3d7c8fddc75e6e0f182f132a/docs/ImpactAnalysis.md
@@ -2745,7 +3214,7 @@ usual mechanisms of governing a hard-fork will be employed.
 <!-- Other protocol references -->
 
 [cps-17]:
-  https://github.com/cardano-scaling/CIPs/blob/settlement-cps/CPS-0017/README.md
+  https://github.com/cardano-foundation/CIPs/blob/master/CPS-0017/README.md
   "CPS-0017"
 [praos-performance]:
   https://github.com/IntersectMBO/cardano-formal-specifications/blob/6d4e5cfc224a24972162e39a6017c273cea45321/src/performance/README.md
@@ -2773,6 +3242,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [timings]:
   https://github.com/input-output-hk/ouroboros-leios/blob/d5f1a9bc940e69f406c3e25c0d7d9aa58cf701f8/analysis/timings/ReadMe.ipynb
   "Analysis of mainnet transaction validation times"
+[2026w18]:
+  https://github.com/input-output-hk/ouroboros-leios/tree/main/analysis/sims/2026w18
+  "Multiple committee selection methods across mini-mainnet (750 nodes) and midi-mainnet (1500 nodes)"
 
 <!-- External resources -->
 
@@ -2795,8 +3267,6 @@ usual mechanisms of governing a hard-fork will be employed.
 [apache-2.0]: http://www.apache.org/licenses/LICENSE-2.0 "Apache License 2.0"
 
 <!-- Footnotes -->
-
-[^fasort]: The Fait Accompli sortition scheme
 
 [^2]: Leios: Dynamic Availability for Blockchain Sharding (2025)
 
@@ -2824,9 +3294,8 @@ requirements to ensure security, efficiency, and practical deployability:
    certificates and not unduly increase their size.
 
 2. **Key rotation:** The cryptographic keys used to sign Leios votes and
-   certificates _do not_ need to be rotated periodically because the constraints
-   on Leios voting rounds and the key rotation already present in Praos secure
-   the protocol against attacks such as replay and key compromise.
+   certificates should support periodic rotation to strengthen the scheme
+   against adaptive adversaries who may target known committee members.
 
 3. **Deterministic signatures:** While deterministic signatures can provide
    additional protection against attacks that exploit weak randomness in
@@ -2834,13 +3303,14 @@ requirements to ensure security, efficiency, and practical deployability:
    The main requirement for deterministic randomness is in the lottery
    mechanism, which is satisfied by the use of VRFs.
 
-4. **Local lottery:** Selection of the voting committee should not be so
-   deterministic and public as to open attack avenues such as denial-of-service
-   or subversion.
+4. **Committee privacy:** Committee selection may be public and deterministic.
+   Leios is an optimistic overlay protocol: attacking certification does not
+   impact safety of the underlying chain, only liveness of the EB certification
+   path. Key rotation (requirement 2) mitigates targeted attacks on known
+   committee members.
 
-5. **Liveness:** Adversaries with significant stake (e.g., more than 35%) should
-   not be able to thwart an honest majority from reaching a quorum of votes for
-   an EB.
+5. **Liveness:** Adversaries with less than 50% of stake should not be able to
+   thwart an honest majority from reaching a quorum of votes for an EB.
 
 6. **Soundness:** Adversaries with near majority stake (e.g., 49%) should not be
    able to form an adversarial quorum that certifies the EB of their choice.
@@ -2849,10 +3319,11 @@ requirements to ensure security, efficiency, and practical deployability:
    votes themselves should be small. Note that the large size of Praos KES
    signatures precludes their use for signing Leios votes.
 
-8. **Small certificates:** Because Leios certificates are frequent and must fit
-   inside Praos blocks, they should be small enough so there is plenty of room
-   for other transactions in the Praos blocks. Note once again that certificates
-   based on Praos KES signatures are too large for consideration in Leios.
+8. **Small certificates:** Leios certificates are included in ranking blocks and
+   must be small and quick to validate. Compact certificates improve RB
+   diffusion speed and thus the safety margins of the protocol. Note that
+   certificates based on Praos KES signatures are too large for consideration
+   in Leios.
 
 9. **Fast cryptography:** The computational burden of creating and verifying
    voting eligibility, the votes themselves, and the resulting certificate must
@@ -2923,76 +3394,33 @@ omap<K, V> = {* K => V}  ; Order-preserving map with unique keys
 ;   ]
 ```
 
-<a id="merged-block-cddl" href="#merged-block-cddl">**Merged Block**</a>
-
-```diff
-+ merged_block =
-+   [ header                   : block_header
-+   , transaction_bodies       : [* transaction_body]
-+   , transaction_witness_sets : [* transaction_witness_set]
-+   , auxiliary_data_set       : {* transaction_index => auxiliary_data}
-+   , ? eb_certificate         : leios_certificate
-+   , ? eb_tx_references       : [* tx_reference]
-+   ]
-
-+ block_header =
-+   [ header_body              : block_header_body
-+   , body_signature           : kes_signature
-+   ]
-
-+ block_header_body =
-+   [ block_number             : uint
-+   , slot                     : slot_no
-+   , prev_hash                : hash32
-+   , issuer_vkey              : vkey
-+   , vrf_vkey                 : vrf_vkey
-+   , vrf_result               : vrf_cert
-+   , block_body_size          : uint
-+   , block_body_hash          : hash32
-+   , ? ( announced_eb         : hash32
-+       , announced_eb_size    : uint32
-+       )
-+   , ? certified_eb           : bool
-+   ]
-
-+ ; Reference structures
-+ tx_reference =
-+  [ tx_hash                  : hash32     ; Hash of complete transaction bytes
-+  , tx_size                  : uint16     ; Transaction size in bytes
-+  ]
-```
-
 <a id="votes-certificates-cddl" href="#votes-certificates-cddl">**Votes and
 Certificates**</a>
 
 ```cddl
 leios_certificate =
-  [ election_id              : election_id
-  , endorser_block_hash      : hash32
-  , persistent_voters        : [* persistent_voter_id]
-  , nonpersistent_voters     : {* pool_id => leios_bls_signature}
-  , aggregated_vote_sig      : leios_bls_signature
+  [ signers               : bytes          ; bitfield over the epoch's committee, MSB-first; bit i set iff voter_id = i signed
+  , aggregated_signature  : leios_bls_signature
   ]
 
-leios_vote = persistent_vote / non_persistent_vote
-
-persistent_vote =
-  [ 0
-  , election_id
-  , persistent_voter_id
-  , endorser_block_hash
-  , vote_signature : leios_bls_signature
-  ]
-
-non_persistent_vote =
-  [ 1
-  , election_id
-  , pool_id
-  , eligibility_signature : leios_bls_signature
-  , endorser_block_hash
-  , vote_signature : leios_bls_signature
+leios_vote =
+  [ announcing_rb_hash    : hash32         ; the signed message; hash of the RB header announcing the EB
+  , voter_id              : uint           ; index into the epoch's stake-based committee
+  , vote_signature        : leios_bls_signature
   ]
 ```
+
+Neither structure repeats the announcing RB's slot or the EB hash. A vote is
+verified against the `announcing_rb_hash` it carries, and a certificate is
+verified against the announcing RB determined from the certifying RB's own chain
+context, so both are redundant on the wire.
+
+The `signers` bitfield is `⌈N/8⌉` bytes where `N` is the committee size for the
+epoch in which the announcing RB was produced: the `committeeSize` protocol
+parameter $N_c$, or the number of registered pools if that is smaller. The
+committee itself is derived deterministically from the active stake distribution
+(see [Committee Selection](#committee-selection)), so no per-vote eligibility
+proof is carried in either the vote or the certificate.
 
 Leios uses **BLS12-381 MinSig** (small signature, large verification key):
 
@@ -3000,16 +3428,51 @@ Leios uses **BLS12-381 MinSig** (small signature, large verification key):
 - Signature: compressed G1 = 48 bytes
 - Proof-of-possession: compressed G1 = 48 bytes
 
-MinSig is chosen because:
-
-- Certificate size is ~8 kB vs >12 kB for MinPk
-- Network propagation and storage are significantly improved
+MinSig is chosen because vote traffic — not certificate size — dominates the
+on-wire cost of the voting layer once the certificate collapses to a single
+aggregated signature. The single signature in a certificate is 48 B under MinSig
+vs 96 B under MinPk; an individual vote is 48 B + overhead vs 96 B + overhead.
+Verification keys are referenced indirectly through the committee bitfield
+rather than carried per-vote, so MinSig's larger 96 B keys do not appear on the
+wire at vote time.
 
 ```cddl
 ; BLS12-381 MinSig encodings for Leios
 leios_bls_verification_key = bytes .size 96
 leios_bls_signature        = bytes .size 48
-leios_bls_pop              = bytes .size 96
+leios_bls_pop              = bytes .size 48
+```
+
+<a id="pool-registration-cddl" href="#pool-registration-cddl">**Pool
+Registration**</a>
+
+Registering a voting key extends the existing stake pool registration
+certificate with an optional `bls_key` field that may also be `nil` (for
+backwards compatibility). A pool that has not registered a voting key occupies a
+*keyless* committee seat (see [Key Registration and
+Rotation](#key-registration)):
+
+
+```diff
+ pool_registration_cert = (3, pool_params)
+
+ pool_params =
+   (   operator       : pool_keyhash
+   ,   vrf_keyhash    : vrf_keyhash
++  , ? bls_key        : bls_key/ nil
+   ,   pledge         : coin
+   ,   cost           : coin
+   ,   margin         : unit_interval
+   ,   reward_account : reward_account
+   ,   pool_owners    : set<addr_keyhash>
+   ,   relays         : [* relay]
+   ,   pool_metadata  : pool_metadata/ nil
+   )
+
++bls_key =
++  [ leios_bls_verification_key
++  , leios_bls_pop
++  ]
 ```
 
 ## Copyright

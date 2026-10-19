@@ -1,0 +1,11 @@
+{
+    "anchor": {
+        "dataHash": "c92199160c7915a92c3e3e7469a61912a8f5c706d31162b2a5f5a1f73db6a405",
+        "url": "ipfs://bafkreihnd5vsgmuvjbgv74cytzbpfspfx62i2h6zcjydm4bt2fbhte5n74"
+    },
+    "certificate": "DRep registration",
+    "deposit": 500000000,
+    "drep": {
+        "keyHash": "fa1283331c95aa3b4e5d16ee212433c38044cbeec9847122f806b7cb"
+    }
+}

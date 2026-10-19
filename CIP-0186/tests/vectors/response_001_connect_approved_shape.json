@@ -1,0 +1,18 @@
+{
+  "name": "response_001_connect_approved_shape",
+  "spec_section": "Methods (connect); Appendix C.1",
+  "category": "response_envelope",
+  "input": {
+    "redirect": "https://aegis.example/cb",
+    "walletKey_b64url": "AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM",
+    "nonce_b64url": "BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE",
+    "payload_b64url": "ZXhhbXBsZS1jaXBoZXJ0ZXh0LWZvci1zZXNzaW9uLWpzb24",
+    "signature_b64url": "ZmFrZS1lZDI1NTE5LXNpZ25hdHVyZS1leGFtcGxlLWZvci1jb25uZWN0LXJlc3BvbnNl"
+  },
+  "expected": {
+    "response_url": "https://aegis.example/cb?response=approved&walletKey=AwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwM&nonce=BAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQE&payload=ZXhhbXBsZS1jaXBoZXJ0ZXh0LWZvci1zZXNzaW9uLWpzb24&signature=ZmFrZS1lZDI1NTE5LXNpZ25hdHVyZS1leGFtcGxlLWZvci1jb25uZWN0LXJlc3BvbnNl",
+    "signature_is_last_param": true
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

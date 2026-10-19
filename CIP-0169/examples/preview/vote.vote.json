@@ -1,0 +1,11 @@
+{
+    "drep-keyHash-03ccae794affbe27a5f5f74da6266002db11daa6ae446aea783b972d": {
+        "3ff13ad85117e9cde53d67dada19eb80a9c7971efdee95d73020f3b3c467d8b5#0": {
+            "anchor": {
+                "dataHash": "7f95c810df8e66cc9bccc2dd08303342b99a3600326c75939da4009dc498d1e2",
+                "url": "ipfs://bafkreihniyugf4bq5h22bymtpnl23n75g5p2cq562cfznuvx74z4wirrpm"
+            },
+            "decision": "VoteYes"
+        }
+    }
+}
