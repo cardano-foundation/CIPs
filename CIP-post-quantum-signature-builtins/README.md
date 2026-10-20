@@ -116,7 +116,10 @@ CPS-0027 is a signature problem, but Cardano will also need to name the scheme w
 
 ### Implementation Plan
 
-A reference encoder, decoder and verification check are published at https://github.com/quantova-inc/bnb-pq-tooling/tree/main/registry and are linked rather than included here. The test vectors in this CIP are the conformance target for any implementation. Quantova Inc offers to maintain the reference vectors and to support the Plutus implementation team with conformance checks. The in evaluator builtin and the cost model are the work of the ledger and Plutus maintainers, since they are consensus critical and require a hardfork.
+- A reference encoder, decoder and verification check are published at https://github.com/quantova-inc/bnb-pq-tooling/tree/main/registry and are linked rather than included here.
+- The test vectors in this CIP are the conformance target for any implementation.
+- Quantova Inc maintains the reference vectors and supports the Plutus implementation team with conformance checks.
+- The in evaluator builtin and the cost model are the work of the ledger and Plutus maintainers, since they are consensus critical and require a hardfork.
 
 ## References
 
