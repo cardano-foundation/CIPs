@@ -15,11 +15,11 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The European Union's Ecodesign for Sustainable Products Regulation (ESPR) mandates Digital Product Passports (DPPs) for numerous product categories, with the first compliance deadline on 18 February 2027 for certain large batteries. These passports must provide tamperproof, verifiable information about products' materials, origin, lifecycle, and compliance throughout the supply chain.
+The European Union's Ecodesign for Sustainable Products Regulation (ESPR) mandates Digital Product Passports (DPPs) for numerous product categories. The first compliance deadline is 18 February 2027, for certain large batteries, under the Batteries Regulation (EU) 2023/1542. These passports must provide tamperproof, verifiable information about products' materials, origin, lifecycle, and compliance throughout the supply chain.
 
-Since this CPS was first drafted, the EU-level foundations have moved from proposal to operation: the central DPP Registry went live in July 2026, and the first six of eight CEN-CENELEC system standards (the EN 1821x series) are now published and cited as harmonised standards. Despite this, the Cardano ecosystem still lacks standardized approaches for anchoring DPP data on-chain, creating product identity assets, and enabling multi-party verification against this now-published EU baseline. This fragmentation risks incompatible implementations, poor interoperability, and a missed opportunity for Cardano to become a reference platform for supply chain transparency and regulatory compliance.
+Since this CPS was first drafted, the EU-level foundations have moved from proposal to operation. The central DPP Registry went live in July 2026, and all eight CEN-CENELEC JTC 24 system standards (the EN 1821x and EN 1823x series) are now published and cited as harmonised standards. Despite this, the Cardano ecosystem still lacks standardized approaches for anchoring DPP data on-chain, creating product identity assets, and enabling multi-party verification against this now-published EU baseline. This fragmentation risks incompatible implementations, poor interoperability, and a missed opportunity for Cardano to become a reference platform for supply chain transparency and regulatory compliance.
 
-This CPS articulates the problem space and establishes goals for comprehensive DPP standards that enable regulatory compliance, ecosystem interoperability, and practical implementation.
+This CPS articulates the problem space and establishes goals for Cardano-specific anchoring standards that support regulatory compliance, ecosystem interoperability, and practical implementation.
 
 ## Problem
 
@@ -32,15 +32,17 @@ Digital Product Passports are becoming mandatory under EU regulation to support:
 - **Regulatory compliance** - Proving adherence to safety, sustainability, and origin requirements
 - **Supply chain accountability** - Creating tamperproof audit trails across multiple parties
 
-The ESPR affects industries including textiles, electronics, batteries, construction materials, furniture, and more, impacting millions of businesses globally. Practical implementation is already underway for batteries in 2026 (the DPP Registry is live, the core CEN-CENELEC standards are published, and a public testing environment is available), ahead of the mandatory compliance deadline of 18 February 2027 (EV, light-transport, and industrial batteries above 2 kWh). The textile delegated act is expected in 2027, but its compliance deadline follows the standard 18-24 month transition period, landing realistically in 2028-2029; other sectors phase in through 2030.
+The ESPR affects industries including textiles, electronics, batteries, construction materials, furniture, and more, impacting millions of businesses globally. Practical implementation is already underway for batteries in 2026 (the DPP Registry is live, all eight CEN-CENELEC JTC 24 standards are published, and a public testing environment is available), ahead of the mandatory compliance deadline of 18 February 2027 (EV, light-transport, and industrial batteries above 2 kWh) under the Batteries Regulation (EU) 2023/1542. The textile delegated act is now expected towards the end of 2027, with compliance following roughly 18 months after adoption, landing realistically in 2029; other sectors phase in through 2030.
 
 DPP implementations must integrate with existing global product identification systems, particularly GS1 standards (GTINs for product identification, Digital Link for web-based resolution, and EPCIS for event tracking). This integration is essential for interoperability with existing supply chain infrastructure.
 
 The EU DPP Registry went live on 20 July 2026 alongside a public testing environment, following adoption of its Implementing Regulation. The Registry is a shared index rather than a central data store: it holds unique identifiers and registration metadata (plus a verification and logging framework), while the DPP content itself remains hosted in a decentralised manner by the economic operator or a DPP service provider. Registration is available through a secure UI or an API, and a free semantic repository of machine-readable data models is provided to support interoperability.
 
-Additionally, CEN-CENELEC Joint Technical Committee 24 (JTC 24) has published the first six of eight planned system standards for DPP data models and interoperability (the EN 1821x series), covering unique identifiers, data carriers, data exchange protocols, data storage/persistence, APIs, and system interoperability. These six were cited as harmonised standards in the Official Journal in July 2026, giving conforming implementations a presumption of conformity under ESPR. The remaining two standards, covering access rights/security and data authentication, are expected to follow shortly after. DPP implementations on Cardano should now be designed for direct alignment with this published EN 1821x series, rather than against a moving target.
+Additionally, CEN-CENELEC Joint Technical Committee 24 (JTC 24) has now published all eight system standards for DPP data models and interoperability, the EN 1821x and EN 1823x series. These cover unique identifiers, data carriers, data exchange protocols, data storage and persistence, APIs, system interoperability, access rights and confidentiality, and data authentication. The first six were cited as harmonised standards in the Official Journal in July 2026, giving conforming implementations a presumption of conformity under ESPR. Citation of the final two, access rights and confidentiality (EN 18239) and data authentication (EN 18246), is expected to follow the same path. DPP implementations on Cardano should now be designed for direct alignment with the full published EN series, rather than against a moving target.
 
 ### Current State
+
+Today, each party anchoring DPP evidence on Cardano chooses its own label, payload, canonicalisation and hash rule, issuer-key binding, and versioning scheme. A verifier then has to integrate every vendor separately. This verifier could be market surveillance, a recycler, a marketplace, or another DPP provider. Separate integration for each vendor defeats the purpose of a neutral public anchor.
 
 While Cardano provides foundational capabilities through CIP-25 and CIP-68 metadata standards, the ecosystem lacks:
 
@@ -90,7 +92,7 @@ Where the use cases above call for a shared ledger at all, several of Cardano's 
 - The UTxO model maps naturally onto item-level ownership and transfer chains (anti-counterfeiting, secondary-market provenance): each transfer is an explicit, individually auditable state transition rather than a mutation of shared contract state
 - CIP-25 and CIP-68 give a low-complexity anchoring path (no smart contract required for CIP-25) and a structured update path (CIP-68), lowering the cost of entry for both simple item registration and more complex, updateable proof records
 - Formal verification tooling (Aiken) directly derisks the correctness of proof and commitment-checking logic in multi-party confidential verification, where several mutually distrusting parties are relying on the same code being right
-- Predictable, low transaction costs support high-frequency use (repeated lifecycle events, resale transfers) without the cost volatility that complicates budgeting for an ongoing verification layer
+- Low transaction costs support high-frequency use, such as repeated lifecycle events and resale transfers. These costs are predictable in ADA, not in EUR, so an enterprise budgeting against this anchor carries ADA exchange-rate exposure
 
 Separately, and only relevant once a ledger is already the right tool: Cardano's energy footprint is a genuine relative advantage over proof-of-work alternatives, which matters given ESPR's own sustainability framing.
 
@@ -140,7 +142,13 @@ SME textile manufacturers need to register 1,200 products with materials, origin
 
 ### Multi-Party Lifecycle Tracking
 
-Battery manufacturers track 500,000 batteries from production through recycling, coordinating data from manufacturers, vehicle OEMs, service centers, and recyclers. Needs append-only audit trail with cryptographic proof of each event, support for multiple authorized parties, and 10+ year retention. Success means complete history queryable in seconds and regulatory audits passed with blockchain evidence.
+Over a battery's life, its passport data passes through several custodians: the original operator, a backup service provider, and, after repurposing, a new operator. The EU registry and backup-provider rules keep that chain reachable. They do not let a recycler or buyer check that a state-of-health or carbon-footprint value is the one the original issuer published. An on-chain anchor provides that check, against the issuer's key and a timestamp, without depending on any party's API. This custodian-independent verification is what a shared ledger adds beyond what the registry and backup rules already provide.
+
+Alongside that, the same use case covers coordination across many contributing parties. Battery manufacturers track 500,000 batteries from production through recycling, coordinating data from manufacturers, vehicle OEMs, service centers, and recyclers. It needs an append-only audit trail with cryptographic proof of each event, support for multiple authorized parties, and 10+ year retention. Success means complete history queryable in seconds and regulatory audits passed with blockchain evidence.
+
+### Anti-Counterfeiting and Resale Provenance
+
+An item's ownership and transfer history needs to stay independently checkable, regardless of whether any single platform vendor remains in business. This works only under two conditions. First, the product needs a secure physical data carrier, otherwise a cloned QR code inherits a perfect provenance chain along with it. Second, owner identifiers must be kept off-chain for GDPR compliance.
 
 ### High-Volume Registration
 
@@ -154,14 +162,24 @@ Chemical manufacturers must prove regulatory compliance without revealing confid
 
 Consumers scan product QR codes to verify sustainability claims using standard smartphones without specialized apps or cryptocurrency knowledge. Needs instant verification (under 2 seconds), clear visual indicators of verification status, and privacy protection. Success means high scan success rate and consumer comprehension without technical complexity.
 
+Static Product Registration, High-Volume Registration, and Consumer Verification do not need independent verification against a past host. The conventional VC/SD-JWT/GS1-Digital-Link stack already covers them on its own. Cardano remains an option for these scenarios too, but see Constraints below for the bar any implementation needs to clear there.
+
+## Constraints
+
+For static registration, high-volume retail, and consumer verification, anchoring should add minimal cost, latency, or wallet handling to the compliance path. A conventional stack already meets this bar without a ledger. A Cardano-based implementation remains an option here too, but it must meet the same bar rather than assume a ledger is required.
+
 ## Goals
 
-### Enable Regulatory Compliance
+### Define Cardano-Specific Anchoring Standards
 
-- Standards cover mandatory ESPR data fields for regulated sectors
-- Verification mechanisms satisfy regulatory auditors
-- Support for multiple jurisdictions (EU primary, with extensibility for UK, US, Asia)
-- Extension framework supports future regulation changes
+- A standard anchor format and label
+- Canonicalisation and hashing rules for the anchored payload, including Merkle structure where relevant
+- A binding method between the on-chain anchor key and the VC issuer identity
+- A resolution path from a GS1 Digital Link-resolved VC to the Cardano anchor
+- Status and supersession handling, consistent with the CIRPASS-2 immutability recommendation noted in Open Questions
+- A verification procedure that works without calling the issuer's API
+
+These standards should align with the published EN 18246 data authentication standard. It is the natural reference point for the anchor's cryptographic design, rather than something to track separately.
 
 ### Ensure Ecosystem Interoperability
 
@@ -174,7 +192,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 - Static passports for stable products with rare updates
 - Updateable passports for evolving data
-- Event logs for multi-party lifecycle tracking
+- Event logs for multi-party lifecycle tracking, including custodian-independent verification
 - Privacy-preserving proofs for confidential data
 - High-throughput solutions for millions of products
 
@@ -183,13 +201,13 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - Confidential business data stays off-chain with on-chain commitments
 - Selective disclosure to authorized parties only
 - Consumer privacy protection
+- Owner identifiers for resale and provenance use cases kept off-chain for GDPR compliance
 
 ### Enable Practical Adoption
 
-- Cost-effective for SMEs (thousands of euros annually, not tens of thousands)
-- Scalable for enterprises (millions of products)
-- Simple enough for non-technical staff
 - Integration with existing business systems
+- Simple enough for non-technical staff
+- Cost, latency, and complexity stay within the bounds set out in Constraints
 
 ## Open Questions
 
@@ -208,7 +226,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 **Physical-Digital Linking:**
 
 - Should product identifiers (GTINs) be plaintext or hashed on-chain?
-- Map GS1 Digital Links to Decentralized Identifiers for holding verifiable credentials
+- How should a Cardano anchor be referenced from a Digital-Link-resolved VC? DIDs should be treated as optional, consistent with CIRPASS-2 dropping its DID-only track.
 - EN 18219 (unique identifiers) and EN 18220 (data carriers) are now published, and independent implementations are converging on GS1 Digital Link identifiers resolving to a W3C Verifiable Credential over plain HTTPS, rather than a DID-first resolution path. This is worth validating Cardano identifier/resolver design against directly
 
 **Scalability and Transaction Cost Management:**
@@ -231,7 +249,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 **Timeline Risk:**
 
-- System-level technical specifications (the EN 1821x series covering identifiers, carriers, data exchange, storage, APIs, and interoperability) are now published, with six of eight cited as harmonised standards, so this risk has substantially reduced at the system level
+- All eight system-level technical specifications (the EN 1821x and EN 1823x series, covering identifiers, carriers, data exchange, storage, APIs, interoperability, access rights, and data authentication) are now published. This risk is now largely resolved at the system level
 - Sector-specific delegated acts (defining what data each product category must disclose) remain in progress and are now the primary remaining source of specification risk
 - Cardano-specific guidance can now commit to the published system standards, while keeping sectoral data schemas flexible until the relevant delegated acts land
 
@@ -243,7 +261,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 **European Technical Standards Alignment:**
 
 *Where the standards landscape stands now:*
-- CEN-CENELEC JTC 24 published the first six of eight DPP system standards on 27 May 2026, covering unique identifiers (EN 18219), data carriers (EN 18220), data exchange protocols (EN 18216), data storage/persistence (EN 18221), APIs (EN 18222), and interoperability (EN 18223); these were cited as harmonised standards in the Official Journal in July 2026 (Commission Implementing Decision (EU) 2026/1736), giving conforming DPPs a presumption of conformity under ESPR Articles 10 and 11. The remaining two (access rights/security, and data authentication) are in final approval and expected shortly.
+- CEN-CENELEC JTC 24 has now published all eight DPP system standards. The first six, published 27 May 2026, cover unique identifiers (EN 18219), data carriers (EN 18220), data exchange protocols (EN 18216), data storage and persistence (EN 18221), APIs (EN 18222), and interoperability (EN 18223). These were cited as harmonised standards in the Official Journal in July 2026 (Commission Implementing Decision (EU) 2026/1736), giving conforming DPPs a presumption of conformity under ESPR Articles 10 and 11. The final two, access rights and confidentiality (EN 18239) and data authentication (EN 18246), have since been published as well, with Official Journal citation expected to follow the same path.
 - The EU DPP Registry went live in July 2026 alongside a testing environment, giving implementers a real integration target rather than a specification on paper.
 - Sector-specific data requirements (what fields textiles vs. electronics must actually disclose) are still being finalised through delegated acts and remain the more volatile layer: the system-level "plumbing" is now comparatively stable, the "what data" layer is not.
 - Even once defined, data requirements are expected to evolve as regulations are refined and new sustainability metrics emerge
@@ -259,7 +277,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - Given that neither the EU's own reference architecture (CIRPASS-2) nor its own blockchain project (EBSI) has converged on a shared-ledger model for DPP, what concrete benefit does anchoring on Cardano provide over the conventional VC/SD-JWT/GS1-Digital-Link stack alone? This CPS should treat that as genuinely open rather than assumed; informal outreach with early implementers so far mostly confirms it isn't a widely felt need, which is itself worth stating plainly rather than glossing over.
 
 *Strategic Options:*
-- Align directly to the now-published EN 1821x system standards, treating sectoral (delegated-act) data requirements as the extension point that evolves over time
+- Align directly to the now-published EN 1821x and EN 1823x system standards, treating sectoral (delegated-act) data requirements as the extension point that evolves over time
 - Position Cardano as a verification/anchoring layer beneath a standards-compliant VC/SD-JWT passport, rather than simply proposing it as an alternative credential model
 - Implement core infrastructure now, add industry-specific schemas iteratively (risk: fragmentation)
 
@@ -269,7 +287,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - Production pilots with real businesses and products
 - Businesses using standards in production (target: multiple companies within 24 months)
 - Number of DPP and DPP-adjacent solutions anchoring data on Cardano, whether Cardano-native or via a conventional-stack platform anchoring in
-- Production deployments demonstrate viability ahead of each sector's own mandated deadline (batteries: 18 February 2027; textiles: realistically 2028-2029 once the delegated act's transition period runs; other sectors phasing in through 2030)
+- Production deployments demonstrate viability ahead of each sector's own mandated deadline (batteries: 18 February 2027; textiles: realistically 2029, roughly 18 months after the delegated act's expected late-2027 adoption; other sectors phasing in through 2030)
 - Significant product volume registered (target: 50,000+ products by Q4 2027), most plausibly battery-driven at that point, since batteries is the only sector under a confirmed compliance date by then
 
 ### Technical Validation
@@ -285,7 +303,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 - Active community participation in standards evolution
 - Comprehensive documentation and implementation guides
 - Industry recognition and regulatory acceptance
--  A dedicated Cardano DPP working group already meets monthly and maintains a draft solution-pattern blueprint (`cardano-foundation/cardano-dpp-standards`), to try and coordinate,support, and avoid duplicating effort
+- A dedicated Cardano DPP working group already meets monthly and maintains a draft solution-pattern blueprint (`cardano-foundation/cardano-dpp-standards`), to try and coordinate, support, and avoid duplicating effort
 
 ## Copyright
 
