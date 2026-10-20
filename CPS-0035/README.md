@@ -164,7 +164,7 @@ Consumers scan product QR codes to verify sustainability claims using standard s
 
 Static Product Registration, High-Volume Registration, and Consumer Verification do not need independent verification against a past host. The conventional VC/SD-JWT/GS1-Digital-Link stack already covers them on its own. Cardano remains an option for these scenarios too, but see Constraints below for the bar any implementation needs to clear there.
 
-## Constraints
+### Constraints
 
 For static registration, high-volume retail, and consumer verification, anchoring should add minimal cost, latency, or wallet handling to the compliance path. A conventional stack already meets this bar without a ledger. A Cardano-based implementation remains an option here too, but it must meet the same bar rather than assume a ledger is required.
 
