@@ -1392,13 +1392,13 @@ A **service profile** is a service's announced configuration of the policy of wh
 
 ### Price hints
 
-A hint is what a service would indicatively charge, published in advance so that a wallet can price an offer without asking first. Asking first, for a [quote](#quotes), gets terms priced for the wallet's own offer. On Binding B, hints are also how a wallet decides [whom to ask](#price-discovery), since they are the only prices every service shows the whole market. It has two components, and the reason there are two is that a sub-transaction's cost to a service has two independent parts.
+A hint is what a service would indicatively charge, published in advance so that a wallet can price an offer without asking first. Asking first, for a [quote](#quotes), gets terms priced for the wallet's own offer. On Binding B, hints are also how a wallet decides [whom to ask](#price-discovery), since they are the only prices every service shows the whole market. It says, for each asset the service accepts payment in, what it charges in that asset.
 
-**1. The rate** is effective lovelace per unit of the token, as a fraction, with the service's margin already folded in. Every service quotes its accepted tokens against ADA, and may additionally quote **direct pairs** for the ones it makes a market in. 
+**The spend.** What an offer costs a service is what it spends on it, per asset: the offer's negative [imbalance](#chain-state-checks--performed-by-publishers-services), with the ledger fee its inclusion adds to the batch added to the lovelace entry. The wallet computes the fee from current protocol parameters, its own size and its declared execution units. Size and execution units therefore reach the price only through what they cost the service in lovelace; a service does not price them separately. Every offer spends some lovelace, since every offer adds to the fee.
 
-A hint is served over HTTP at `GET /hints`, or published on [Binding B](#price-discovery), and never registered: it carries a number, and numbers move. What the service registers is the [rate source](#service-profile) it derives them from, which does not.
+**The price** is a list of entries, one per pair of assets: an asset the wallet may pay in, and an asset the service spends. Each entry gives a constant `base` and a `per_unit` rate, both in units of the asset paid in. An offer paying in some asset owes, for each asset the service spends on it, that pair's `base` plus its `per_unit` times the amount spent, summed over the assets spent. Every offer spends lovelace, so the lovelace pair's `base` acts as a flat fee per offer, and a `base` on any other pair is a flat fee for supplying that asset. A service accepting ADA might list (ADA, lovelace) with `base` 100,000 and `per_unit` 1.02: at cost, plus 2% and a flat 0.1 ADA. One accepting a stablecoin might list (stablecoin, lovelace) with a flat 0.05 of it and the spend converted at its exchange rate, its margin folded into that rate, and a market maker adds a pair for each token it will supply. Because each pair carries its own terms, a service can price each currency as it sees fit, rather than through one ADA-denominated fee converted at a single rate. A wallet can pay in an asset only if there is a pair from that asset to every asset its offer needs; the service is not offering to supply any other. A `per_unit` of 0 means the service absorbs that part of the spend.
 
-**2. The fee-coverage terms** are what the service quotes for carrying the sub-transaction, shaped like the ledger's own minimum fee: an intercept, a per-byte term, and per-execution-unit terms. 
+A hint is served over HTTP at `GET /hints`, or published on [Binding B](#price-discovery), and never registered: it carries numbers, and numbers move. What the service registers is the [rate source](#service-profile) it derives them from, which does not.
 
 **Wire format.** Both bindings carry the same signed structure.
 
@@ -1411,32 +1411,31 @@ hints =
 hints_body =
   [ produced_at  : uint                     ; POSIX milliseconds
   , scope        : [* filter_key]           ; offers these hints apply to; empty is all
-  , rates        : { * asset => rational }  ; lovelace per unit, margin folded in
-  , pairs        : [* [asset, asset, rational]]  ; direct pairs: units of the
-                                            ; second per unit of the first
-  , fee_terms    : [ intercept : uint       ; in lovelace
-                   , per_byte  : rational
-                   , per_mem   : rational
-                   , per_step  : rational
-                   ]
+  , prices       : [* price]                ; at most one per (paid, spent) pair
   , registration : bytes .size 28           ; the issuer's registration asset name
   , issuer_vkey  : bytes .size 32
   ]
+
+price    = [ paid     : asset              ; what the wallet pays in
+           , spent    : asset              ; what the service spends
+           , base     : uint               ; units of paid, per offer
+           , per_unit : rational           ; units of paid per unit of spent
+           ]
 
 rational = [numerator : uint, denominator : uint .gt 0]
 ```
 
 The signature is under the registration key, as a [quote's](#quotes) is, so that a hint relayed by a third party can still be tied to the service it claims to be from.
 
-**Scope.** A set of hints applies to the offers that carry every [filter key](#filter-key-kinds) in its `scope`, encoded as in the [registration CDDL](#on-chain-registration-of-services); an empty scope applies to every offer. A service may publish one unscoped set and any number of scoped ones, so that it can advertise different terms for some offers than for the rest. A sponsor covering fees for one DApp's users publishes a set scoped to [`PaysToScript`](#filter-key-kinds) with that DApp's script, with every fee term zero. For an offer that needs nothing beyond fee and collateral, the arithmetic then comes to nothing. Such a set may leave `rates` empty: a wallet with something to cover and no rate for its asset treats the set as not applying to it.
+**Scope.** A set of hints applies to the offers that carry every [filter key](#filter-key-kinds) in its `scope`, encoded as in the [registration CDDL](#on-chain-registration-of-services); an empty scope applies to every offer. A service may publish one unscoped set and any number of scoped ones, so that it can advertise different terms for some offers than for the rest. A sponsor covering fees for one DApp's users publishes a set scoped to [`PaysToScript`](#filter-key-kinds) with that DApp's script and a (lovelace, lovelace) price whose `base` and `per_unit` are both zero. The arithmetic then comes to nothing whatever the offer costs the sponsor, which is why a sponsor also bounds what it will spend (see [Sponsorship drain](#security-considerations)). A price that comes to zero for an offer asks for nothing, so a wallet may use it whatever it would otherwise pay in. Otherwise, a set with no price for any asset a wallet would pay in does not apply to that wallet.
 
 When several of one service's sets apply to an offer, the wallet may use whichever gives it the best terms. A service that does not mean its unscoped terms to undercut a scoped set should not publish them that way. `GET /hints` returns every set the service currently publishes, as `[* hints]`.
 
-**Arithmetic is the wallet's.** Using a set of hints whose scope its offer satisfies, a wallet computes what it must cover — its own outputs, plus the fee terms applied to its own size and declared execution units — and converts at the rate to decide what to put on the offered side. 
+**Arithmetic is the wallet's.** Using a set of hints whose scope its offer satisfies, a wallet computes the service's spend on its offer and, for each asset it could pay in, what it would owe (`Σ base[x,a] + per_unit[x,a] × spend[a]` over the assets `a` spent, for payment asset `x`), skipping any payment asset that lacks a pair for some asset it spends. It puts the one it prefers on the offered side. 
 
 **Every hint carries when it was produced**, and a wallet should treat an old one as absent rather than as current. Rates move, and a service has no way to push a correction to a wallet it does not know exists. A service should drop its own stale hints rather than serve them, for the same reason from the other side: a wallet that receives no hint asks elsewhere, where one that receives a stale hint may sign against it, and a signed offer cannot be taken back.
 
-**Rates set manually.** A service announces its rate hints, but this announcement is not fixed to any chain or oracle data.
+**Prices set manually.** A service announces its prices, but this announcement is not fixed to any chain or oracle data.
 
 **Hints bind nothing.** A service that publishes a rate has promised nothing and may decline any offer quoted against it. 
 
@@ -1638,7 +1637,7 @@ It is possible that an LC that does not follow the chain is also not capable of 
 
 #### Fit with economic research
 
-This CIP fixes an interface and leaves the economics to the operator, so market design lands in the pluggable parts rather than in the protocol. A service's pricing theory is what it publishes as a [price hint](#price-hints), which can be derived from an oracle, from off-chain sources, or from other users' price hints, service, and interest profiles. These contain the rate plus fee-coverage terms, with [`rate_source`](#service-profile) already separating a self-quoted rate from a named feed. A [quote](#quotes) goes further: it is computed per request, so it can price on anything the request and the service's own state say, and its formula is never published at all. Its theory of which offers are worth taking is a [`ValueFunction`](#batch-construction). Its theory of how to fund them is a [liquidity strategy](#liquidity-strategy). None of the three is announced, so an operator may act on a model it does not publish, and choosing the best-fit model for each service requires further research.
+This CIP fixes an interface and leaves the economics to the operator, so market design lands in the pluggable parts rather than in the protocol. A service's pricing theory is what it publishes as a [price hint](#price-hints), which can be derived from an oracle, from off-chain sources, or from other users' price hints, service, and interest profiles. These give a price per accepted asset, with [`rate_source`](#service-profile) already separating self-quoted prices from a named feed. A [quote](#quotes) goes further: it is computed per request, so it can price on anything the request and the service's own state say, and its formula is never published at all. Its theory of which offers are worth taking is a [`ValueFunction`](#batch-construction). Its theory of how to fund them is a [liquidity strategy](#liquidity-strategy). None of the three is announced, so an operator may act on a model it does not publish, and choosing the best-fit model for each service requires further research.
 
 **A price aggregator** is the service this suggests and this CIP does not define. It reads the hints, tells a wallet what to sign at, and publishes to the matching topics: one price for the user, and no position in the flow. Several can compete without fragmenting anything, because they route nothing and hold nothing. On Binding B, [price discovery](#price-discovery) does much of this job in the wallet itself, since the wallet reads every service's hints from relays and collects competing quotes directly. An aggregator remains useful for a wallet that does not speak Nostr, or would rather make one HTTPS call than query and verify hints across several relays. It could also cover services which served hints only over `GET /hints` and never published them to relays. 
 
