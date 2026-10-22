@@ -4,16 +4,7 @@ enactment_fields = (
   ? 30 : required_enactments
 )
 
-; One entry per action ID, even when supplied parents differ.
-; CDDL alone does not enforce this uniqueness requirement.
-required_enactments = nonempty_set<required_enactment>
-
-; nil asserts that the enacted action has no parent; it does not skip the check.
-; A parent need not have its own entry in required_enactments.
-required_enactment = [
-  action : gov_action_id,
-  parent : gov_action_id / nil
-]
+required_enactments = nonempty_set<gov_action_id>
 
 ; Existing ledger types, repeated here to make the fragment self-contained.
 ; Set elements must be distinct; CDDL alone does not enforce uniqueness.
