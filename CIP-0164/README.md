@@ -952,7 +952,8 @@ Praos chain and have the following structure:
 - `voter_id`: Index into the epoch's stake-based committee (pools ordered by
   descending stake at the epoch boundary; see [Committee
   Selection](#committee-selection))
-- `vote_signature`: BLS signature over `announcing_rb_hash`
+- `vote_signature`: BLS signature over `announcing_rb_hash` (see [Signed
+  Message](#signed-message))
 
 Votes do not carry eligibility proofs. Eligibility is determined by epoch-level
 committee membership and verified by direct lookup against the committee derived
@@ -972,7 +973,8 @@ following before accepting the block:
 1. **CDDL Format Compliance**: Certificate structure matches the specification
    format defined in the <a href="#votes-certificates-cddl">Votes and
    Certificates CDDL specification</a> in Appendix B
-2. **Cryptographic Signatures**: The cryptographic signature is valid (BLS
+2. **Cryptographic Signatures**: The aggregate signature verifies, under the
+   signing voters' keys, over the [signed message](#signed-message) (BLS
    signatures in this implementation)
 
 3. **Voter Eligibility**: Each signing voter must be a member of the epoch's
@@ -984,7 +986,7 @@ following before accepting the block:
 4. **Stake Verification**: Total voting stake meets the required quorum
    threshold
 
-5. **Announcement Consistency**: The certificate verifies against the hash of the
+5. **Announcement Consistency**: The signed message is the hash of the
    announcing RB header, which is determined from the certifying RB's chain
    context rather than carried in the certificate
 
@@ -3189,6 +3191,9 @@ usual mechanisms of governing a hard-fork will be employed.
 [arc-voting-review]:
   https://github.com/input-output-hk/ouroboros-leios/blob/41cefc99a/docs/arc-voting-crypto-review.pdf
   "ARC voting crypto review: All-vote, Truncation, and wFA^LS comparison"
+[bls-sig-draft]:
+  https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-05
+  "BLS Signatures (IRTF CFRG draft 05)"
 [kleioscan-stake]:
   https://kleioscan.com/#/mainnet/analytics/stake
   "Kleioscan: mainnet active-stake distribution analytics"
@@ -3480,6 +3485,18 @@ Leios uses **BLS12-381 MinSig** (small signature, large verification key):
 - Verification key: compressed G2 = 96 bytes
 - Signature: compressed G1 = 48 bytes
 - Proof-of-possession: compressed G1 = 48 bytes
+
+<a id="signed-message" href="#signed-message"></a>**Signed Message**: A vote
+signs, and a certificate verifies, the 32 bytes of `announcing_rb_hash`
+themselves, not their CBOR encoding. Leios uses the proof-of-possession
+ciphersuites of the [IETF BLS signature draft][bls-sig-draft] for MinSig:
+
+- Votes and certificates use the DST `BLS_SIG_BLS12381G1_XMD:SHA-256_SSWU_RO_POP_`.
+- A proof of possession signs the compressed 96-byte verification key under the
+  DST `BLS_POP_BLS12381G1_XMD:SHA-256_SSWU_RO_POP_`.
+
+Every vote for an announcement signs the same message, which is what lets a
+certificate aggregate them into one signature.
 
 MinSig is chosen because vote traffic — not certificate size — dominates the
 on-wire cost of the voting layer once the certificate collapses to a single
