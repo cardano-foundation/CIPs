@@ -1433,7 +1433,9 @@ rung     = [ supply   : uint / null        ; units of spent at this rung, not
            , per_unit : rational           ; units of paid per unit of spent
            ]
 
-rational = [numerator : uint, denominator : uint .gt 0]
+rational = #6.30([numerator : u64, denominator : u64 .gt 0])
+
+u64      = uint .size 8
 ```
 
 A `hints_body` with two prices for the same (paid, spent) pair, or a ladder with a `null` supply on any rung but the last, is malformed rather than ambiguous, and a reader MUST reject the whole set rather than pick one reading.
