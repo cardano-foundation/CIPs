@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-XXXX/registry.schema.json",
+  "title": "Node Implementation Identifier Registry",
+  "description": "Identifiers carried in the block header protocol_version minor component. Entries are unique by (scheme, id).",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "scheme": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 3
+      },
+      "id": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 255
+      },
+      "name": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "active",
+          "retired"
+        ]
+      },
+      "maintainers": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "description": "GitHub account name",
+          "pattern": "^[A-Za-z0-9-]{1,39}$"
+        }
+      },
+      "repository": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uri"
+      },
+      "payload_specification": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uri"
+      },
+      "registered": {
+        "type": "string",
+        "format": "date"
+      },
+      "retired": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "date"
+      },
+      "description": {
+        "type": "string",
+        "maxLength": 256
+      }
+    },
+    "required": [
+      "scheme",
+      "id",
+      "name",
+      "status",
+      "maintainers",
+      "repository",
+      "registered",
+      "description"
+    ],
+    "additionalProperties": false
+  }
+}
