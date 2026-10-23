@@ -392,43 +392,75 @@ That is, an incoming urgent transaction enters the queue after all `urgentTxs` a
 The mempool update cost for each urgent transaction is proportional to the number of standard transactions 
 that need to be revalidated against the new `urgentUpdatedLedger`.
 
-To address this inefficiency, we have 
-[proved](https://github.com/IntersectMBO/formal-ledger-specifications/compare/polina/txcomm?expand=1) 
-a theorem stating that two lists containing the same transactions 
-produce the same *updated* ledger state 
-when applied to the same state and in the same environment.
-It has the following (also proved) corollary:
+To address this inefficiency, we have proved, for the Dijkstra ledger rules
+([formal-ledger-specifications PR #1351](https://github.com/IntersectMBO/formal-ledger-specifications/pull/1351):
+`CheckedInsertion.lagda.md`, with all results and assumptions summarised in `ReorderingOverview.md`),
+that an urgent transaction meeting the conditions below can be inserted in front of the standard
+queue without revalidating that queue. Here a *transaction* is a whole Dijkstra batch, that is, a
+top-level transaction together with its subtransactions, and every footprint and condition below
+is taken over the whole batch. The result (`reorder-urgent-≈` in the proof) is:
 
-> **Corollary.** Let `urgentTxs` and `standardTxs` be lists of transactions, `tx : Tx`,
-> `s : LState`, and `e : LEnv`. Suppose `Cpri(tx :: urgentTxs)` and `Cstd(standardTxs)` hold,
-> and that `tx` is conflict-free against every transaction in `standardTxs`.
-> Suppose also that, in `e` starting from `s`: applying `urgentTxs` reaches `s₀`; applying
-> `standardTxs` from `s₀` reaches `s₁`; `tx` is valid at `s₀`; and `tx` is valid at `s₁`,
-> reaching `s₂`.
+> **Theorem.** Let `Γ : LedgerEnv` and `s : LedgerState`, where `s` is *normalized*: its governance
+> state holds no votes by unregistered DReps (every `LEDGER` step preserves this, and every
+> phase-2-valid one re-establishes it).
+> Let `urgentTxs` and `standardTxs` be lists of top-level transactions and `tx` a top-level transaction.
+> Suppose that, in `Γ`, applying `urgentTxs` to `s` reaches `s₀`, and applying `standardTxs` to `s₀`
+> reaches `s₁`. Suppose `Cpri` holds for `tx`: `tx` is valid at `s₀`; `tx` is valid at `s₁`, reaching
+> `s₂`; and `tx` is compatible (`QueueCompat`) with every transaction in `standardTxs`. Suppose finally
+> that `Cstd(standardTxs)` holds.
 > Then `urgentTxs ++ (tx :: standardTxs)` is applicable from `s`, and the state it reaches is
 > equivalent to `s₂`.
 
+The proof rests on an exchange lemma (`LEDGERS-shift-≈`): from a normalized state, for a standard
+queue satisfying `Cstd` and a `tx` compatible with each of its transactions, running the queue and
+then `tx`, or `tx` and then the queue, gives equivalent states.
+Equivalence compares the UTxO and the certificate-state maps up to extensional equality, fees and
+donations exactly, and the governance state as the same list of actions whose vote maps agree
+extensionally. A related general result (`LEDGERS-reorder`) shows that two valid runs of
+permutations of a list of pairwise-independent transactions with no proposals or DRep certificates
+end in equivalent states; its UTxO, fee and donation parts hold for any permutation of any list
+(given replay protection, below).
+
+The proof is machine-checked in Agda, modulo four assumptions stated as postulates:
+
+- **replay protection** (`txIds-unique`): along a run, the ids of the applied transactions are
+  pairwise distinct and new to the starting UTxO;
+- **congruence** (`LEDGER-cong`): a transaction that is valid at a state is valid at every equivalent
+  state, with equivalent results. This is also what lets the mempool keep validating against `s₂`
+  rather than against the state the reordered queue actually reaches;
+- **deferral** (`LEDGER-defer-checked`): if `tx` and a compatible standard transaction `t` are both
+  valid at a state, and `tx` is valid again after `t` followed by further transactions, then `tx` is
+  valid right after `t`, and `t` is valid right after `tx`;
+- **governance-state exchange** (`shift-govSt≈`): the governance-state part of the exchange lemma.
+  Proving it requires the action ids of `tx`'s proposals to be fresh with respect to the existing
+  governance actions. That follows from chain-wide uniqueness of transaction ids, but is not yet
+  derived.
+
+Every other part of the exchange (UTxO, fees, donations, and every certificate-state field,
+including account balances, vote delegations and DReps) is proved, the UTxO and fee parts using
+replay protection.
 
 The two `tx` validations in the hypotheses are the mempool's two checks — at the insertion point
-(the back of `urgentTxs`) and at the back of the standard queue — and `s₂` is the state the second
-one already computed. The conclusion is exactly what lets the node adopt `s₂` and leave the standard
-queue alone. Note the conclusion is state *equivalence* rather than syntactic equality, which is all
-the mempool needs and all the proof gives.
+(the back of `urgentTxs`) and at the back of the standard queue. The state reached by the first
+becomes the new `urgentUpdatedLedger`, and `s₂` is the state the second one already computed, which
+becomes the new `standardUpdatedLedger`. The conclusion is exactly what lets the node adopt `s₂` and
+leave the standard queue alone. Note the conclusion is state *equivalence* rather than syntactic
+equality, which is all the mempool needs and all the proof gives.
 
 `Cpri` is the condition on the **incoming urgent transaction**:
 
 1. it validates at its insertion point, the back of the urgent queue;
 2. it validates at the back of the standard queue;
-3. its footprint conflicts with no transaction in `standardTxs`.
+3. it is compatible with every transaction in `standardTxs`: its footprint conflicts with none of
+   them (`QueueCompat` in the proof; the conflicts are listed below).
 
 `Cstd` is the condition on the **standard queue**, held as an invariant of that queue rather than
-rechecked per urgent admission. For each transaction it checks that:
+rechecked per urgent admission: no transaction in it, including its subtransactions, carries a
+governance action that never commutes — governance **action proposals** and DRep
+**(de)registration** (`GovDomStable` in the proof). The validity of the standard queue itself is not
+part of `Cstd`: it is the separate hypothesis that `standardTxs` takes `s₀` to `s₁`.
 
-1. it validates at the insertion point;
-1. none of them carries a governance action that never commutes — governance **action proposals** and
-   DRep **(de)registration** (`GovDomStable` in the proof).
-
-Condition 2 is a lane restriction rather than a conflict check.
+`Cstd` is a lane restriction rather than a conflict check.
 
 Conflict detection appears in `Cpri` only, and that asymmetry is the point. The incoming urgent
 transaction is the one that gets *moved* — ahead of the entire standard queue — so it is the only
@@ -448,18 +480,32 @@ may therefore be admitted by one node and discarded by another, with neither wro
 
 These are the conflicts condition 3 checks for, against the transactions in `standardTxs`:
 
-- the urgent transaction **consumes an input that some standard transaction reads without consuming**: a reference
-  input, collateral it does not also spend, or (for a phase-2-invalid standard transaction) an unconsumed input;
-- overlapping **certificate targets** or **deposit keys**;
-- overlapping **withdrawal credentials**, or a withdrawal credential matching the other transaction's certificate target;
+- the urgent transaction **spends, or offers as collateral, an input that some standard transaction
+  reads without consuming**: a reference input, collateral it does not also spend, or (for a
+  phase-2-invalid standard transaction) an input it does not consume;
+- overlapping **certificate targets**. Every Dijkstra certificate has a target credential, so this
+  also separates every deposit key;
+- overlapping **account footprints** (CIP-159): one transaction withdraws from, or direct-deposits
+  into, an account that the other withdraws from or asserts a balance interval on (including
+  top-level starting balance intervals); or either transaction's withdrawals, direct deposits or
+  balance intervals touch an account that the other has a certificate for. Two direct deposits into
+  the same account do not conflict;
 - overlapping **governance vote targets** (same action and voter);
 - the urgent transaction **deregisters a DRep that some standard transaction votes with, or delegates
   to**. A deregistration triggers a re-filter of recorded votes, dropping those cast by DReps that are
-  no longer registered, and it also invalidates any later delegation to that DRep, since delegating
-  requires the delegatee to be registered. 
+  no longer registered. It also removes the vote delegations to that DRep, and it invalidates any
+  later delegation to it, since delegating requires the delegatee to be registered;
+- some standard transaction has a **certificate for an account that a proposal of the urgent
+  transaction requires** to be registered: the proposal's return account, or a treasury-withdrawal
+  target;
+- the urgent transaction **registers a CC hot key while some standard transaction casts a CC vote**,
+  or **casts a CC vote while some standard transaction registers a CC hot key**.
 
-Governance placement follows from that last class, and is worth stating as a table, because the four
-kinds of governance content behave differently:
+No check is needed for a pool registration reusing a VRF or BLS key already taken by a standard
+transaction: the validation at the back of the standard queue rejects it.
+
+Governance placement follows from the DRep-deregistration class, and is worth stating as a table,
+because the four kinds of governance content behave differently:
 
 | content | effect on state the other lane reads | urgent | standard |
 | --- | --- | --- | --- |
@@ -490,18 +536,27 @@ always pay the urgency price.
   consensus-level advantage from doing so.
 
 To address these conflicts and maintain a better than linear (in the size of the `standardTxs` queue) time 
-for including incoming urgent transactions, we adopt the following strategy, proved correct in the
-commutativity branch linked above. An incoming urgent transaction is validated twice: once at the back of
+for including incoming urgent transactions, we adopt the following strategy, proved correct (modulo
+the four assumptions above) in
+[formal-ledger-specifications PR #1351](https://github.com/IntersectMBO/formal-ledger-specifications/pull/1351).
+An incoming urgent transaction is validated twice: once at the back of
 the standard queue, and once at its insertion point. It is then checked for the conflicts listed above against
 the `standardTxs` queue. If all checks pass, no standard transaction needs revalidation.
 On any conflict, the urgent transaction is simply discarded. 
 
 The lookups use one counted multiset (a map from key to occurrence count) per conflict source, maintained
-alongside the standard queue: non-consumption reads keyed by `TxIn`, certificate targets and withdrawal
-credentials keyed by `Credential`, deposit keys keyed by `DepositPurpose`, vote targets keyed by
-`(GovActionId, Voter)`, and — both keyed by `Credential` — the DRep credentials the queue votes with
-and the DRep credentials it delegates to. Disjointness from these unions indicates a lack of conflict, so admission
-costs `O(|footprint of the incoming transaction|)` lookups. Counts are incremented at standard admission,
+alongside the standard queue:
+
+- non-consumption reads, keyed by `TxIn`;
+- keyed by `Credential`: certificate targets, withdrawal accounts, direct-deposit accounts,
+  balance-interval accounts, the DRep credentials the queue votes with, and the DRep credentials it
+  delegates to;
+- vote targets, keyed by `(GovActionId, Voter)`;
+- two counters: of standard transactions that cast CC votes, and of those that register CC hot keys.
+
+The accounts an urgent transaction's proposals require are checked against the certificate-target
+multiset, so they need no index of their own. Disjointness from these unions indicates a lack of
+conflict, so admission costs `O(|footprint of the incoming transaction|)` lookups. Counts are incremented at standard admission,
 decremented when a single transaction leaves, and rebuilt for free during events that already reapply the
 whole queue. There may be some over-approximation in this strategy; however, users of the same Voter 
 ID or credential are likely the same user, and therefore it is not necessary to provide 
@@ -524,8 +579,9 @@ which queued transactions survive revalidation holds anyway. Diffusion is unchan
 
 **Evaluation against the discard mechanism above.**
 
-- *Behaviour change.* Discarding relies on the commutativity result. Conflict-freedom is the
-  theorem's hypothesis, and the buffer bypasses it, admitting conflicting transactions and
+- *Behaviour change.* Discarding relies on the commutativity result
+  ([PR #1351](https://github.com/IntersectMBO/formal-ledger-specifications/pull/1351)). Conflict-freedom
+  is the theorem's hypothesis, and the buffer bypasses it, admitting conflicting transactions and
   re-establishing validity by revalidating the whole queue. Flushed entries of incoming urgent 
   txs land ahead of the standard queue, so where one consumes an input a
   standard transaction reads without consuming, that standard transaction is evicted contrary to the intent of 
