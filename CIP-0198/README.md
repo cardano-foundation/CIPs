@@ -431,7 +431,7 @@ The `d` tag exists only for that replacement, and nothing queries by it. A publi
 
 A service publishes its hint event only to relays it reads, so that a publisher who found the hint on a relay can reach the service through that relay.
 
-**Verifying a hint.** As for a [quote](#verifying-a-quote): the signature verifies under the `issuer_vkey` the hints carry, that key's hash is the `key` of the live registration they name (or a key the publisher has pinned), and the hints are younger than `HINT_TTL`. The event's `d` tag must be the one derived from the registration and scope the hints carry. A publisher ignores a hint event that fails any of these, which is how it discards hint events published by anyone other than the service they claim to be from.
+**Verifying a hint event.** A publisher ignores a hint event whose `content` fails [verification](#price-hints) as a set of hints, or whose `d` tag is not the one derived from the registration and scope those hints carry.
 
 **The exchange.**
 
@@ -1427,7 +1427,8 @@ price    = [ paid     : asset              ; what the wallet pays in
            , ladder   : [+ rung]           ; filled in order
            ]
 
-rung     = [ supply   : uint / null        ; units of spent; null is unbounded,
+rung     = [ supply   : uint / null        ; units of spent at this rung, not
+                                           ; cumulative; null is unbounded,
                                            ; and only allowed on the last rung
            , per_unit : rational           ; units of paid per unit of spent
            ]
@@ -1435,7 +1436,11 @@ rung     = [ supply   : uint / null        ; units of spent; null is unbounded,
 rational = [numerator : uint, denominator : uint .gt 0]
 ```
 
+A `hints_body` with two prices for the same (paid, spent) pair, or a ladder with a `null` supply on any rung but the last, is malformed rather than ambiguous, and a reader MUST reject the whole set rather than pick one reading.
+
 The signature is under the registration key, as a [quote's](#quotes) is, so that a hint relayed by a third party can still be tied to the service it claims to be from.
+
+**Verifying a hint.** As for a [quote](#verifying-a-quote), a wallet ignores a set of hints unless it is well-formed, as above; its signature verifies under the `issuer_vkey` it carries; that key's hash is the `key` of the live registration it names, or a key the wallet has pinned; and it is younger than `HINT_TTL`. This is how a wallet discards hints from anyone other than the service they claim to be from, however they reached it. A binding may add checks of its own, as [Binding B](#price-discovery) does for the hint event.
 
 **Scope.** A set of hints applies to the offers that carry every [filter key](#filter-key-kinds) in its `scope`, encoded as in the [registration CDDL](#on-chain-registration-of-services); an empty scope applies to every offer. A service may publish one unscoped set and any number of scoped ones, so that it can advertise different terms for some offers than for the rest. A sponsor covering fees for one DApp's users publishes a set scoped to [`PaysToScript`](#filter-key-kinds) with that DApp's script and an (ADA, ADA) price whose `base` is zero and whose ladder is one unbounded rung at zero. The arithmetic then comes to nothing whatever the offer costs the sponsor, which is why a sponsor also bounds what it will spend (see [Sponsorship drain](#security-considerations)). A price that comes to zero for an offer asks for nothing, so a wallet may use it whatever it would otherwise pay in. Otherwise, a set with no price for any asset a wallet would pay in does not apply to that wallet.
 
