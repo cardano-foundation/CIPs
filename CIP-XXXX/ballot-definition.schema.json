@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://docs.ekklesia.vote/cip/hydra-voting-tokens/v0.3.0/ballot-definition.schema.json",
+  "title": "BallotDefinition",
+  "description": "Full ballot definition pinned to IPFS. Referenced by the (600) token's content_hash + ballot_cid on-chain.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "specVersion",
+    "title",
+    "description",
+    "questions",
+    "roleWeighting",
+    "endEpoch",
+    "ekklesia"
+  ],
+  "properties": {
+    "specVersion": {
+      "type": "string",
+      "description": "Semver string. See the 'Off-chain document versions' section for the versioning rules. Current canonical value is '0.3.0'.",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/BallotQuestion"
+      }
+    },
+    "roleWeighting": {
+      "$ref": "#/$defs/RoleWeighting"
+    },
+    "endEpoch": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Cardano epoch at which voting ends. Informational alignment with votingWindow.close."
+    },
+    "ekklesia": {
+      "$ref": "#/$defs/EkklesiaExtension"
+    }
+  },
+  "$defs": {
+    "VoteMethod": {
+      "type": "string",
+      "enum": [
+        "binary",
+        "single-choice",
+        "multi-choice",
+        "range",
+        "ranked",
+        "weighted",
+        "likert"
+      ]
+    },
+    "BallotOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "value"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "integer"
+        }
+      }
+    },
+    "IntegerGrid": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min",
+        "max"
+      ],
+      "description": "Arithmetic integer grid {min, min+step, …, max}. Constraint not expressible in JSON Schema: (max - min) MUST be a non-negative multiple of step.",
+      "properties": {
+        "min": {
+          "type": "integer"
+        },
+        "max": {
+          "type": "integer"
+        },
+        "step": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      }
+    },
+    "BallotQuestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "questionId",
+        "question",
+        "method"
+      ],
+      "properties": {
+        "questionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string"
+        },
+        "method": {
+          "$ref": "#/$defs/VoteMethod"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/BallotOption"
+          }
+        },
+        "minSelections": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxSelections": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "valueRange": {
+          "$ref": "#/$defs/IntegerGrid"
+        },
+        "rankCount": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "budget": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ratingRange": {
+          "$ref": "#/$defs/IntegerGrid"
+        },
+        "requireAnswer": {
+          "type": "boolean",
+          "default": false
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "Optional blake2b_256 (64 lowercase hex) of the question's off-chain content blob. When present, participates in the question's merkle leaf and therefore in content_hash on the (600) datum."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "range"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "required": [
+              "valueRange"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "weighted"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "required": [
+              "options",
+              "budget"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "const": "likert"
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "required": [
+              "options",
+              "ratingRange"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "method": {
+                "enum": [
+                  "binary",
+                  "single-choice",
+                  "multi-choice",
+                  "ranked"
+                ]
+              }
+            },
+            "required": [
+              "method"
+            ]
+          },
+          "then": {
+            "required": [
+              "options"
+            ]
+          }
+        }
+      ]
+    },
+    "RoleWeighting": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Tabulation hint. The voting infrastructure publishes raw participation only (see the 'Full results object' section). These keys describe how the voting authority intends to interpret results.",
+      "properties": {
+        "drep": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased"
+          ]
+        },
+        "pool": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased",
+            "PledgeBased"
+          ]
+        },
+        "stake": {
+          "type": "string",
+          "enum": [
+            "CredentialBased",
+            "StakeBased"
+          ]
+        }
+      }
+    },
+    "EkklesiaExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "namespace",
+        "votingAuthority",
+        "context",
+        "acceptedCredentials",
+        "merkleRoot",
+        "ballotIpfsCid",
+        "votingWindow"
+      ],
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Fingerprint source. See the 'CIP-67 label allocation' section: fingerprint = blake2b_224(utf8(namespace))."
+        },
+        "votingAuthority": {
+          "type": "string",
+          "description": "Informational bech32 address of the intended voting authority. The on-chain (600) datum records the middleware's admin address, not this value, so this field is advisory metadata on IPFS only."
+        },
+        "context": {
+          "type": "string",
+          "const": "hydra-head"
+        },
+        "acceptedCredentials": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "drep",
+              "pool",
+              "calidus",
+              "stake",
+              "stake_test"
+            ]
+          },
+          "description": "Bech32 HRPs whose holders are permitted to register for this ballot."
+        },
+        "merkleRoot": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "blake2b_256 merkle root over the questions, 64 lowercase hex. Same value as content_hash in the (600) datum."
+        },
+        "ballotIpfsCid": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Self-referential IPFS CID of this very document, written in by the middleware after the document is pinned."
+        },
+        "votingWindow": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "open",
+            "close"
+          ],
+          "properties": {
+            "open": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO-8601 UTC. Also the timelock anchor for the (600)/(601) minting policy (see the 'Minting policy' section)."
+            },
+            "close": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO-8601 UTC."
+            }
+          }
+        }
+      }
+    }
+  }
+}
