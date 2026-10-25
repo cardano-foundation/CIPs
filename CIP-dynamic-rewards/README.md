@@ -257,28 +257,33 @@ The difference in this assumed scenario is about **1.4675 percentage points**, n
 
 #### Effect of tightening a saturation cap
 
-To isolate saturation, consider a separate simplified example with $S=200$ ADA, $R=1,000$ ADA, $a_0=0$, and apparent-performance multipliers of one. Pool A has 100 ADA of stake and Pool B has 20 ADA, each including 5 ADA of declared and fulfilled pledge. With k changing from 4 to 8, the saturation cap falls from 50 to 25 ADA. The table gives unrounded rewards, displayed to two decimal places:
+Consider a hypothetical network using rounded, historical-scale amounts: $S=36$ billion ADA and $R=16.8$ million ADA per epoch, with $a_0=0.3$. For example, this pot results from 7 billion ADA in reserves, $\rho=0.003$ and $\tau=0.2$, assuming full network-wide production and no transaction fees. These are illustrative inputs, not a current mainnet snapshot or a proposed parameter change.
 
-| Quantity | Cap of 50 ADA | Cap of 25 ADA |
-| --- | ---: | ---: |
-| Pool A capped stake | 50 ADA | 25 ADA |
-| Pool B capped stake | 20 ADA | 20 ADA |
-| $N$ | $70/200=0.35$ | $45/200=0.225$ |
-| Pool A reward | 714.29 ADA | 555.56 ADA |
-| Pool B reward | 285.71 ADA | 444.44 ADA |
-| Total pool rewards | 1,000 ADA | 1,000 ADA |
+Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools as follows. Each pool's total stake includes its declared and fulfilled pledge. Assume apparent-performance multipliers of one and that any leverage cap is nonbinding. Hold stake, pledge, performance, and $R$ fixed while increasing k from 500 to 1,000. The global reward cap $S/k$ falls from 72 million to 36 million ADA:
 
-Pool A remains oversaturated and shares only through its capped weight. Tightening its cap shifts rewards toward Pool B, which remains below the cap. Before coin rounding, no saturation-related amount is returned to reserves in this cap-only example. Coin floors and account allocation can still leave a small residual. A nonzero $a_0$ would retain the pledge-dependent reductions specified above.
+| Pool group | Number of pools | Stake per pool | Pledge per pool | Capped stake per pool, k = 500 | Capped stake per pool, k = 1,000 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Large | 100 | 100M ADA | 1M ADA | 72M ADA | 36M ADA |
+| Medium | 400 | 20M ADA | 500,000 ADA | 20M ADA | 20M ADA |
+| Small | 1,800 | 2M ADA | 100,000 ADA | 2M ADA | 2M ADA |
 
-For the $a_0=0$ cap-only example, the same caps and allocations result if the global cap is held at 100 ADA, both pools have 5 ADA of fulfilled pledge, and an independently adopted CIP-50 L changes from 10 to 5. The leverage cap then falls from 50 to 25 ADA while Pool B remains below it. Neither example changes the stake used for leader election.
+The total capped stake falls from $100\times72\mathrm{M}+400\times20\mathrm{M}+1{,}800\times2\mathrm{M}=18.8$ billion ADA to 15.2 billion ADA. Thus $N$ falls from $18.8/36\approx0.522222$ to $15.2/36\approx0.422222$. This uses capped stake across the entire hypothetical network, not just two example pools. The 14.4 billion ADA outside active delegation and the stake above each pool's cap contribute no reward weight.
 
-With $a_0=0.3$, Pool B's reward increases from approximately 225.38 to 361.37 ADA in the k example, and from approximately 222.42 to 345.98 ADA in the L example. The retained pledge term leaves part of the pot unallocated in these cases.
+The table compares the existing, unnormalized reward calculation with this CIP. Amounts are ADA per epoch, before coin rounding and account allocation, displayed to two decimal places. Network totals are calculated from unrounded amounts, not the displayed per-pool values:
 
-The [SPO Incentives simulator](https://spo-incentives.vercel.app/) explores related policies, but its published [Full and Max calculations](https://github.com/Cerkoryn/SPO-Incentives/blob/7186366e70f79d50268e8a4482369005626ab509/src/lib/utils/graphs.ts) normalize by full pool factors. Full retains the `1 + a₀` denominator and sets a modeled aggregate budget of $R/(1+a_0)$; Max removes it and sets a budget of $R$. This CIP instead normalizes eligible performance-adjusted capped stake before applying the recipients' retained pledge terms. The simulator also omits actual block-performance and owner-pledge-fulfillment checks, so neither mode is a reference implementation of this specification.
+| Quantity | Existing calculation, k = 500 | Existing calculation, k = 1,000 | Dynamic Rewards, k = 500 | Dynamic Rewards, k = 1,000 |
+| --- | ---: | ---: | ---: | ---: |
+| Reward for one large pool | 25,953.85 | 13,030.77 | 49,698.85 | 30,862.35 |
+| Reward for one medium pool | 7,194.17 | 7,209.07 | 13,776.08 | 17,074.11 |
+| Reward for one small pool | 718.23 | 718.52 | 1,375.34 | 1,701.75 |
+| Total pool rewards | 6,765,874.35 | 5,480,038.41 | 12,955,929.60 | 12,979,038.35 |
+| Remaining portion of $R$ returned to reserves | 10,034,125.65 | 11,319,961.59 | 3,844,070.40 | 3,820,961.65 |
 
-The simulator's CIP-50 mode also substitutes the pool-specific cap for $z_0$ throughout its pledge term. This specification retains the global $z_0=1/k$ and applies the leverage cap to $c_i$, following the ledger reward expression above. Historical outputs for L must therefore also be checked against that distinction.
+For example, a medium pool's capped stake remains 20 million ADA. Its share of reward capacity rises from $20\mathrm{M}/18.8\mathrm{B}$ to $20\mathrm{M}/15.2\mathrm{B}$, so it receives a larger share of the same pot under Dynamic Rewards. The large pools remain eligible through their below-cap portions, but their capped weights fall relative to the other pools. Their full 100 million ADA per pool still contributes to leader election and shares the resulting pool payment under the existing allocation rules.
 
-The author's [October 2, 2025 clarification](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3358613174) explicitly describes recycling saturation-related rewards after changes to k or CIP-50 L, while retaining the contribution of oversaturated stake to block production. The [seminar slides](https://docs.google.com/presentation/d/1m_s0yymahQjyE21s1VgC6CgYC0K4mjP2YgjnIGzUhNo/htmlpresent) and earlier bundled proposal use “full-pot” as a broad description. This independent specification clarifies that description: reward capacity excluded by inactivity, saturation, and failed declared pledge is shared among eligible pools, but their own pledge-dependent reductions remain variable. It therefore does not promise either a 100% payout or the simulator Full mode's fixed payout fraction. Its activation requires modeling and review of this formula, rather than treating historical simulator outputs as forecasts.
+Under the existing calculation, tightening the cap increases the return to reserves by about 1.29 million ADA per epoch in this scenario. Under Dynamic Rewards, the medium and small pools instead receive substantially more, while total pool rewards remain around 13 million ADA. The remaining approximately 3.8 million ADA is attributable to the recipients' retained pledge-dependent reductions. The small difference in total payouts between the two Dynamic Rewards columns arises because changing k also changes $z_0$ in the retained pledge expression; this CIP does not fix total payouts at a predetermined amount. With $a_0=0$, Dynamic Rewards would allocate the entire 16.8 million ADA before rounding in both cases.
+
+A tighter CIP-50 L can produce the same redistribution mechanism without changing k. In this same hypothetical network, hold k at 500 and reduce L from 72 to 36. The large pools' capped stake falls from 72M to 36M ADA; the medium pools' capped stake falls from 20M to 18M ADA; and the small pools remain at 2M ADA. Total capped stake falls from 18.8B to 14.4B ADA. Using the retained global $z_0=1/500$, a small pool's Dynamic Rewards payment rises from 1,375.34 to 1,795.58 ADA per epoch, while a large pool's payment falls from 49,698.85 to 32,440.44 ADA. This illustrates why redistribution depends on each pool's stake and pledge: a change to L need not affect the same pools, or produce the same payouts, as a change to k.
 
 ## Path to Active
 
