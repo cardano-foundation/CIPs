@@ -34,8 +34,6 @@ This CIP addresses the broader drift toward **passive and indifferent delegation
 - **Indefinite delegations.** Delegation certificates today have no expiry. Once a stake credential delegates to a stake pool or a dRep, that delegation remains valid indefinitely until the holder submits a new delegation (or deregisters the stake key).
 - **Rewards return-to-reserves.** After monetary expansion and fees are combined and the treasury cut is taken, pool rewards depend on stake relative to the existing total-stake denominator, reward saturation, pledge, and observed block production. Any residual R not assigned to rewards (∆r₂ = R − Σrs) is returned to reserves, per the epoch-boundary and reward-update rules (SL-D5 §11.1, §11.5, §11.8–§11.10). The active-stake ratio is not the only source of that residual.
 
-This CIP intentionally limits itself to reward-account inactivity expiry and its effects on eligibility. The reward formula and residual-return rules, pledge influence, saturation, and treasury cut are unchanged. Adoption of Dynamic Rewards is not required.
-
 ### Reward-account inactivity expiry (proof-of-life)
 
 - Add a **single protocol parameter** (measured in epochs), to be set via governance:
@@ -45,7 +43,7 @@ This CIP intentionally limits itself to reward-account inactivity expiry and its
 - **Proof-of-life.** Any action that requires a **witness by the reward account** resets its expiration to `currentEpoch + delegatorActivity`. Examples include reward withdrawal, (re)delegation to an SPO or dRep, stake-key deregistration, stake-key registration where its certificate requires that witness, and pool registration or updates requiring a witness from that credential as a pool owner. Ordinary wallet usage can renew automatically when the wallet includes a qualifying action such as a reward withdrawal.
 - **Ineligible for rewards.** For epochs in which a reward account is inactive, its epoch reward share is **not credited** to that account. The existing reward-distribution rules, including the return of undistributed residual rewards to reserves, continue to apply. This CIP does not redistribute those uncredited rewards to other accounts.
 - **Parameter changes.** Updating `delegatorActivity` does not retime existing stored expiration dates or reactivate expired accounts. The next qualifying witness resets the date using the period then in force. The reset remains `currentEpoch + delegatorActivity`, so a shorter period can move a previously stored future expiration earlier.
-- **Migration.** On activation, determine the epoch of the last qualifying staking-credential witness for each registered reward account. Initialize its `expirationEpoch` to that epoch plus the activation value of `delegatorActivity`. If no historical qualifying witness exists, initialize it to `activationEpoch + delegatorActivity`, giving the account a full activity period from activation. Apply the same expiry comparison to both cases; a historically witnessed account can therefore already be expired at activation.
+- **Migration.** On activation, initialize `expirationEpoch` for each reward account to `activationEpoch + delegatorActivity`, giving the account a full activity period from activation.  This is done to prevent computationally expensive historical lookups to get the last qualifying staking-credential witness for every single reward account on the hard fork boundary.
 
 Only authorization required for the staking credential counts. Receiving funds or spending an output using only its payment credential does not itself renew the reward account. A legacy Shelley stake-registration certificate does not require the staking-credential witness and therefore does not qualify merely by registering the account; the Conway registration form that specifies the deposit does require it. This follows the [ledger review's distinction between direct proof and indirect activity](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3458476624). It clarifies the existing witness rule rather than requiring explicit periodic redelegation.
 
@@ -62,19 +60,13 @@ Let a qualifying witness occur in epoch $t$, with activity period $d$. The store
 | 102 | 102 | Unexpired |
 | 103 | 102 | Expired |
 
-This example does not select an initial parameter value. If governance permits $d=0$, the account is unexpired in the qualifying epoch and expires in the next one. An account with no qualifying witness history uses activation as $t$ for the migration initialization above.
+This example does not select an initial parameter value. If governance permits $d=0$, the account is unexpired in the qualifying epoch and expires in the next one.
 
 ### Eligibility and reward calculation
 
 Expiry determines whether a reward account's associated stake can participate in leader election, rewards, and governance under the other prevailing eligibility rules. It does not assign a reward weight to each account. An unexpired account can still receive no rewards, for example if its pool fails its declared pledge or produces no blocks.
 
-Pool saturation and block performance remain separate parts of the reward calculation after account eligibility is determined. A saturation cap limits the pool's reward-bearing stake; it does not expire its delegators' accounts or cap their contribution to leader election or governance. Eligible delegators continue to share their pool's payment under the existing allocation rules.
-
-Ongoing liveness tracking uses the stored `expirationEpoch`: a qualifying action updates it, and stake calculations compare it with the current epoch. Historical witness lookup is needed for activation migration, rather than repeated wallet-history lookup at every epoch. This CIP adds no normalization factor to the reward formula.
-
-### Activity-period terminology
-
-`delegatorActivity` names the period, measured in epochs, for which a reward account remains active after a qualifying witness. The name follows the existing DRep activity-period parameter, called `drepActivity` in [CIP-1694’s Registered DReps section](../CIP-1694/README.md#registered-dreps) and `dRepActivity` in the [ledger implementation](https://github.com/IntersectMBO/cardano-ledger/blob/master/eras/conway/impl/src/Cardano/Ledger/Conway/PParams.hs). It is also consistent with the proposed `spoActivity` parameter in [CIP-0193? | Auto-retirement of Abandoned Pools](https://github.com/cardano-foundation/CIPs/pull/1230). These parameters all describe activity periods renewed by qualifying actions; their qualifying actions and expiry rules remain specific to their respective proposals.
+Pool saturation and block performance remain separate parts of the reward calculation after account eligibility is determined. A saturation cap limits the pool's reward-bearing stake but does not expire its delegators' accounts or cap their contribution to leader election or governance. Eligible delegators continue to share their pool's payment under the existing allocation rules.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -90,19 +82,11 @@ Ongoing liveness tracking uses the stored `expirationEpoch`: a qualifying action
 
 Introducing inactivity expiry could, in the short term, allow portions of stake to lapse if large wallets forget or delay renewal. This temporarily reduces the **active‑stake ratio**, widening the gap between total and active stake. In such windows, the cost for an adversary to assemble a large share of active stake is lower than usual, and block production can concentrate among a smaller set of pools until new delegations occur.
 
-This risk must be assessed for time-bound delegation on its own. Its activation does not require the potential balancing mechanism described below.
+This risk may be assessed for time-bound delegation on its own or it may be considered in conjunction with the [Dynamic Rewards CIP](https://github.com/Cerkoryn/CIPs/tree/cip-dynamic-rewards/CIP-dynamic-rewards)
 
 ### Evidence for the activity period
 
 The [historical inactivity chart linked by the parameter ballot](https://raw.githubusercontent.com/Cerkoryn/governance-reference/refs/heads/main/delegatorInactivity_values.jpg) and [per-pool inactivity search](https://earncoinpool.com/CIP-163.html) provide dated observations of transaction inactivity. They are not measurements of permanently lost stake or forecasts of how many accounts would actually expire after notice and opportunities to renew. The author also [corrected an earlier analysis](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3358578912) because inbound-only transactions had incorrectly indicated activity.
-
-Before selecting the initial value, impact estimates must use a fresh snapshot and the qualifying staking-credential witness rule above, with their filters and observation date stated. General transaction activity must not be treated as an exact substitute for that witness history. This preserves the retroactive migration rule and leaves the initial parameter value to governance.
-
-### Relationship to Dynamic Rewards
-
-The companion **Dynamic Rewards** proposal is being extracted from the [original CIP-163 discussion](https://github.com/cardano-foundation/CIPs/pull/1077). It redistributes reward capacity associated with inactive stake, capped-out stake, and failed-pledge pools by scaling eligible pools' unrounded maximum rewards with one common factor. That factor is computed from capped pool stake and the existing block-performance multipliers. Recipients retain their pledge-dependent reward expressions, while failed-pledge pools receive zero. Oversaturated pools can share through their capped portion, and separately governed changes to k or an adopted CIP-50 L can shift rewards toward less-saturated pools. The two proposals can be reviewed, ratified, and activated independently.
-
-If both proposals are adopted, time-bound delegation first determines account participation in the rewards snapshot using its activity rule. Dynamic Rewards then uses that resulting snapshot to calculate pool reward weights and the common scaling factor. The distinction is account eligibility followed by pool reward calculation; individual delegator payments still use the existing pool allocation rules. This can increase rewards for reachable participants when other stake expires, providing an incentive for delegation to return. Recipients' pledge-dependent reductions, zero rewards for failed-pledge pools, and final accounting rules still apply. This potential balancing effect is conditional on the separate adoption of Dynamic Rewards; time-bound delegation alone does not provide it.
 
 ## Path to Active
 
