@@ -9,6 +9,7 @@ Authors:
   - Matthieu Pizenberg <matthieu.pizenberg@gmail.com>
 Implementors:
   - Civitas Explorer <https://www.civitasexplorer.com/surveys>
+  - DRepTalk <https://dreptalk.com/c/surveys/>
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1107
 Created: 2025-10-28
