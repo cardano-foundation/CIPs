@@ -232,6 +232,11 @@
       "description": "An object shorter than its four byte header",
       "object": "010001",
       "expected": "failure"
+    },
+    {
+      "description": "An empty object with no bytes is refused before any decode",
+      "object": "",
+      "expected": "failure"
     }
   ]
 }
