@@ -1,33 +1,83 @@
+; CIP-170 major version 1 (currently 1.1). Only label 170 is constrained;
+; other labels in the same transaction may hold any metadata.
 cardano_keri_metadata = {
-  ? uint => auth_event
+  170 => auth_event,
+  * uint => any
 }
 
-auth_event = 
+auth_event =
   auth_begin /
   auth_end /
-  attest
+  attest /
+  attest_tx /
+  claim_tx
 
 auth_begin = {
   t: "AUTH_BEGIN",
-  s: text,          ; SAID of leaf credential schema
-  i: text,          ; AID of signer
-  c: bytes,         ; Byte stream payload
-  ? m: metadata_map ; Optional metadata
+  s: text,            ; SAID of leaf credential schema
+  i: text,            ; AID of signer
+  c: byte_stream,     ; Credential chain
+  ? v: auth_version,  ; Absent means version 1.0
+  ? m: metadata_map   ; Optional metadata
 }
 
 attest = {
   t: "ATTEST",
-  i: text,          ; AID of signer
-  d: text,          ; Digest
-  s: text           ; Hex-encoded sequence number
+  i: text,            ; AID of signer
+  d: text,            ; Digest
+  s: text,            ; Hex-encoded sequence number
+  ? v: cip_version    ; Absent means version 1.0; "1.1" or later if the KEL anchor is a metadata seal
+}
+
+attest_tx = {
+  t: "ATTEST_TX",
+  attest_tx_signers,
+  v: cip_version      ; "1.1" or later
+}
+
+; One signer, or several distinct signers of the same transaction. With several,
+; each optional sequence number hint sits at the position of its AID.
+attest_tx_signers = (
+  i: text,            ; AID of signer
+  ? s: text           ; Hex-encoded sequence number hint
+  //
+  i: [+ text],        ; AIDs of signers
+  ? s: [+ text]       ; Hints, same length as i
+)
+
+claim_tx = {
+  t: "CLAIM_TX",
+  i: text,            ; AID of signer
+  r: [+ tx_id],       ; Claimed transactions
+  ? s: text,          ; Hex-encoded sequence number hint
+  v: cip_version      ; "1.1" or later
 }
 
 auth_end = {
   t: "AUTH_END",
-  s: text,          ; SAID of leaf credential schema
-  i: text,          ; AID of signer
-  c: bytes,         ; Byte stream payload
-  ? m: metadata_map ; Optional metadata
+  s: text,            ; SAID of leaf credential schema
+  i: text,            ; AID of signer
+  c: byte_stream,     ; Revocation registry events
+  ? v: auth_version,  ; Absent means version 1.0
+  ? m: metadata_map   ; Optional metadata
+}
+
+; A metadata byte string holds at most 64 bytes; longer streams are a list of chunks in order.
+byte_stream = chunk / [+ chunk]
+chunk = bytes .size (0..64)
+
+tx_id = text .regexp "[0-9a-f]{64}"  ; Lowercase hex transaction ID
+
+version = text .regexp "[0-9]+[.][0-9]+"  ; major.minor
+
+cip_version = {
+  v: version          ; CIP version
+}
+
+auth_version = {
+  v: version,         ; CIP version
+  k: text,            ; Minimum KERI version
+  a: text             ; Minimum ACDC version
 }
 
 metadata_map = {
