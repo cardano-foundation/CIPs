@@ -79,6 +79,8 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
 - A new CIP, which defines new JSON-LD vocabulary to extend this one, which seeks broad adoption.
 - A new context document, used in the wild, but not officially standardized, and which doesn't seek broad adoption.
 
+See the [Extension Index](./extensions.md) for a list of CIPs extending this standard, how they combine, and known gotchas.
+
 ### Hosting
 
 In CIP-1694 (and likely any alternative or future evolution of it), there are a number of certificates that can be attached to a transaction pertaining to governance; each of these is equipped with an "anchor", which is a URI at which can be found additional metadata.
