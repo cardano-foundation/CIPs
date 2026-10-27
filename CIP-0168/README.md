@@ -324,12 +324,14 @@ Specification.
 
 ### Why the Policy List Is Bounded
 
-The cost models for `keepPolicies` and `dropPolicies` are fitted on policy lists of up to 256
-ids, and the limit keeps the list length of every call inside that range. Without it, a script
-could pass a list of tens of thousands of ids, far outside the fitted range.
+The limit on the policy list makes the cost models for `keepPolicies` and `dropPolicies` more
+accurate. With at most 256 ids, the costing benchmarks can measure every list length a call can
+have, so the charge is fitted over the whole range instead of being extrapolated to longer lists.
 
-The limit is well above practical use. The contracts that motivate this CIP filter a value by a
-handful of policies, such as the three protocol tokens of the CIP-89 order in the Motivation.
+Without the limit, a script could pass a list of tens of thousands of ids. Such lists are far
+beyond the useful cases: the contracts that motivate this CIP filter a value by a handful of
+policies, such as the three protocol tokens of the CIP-89 order in the Motivation. Covering them
+would add uncertainty to the cost models for little gain.
 
 ### Does this create a "Slippery Slope"?
 
