@@ -197,13 +197,13 @@ Retain the following historical inputs for illustration, with monetary amounts i
 - $\text{Reserves} = 6,955,875,027$
 - $k = 500 \;\Rightarrow\; z_0 = 0.002$
 - $a_0 = 0.3$
-- $\rho = 0.003$
-- $\tau = 0.2$
+- $\mathrm{Rho} = 0.003$
+- $\mathrm{Tau} = 0.2$
 
 Ignoring transaction fees and missed blocks, the rewards pot after treasury is:
 
 $$
-R = (\rho \cdot \mathrm{Reserves}) \cdot (1 - \tau) = 16{,}694{,}100.0648.
+R = (\mathrm{Rho} \cdot \mathrm{Reserves}) \cdot (1 - \mathrm{Tau}) = 16{,}694{,}100.0648.
 $$
 
 Consider a pool with total stake $x=35,000,000$ ADA, **including** a declared and fulfilled pledge $y=1,000,000$ ADA. Pledge is part of the pool stake, so it is not added to $x$ again when calculating ROI. Assume an apparent-performance multiplier of one and ignore pool costs and margins.
@@ -257,9 +257,9 @@ The difference in this assumed scenario is about **1.4675 percentage points**, n
 
 #### Effect of tightening a saturation cap
 
-Consider a hypothetical network using rounded, historical-scale amounts: $S=36$ billion ADA and $R=16.8$ million ADA per epoch, with $a_0=0.3$. For example, this pot results from 7 billion ADA in reserves, $\rho=0.003$ and $\tau=0.2$, assuming full network-wide production and no transaction fees. These are illustrative inputs, not a current mainnet snapshot or a proposed parameter change.
+Consider a hypothetical network using rounded, historical-scale amounts: $S=36$ billion ADA and $R=16.8$ million ADA per epoch, with $a_0=0.3$. For example, this pot results from 7 billion ADA in reserves, $\mathrm{Rho}=0.003$ and $\mathrm{Tau}=0.2$, assuming full network-wide production and no transaction fees. These are illustrative inputs, not a current mainnet snapshot or a proposed parameter change.
 
-Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools as follows. Each pool's total stake includes its declared and fulfilled pledge. Assume apparent-performance multipliers of one and that any leverage cap is nonbinding. Hold stake, pledge, and performance fixed while increasing k from 500 to 1,000. First keep $\rho=0.003$ and $R=16.8$ million ADA; then compare the same snapshots with $\rho=0.002$ and $R=11.2$ million ADA. The global reward cap $S/k$ falls from 72 million to 36 million ADA:
+Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools as follows. Each pool's total stake includes its declared and fulfilled pledge. Assume apparent-performance multipliers of one and that any leverage cap is nonbinding. Hold stake, pledge, and performance fixed while increasing k from 500 to 1,000. First keep $\mathrm{Rho}=0.003$ and $R=16.8$ million ADA; then compare the same snapshots with $\mathrm{Rho}=0.002$ and $R=11.2$ million ADA. The global reward cap $S/k$ falls from 72 million to 36 million ADA:
 
 | Pool group | Number of pools | Stake per pool | Pledge per pool | Capped stake per pool, k = 500 | Capped stake per pool, k = 1,000 |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -269,13 +269,13 @@ Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools a
 
 The total capped stake falls from $100\times72\mathrm{M}+400\times20\mathrm{M}+1{,}800\times2\mathrm{M}=18.8$ billion ADA to 15.2 billion ADA. Thus $N$ falls from $18.8/36\approx0.522222$ to $15.2/36\approx0.422222$. This uses capped stake across the entire hypothetical network, not just two example pools. The 14.4 billion ADA outside active delegation and the stake above each pool's cap contribute no reward weight.
 
-The table compares the existing, unnormalized reward calculation with this CIP, including an optional reduction in $\rho$ from 0.003 to 0.002. With fees omitted and other inputs fixed, reducing $\rho$ by one third reduces the gross reserve draw from 21M to 14M ADA, treasury inflow from 4.2M to 2.8M ADA, and the post-treasury pot $R$ from 16.8M to 11.2M ADA. The normalization weights do not depend on $\rho$, so each pool's Dynamic Rewards payment scales by $2/3$ at the same k.
+The table compares the existing, unnormalized reward calculation with this CIP, including an optional reduction in Rho from 0.003 to 0.002. With fees omitted and other inputs fixed, reducing Rho by one third reduces the gross reserve draw from 21M to 14M ADA, treasury inflow from 4.2M to 2.8M ADA, and the post-treasury pot $R$ from 16.8M to 11.2M ADA. The normalization weights do not depend on Rho, so each pool's Dynamic Rewards payment scales by $2/3$ at the same k.
 
 Amounts are ADA per epoch, before coin rounding and account allocation, displayed to two decimal places. Network totals are calculated from unrounded amounts, not the displayed per-pool values. With no fees, net reserve depletion equals treasury inflow plus total pool rewards, or equivalently the gross reserve draw minus the portion of $R$ returned to reserves:
 
 | Quantity | Existing calculation, k = 500 | Existing calculation, k = 1,000 | Dynamic Rewards, k = 500 | Dynamic Rewards, k = 1,000 | Dynamic Rewards, lower Rho, k = 500 | Dynamic Rewards, lower Rho, k = 1,000 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| $\rho$ | 0.003 | 0.003 | 0.003 | 0.003 | 0.002 | 0.002 |
+| Rho | 0.003 | 0.003 | 0.003 | 0.003 | 0.002 | 0.002 |
 | Reward for one large pool | 25,953.85 | 13,030.77 | 49,698.85 | 30,862.35 | 33,132.57 | 20,574.90 |
 | Reward for one medium pool | 7,194.17 | 7,209.07 | 13,776.08 | 17,074.11 | 9,184.05 | 11,382.74 |
 | Reward for one small pool | 718.23 | 718.52 | 1,375.34 | 1,701.75 | 916.89 | 1,134.50 |
@@ -286,9 +286,9 @@ Amounts are ADA per epoch, before coin rounding and account allocation, displaye
 
 For example, a medium pool's capped stake remains 20 million ADA. Its share of reward capacity rises from $20\mathrm{M}/18.8\mathrm{B}$ to $20\mathrm{M}/15.2\mathrm{B}$, so it receives a larger share of the same pot under Dynamic Rewards. The large pools remain eligible through their below-cap portions, but their capped weights fall relative to the other pools. Their full 100 million ADA per pool still contributes to leader election and shares the resulting pool payment under the existing allocation rules.
 
-Under the existing calculation, tightening the saturation cap increases the return to reserves by about 1.29 million ADA per epoch in this scenario. Under Dynamic Rewards with $\rho=0.003$, the medium and small pools instead receive substantially more, while total pool rewards remain around 13 million ADA. The remaining approximately 3.8 million ADA is attributable to the recipients' retained pledge-dependent reductions. The small difference in total payouts between the k settings at a fixed $\rho$ arises because changing k also changes $z_0$ in the retained pledge expression.
+Under the existing calculation, tightening the saturation cap increases the return to reserves by about 1.29 million ADA per epoch in this scenario. Under Dynamic Rewards with $\mathrm{Rho}=0.003$, the medium and small pools instead receive substantially more, while total pool rewards remain around 13 million ADA. The remaining approximately 3.8 million ADA is attributable to the recipients' retained pledge-dependent reductions. The small difference in total payouts between the k settings at a fixed Rho arises because changing k also changes $z_0$ in the retained pledge expression.
 
-The lower-Rho columns use the original existing-calculation case at k = 500 as the net-emissions benchmark. At $\rho=0.002$, Dynamic Rewards depletes reserves by approximately 11.44M ADA at k = 500 and 11.45M ADA at k = 1,000, compared with the original 10.97M ADA: about 4.30% and 4.44% more, respectively. Without the Rho reduction, the increases would be about 56.45% and 56.66%. Thus 0.002 is a rounded illustrative choice that keeps net reserve depletion roughly, rather than exactly, at the original level.
+The lower-Rho columns use the original existing-calculation case at k = 500 as the net-emissions benchmark. At $\mathrm{Rho}=0.002$, Dynamic Rewards depletes reserves by approximately 11.44M ADA at k = 500 and 11.45M ADA at k = 1,000, compared with the original 10.97M ADA: about 4.30% and 4.44% more, respectively. Without the Rho reduction, the increases would be about 56.45% and 56.66%. Thus 0.002 is a rounded illustrative choice that keeps net reserve depletion roughly, rather than exactly, at the original level.
 
 Keeping net reserve depletion similar does not keep the treasury/pool split unchanged. The lower Rho reduces treasury inflow to 2.8M ADA, while pool rewards rise to approximately 8.64M or 8.65M ADA. The relative redistribution toward less-constrained pools remains. These columns illustrate an optional, separate parameter change decision for DReps to make.
 
