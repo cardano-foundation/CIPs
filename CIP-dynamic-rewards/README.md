@@ -271,18 +271,18 @@ The total capped stake falls from $100\times72\mathrm{M}+400\times20\mathrm{M}+1
 
 The table compares the existing, unnormalized reward calculation with this CIP, including an optional reduction in Rho from 0.003 to 0.002. With fees omitted and other inputs fixed, reducing Rho by one third reduces the gross reserve draw from 21M to 14M ADA, treasury inflow from 4.2M to 2.8M ADA, and the post-treasury pot $R$ from 16.8M to 11.2M ADA. The normalization weights do not depend on Rho, so each pool's Dynamic Rewards payment scales by $2/3$ at the same k.
 
-Amounts are ADA per epoch, before coin rounding and account allocation, displayed to two decimal places. Network totals are calculated from unrounded amounts, not the displayed per-pool values. With no fees, net reserve depletion equals treasury inflow plus total pool rewards, or equivalently the gross reserve draw minus the portion of $R$ returned to reserves:
+Amounts are ADA per epoch, before ledger coin rounding and account allocation, displayed to the nearest whole ADA. Network totals are calculated from unrounded amounts, not the displayed per-pool values; displayed components may differ from displayed totals by 1 ADA because of rounding. With no fees, net reserve depletion equals treasury inflow plus total pool rewards, or equivalently the gross reserve draw minus the portion of $R$ returned to reserves:
 
 | Quantity | Existing calculation, k = 500 | Existing calculation, k = 1,000 | Dynamic Rewards, k = 500 | Dynamic Rewards, k = 1,000 | Dynamic Rewards, lower Rho, k = 500 | Dynamic Rewards, lower Rho, k = 1,000 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Rho | 0.003 | 0.003 | 0.003 | 0.003 | 0.002 | 0.002 |
-| Reward for one large pool | 25,953.85 | 13,030.77 | 49,698.85 | 30,862.35 | 33,132.57 | 20,574.90 |
-| Reward for one medium pool | 7,194.17 | 7,209.07 | 13,776.08 | 17,074.11 | 9,184.05 | 11,382.74 |
-| Reward for one small pool | 718.23 | 718.52 | 1,375.34 | 1,701.75 | 916.89 | 1,134.50 |
-| Total pool rewards | 6,765,874.35 | 5,480,038.41 | 12,955,929.60 | 12,979,038.35 | 8,637,286.40 | 8,652,692.23 |
-| Treasury inflow | 4,200,000.00 | 4,200,000.00 | 4,200,000.00 | 4,200,000.00 | 2,800,000.00 | 2,800,000.00 |
-| Remaining portion of $R$ returned to reserves | 10,034,125.65 | 11,319,961.59 | 3,844,070.40 | 3,820,961.65 | 2,562,713.60 | 2,547,307.77 |
-| Net reserve depletion | 10,965,874.35 | 9,680,038.41 | 17,155,929.60 | 17,179,038.35 | 11,437,286.40 | 11,452,692.23 |
+| Reward for one large pool | 25,954 | 13,031 | 49,699 | 30,862 | 33,133 | 20,575 |
+| Reward for one medium pool | 7,194 | 7,209 | 13,776 | 17,074 | 9,184 | 11,383 |
+| Reward for one small pool | 718 | 719 | 1,375 | 1,702 | 917 | 1,135 |
+| Total pool rewards | 6,765,874 | 5,480,038 | 12,955,930 | 12,979,038 | 8,637,286 | 8,652,692 |
+| Treasury inflow | 4,200,000 | 4,200,000 | 4,200,000 | 4,200,000 | 2,800,000 | 2,800,000 |
+| Remaining portion of $R$ returned to reserves | 10,034,126 | 11,319,962 | 3,844,070 | 3,820,962 | 2,562,714 | 2,547,308 |
+| Net reserve depletion | 10,965,874 | 9,680,038 | 17,155,930 | 17,179,038 | 11,437,286 | 11,452,692 |
 
 For example, a medium pool's capped stake remains 20 million ADA. Its share of reward capacity rises from $20\mathrm{M}/18.8\mathrm{B}$ to $20\mathrm{M}/15.2\mathrm{B}$, so it receives a larger share of the same pot under Dynamic Rewards. The large pools remain eligible through their below-cap portions, but their capped weights fall relative to the other pools. Their full 100 million ADA per pool still contributes to leader election and shares the resulting pool payment under the existing allocation rules.
 
