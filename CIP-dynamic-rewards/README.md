@@ -259,7 +259,7 @@ The difference in this assumed scenario is about **1.4675 percentage points**, n
 
 Consider a hypothetical network using rounded, historical-scale amounts: $S=36$ billion ADA and $R=16.8$ million ADA per epoch, with $a_0=0.3$. For example, this pot results from 7 billion ADA in reserves, $\rho=0.003$ and $\tau=0.2$, assuming full network-wide production and no transaction fees. These are illustrative inputs, not a current mainnet snapshot or a proposed parameter change.
 
-Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools as follows. Each pool's total stake includes its declared and fulfilled pledge. Assume apparent-performance multipliers of one and that any leverage cap is nonbinding. Hold stake, pledge, performance, and $R$ fixed while increasing k from 500 to 1,000. The global reward cap $S/k$ falls from 72 million to 36 million ADA:
+Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools as follows. Each pool's total stake includes its declared and fulfilled pledge. Assume apparent-performance multipliers of one and that any leverage cap is nonbinding. Hold stake, pledge, and performance fixed while increasing k from 500 to 1,000. First keep $\rho=0.003$ and $R=16.8$ million ADA; then compare the same snapshots with $\rho=0.002$ and $R=11.2$ million ADA. The global reward cap $S/k$ falls from 72 million to 36 million ADA:
 
 | Pool group | Number of pools | Stake per pool | Pledge per pool | Capped stake per pool, k = 500 | Capped stake per pool, k = 1,000 |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -269,19 +269,28 @@ Suppose 21.6 billion ADA (60% of $S$) is delegated across 2,300 eligible pools a
 
 The total capped stake falls from $100\times72\mathrm{M}+400\times20\mathrm{M}+1{,}800\times2\mathrm{M}=18.8$ billion ADA to 15.2 billion ADA. Thus $N$ falls from $18.8/36\approx0.522222$ to $15.2/36\approx0.422222$. This uses capped stake across the entire hypothetical network, not just two example pools. The 14.4 billion ADA outside active delegation and the stake above each pool's cap contribute no reward weight.
 
-The table compares the existing, unnormalized reward calculation with this CIP. Amounts are ADA per epoch, before coin rounding and account allocation, displayed to two decimal places. Network totals are calculated from unrounded amounts, not the displayed per-pool values:
+The table compares the existing, unnormalized reward calculation with this CIP, including an optional reduction in $\rho$ from 0.003 to 0.002. With fees omitted and other inputs fixed, reducing $\rho$ by one third reduces the gross reserve draw from 21M to 14M ADA, treasury inflow from 4.2M to 2.8M ADA, and the post-treasury pot $R$ from 16.8M to 11.2M ADA. The normalization weights do not depend on $\rho$, so each pool's Dynamic Rewards payment scales by $2/3$ at the same k.
 
-| Quantity | Existing calculation, k = 500 | Existing calculation, k = 1,000 | Dynamic Rewards, k = 500 | Dynamic Rewards, k = 1,000 |
-| --- | ---: | ---: | ---: | ---: |
-| Reward for one large pool | 25,953.85 | 13,030.77 | 49,698.85 | 30,862.35 |
-| Reward for one medium pool | 7,194.17 | 7,209.07 | 13,776.08 | 17,074.11 |
-| Reward for one small pool | 718.23 | 718.52 | 1,375.34 | 1,701.75 |
-| Total pool rewards | 6,765,874.35 | 5,480,038.41 | 12,955,929.60 | 12,979,038.35 |
-| Remaining portion of $R$ returned to reserves | 10,034,125.65 | 11,319,961.59 | 3,844,070.40 | 3,820,961.65 |
+Amounts are ADA per epoch, before coin rounding and account allocation, displayed to two decimal places. Network totals are calculated from unrounded amounts, not the displayed per-pool values. With no fees, net reserve depletion equals treasury inflow plus total pool rewards, or equivalently the gross reserve draw minus the portion of $R$ returned to reserves:
+
+| Quantity | Existing calculation, k = 500 | Existing calculation, k = 1,000 | Dynamic Rewards, k = 500 | Dynamic Rewards, k = 1,000 | Dynamic Rewards, lower Rho, k = 500 | Dynamic Rewards, lower Rho, k = 1,000 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| $\rho$ | 0.003 | 0.003 | 0.003 | 0.003 | 0.002 | 0.002 |
+| Reward for one large pool | 25,953.85 | 13,030.77 | 49,698.85 | 30,862.35 | 33,132.57 | 20,574.90 |
+| Reward for one medium pool | 7,194.17 | 7,209.07 | 13,776.08 | 17,074.11 | 9,184.05 | 11,382.74 |
+| Reward for one small pool | 718.23 | 718.52 | 1,375.34 | 1,701.75 | 916.89 | 1,134.50 |
+| Total pool rewards | 6,765,874.35 | 5,480,038.41 | 12,955,929.60 | 12,979,038.35 | 8,637,286.40 | 8,652,692.23 |
+| Treasury inflow | 4,200,000.00 | 4,200,000.00 | 4,200,000.00 | 4,200,000.00 | 2,800,000.00 | 2,800,000.00 |
+| Remaining portion of $R$ returned to reserves | 10,034,125.65 | 11,319,961.59 | 3,844,070.40 | 3,820,961.65 | 2,562,713.60 | 2,547,307.77 |
+| Net reserve depletion | 10,965,874.35 | 9,680,038.41 | 17,155,929.60 | 17,179,038.35 | 11,437,286.40 | 11,452,692.23 |
 
 For example, a medium pool's capped stake remains 20 million ADA. Its share of reward capacity rises from $20\mathrm{M}/18.8\mathrm{B}$ to $20\mathrm{M}/15.2\mathrm{B}$, so it receives a larger share of the same pot under Dynamic Rewards. The large pools remain eligible through their below-cap portions, but their capped weights fall relative to the other pools. Their full 100 million ADA per pool still contributes to leader election and shares the resulting pool payment under the existing allocation rules.
 
-Under the existing calculation, tightening the cap increases the return to reserves by about 1.29 million ADA per epoch in this scenario. Under Dynamic Rewards, the medium and small pools instead receive substantially more, while total pool rewards remain around 13 million ADA. The remaining approximately 3.8 million ADA is attributable to the recipients' retained pledge-dependent reductions. The small difference in total payouts between the two Dynamic Rewards columns arises because changing k also changes $z_0$ in the retained pledge expression; this CIP does not fix total payouts at a predetermined amount. With $a_0=0$, Dynamic Rewards would allocate the entire 16.8 million ADA before rounding in both cases.
+Under the existing calculation, tightening the saturation cap increases the return to reserves by about 1.29 million ADA per epoch in this scenario. Under Dynamic Rewards with $\rho=0.003$, the medium and small pools instead receive substantially more, while total pool rewards remain around 13 million ADA. The remaining approximately 3.8 million ADA is attributable to the recipients' retained pledge-dependent reductions. The small difference in total payouts between the k settings at a fixed $\rho$ arises because changing k also changes $z_0$ in the retained pledge expression.
+
+The lower-Rho columns use the original existing-calculation case at k = 500 as the net-emissions benchmark. At $\rho=0.002$, Dynamic Rewards depletes reserves by approximately 11.44M ADA at k = 500 and 11.45M ADA at k = 1,000, compared with the original 10.97M ADA: about 4.30% and 4.44% more, respectively. Without the Rho reduction, the increases would be about 56.45% and 56.66%. Thus 0.002 is a rounded illustrative choice that keeps net reserve depletion roughly, rather than exactly, at the original level.
+
+Keeping net reserve depletion similar does not keep the treasury/pool split unchanged. The lower Rho reduces treasury inflow to 2.8M ADA, while pool rewards rise to approximately 8.64M or 8.65M ADA. The relative redistribution toward less-constrained pools remains. These columns illustrate an optional, separate parameter change decision for DReps to make.
 
 A tighter CIP-50 L can produce the same redistribution mechanism without changing k. In this same hypothetical network, hold k at 500 and reduce L from 72 to 36. The large pools' capped stake falls from 72M to 36M ADA; the medium pools' capped stake falls from 20M to 18M ADA; and the small pools remain at 2M ADA. Total capped stake falls from 18.8B to 14.4B ADA. Using the retained global $z_0=1/500$, a small pool's Dynamic Rewards payment rises from 1,375.34 to 1,795.58 ADA per epoch, while a large pool's payment falls from 49,698.85 to 32,440.44 ADA. This illustrates why redistribution depends on each pool's stake and pledge: a change to L need not affect the same pools, or produce the same payouts, as a change to k.
 
