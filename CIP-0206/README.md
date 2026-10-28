@@ -67,11 +67,11 @@ pq_signature  = pq_object       ; kind 0x02
 ### Builtin signatures
 
 ```
-verifyMlDsaSignature  :: pq_public_key -> message -> pq_signature -> bool
-verifySlhDsaSignature :: pq_public_key -> message -> pq_signature -> bool
+verifyMlDsaSignature  :: bytestring -> bytestring -> bytestring -> bool
+verifySlhDsaSignature :: bytestring -> bytestring -> bytestring -> bool
 ```
 
-A builtin returns false on a well formed object whose signature does not verify, and fails evaluation on a malformed object, matching the behaviour of the existing Ed25519 builtin.
+The arguments are the public key, the message, and the signature. Every argument is a bytestring and the result is a bool, so no new UPLC type is introduced, matching the existing verifyEd25519Signature. The key and signature bytestrings carry the versioned object described above. A builtin returns false on a well formed object whose signature does not verify, and fails evaluation on a malformed object.
 
 ### Test vectors
 
