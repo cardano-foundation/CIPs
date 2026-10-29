@@ -46,7 +46,7 @@ verified UAL 0.5 example are retained as prototype compatibility fixtures.
 
 The new game example preserves the previously compiled game bytes and recomputes
 its blueprint-document binding after migrating the metadata. It carries no
-verification evidence: its environment is illustrative. The UAL 0.6-draft
+verification evidence: its environment is illustrative. The UAL 1.0
 implementation requires a freshly captured environment and currently supports the
 Data/native, universal-parameter, CEK-step subset of this draft. The old game example and the previously completed
 verification remain separate.

@@ -22,7 +22,7 @@
     "ual": {
       "name": "Universal Annotation Language",
       "description": "Property specification language used by Blaster.",
-      "version": "0.6-draft",
+      "version": "1.0",
       "uri": "https://github.com/input-output-hk/UniversalAnnotationLanguage"
     }
   },

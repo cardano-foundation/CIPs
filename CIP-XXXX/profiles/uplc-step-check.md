@@ -2,7 +2,7 @@
 
 Proposed identifier:
 `https://cips.cardano.org/cips/cipXXXX/profiles/uplc-step-check/v1`.
-This is an editor-discussion draft. The UAL 0.6-draft implementation supports
+This is an editor-discussion draft. The UAL 1.0 implementation supports
 Data/native schemas, universal or fully applied parameters and evaluation under CEK step bounds.
 Scott and ledger-cost checking are explicit
 unsupported cases. The illustrative CIP examples need a freshly captured checking
@@ -42,8 +42,10 @@ A checking run MUST perform the following steps before reporting a result:
    for the property, with only runtime arguments remaining in its wrapper.
    Failure to establish a required binding is not a successful check. This draft
    does not define a partial-application deployment record.
-8. Elaborate only the property's declared fragment closure. Reject local axioms
-   and admitted dependencies. Check that the proposition refers to every scoped
+8. Elaborate only the property's declared fragment closure. The initial implementation
+   allows plain `def`/`abbrev` declarations and documentation comments, rejecting
+   attributes and other declaration modifiers. Audit the elaborated declarations
+   and checker registrations. Reject local axioms and admitted dependencies. Check that the proposition refers to every scoped
    compiled program, while recognizing that this cannot establish semantic
    relevance or rule out a vacuous proposition. Documentary assumptions are not
    silently injected as axioms.
@@ -76,7 +78,7 @@ the theorem-checking, term-decoding or parameter-application steps above.
 - Implement and test a Scott encoder only for the exact declared profile; reject
   unsupported profiles instead of coercing to Data.
 - Bind UAL wrapper generation to a selected checking context and bump the UAL
-  checking-profile version. The example's `0.6-draft` is not a released version.
+  language version. The examples use the released UAL `1.0` language; this checking profile remains a draft.
 - Extend the checker and evidence producer for context hashes and applied hashes.
 - Preserve the old UAL 0.5 fixtures and their recorded verification results.
 
@@ -115,11 +117,12 @@ also requires each proposition to depend on every scoped compiled program;
 this syntactic dependency test is not a proof of semantic relevance.
 
 Environment capture and verification must import the same ledger/model modules.
-The Auction example uses `CardanoLedgerApi.Examples.Auction`, with typed V3
-context constructors adapted from upstream commit
+The Auction example exports its detached `FormalSpec.hs` definitions as
+assurance fragments using `CardanoLedgerApi.V3`. Its typed context scenarios
+are adapted from upstream commit
 `9938562fd452351655fe2f6b63e583c62422687c`. The verified scenarios are deliberately
-bounded transaction shapes, not the entire upstream security audit or ledger
-transaction validity. Separately compiled helper claims do not establish
+bounded transaction shapes and cover the upstream theorem statements; they
+do not establish complete ledger transaction validity. Separately compiled helper claims do not establish
 compiler optimization equivalence.
 
 Function checking targets also carry `functionInterface`, an exact copy of the
