@@ -1,6 +1,6 @@
 ---
 CIP: 206
-Title: Post-Quantum Signature Verification Builtins
+Title: ML-DSA and SLH-DSA Signature Verification Builtins
 Category: Plutus
 Status: Proposed
 Authors:
@@ -101,6 +101,14 @@ The sizes below are fixed by the standards. The verification times are from a Ja
 | SLH-DSA-SHA2-128s | 32 B | 7856 B | about 0.92 ms |
 
 SLH-DSA has the smallest key and the largest signature, and ML-DSA has the opposite balance, which is why both are offered. Final costing against the Plutus cost model needs native benchmarks and is left to implementation.
+
+### Cost scaling
+
+Per CIP-0035, the cost shape for each builtin is as follows. Verification cost is constant in the public key size and the signature size, which are fixed per scheme in the table above, and linear in the message length. This is the same shape as the Ed25519 builtin and the ECDSA and Schnorr builtins in CIP-0049, so the existing costing approach applies and the only new inputs are the per scheme constants from the native benchmark.
+
+The signatures are larger than the pre quantum builtins. ML-DSA-65 at 3309 bytes and SLH-DSA-SHA2-128s at 7856 bytes take a real share of the 16 kB transaction limit, so a witness of that size leaves less room for other data. ML-DSA is the smaller signature lattice option and SLH-DSA is the hash based fallback on a different hardness assumption. An implementation can take the smaller parameter sets first where size is the binding constraint. Raising block and transaction limits is a separate consensus change outside this CIP, and the Praos block rate is fixed.
+
+The versioned encoding stays quantum agile. A new scheme is a new identifier with its own builtin name and no second format break.
 
 ### Why a versioned encoding
 
