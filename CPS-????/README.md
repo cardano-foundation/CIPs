@@ -9,7 +9,7 @@ Proposed Solutions: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1310
   - Data Availability Technical Workshop, 3 September 2026 
-Created: 2026-29-10
+Created: 2026-10-29
 License: CC-BY-4.0
 ---
 
