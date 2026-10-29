@@ -9,3 +9,10 @@ Schema                                                               | Descripti
 [plutus-blueprint-parameter.json](./plutus-blueprint-parameter.json) | The meta-schema for blueprints compile-time parameters
 [plutus-data.json](./plutus-data.json)                               | Definitions of the _Plutus Data Schema_ and the various supported keywords
 [plutus-builtin.json](./plutus-builtin.json)                         | Definitions of the Untyped Plutus Core builtin types
+
+## Proposed extension (not part of the active dialect)
+
+The [compiled-interface draft](../extensions/compiled-interface) has separate
+[blueprint](../extensions/compiled-interface/schemas/blueprint.json) and
+[value](../extensions/compiled-interface/schemas/value-schema.json) meta-schemas.
+Their proposed versioned identifiers do not change the existing schemas above.
