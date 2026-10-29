@@ -8,7 +8,7 @@ Authors:
 Implementors:
     - Smit Blockchain Operations (BKIND) <https://smitblockchainops.nl>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1311
 Created: 2026-10-29
 License: CC-BY-4.0
 ---
