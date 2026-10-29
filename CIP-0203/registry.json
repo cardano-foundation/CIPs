@@ -1,0 +1,26 @@
+[
+  {
+    "scheme": 0,
+    "id": 67,
+    "name": "Gerolamo",
+    "status": "active",
+    "maintainers": [],
+    "repository": "https://github.com/HarmonicLabs/gerolamo",
+    "payload_specification": null,
+    "registered": "2026-09-21",
+    "retired": null,
+    "description": "TypeScript implementation of the Cardano node."
+  },
+  {
+    "scheme": 0,
+    "id": 69,
+    "name": "Dingo",
+    "status": "active",
+    "maintainers": [],
+    "repository": "https://github.com/blinklabs-io/dingo",
+    "payload_specification": null,
+    "registered": "2026-09-21",
+    "retired": null,
+    "description": "Go implementation of the Cardano node."
+  }
+]
