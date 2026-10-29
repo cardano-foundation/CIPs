@@ -154,8 +154,6 @@ The goals of this CPS are derived from requirements stated in the Data Availabil
 6. How much time does it take for the submitted data to become publicly available?
 
 
-## References 
-
 ## References
 
 - **[1]** Data Availability Technical Workshop. IO Research, 3 September 2026. Requirements gathered from multiple layer 2 projects. [Recording](https://drive.google.com/file/d/1iVEuNebQcVMIlWpO_8GcszGMJigMIGIB/view?referrer=luma). 
