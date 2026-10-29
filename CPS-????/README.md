@@ -1,5 +1,5 @@
 ---
-CPS: ?
+CPS: "?"
 Title: Layer 1 Data Availability
 Category: Ledger
 Status: Open
