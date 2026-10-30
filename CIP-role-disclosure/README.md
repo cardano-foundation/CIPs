@@ -9,6 +9,8 @@ Implementors:
     - Smit Blockchain Operations (BKIND) <https://smitblockchainops.nl>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1311
+Solution To:
+    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2026-10-29
 License: CC-BY-4.0
 ---
@@ -53,48 +55,60 @@ in RFC 2119.
 
 ### Role URIs
 
-A role is named by a URI under the `web+cardano:` scheme of CIP-0013, which
-allows other CIPs to define further keywords. This CIP defines `drep` and
-`cc` and reuses `stake`:
+A role is named by a URI under the `web+cardano:` scheme of CIP-0013. CPS-0016
+registers the authorities of that scheme and requires an extension to use a
+new, unique authority. This CIP uses two:
+
+1. `addr`, registered by CIP-0134, for a DRep credential and for a
+   Constitutional Committee cold credential, in their CIP-0129 bech32 form.
+2. `pool`, registered by this CIP, for a stake pool, in the bech32 form of
+   CIP-0005 (prefix `pool`, the 28-byte pool ID).
+
+The `stake` authority of CIP-0013 and the `drep` authority of CIP-0162 are
+instructions to a wallet to delegate. They are not role URIs, and a tool MUST
+NOT read them as declarations.
 
 ```abnf
-roleuri   = "web+cardano://" ( stakerole / dreprole / ccrole )
-stakerole = "stake?" poolhexid
-dreprole  = "drep?" drepid
-ccrole    = "cc?" ccid
-poolhexid = 56LOWERHEX
-drepid    = %x64.72.65.70.31 1*BECH32CHAR
-ccid      = %x63.63.5F.63.6F.6C.64.31 1*BECH32CHAR
-LOWERHEX  = %x30-39 / %x61-66
+roleuri    = "web+cardano://" ( poolrole / dreprole / ccrole )
+poolrole   = "pool/" poolid
+dreprole   = "addr/" drepid
+ccrole     = "addr/" ccid
+poolid     = %x70.6F.6F.6C.31 1*BECH32CHAR
+drepid     = %x64.72.65.70.31 1*BECH32CHAR
+ccid       = %x63.63.5F.63.6F.6C.64.31 1*BECH32CHAR
 BECH32CHAR = %x30 / %x32-39 / %x61 / %x63-68 / %x6A-6E / %x70-7A
 ```
 
 Quoted strings in ABNF are case-insensitive, so the identifiers are given as
-code points: `drepid` begins with the bytes of `drep1`, `ccid` with those of
-`cc_cold1`, and `BECH32CHAR` is the bech32 alphabet in lowercase.
+code points: `poolid` begins with the bytes of `pool1`, `drepid` with those
+of `drep1`, `ccid` with those of `cc_cold1`, and `BECH32CHAR` is the bech32
+alphabet in lowercase.
 
-1. `poolhexid` is the 28-byte pool ID (the blake2b-224 hash of the cold
-   verification key) in lowercase hex, the single pool form of CIP-0013. The
-   ticker form of CIP-0013 is not a role, because a ticker is not unique.
+1. `poolid` is the bech32 of the 28-byte pool ID (the blake2b-224 hash of
+   the cold verification key) with prefix `pool`, as CIP-0005 defines it.
+   The checksum MUST be valid and the payload MUST be 28 bytes.
 2. `drepid` is a CIP-0129 DRep identifier: bech32 with prefix `drep`, payload
    one header byte (`0x22` key hash, `0x23` script hash) and the 28-byte
    credential hash. `ccid` is a CIP-0129 cold credential: prefix `cc_cold`,
    header `0x12` or `0x13`, and the 28-byte hash. The checksum MUST be valid,
    the payload MUST be 29 bytes, and the header byte MUST be one of the two
-   values given for the keyword. Any other header byte names a credential
+   values given for the prefix. Any other header byte names a credential
    this CIP does not define, and the reference is invalid.
-3. The scheme and the keyword are case-insensitive. The identifier is
+3. CIP-0134 admits other strings under `addr`, among them the CIP-0105 forms
+   with prefixes `drep_vk`, `drep_script`, `cc_cold_vk` and `cc_cold_script`.
+   Those are not role URIs: a credential has one role URI, the CIP-0129 form,
+   so that two documents that name the same credential name it the same way.
+4. The scheme and the authority are case-insensitive. The identifier is
    lowercase, as the grammar says: an uppercase or mixed-case identifier is
-   invalid. CIP-0013 allows either case for the hex pool ID (`56HEXDIG`);
-   the role form is stricter, so that the grammar alone decides. A tool MUST
-   compare roles by the decoded credential, never by the URI string.
+   invalid. A tool MUST compare roles by the decoded credential, never by the
+   URI string.
 
 Examples:
 
 ```
-web+cardano://stake?d9e2d181dfe21ab2ca7e95847b9a219e691ee1366d22569712390655
-web+cardano://drep?drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4eq
-web+cardano://cc?cc_cold1zgf5jdusmxcrfqapu8ngf6j04u0wfzjc7sp9wnnlyfr0f4q68as9w
+web+cardano://pool/pool1m83drqwlugdt9jn7jkz8hx3pne53acfkd539d9cj8yr92dr4k9y
+web+cardano://addr/drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4eq
+web+cardano://addr/cc_cold1zgf5jdusmxcrfqapu8ngf6j04u0wfzjc7sp9wnnlyfr0f4q68as9w
 ```
 
 ### The `Role` reference
@@ -105,16 +119,18 @@ A declaration is an entry in a `references` list:
 {
   "@type": "Role",
   "label": "Stake pool BKIND, operated by this DRep",
-  "uri": "web+cardano://stake?d9e2d181dfe21ab2ca7e95847b9a219e691ee1366d22569712390655"
+  "uri": "web+cardano://pool/pool1m83drqwlugdt9jn7jkz8hx3pne53acfkd539d9cj8yr92dr4k9y"
 }
 ```
 
-1. `@type` MUST be `Role` and `uri` MUST be a role URI.
+1. `@type` MUST be `Role` and `uri` MUST be a role URI. In a CIP-119
+   document the term `Role` is defined by the context of this CIP, see
+   "Context and schema" below.
 2. `label` MUST be present and MUST NOT be empty or consist of whitespace
    only, and SHOULD say in words which role it is. Tools MUST NOT derive
    anything from it. A reference with a missing, empty or whitespace-only
-   label is invalid and MUST be ignored when determining declarations. A tool SHOULD report
-   the defect.
+   label is invalid and MUST be ignored when determining declarations. A tool
+   SHOULD report the defect.
 3. A `Role` reference declares that the person or entity that controls the
    credential the document belongs to also controls the credential in the
    URI. A reference to a role held by someone else MUST NOT use this type.
@@ -123,17 +139,20 @@ A declaration is an entry in a `references` list:
 
 ### Where a declaration lives
 
-A declaration lives in a document whose hash a certificate carries, so that
-every change is a signed transaction with a place in the chain's history.
+A declaration lives in a document whose hash a certificate carries. Every
+version has its hash anchored in a certificate contained in a transaction
+authorized by the declaring credential, with a place in the chain's history.
 
-1. **DRep**: in the CIP-119 document, in `body.references`. A DRep MAY
-   declare stake pools (`stake`) and Constitutional Committee cold
-   credentials (`cc`).
+1. **DRep**: in the CIP-119 document, in `body.references`, the list that
+   CIP-100 and CIP-119 already define. A DRep MAY declare stake pools
+   (`pool`) and Constitutional Committee cold credentials (`addr` with a
+   `cc_cold1` identifier). Nothing else in the document changes.
 2. **Stake pool**: in the registered pool metadata document, the file whose
-   hash is in the registration certificate, as a top-level key `references`
-   with the same entries. A pool MAY declare DReps (`drep`) and cold
-   credentials (`cc`). The registered pool metadata format limits the
-   document to 512 bytes. The Appendix has a complete example of 296 bytes.
+   hash is in the registration certificate. That format has no `references`
+   field in its specification, so the declaration is a top-level key `references` holding a list
+   with the same entries. A pool MAY declare DReps and cold credentials
+   (`addr`). The registered pool metadata format limits the document to 512
+   bytes. The Appendix has a complete example of 296 bytes.
 3. **Constitutional Committee**: a committee credential has no document of
    its own. A member who is also a DRep or a pool operator declares the
    committee role from that side.
@@ -144,10 +163,11 @@ CIP-0006 is not a place for a declaration, see the Rationale.
 
 ### Versioning
 
-The meaning of `Role` and the three URI forms are fixed by this CIP. A change
-to either requires a new CIP that supersedes this one. Another CIP MAY add a
-keyword for a new kind of governance credential under the extension rule of
-CIP-0013. A tool treats a keyword it does not know as invalid.
+The meaning of `Role`, the `pool` authority and the use of `addr` for the two
+credential forms are fixed by this CIP. A change to any of them requires a
+new CIP that supersedes this one. A new kind of governance credential needs
+a new CIP under CPS-0016. A tool treats an authority or an identifier form it
+does not know as invalid.
 
 ### How a tool reads declarations
 
@@ -175,7 +195,7 @@ status is one of:
    hash on chain, and the content conforms: for a pool a JSON object, for a
    DRep a JSON object whose `body` is an object, the CIP-100 structure that
    CIP-119 builds on. An object with a duplicate key does not conform.
-   Declarations follow from the JSON structure; JSON-LD expansion or the
+   Declarations follow from the JSON structure. JSON-LD expansion or the
    `@context` does not change which references count.
 2. **no anchor**: the latest certificate carries no metadata.
 3. **unreachable**: the tool tried to fetch the document and could not.
@@ -221,31 +241,43 @@ a **former** member.
 Whether a disclosure was in place when an earlier vote was cast is out of
 scope. A tool reads the latest documents.
 
-### Changes to CIP-0119 and CIP-0013
+### Context and schema
 
-The JSON schema of CIP-0119 (`cip-0119.common.schema.json`) gains `Role` in
-the enum of `@type` of a reference, next to `GovernanceMetadata`, `Other`,
-`Link` and `Identity`. The context file (`cip-0119.common.jsonld`) gains the
-term `"Role": "CIP119:RoleReference"` in the context of `references`. That
-file defines `GovernanceMetadata` and `Other` today and not `Link` and
-`Identity`, so a document defines the terms it uses in its own `@context`,
-as the document in the Appendix does. The term lives in the namespace of
-CIP-119 because it is a reference type of CIP-119 metadata, so a document
-needs no reference to this CIP to use it. CIP-0013 registers the keywords
-`drep` and `cc` next to `stake`.
+This CIP defines its terms in its own namespace, as CIP-0136 does for its
+reference type, and changes neither CIP-0100, CIP-0119 nor CIP-0013.
+
+1. The prefix `CIPxxxx` (the number of this CIP once assigned) expands to
+   `https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#`.
+2. The term `Role` is `CIPxxxx:RoleReference`, declared inside the context
+   of `references` of a CIP-119 document, next to the CIP-100 terms. The
+   Appendix shows a complete document.
+3. This CIP ships `cip-xxxx.common.jsonld` with that context and
+   `cip-xxxx.common.schema.json`, a `reference` definition whose `@type`
+   enum holds `Role`, for validators that want to accept it. Both files are
+   added to the CIP directory once the number is assigned. The Appendix
+   shows their content.
+4. Registered pool metadata is plain JSON without a context. There the value
+   `Role` of `@type` is defined by this text.
+
+The `pool` authority is registered under CPS-0016 by this CIP.
 
 ### Backward compatibility
 
 A tool that validates DRep metadata against the current CIP-119 schema
-rejects a document with a `Role` reference until the schema change is
-adopted, and what it then shows depends on the tool. A tool that reads
+rejects a document with a `Role` reference until it also accepts the schema
+of this CIP, and what it then shows depends on the tool. A tool that reads
 `references` without validating `@type` can show a `Role` reference as it
-shows any reference, or ignore it. A key beyond the four of the delegation
-specification at the top level of registered pool metadata is existing
-practice, not a novelty of this CIP: at block 14130891 (epoch 664), of the
-1,986 registered pools whose document matches the hash in their certificate,
-1,074 carry such a key, 993 of them a key named `extended`, read from
-db-sync and from the documents at their registered addresses.
+shows any reference, or ignore it.
+
+A key beyond the four of the delegation specification at the top level of
+registered pool metadata is existing practice, not a novelty of this CIP: at
+block 14130891 (epoch 664), of the 1,986 registered pools whose document
+matches the hash in their certificate, 1,074 carry such a key, 993 of them a
+key named `extended`, read from db-sync and from the documents at their
+registered addresses. The registration certificate carries the metadata URL
+and hash. The ledger does not parse the JSON document. cardano-db-sync parses
+the four fields and ignores other keys.
+
 Whether a given wallet or explorer tolerates one more key is that tool's
 behavior, and a pool MUST keep its document within 512 bytes, for example
 with compact JSON and shorter free text, or omit the declaration.
@@ -261,19 +293,37 @@ Constitution asks for a disclosure. This CIP gives it a form a program can
 read and leaves truth and completeness with the holder.
 
 **References and URIs.** CIP-119 already has `references` with a type, a
-label and a URI, and explorers already read it. A new type costs one enum
-value and reaches readers through tools that exist today. A URI says what
-kind of credential it names, and CIP-0013 already defines the pool form and
-invites other keywords. Only the hex pool ID is a role, because a ticker can
-be shared and can change.
+label and a URI, and explorers already read it. A new type in this CIP's own
+namespace reaches readers through tools that exist today and changes no other
+CIP. CIP-0134 already gives a DRep and a committee credential a URI form, so
+this CIP reuses it. A pool had no such form: the `stake` authority of
+CIP-0013 and the `drep` authority of CIP-0162 are delegation instructions for
+a wallet, and a declaration must not be one. Hence the `pool` authority.
+Only the pool ID is a role, because a ticker can be shared and can change.
 
 **Only certificate-anchored documents.** Every version of the DRep document
-and of the registered pool document is a signed transaction at a known place
-in the chain. The extended pool metadata of CIP-0006 can be signed with a key
+and of the registered pool document has its hash anchored in a certificate
+contained in a transaction authorized by the declaring credential, at a known
+place in the chain. The extended pool metadata of CIP-0006 can be signed with a key
 published in the main document, which proves who wrote it, but it can be
 replaced by the same key without a transaction, so a reader cannot tell which
 version was in force when. For a disclosure the Constitution ties to "before
 engaging", the history matters.
+
+**Why reciprocity and not a signature.** A declaration could carry a
+signature by the other credential over a nonce, so that one document proves
+the link. A bare signature that can be verified against the credential hash
+alone works only for key credentials. Native multisig and Plutus credentials
+require script-specific evidence and witnesses, so one uniform signature
+field cannot serve every credential. Five of the seven current committee cold
+credentials are scripts, and so is the DRep of the Cardano Foundation. Used
+as the sole proof mechanism, a signature would exclude script DReps and would
+not cover most committee members. Registration and update certificates
+support both key and script credentials, which is why the CIP keeps
+certificate-anchored declarations and reciprocity. For a committee credential
+there is no metadata certificate, so the CIP claims no reciprocal proof
+there: that relation stays one-sided. An optional signature proof for key
+credentials can be defined in a later CIP.
 
 **Status before relation, and current before former.** A missing or broken
 document says nothing about what its holder declares, so it gives "unknown"
@@ -289,7 +339,10 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
 
 1. A `Role` reference is a claim authorized by one credential about another.
    Tools MUST NOT present it as acknowledged by the other credential unless
-   that credential's own valid document names it back.
+   that credential's own valid document names it back. A false claim by one
+   side is therefore visible as what it is: "declared by" that side when
+   both documents are valid, and "unknown" when the other document is not,
+   never a confirmation.
 2. The credentials are public on chain, but the link between them is new
    information: it connects the stake, the votes and the committee decisions
    of one holder. Declaring a role is a deliberate public disclosure, which is
@@ -302,9 +355,9 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
 
 ### Acceptance Criteria
 
-1. [ ] The `Role` type is in the CIP-0119 context and schema, and the `drep`
-       and `cc` keywords are registered in CIP-0013, or those CIPs refer to
-       this one.
+1. [ ] The context and schema files of this CIP are published with it, and
+       at least one public CIP-119 validator accepts a document that uses
+       them.
 2. [ ] At least two independent public tools read declarations over every
        pool and DRep on mainnet and show document status and relation for
        the pools and DReps they list.
@@ -319,24 +372,33 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
        `2a41fdeebcd1432e0feb12c68af612c4e2cbd0004a2ee785619d9e6058bd9c3e`,
        transaction
        `9593900f25cdb6310cb76761ec3e228e0ac9b8a8563c6bc454785a9c6e9dfc8e`,
-       2026-10-29.
+       2026-10-29. It uses the URI forms of the first draft and will be
+       updated to the forms of this text once the number is assigned.
 2. [x] The pool metadata of BKIND carries a `Role` reference to the DRep,
        the first reciprocal pair: metadata hash
        `f9de5aa69eca5319d5c81f74023f7c84003e9d6bfbc80b6ca64ed526168b35b3`,
        transaction
        `994936264446dc53873dfc6cdbe504c4faec13e13d039eea418d1e04ef3b7e4d`,
-       2026-10-29.
+       2026-10-29. Same remark.
 3. [x] The DRep list and pool list of smitblockchainops.nl read declarations
        over every pool and DRep on mainnet and show document status and
        relation for the pools and DReps they list, since 2026-10-29, as the
        first tool.
+4. [ ] The open source registration tools spo-tools and drep-tools of the
+       author get a `Role` field, so that any operator adds the declaration
+       from the tool that builds the registration.
+5. [ ] Once the number is assigned: the DRep metadata and the pool metadata
+       of BKIND move to the URI forms and the context of this text, the
+       context and schema files are added to the CIP directory, and the
+       proposal is brought to the SPO and DRep working groups and to the
+       Cardano Forum.
 
 ## Appendix
 
 ### A pool metadata document with a declaration (296 bytes)
 
 ```json
-{"name":"Smit Blockchain Operations","ticker":"BKIND","homepage":"https://smitblockchainops.nl","description":"The trustworthy Cardano Stake Pool","references":[{"@type":"Role","label":"DRep of the operator","uri":"web+cardano://drep?drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4eq"}]}
+{"name":"Smit Blockchain Operations","ticker":"BKIND","homepage":"https://smitblockchainops.nl","description":"The trustworthy Cardano Stake Pool","references":[{"@type":"Role","label":"DRep of the operator","uri":"web+cardano://addr/drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4eq"}]}
 ```
 
 ### A DRep metadata document with declarations
@@ -346,6 +408,7 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
   "@context": {
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
+    "CIPxxxx": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
       "@id": "CIP119:body",
@@ -358,7 +421,7 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
             "Other": "CIP100:OtherReference",
             "Link": "CIP119:LinkReference",
             "Identity": "CIP119:IdentityReference",
-            "Role": "CIP119:RoleReference",
+            "Role": "CIPxxxx:RoleReference",
             "label": "CIP100:reference-label",
             "uri": "CIP100:reference-uri"
           }
@@ -385,9 +448,37 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
       {
         "@type": "Role",
         "label": "Stake pool BKIND, operated by this DRep",
-        "uri": "web+cardano://stake?d9e2d181dfe21ab2ca7e95847b9a219e691ee1366d22569712390655"
+        "uri": "web+cardano://pool/pool1m83drqwlugdt9jn7jkz8hx3pne53acfkd539d9cj8yr92dr4k9y"
       }
     ]
+  }
+}
+```
+
+### The context file of this CIP
+
+```json
+{
+  "@context": {
+    "CIPxxxx": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#",
+    "Role": "CIPxxxx:RoleReference"
+  }
+}
+```
+
+### The schema fragment of this CIP
+
+```json
+{
+  "reference": {
+    "title": "Reference",
+    "type": "object",
+    "required": ["@type", "label", "uri"],
+    "properties": {
+      "@type": {"type": "string", "enum": ["GovernanceMetadata", "Other", "Link", "Identity", "Role"]},
+      "label": {"type": "string", "minLength": 1},
+      "uri": {"type": "string"}
+    }
   }
 }
 ```
@@ -407,12 +498,15 @@ Each vector gives what a tool sees and what it MUST report.
    unreachable, hash mismatch, no anchor or not fetched, relation unknown,
    even if the bytes served declare P.
 5. **Invalid URI.** A `Role` reference with
-   `web+cardano://drep?drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4ex`
+   `web+cardano://addr/drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4ex`
    (last character changed, checksum fails), or with
-   `web+cardano://stake?BKIND` (a ticker), or with an identifier in uppercase
-   or mixed case, or with a label of spaces only. Result: invalid, ignored.
-   The same reference in an object that carries the key `uri` twice: the
-   document is invalid, relation unknown.
+   `web+cardano://pool/BKIND` (a ticker), or with
+   `web+cardano://stake?d9e2d181dfe21ab2ca7e95847b9a219e691ee1366d22569712390655`
+   (a delegation instruction, not a role URI), or with
+   `web+cardano://addr/drep_vk1...` (a CIP-0105 form), or with an identifier
+   in uppercase or mixed case, or with a label of spaces only. Result:
+   invalid, ignored. The same reference in an object that carries the key
+   `uri` twice: the document is invalid, relation unknown.
 6. **Wrong direction.** A DRep document with a `Role` reference to a `drep`
    URI. Result: invalid, ignored.
 7. **Retired pool.** D declares pool P, and P's retirement epoch is the
@@ -421,7 +515,7 @@ Each vector gives what a tool sees and what it MUST report.
    block, P is not retired and the reference is valid. A committee member
    whose expiration epoch is the reading epoch is still current.
 8. **Former member.** D declares
-   `web+cardano://cc?cc_cold1ztwq6mh5jkgwk6yq559qptw7zavkumtk7u2e2uh6rlu972slkt0rz`,
+   `web+cardano://addr/cc_cold1ztwq6mh5jkgwk6yq559qptw7zavkumtk7u2e2uh6rlu972slkt0rz`,
    whose term ended in epoch 653. Reading in epoch 664: declared, former
    member.
 
