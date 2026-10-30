@@ -315,7 +315,7 @@ Price hints are an endpoint. A service cannot negotiate with an offer that is al
 
 `/interest` is made up of the accept and reject sides of the profile. A service advertising an interest is expected to honour it. See [Routing and filtering] for when each part of a filter applies.
 
-Nothing on this binding relays, so an offer reaches exactly the services its publisher sends it to.
+Nothing on this binding is expected to relay, so an offer should only be assumed to reach the services its publisher explicitly sends it to.
 
 **Encoding**
 
