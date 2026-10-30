@@ -384,14 +384,9 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
        over every pool and DRep on mainnet and show document status and
        relation for the pools and DReps they list, since 2026-10-29, as the
        first tool.
-4. [ ] The open source registration tools spo-tools and drep-tools of the
-       author get a `Role` field, so that any operator adds the declaration
-       from the tool that builds the registration.
-5. [ ] Once the number is assigned: the DRep metadata and the pool metadata
-       of BKIND move to the URI forms and the context of this text, the
-       context and schema files are added to the CIP directory, and the
-       proposal is brought to the SPO and DRep working groups and to the
-       Cardano Forum.
+4. [ ] Once the number is assigned: the DRep metadata and the pool metadata
+       of BKIND move to the URI forms and the context of this text, and the
+       context and schema files are added to the CIP directory.
 
 ## Appendix
 
