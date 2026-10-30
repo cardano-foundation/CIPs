@@ -27,10 +27,15 @@ constraint is included in that sub-transaction as a required top-level
 guard, ensuring on-chain that the client's intent is satisfied by the constructed 
 transaction.
 
+The protocol design we propose here is an adaptation to the Dijkstra era of Cardano 
+the Cavefish protocol described here :
+[Cavefish: Communication-Optimal Light Client Protocol for UTxO Ledgers](https://eprint.iacr.org/2026/217),
 The base variant of the protocol is executed fully in plaintext, allowing the client 
 to inspect the transaction body. A further variant is proposed that uses cryptographic 
 techniques to make it more difficult for the client to force the service provider 
-to perform unpaid computation.
+to perform unpaid computation. 
+which gives the two-party light-client/service-provider construction and
+the predicate blind signatures the blind variant rests on.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -1010,7 +1015,8 @@ satisfies unless it reads the registry, which is the discovery problem
   source of sub-transactions, guards, required top-level guards, and
   `NoOverlappingSpendInputs`, on which the multi-SP signing rule depends.
 - *Cavefish: Communication-Optimal Light Client Protocol for UTxO Ledgers*.
-  Preprint, 2026. Light-client intent fulfilment with blind-signed,
+  Kiayias, Roeschlin, Vinogradova and Chaidos. IACR ePrint 2026/217,
+  <https://eprint.iacr.org/2026/217>. Light-client intent fulfilment with blind-signed,
   input-hidden transactions; the design [blind intents](#blind-intents)
   reduces to a single predicate.
 - Fuchsbauer and Wolf. *Predicate Blind Signatures*. Eurocrypt 2024. The
@@ -1021,7 +1027,7 @@ satisfies unless it reads the registry, which is the discovery problem
 
 [CIP-0118]: https://cips.cardano.org/cip/CIP-0118
 [CIP-0198]: ../CIP-0198/README.md
-[Cavefish]: #references
+[Cavefish]: https://eprint.iacr.org/2026/217
 [pbs]: #references
 [NIP-01]: https://github.com/nostr-protocol/nips/blob/master/01.md
 [Tx3]: https://docs.txpipe.io/tx3
