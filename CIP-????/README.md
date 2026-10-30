@@ -1,6 +1,6 @@
 ---
-CIP: ????
-Title: Nested Txs Service Layer Light Client Extension 
+CIP: "?"
+Title: Nested Txs Service Layer Light Client Extension
 Category: Network
 Status: Proposed
 Authors:
@@ -27,15 +27,16 @@ constraint is included in that sub-transaction as a required top-level
 guard, ensuring on-chain that the client's intent is satisfied by the constructed 
 transaction.
 
-The protocol design we propose here is an adaptation to the Dijkstra era of Cardano 
-the Cavefish protocol described here :
-[Cavefish: Communication-Optimal Light Client Protocol for UTxO Ledgers](https://eprint.iacr.org/2026/217),
-The base variant of the protocol is executed fully in plaintext, allowing the client 
-to inspect the transaction body. A further variant is proposed that uses cryptographic 
-techniques to make it more difficult for the client to force the service provider 
-to perform unpaid computation. 
-which gives the two-party light-client/service-provider construction and
-the predicate blind signatures the blind variant rests on.
+The design proposed here adapts
+[Cavefish: Communication-Optimal Light Client Protocol for UTxO Ledgers](https://eprint.iacr.org/2026/217)
+to the Dijkstra era of Cardano. Cavefish gives the two-party
+light-client/service-provider construction, and the predicate blind
+signatures the blind variant rests on.
+
+The base variant of the protocol is executed fully in plaintext, allowing the client
+to inspect the transaction body. A further variant is proposed that uses cryptographic
+techniques to make it more difficult for the client to force the service provider
+to perform unpaid computation.
 
 ## Motivation: Why is this CIP necessary?
 
