@@ -1,0 +1,39 @@
+{
+  "contextType": "linkedSurveyResponseTxContext",
+  "description": "Optional governance-vote binding for a linked survey response.",
+  "linkedSurveyRef": [
+    "1515151515151515151515151515151515151515151515151515151515151515",
+    0
+  ],
+  "linkedActionId": {
+    "txId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "govActionIx": 0
+  },
+  "votingProcedures": [
+    {
+      "voter": {
+        "tag": 2,
+        "role": 0,
+        "credential": [
+          0,
+          "11111111111111111111111111111111111111111111111111111111"
+        ]
+      },
+      "procedures": [
+        {
+          "govActionId": {
+            "txId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "govActionIx": 0
+          },
+          "vote": "yes"
+        }
+      ]
+    }
+  ],
+  "requiredSigners": [],
+  "responseTx": {
+    "slot": 120200000,
+    "txIndexInBlock": 0,
+    "responseIndex": 0
+  }
+}

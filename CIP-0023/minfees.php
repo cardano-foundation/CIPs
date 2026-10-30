@@ -34,11 +34,11 @@ $a0 = 0.3;
 $tau = .2;
 
 // Assumptions
-$current_fixed = 340;
+$current_fixed = 170;
 $current_rate = 0.0;
-$reserve = 13000000000;
-$total_stake = 32000000000;
-$fees = 0;
+$reserve = 1690000000;
+$total_stake = 37000000000;
+$fees = 32000;
 $staker = 100000;
 
 if ($staker < 1000000) {
@@ -51,7 +51,8 @@ if ($staker < 1000000) {
 $R = (($reserve * $rho) + $fees) * (1 - $tau);
 $z0 = 1 / $k;
 $saturation = $total_stake / $k;
-$ds = array(2000000, 5000000, 10000000, 20000000, 30000000, $saturation);
+$half_saturation = $saturation / 2;
+$ds = array(2000000, 5000000, 10000000, 20000000, $half_saturation, $saturation);
 $os = array();
 
 foreach ($ds as $d) {
@@ -70,9 +71,11 @@ echo "Current Rate: " . round($current_rate * 100, 1) . '%' . PHP_EOL;
 echo "New Fixed Fee: " . $new_fixed . PHP_EOL;
 echo "New Rate: " . round($new_rate * 100, 1) . '%' . PHP_EOL;
 echo PHP_EOL;
-echo "\t\t+---------- Current ----------+ +-------- Proposed ---------+" . PHP_EOL;
+
+echo "\t\t/---------- Current ----------\\ /-------- Proposed ---------\\" . PHP_EOL;
 echo "Pool\tTotal\tPool\tStaker\tStaker\tCurrent\tPool\tStaker\tStaker\tNew" . PHP_EOL;
-echo "Stake\tRewards\tCur Fee\tCur Fee\tCur Rew\tFee %\tNew Fee\tNew Fee\tNew Rew\tFee %" . PHP_EOL;
+echo "Stake\tRewards\tFee\tFee\tRew\tFee %\tFee\tFee\tRew\tFee %" . PHP_EOL;
+echo "---------------------------------------------------------------------" . PHP_EOL;
 
 $i = 0;
 
@@ -83,6 +86,11 @@ foreach ($os as $o) {
   $current_rate_basis = $rewards - $current_fixed;
   $current_rate_fee = $current_rate_basis * $current_rate;
   $current_fees = $current_fixed + $current_rate_fee;
+
+  if ($current_fees > $rewards) {
+    $current_fees = $rewards;
+  }
+
   $current_fee_per_staker = $current_fees * ($staker / $ds[$i]);
   $current_reward_per_staker = ($rewards - $current_fees) * ($staker / $ds[$i]);
   $current_fee_percent = round(($current_fees / $rewards) * 100, 1);
@@ -93,6 +101,7 @@ foreach ($os as $o) {
   $new_reward_per_staker = ($rewards - $new_fees) * ($staker / $ds[$i]);
   $new_fee_percent = round(($new_fees / $rewards) * 100, 1);
   $d_str = round($ds[$i] / 1000000, 1) . 'm';
+
   echo $d_str . "\t" . $rewards . "\t" . round($current_fees, 1) . "\t" . round($current_fee_per_staker, 1) . "\t" . round($current_reward_per_staker, 1) . "\t" . $current_fee_percent . "%\t" . round($new_fees, 1) . "\t" . round($new_fee_per_staker, 1) . "\t" . round($new_reward_per_staker, 1) . "\t" . $new_fee_percent . '%' . PHP_EOL;
   $i++;
 }

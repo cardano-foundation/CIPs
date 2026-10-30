@@ -1,0 +1,9 @@
+; CIP-0102: Royalty Datum Metadata
+; Version: 1
+
+royalty-token-name = bytes .size (11..32)
+
+cip102-details = {
+    ? 0 : uint,                  ; version (default: 1)
+      1 : [+ royalty-token-name] ; royalty token asset names
+}

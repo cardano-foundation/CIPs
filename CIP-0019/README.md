@@ -1,13 +1,13 @@
 ---
 CIP: 19
 Title: Cardano Addresses
-Status: Active
 Category: Ledger
+Status: Active
 Authors:
   - Matthias Benkort <matthias.benkort@cardanofoundation.org>
 Implementors: N/A
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/78
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/78
 Created: 2020-03-25
 License: CC-BY-4.0
 ---
@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 This specification describes the structure of addresses in Cardano, covering both addresses introduced in the Shelley era and the legacy format from the Byron era.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Document design choices for posterity. Most applications interacting with the Cardano blockchain will likely not have any need for this level of details, however, some might. This CIP is meant to capture this knowledge. 
 
@@ -109,6 +109,9 @@ The second part of a Shelley address indicates the owner of the stake rights ass
 Some addresses (types 6 and 7) carry no delegation part whatsoever. Their associated stake can't be delegated. They can be used by parties who want to prove that they are not delegating funds which is typically the case for custodial businesses managing funds on the behalf of other stakeholders. Delegation parts can also be defined in terms of on-chain [pointers]. 
 
 ##### Pointers
+
+> **Note**
+> From the Conway ledger era, new pointer addresses cannot be added to Mainnet.
 
 In an address, a **chain pointer** refers to a point of the chain containing a stake key registration certificate. A point is identified by 3 coordinates:
 
@@ -214,7 +217,7 @@ testnet:
     type-14: stake_test1uqehkck0lajq8gr28t9uxnuvgcqrc6070x3k9r8048z8y5gssrtvn
     type-15: stake_test17rphkx6acpnf78fuvxn0mkew3l0fd058hzquvz7w36x4gtcljw6kf
 ```
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 As stated in [Motivation](#motivation-why-is-this-cip-necessary) this CIP is provided for informational purposes regarding a single deliberate design. Further rationale and motivation for this design are available in the [Design Specification for Delegation and Incentives in Cardano - Section 3.2 :: Addresses & Credentials ](https://github.com/intersectmbo/cardano-ledger/releases/latest/download/shelley-delegation.pdf).
 

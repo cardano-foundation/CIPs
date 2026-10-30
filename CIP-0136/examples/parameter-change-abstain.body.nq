@@ -1,0 +1,13 @@
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#body> _:c14n3 .
+_:c14n1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "A cool island for Ryan"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://www.google.com/maps/place/World's+only+5th+order+recursive+island/@62.6511465,-97.7946829,15.75z/data=!4m14!1m7!3m6!1s0x5216a167810cee39:0x11431abdfe4c7421!2sWorld's+only+5th+order+recursive+island!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n!3m5!1s0x5216a167810cee39:0x11431abdfe4c7421!8m2!3d62.651114!4d-97.7872244!16s%2Fg%2F11spwk2b6n?authuser=0&entry=ttu"@en-us .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#abstain> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#againstVote> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#constitutional> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#didNotVote> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#unconstitutional> "0"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#references> _:c14n1 .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#internalVote> _:c14n2 .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#rationaleStatement> "By changing the `committeeMaxTermLength` we are changing the maximum length of time that a committee member can serve. This is a change that should be made with caution, as it can affect the stability and continuity of the committee. Voting on `committeeMaxTermLength` would be a conflict of interest for us."@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0136/README.md#summary> "We believing that the CC should abstain from voting on `committeeMaxTermLength` changes."@en-us .

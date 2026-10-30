@@ -1,0 +1,16 @@
+{
+  "name": "witness_001_splice_into_unsigned_tx",
+  "spec_section": "Methods (signTx response shape)",
+  "category": "witness_splice",
+  "input": {
+    "unsigned_tx_cbor_hex": "84a0a0f5f6",
+    "wallet_returned_witness_set_cbor_hex": "a10081825820000000000000000000000000000000000000000000000000000000000000000058401111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "shape_note": "witness_set = map { 0 => [[vkey(32), sig(64)]] }. Outer tx is [tx_body, witness_set, isValid, aux_data]."
+  },
+  "expected": {
+    "merged_tx_cbor_hex": "84a0a10081825820000000000000000000000000000000000000000000000000000000000000000058401111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111f5f6",
+    "note": "Wallet's returned witness_set bytes are spliced verbatim at outer-array index 1, replacing the previously empty map. Other elements (tx_body, isValid, aux_data) are unchanged."
+  },
+  "should_reject": false,
+  "rejection_reason": null
+}

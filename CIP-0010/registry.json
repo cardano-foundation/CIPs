@@ -1,5 +1,13 @@
 [
   {
+    "transaction_metadatum_label": 17,
+    "description": "CIP-XXXX - On-chain surveys and polls metadata"
+  },
+  {
+    "transaction_metadatum_label": 22,
+    "description": "Clarity - DAO creation metadata"
+  },
+  {
     "transaction_metadatum_label": 87,
     "description": "milkomeda.com - The protocol magic for the milkomeda protocol"
   },
@@ -16,8 +24,20 @@
     "description": "shareslake.com - Bridge routing information"
   },
   {
+    "transaction_metadatum_label": 170,
+    "description": "CIP-0170 - KERI-backed metadata attestations"
+  },
+  {
     "transaction_metadatum_label": 309,
-    "description": "Proof of Existence record"
+    "description": "CIP-0190 - Proof of Existence record"
+  },
+  {
+    "transaction_metadatum_label": 529,
+    "description": "Tokenance - Producer-signed Proof of Origin record"
+  },
+  {
+    "transaction_metadatum_label": 544,
+    "description": "TapDano - Proof Platform"
   },
   {
     "transaction_metadatum_label": 620,
@@ -48,6 +68,26 @@
     "description": "finitum.io token bridge transactions metadata"
   },
   {
+    "transaction_metadatum_label": 1113,
+    "description": "OriLife Covenant - CIP-0113 asset operation record"
+  },
+  {
+    "transaction_metadatum_label": 1226,
+    "description": "Oracle related transaction metadata"
+  },
+  {
+    "transaction_metadatum_label": 1304,
+    "description": "on-chain certification metadata"
+  },
+  {
+    "transaction_metadatum_label": 1447,
+    "description": "Reeve - transparent and verifiable financial records on-chain"
+  },
+  {
+    "transaction_metadatum_label": 1517,
+    "description": "Reeve - obsolete - pre-launch metadata"
+  },
+  {
     "transaction_metadatum_label": 1564,
     "description": "Marlowe - a DSL for writing and executing financial contracts"
   },
@@ -56,8 +96,20 @@
     "description": "CIP-72: dApp registration & Discovery"
   },
   {
-    "transaction_metadataum_label": 1694,
+    "transaction_metadatum_label": 1668,
+    "description": "Begin Wallet: dApp rating record from dApp Store"
+  },
+  {
+    "transaction_metadatum_label": 1694,
     "description": "Voltaire - additional metadata for governance, provided in a separate transaction"
+  },
+  {
+    "transaction_metadatum_label": 1695,
+    "description": "CIP-0204 - Holder answers on governance actions"
+  },
+  {
+    "transaction_metadatum_label": 1854,
+    "description": "CIP-146 Multi-signatures wallet registration"
   },
   {
     "transaction_metadatum_label": 1870,
@@ -84,6 +136,10 @@
     "description": "cardanohosts.com hosting metadata"
   },
   {
+    "transaction_metadatum_label": 1984,
+    "description": "CIP-0171 - On-chain Smart Contract Bytecode Verification"
+  },
+  {
     "transaction_metadatum_label": 1988,
     "description": "cardahub.io marketplace metadata"
   },
@@ -92,8 +148,64 @@
     "description": "cardahub.io services metadata"
   },
   {
+    "transaction_metadatum_label": 3165,
+    "description": "CPE - Cardano Proposal Examiner"
+  },
+  {
+    "transaction_metadatum_label": 3692,
+    "description": "CIP-0149 - Optional DRep compensation"
+  },
+  {
+    "transaction_metadatum_label": 6607,
+    "description": "BROCK Bot - Discord moderation bot subscription payment"
+  },
+  {
+    "transaction_metadatum_label": 6676,
+    "description": "Maya Protocol - Cross-chain swap memo (bifrost observer)"
+  },
+  {
     "transaction_metadatum_label": 6770,
     "description": "fortunes.coconutpool.com fortune teller"
+  },
+  {
+    "transaction_metadatum_label": 7757,
+    "description": "Qstamp post quantum evidence anchors by Quantova Inc. A salted SHA3 256 commitment of an off chain record, bound to the signer, for tamper evident time proofs."
+  },
+  {
+    "transaction_metadatum_label": 8413,
+    "description": "commitproof.com lets you prove what you knew and when"
+  },
+  {
+    "transaction_metadatum_label": 8414,
+    "description": "claimpaign.com campaigns"
+  },
+  {
+    "transaction_metadatum_label": 10297,
+    "description": "fida.finance transaction metadata"
+  },
+  {
+    "transaction_metadatum_label": 18300,
+    "description": "selfdriven Achievement"
+  },
+  {
+    "transaction_metadatum_label": 18308,
+    "description": "selfdriven Identity"
+  },
+  {
+    "transaction_metadatum_label": 21325,
+    "description": "PRISM's Verifiable Data Registry for the PRISM DID method"
+  },
+  {
+    "transaction_metadatum_label": 22092,
+    "description": "VitaLedger - food product record anchor (Merkle root of issuer-signed records)"
+  },
+  {
+    "transaction_metadatum_label": 37326,
+    "description": "Eternl Pro - license metadata"
+  },
+  {
+    "transaction_metadatum_label": 49314,
+    "description": "Open CryptoPay - payment identification and reconciliation metadata"
   },
   {
     "transaction_metadatum_label": 61284,

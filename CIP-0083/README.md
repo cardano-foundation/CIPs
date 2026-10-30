@@ -1,8 +1,8 @@
 ---
 CIP: 83
 Title: Encrypted Transaction message/comment metadata (Addendum to CIP-0020)
-Status: Active
 Category: Metadata
+Status: Active
 Authors:
     - Martin Lang <martin@martinlang.at>
     - Ola Ahlman <ola@ahlnet.nu>
@@ -17,7 +17,7 @@ Implementors:
     - JorManager <https://bitbucket.org/muamw10/jormanager/>
     - Cardanoscan.io <https://cardanoscan.io>
 Discussions:
-    - https://github.com/cardano-foundation/CIPs/pull/394
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/394
 Created: 2022-12-08
 License: CC-BY-4.0
 ---
@@ -29,7 +29,7 @@ This CIP is an addendum to the original [CIP-0020](https://github.com/cardano-fo
 It describes the JSON schema to add encrypted messages/comments/memos as transaction metadata. It is fully backwards compatible and requires no changes in existing tools, explorers, wallets. 
 Tools/Wallets that do not have an implementation to decrypt this format will just show the encrypted base64 as the message, but it will not break any existing processes.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Current state of transaction messages
 
@@ -65,7 +65,7 @@ Even with a simple encryption of such messages - and publicly known passphrase -
 
 This addition to the original CIP-0020 should not be seen as the end-all-be-all security solution for privacy on the blockchain. There's better options and upcoming Midnight for that. The transaction messages are also not intended to act like chat messages on the chain.
 
-# Specification - Encrypted message
+## Specification
 
 The specification update for encrypted messages takes advantage of the simple original design, which is leaving room for additional json-keys not affecting the parsing of the content at all. The only outcome if a receiver does not process the encrypted content is, that the encrypted message is shown instead of an maybe autodecrypted one. But even the encrypted base64 strings fit into the max. 64char long string restriction. So it does not break any tools. More on the autodecryption later. 
 
@@ -108,6 +108,7 @@ The value given in the `enc` field references the type of encryption is used. St
   | type | openssl |
   | cipher | aes-256-cbc (salted) |
   | digest | pdkdf2 |
+  | padding | PKCS#7 |
   | iterations | 10000 (default) |
   | key + iv | 32 bytes key + 16 bytes iv |
   | salt | 8 bytes |
@@ -117,6 +118,8 @@ The value given in the `enc` field references the type of encryption is used. St
 OpenSSL was choosen, because its fast and widely available also for all kind of different platforms, web frontends, etc. Encryption algo is **AES-256-CBC** (salted) using `pdkdf2` to derive the key from the given passphrase. 10000 Iterations is the default value for this encryption method. The format of the encoded output is base64 format.
 
 The encryption is based on a given passphrase, which can be choosen by the user. However, a default-passphrase "cardano" should be used to encrypt/decrypt if no other passphrase is provided or known.
+  
+OpenSSL uses [PKCS#7](https://datatracker.ietf.org/doc/html/rfc5652#section-6.3) as padding. The adopted cipher accepts only multiple of 16-byte blocks. Not fitting messages to be encrypted are filled with the number of padding bytes that are needed to form multiple of 16-bytes. So if 1 byte of padding is required, the padding "01" is added. If 2 bytes of padding are needed, "02 02" is added. If no padding is required, an extra block of 0x10 bytes is added, meaning sixteen "10" bytes. In order to be interoperable with OpenSSL this kind of padding is a requirement.  
   
 ##### Why a default passphrase?
   
@@ -155,7 +158,7 @@ in our example.
   
 **Encrypt** this content via openssl, the default passprase **cardano**, iteration set to 10000 and key-derivation via pbkdf2:
 ``` console
-openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" <<< '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]'
+echo -n '["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]' | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano"
 ```
 
 The encrypted result are the **base64 encoded strings**:
@@ -185,7 +188,7 @@ Also add the value `basic` for the `enc:` key, to mark this transaction message 
 
 Console one-liner:
 ``` console
-jq ".\"674\".msg = [ $(jq -crM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
+jq ".\"674\".msg = [ $(jq -cjrM .\"674\".msg normal-message-metadata.json | openssl enc -e -aes-256-cbc -pbkdf2 -iter 10000 -a -k "cardano" | awk {'print "\""$1"\","'} | sed '$ s/.$//') ]" <<< '{"674":{"enc":"basic"}}' | tee encrypted-message-metadata.json | jq
 ``` 
 
 ---
@@ -199,7 +202,7 @@ Which results in the original content of the **msg** key:
   
 `["Invoice-No: 123456789","Order-No: 7654321","Email: john@doe.com"]`
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 This design is simple, so many tools on the cardano blockchain can adopt it easily and a few have already started to implement it.
 The original CIP-0020 design allowed the addition of new entries like the `"enc":` key for encrypted messages in this CIP. Therefore the encoding format of the encrypted message was choosen to be UTF-8 instead of bytearrays, because it would break the backwards compatibility to CIP-0020. But maybe more important, it gives the user a simple text-format to handle such messages. Users can copy and paste the base64 encoded string(s) using there own tools for creation and verification. For example, a user can simply copy the encrypted format from an explorer and verify it with an external own local tool. Such messages are usally pretty short. Yes, the benefit of using bytearrays is to have less data (around -33% over base64), but the decision was made to sacrifice this benefit in favor of the base64 format for the reasons pointed out before.

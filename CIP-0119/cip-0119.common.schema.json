@@ -1,0 +1,92 @@
+{
+    "title": "CIP-119 Common",
+    "description": "Metadata document for Cardano DReps, extending CIP-100",
+    "type": "object",
+    "required": ["hashAlgorithm", "body"],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "body": {
+            "$ref": "#/definitions/body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "type": "string",
+            "enum": ["blake2b-256"],
+            "title": "Hash Algorithm",
+            "description": "The algorithm used to authenticate this document externally (CIP-100)"
+        },
+        "body": {
+            "title": "Body",
+            "description": "The body of the metadata document (CIP-100)",
+            "type": "object",
+            "required": ["givenName"],
+            "properties": {
+                "paymentAddress": {
+                    "type": "string",
+                    "title": "Payment Address",
+                    "description": "A Cardano Bech32 encoded payment address."
+                },
+                "givenName": {
+                    "title": "Given Name",
+                    "$ref": "https://schema.org/givenName"
+                },
+                "image": {
+                    "title": "Image",
+                    "$ref": "https://schema.org/image"
+                },
+                "objectives": {
+                    "type": "string",
+                    "title": "Objectives",
+                    "description": "A short description of what the person believes and what they want to achieve as a DRep, maximum of 1000 characters."
+                },
+                "motivations": {
+                    "type": "string",
+                    "title": "Motivations",
+                    "description": "A short description of why they want to be a DRep, what personal and professional experiences have they had that have driven them to register, maximum 1000."
+                },
+                "qualifications": {
+                    "type": "string",
+                    "title": "Qualifications",
+                    "description": "A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep, maximum 1000."
+                },
+                "doNotList": {
+                    "type": "string",
+                    "enum": ["true", "false"],
+                    "title": "Do Not List",
+                    "description": "A true or false value means that the DRep does not want to show up in tooling that displays DReps."
+                },
+                "references": {
+                    "type": "array",
+                    "title": "References",
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                }
+            }
+        },
+        "reference": {
+            "title": "Reference",
+            "description": "A reference to a document",
+            "type": "object",
+            "required": ["@type", "label", "uri"],
+            "properties": {
+                "@type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "Other", "Link", "Identity"],
+                    "title": "Type"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label"
+                },
+                "uri": {
+                    "type": "string",
+                    "title": "URI"
+                }
+            }
+        }
+    }
+}

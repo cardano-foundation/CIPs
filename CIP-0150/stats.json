@@ -1,0 +1,327 @@
+[
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 1,
+        "compressionRatio": 1.63256,
+        "encodeThroughput": 398.113,
+        "encodeTimeMean": 0.00015838,
+        "decodeThroughput": 1209.36,
+        "decodeTimeMean": 5.21377e-05
+    },
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 5,
+        "compressionRatio": 1.71149,
+        "encodeThroughput": 136.188,
+        "encodeTimeMean": 0.000462986,
+        "decodeThroughput": 1409.33,
+        "decodeTimeMean": 4.47399e-05
+    },
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 9,
+        "compressionRatio": 1.71797,
+        "encodeThroughput": 100.5,
+        "encodeTimeMean": 0.000627393,
+        "decodeThroughput": 1451.87,
+        "decodeTimeMean": 4.3429e-05
+    },
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 13,
+        "compressionRatio": 1.72087,
+        "encodeThroughput": 45.2326,
+        "encodeTimeMean": 0.00139398,
+        "decodeThroughput": 1370.17,
+        "decodeTimeMean": 4.60185e-05
+    },
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 17,
+        "compressionRatio": 1.75162,
+        "encodeThroughput": 16.5579,
+        "encodeTimeMean": 0.00380805,
+        "decodeThroughput": 1087.69,
+        "decodeTimeMean": 5.797e-05
+    },
+    {
+        "maxBlockSize": 65536,
+        "zstdLevel": 21,
+        "compressionRatio": 1.7543,
+        "encodeThroughput": 7.52276,
+        "encodeTimeMean": 0.00838166,
+        "decodeThroughput": 934.353,
+        "decodeTimeMean": 6.74833e-05
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 1,
+        "compressionRatio": 2.06212,
+        "encodeThroughput": 500.562,
+        "encodeTimeMean": 0.000518702,
+        "decodeThroughput": 1567.63,
+        "decodeTimeMean": 0.000165627
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 5,
+        "compressionRatio": 2.15692,
+        "encodeThroughput": 153.107,
+        "encodeTimeMean": 0.00169582,
+        "decodeThroughput": 1905.46,
+        "decodeTimeMean": 0.000136262
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 9,
+        "compressionRatio": 2.19791,
+        "encodeThroughput": 112.152,
+        "encodeTimeMean": 0.00231508,
+        "decodeThroughput": 1892.36,
+        "decodeTimeMean": 0.000137205
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 13,
+        "compressionRatio": 2.21787,
+        "encodeThroughput": 35.0223,
+        "encodeTimeMean": 0.00741363,
+        "decodeThroughput": 1715.47,
+        "decodeTimeMean": 0.000151353
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 17,
+        "compressionRatio": 2.24438,
+        "encodeThroughput": 12.2225,
+        "encodeTimeMean": 0.021243,
+        "decodeThroughput": 1427.37,
+        "decodeTimeMean": 0.000181903
+    },
+    {
+        "maxBlockSize": 262144,
+        "zstdLevel": 21,
+        "compressionRatio": 2.24532,
+        "encodeThroughput": 6.64986,
+        "encodeTimeMean": 0.0390448,
+        "decodeThroughput": 1376.23,
+        "decodeTimeMean": 0.000188662
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 1,
+        "compressionRatio": 2.53074,
+        "encodeThroughput": 609.36,
+        "encodeTimeMean": 0.00171645,
+        "decodeThroughput": 1744.34,
+        "decodeTimeMean": 0.000599615
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 5,
+        "compressionRatio": 2.86093,
+        "encodeThroughput": 185.966,
+        "encodeTimeMean": 0.00562432,
+        "decodeThroughput": 1814.69,
+        "decodeTimeMean": 0.00057637
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 9,
+        "compressionRatio": 2.88514,
+        "encodeThroughput": 130.082,
+        "encodeTimeMean": 0.00804059,
+        "decodeThroughput": 1849.96,
+        "decodeTimeMean": 0.000565382
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 13,
+        "compressionRatio": 2.88951,
+        "encodeThroughput": 41.6058,
+        "encodeTimeMean": 0.0251391,
+        "decodeThroughput": 1828.97,
+        "decodeTimeMean": 0.000571871
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 17,
+        "compressionRatio": 2.9483,
+        "encodeThroughput": 20.4048,
+        "encodeTimeMean": 0.0512593,
+        "decodeThroughput": 1711.73,
+        "decodeTimeMean": 0.000611039
+    },
+    {
+        "maxBlockSize": 1048576,
+        "zstdLevel": 21,
+        "compressionRatio": 2.96801,
+        "encodeThroughput": 7.00983,
+        "encodeTimeMean": 0.149209,
+        "decodeThroughput": 1545.39,
+        "decodeTimeMean": 0.000676809
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 1,
+        "compressionRatio": 2.69259,
+        "encodeThroughput": 745.699,
+        "encodeTimeMean": 0.00562112,
+        "decodeThroughput": 2002.4,
+        "decodeTimeMean": 0.00209332
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 5,
+        "compressionRatio": 3.53123,
+        "encodeThroughput": 227.479,
+        "encodeTimeMean": 0.0184266,
+        "decodeThroughput": 2081.91,
+        "decodeTimeMean": 0.00201337
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 9,
+        "compressionRatio": 3.60462,
+        "encodeThroughput": 150.785,
+        "encodeTimeMean": 0.0277989,
+        "decodeThroughput": 2151.63,
+        "decodeTimeMean": 0.00194814
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 13,
+        "compressionRatio": 3.61693,
+        "encodeThroughput": 31.7403,
+        "encodeTimeMean": 0.132061,
+        "decodeThroughput": 2188,
+        "decodeTimeMean": 0.00191575
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 17,
+        "compressionRatio": 3.66747,
+        "encodeThroughput": 15.8395,
+        "encodeTimeMean": 0.264634,
+        "decodeThroughput": 2044.09,
+        "decodeTimeMean": 0.00205062
+    },
+    {
+        "maxBlockSize": 4194304,
+        "zstdLevel": 21,
+        "compressionRatio": 3.68262,
+        "encodeThroughput": 6.51622,
+        "encodeTimeMean": 0.643266,
+        "decodeThroughput": 1926.62,
+        "decodeTimeMean": 0.00217566
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 1,
+        "compressionRatio": 2.7386,
+        "encodeThroughput": 762.638,
+        "encodeTimeMean": 0.0219948,
+        "decodeThroughput": 2077.56,
+        "decodeTimeMean": 0.00807395
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 5,
+        "compressionRatio": 3.84668,
+        "encodeThroughput": 243.176,
+        "encodeTimeMean": 0.0689793,
+        "decodeThroughput": 2192.05,
+        "decodeTimeMean": 0.00765222
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 9,
+        "compressionRatio": 4.08797,
+        "encodeThroughput": 156.885,
+        "encodeTimeMean": 0.106919,
+        "decodeThroughput": 2246.4,
+        "decodeTimeMean": 0.00746709
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 13,
+        "compressionRatio": 4.11466,
+        "encodeThroughput": 29.0096,
+        "encodeTimeMean": 0.578225,
+        "decodeThroughput": 2280.43,
+        "decodeTimeMean": 0.00735565
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 17,
+        "compressionRatio": 4.24382,
+        "encodeThroughput": 13.0623,
+        "encodeTimeMean": 1.28416,
+        "decodeThroughput": 2188.63,
+        "decodeTimeMean": 0.0076642
+    },
+    {
+        "maxBlockSize": 16777216,
+        "zstdLevel": 21,
+        "compressionRatio": 4.279,
+        "encodeThroughput": 5.66808,
+        "encodeTimeMean": 2.95939,
+        "decodeThroughput": 2108.3,
+        "decodeTimeMean": 0.00795622
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 1,
+        "compressionRatio": 2.74633,
+        "encodeThroughput": 748.516,
+        "encodeTimeMean": 0.0896523,
+        "decodeThroughput": 2016.43,
+        "decodeTimeMean": 0.0332796
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 5,
+        "compressionRatio": 3.93538,
+        "encodeThroughput": 257.649,
+        "encodeTimeMean": 0.260456,
+        "decodeThroughput": 2138.61,
+        "decodeTimeMean": 0.0313783
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 9,
+        "compressionRatio": 4.25619,
+        "encodeThroughput": 163.85,
+        "encodeTimeMean": 0.409559,
+        "decodeThroughput": 2210.75,
+        "decodeTimeMean": 0.0303544
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 13,
+        "compressionRatio": 4.29296,
+        "encodeThroughput": 30.6292,
+        "encodeTimeMean": 2.19092,
+        "decodeThroughput": 2354.02,
+        "decodeTimeMean": 0.028507
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 17,
+        "compressionRatio": 4.49838,
+        "encodeThroughput": 12.4501,
+        "encodeTimeMean": 5.39001,
+        "decodeThroughput": 2273.69,
+        "decodeTimeMean": 0.0295142
+    },
+    {
+        "maxBlockSize": 67108864,
+        "zstdLevel": 21,
+        "compressionRatio": 4.74204,
+        "encodeThroughput": 4.88263,
+        "encodeTimeMean": 13.7438,
+        "decodeThroughput": 2033.34,
+        "decodeTimeMean": 0.0330029
+    }
+]
+  

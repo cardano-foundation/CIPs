@@ -1,0 +1,42 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/GovConstitution.hs
+
+;  Constitution record entry
+;
+;  ```
+;  meta:
+;    endian: be
+;
+;  seq:
+;    - id: key
+;      type: gov_constitution
+;
+;  gov_constitution:
+;    seq:
+;      - id: epoch
+;        doc: Current epoch.
+;        type: u8
+;  ```
+record_entry = constitution
+
+;  address of the constition
+constitution = [anchor, script_hash/ nil]
+
+;
+;  Signed url
+anchor = [anchor_url : url, anchor_data_hash : bytes]
+
+url = text .size (0 .. 128)
+
+;  To compute a script hash, note that you must prepend
+;  a tag to the bytes of the script before hashing.
+;  The tag is determined by the language.
+;  The tags in the Conway era are:
+;   - "\x00" for multisig scripts
+;   - "\x01" for Plutus V1 scripts
+;   - "\x02" for Plutus V2 scripts
+;   - "\x03" for Plutus V3 scripts
+script_hash = hash28
+
+hash28 = bytes .size 28
+

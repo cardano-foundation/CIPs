@@ -1,14 +1,15 @@
 ---
 CIP: 54
 Title: Cardano Smart NFTs
-Status: Proposed
 Category: Tokens
+Status: Proposed
 Authors:
-  - Kieran Simkin
-Implementors: []
+  - Kieran Simkin <hi@clg.wtf>
+Implementors:
+  - Kieran Simkin <hi@clg.wtf>
 Discussions:
-  - https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
-  - https://github.com/cardano-foundation/CIPs/pull/263
+  - Cardano Forum: https://forum.cardano.org/t/cip-draft-cardano-smart-nfts/100470
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/263
 Created: 2022-05-18
 License: CC-BY-4.0
 ---
@@ -17,7 +18,7 @@ License: CC-BY-4.0
 
 This CIP specifies a standard for an API which should be provided to Javascript NFTs, it also defines some additions to the 721 metadata standard defined in [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025) which allow an NFT to specify it would like to receive certain current information from the blockchain. 
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Currently if an NFT creator wishes to change or otherwise “evolve” their NFT after minting, they must burn the token and re-mint. It would be very nice if the user were able to modify their NFT simply by sending it to themselves with some extra data contained in the new transaction metadata. This would allow implementation of something like a ROM+RAM concept, where you have the original immutable part of the NFT (in Cardano’s case represented by the original 721 key from the mint transaction), and you also have a mutable part – represented by any subsequent transaction metadata.
 
@@ -225,13 +226,25 @@ The second argument allows you to specify which token's files to search - it sho
 
 The URL returned by this function should be in a format that is accessible from within the `<iframe>` sandbox - perhaps using `window.URL.createObjectURL()` to generate a static URL from raw data if necessary. 
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Currently the NFT sites which support on-chain Javascript NFTs do so by creating a sandboxed `<iframe>` into which they inject the HTML from the NFT’s metadata. From within this sandbox it is not possible to bring-in arbitrary data from external sources – everything must be contained within the NFT, or explicitly bought into the sandbox via an API.
 
 This proposal suggests an addition to the 721 metadata key from [CIP-0025](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0025), to enable an NFT to specify that it would like to receive a particular transaction history accessible to it from within the sandbox – thus defining it as a “Smart NFT”.
 
 In tandem with the additional metadata, we also define a standard for the Javascript API which is provided to the NFT within the sandbox.
+
+### The Smart NFT toolchain
+
+This CIP now has a [reference implementation](https://clg.wtf/policy/smart-life) which consists of a [front-end React control](https://github.com/kieransimkin/SmartNFTPortal) which takes care of rendering an NFT - it creates the sandbox and exposes the CIP54 Javascript API to it. This works in tandem with a [backend library](https://github.com/kieransimkin/libcip54) which takes care of reading the necessary data from a dbsync instance and making it available for the front end control to render. 
+
+There is also an [integrated development environment](https://nft-playground.dev/) made available to enable realtime experimentation and debugging of Smart NFTs without having to repeatedly mint new tokens. 
+
+Furthermore, [a complete visual blockchain explorer](https://clg.wtf/) has been made available which utilises libcip54 and SmartNFTPortal and fully supports the reference implementation of this standard. 
+
+The first CIP54 collection has been minted on mainnet under the policy ID `1eaf3b3ffb75ff27c43c512c23c6450b307f138281efb1d690b84652` and is [available to see here](https://clg.wtf/policy/smart-life). [A number of other instructive example NFTs](https://nft-playground.dev/examples) have also been provided as part of the NFT Playground website.
+
+[Libcip54](https://github.com/kieransimkin/libcip54), [SmartNFTPortal](https://github.com/kieransimkin/SmartNFTPortal), [Cardano Looking Glass](https://github.com/kieransimkin/looking-glass) and the [NFT Playground](https://github.com/kieransimkin/cip54-playground) are all opensource - pull requests are welcome!
 
 ## Path to Active
 
@@ -243,9 +256,10 @@ In tandem with the additional metadata, we also define a standard for the Javasc
 
 ### Implementation Plan
 
-- [ ] Provide a reference implementation of this scheme, which illustrates both:
-  - [ ] a means of creating a "Smart NFT"
-  - [ ] a means of rendering it
+- [X] Provide a [reference](https://github.com/kieransimkin/libcip54) [implementation](https://github.com/kieransimkin/smartnftportal) of this scheme, which illustrates both:
+  - [X] [a means of creating a "Smart NFT"](https://nft-playground.dev/)
+  - [X] [a means of rendering it](https://clg.wtf/)
+  - [ ] Update this specification to match the new features added in the reference implementation.
 
 ## Copyright
 

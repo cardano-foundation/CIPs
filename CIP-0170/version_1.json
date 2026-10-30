@@ -1,0 +1,320 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Cardano KERI Accountability Metadata",
+    "description": "CIP-170 major version 1 (currently 1.1): the record at metadata label 170. Other labels in the same transaction may hold any metadata. Byte strings use the 0x-prefixed hexadecimal form of the cardano-cli no-schema JSON mapping.",
+    "type": "object",
+    "properties": {
+        "170": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/authBegin"
+                },
+                {
+                    "$ref": "#/definitions/attest"
+                },
+                {
+                    "$ref": "#/definitions/attestTx"
+                },
+                {
+                    "$ref": "#/definitions/claimTx"
+                },
+                {
+                    "$ref": "#/definitions/authEnd"
+                }
+            ]
+        }
+    },
+    "required": [
+        "170"
+    ],
+    "patternProperties": {
+        "^[0-9]+$": {}
+    },
+    "additionalProperties": false,
+    "definitions": {
+        "chunk": {
+            "type": "string",
+            "pattern": "^0x([0-9A-Fa-f]{2}){0,64}$",
+            "description": "Metadata byte string of at most 64 bytes."
+        },
+        "byteStream": {
+            "description": "A byte stream: one chunk, or a list of chunks in order.",
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/chunk"
+                },
+                {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/chunk"
+                    }
+                }
+            ]
+        },
+        "cipVersion": {
+            "type": "object",
+            "properties": {
+                "v": {
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+$",
+                    "description": "CIP version, major.minor."
+                }
+            },
+            "required": [
+                "v"
+            ],
+            "additionalProperties": false
+        },
+        "authVersion": {
+            "type": "object",
+            "properties": {
+                "v": {
+                    "type": "string",
+                    "pattern": "^[0-9]+\\.[0-9]+$",
+                    "description": "CIP version, major.minor."
+                },
+                "k": {
+                    "type": "string",
+                    "description": "Minimum KERI version."
+                },
+                "a": {
+                    "type": "string",
+                    "description": "Minimum ACDC version."
+                }
+            },
+            "required": [
+                "v",
+                "k",
+                "a"
+            ],
+            "additionalProperties": false
+        },
+        "authBegin": {
+            "type": "object",
+            "properties": {
+                "t": {
+                    "const": "AUTH_BEGIN"
+                },
+                "s": {
+                    "type": "string",
+                    "description": "Self-addressing identifier (SAID) of the leaf credential schema."
+                },
+                "i": {
+                    "type": "string",
+                    "description": "Autonomic Identifier (AID) of the signer, CESR qb64."
+                },
+                "c": {
+                    "$ref": "#/definitions/byteStream",
+                    "description": "Credential chain."
+                },
+                "v": {
+                    "$ref": "#/definitions/authVersion",
+                    "description": "Absent means version 1.0."
+                },
+                "m": {
+                    "type": "object",
+                    "description": "Optional metadata block for indexing.",
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "t",
+                "s",
+                "i",
+                "c"
+            ],
+            "additionalProperties": false
+        },
+        "attest": {
+            "type": "object",
+            "properties": {
+                "t": {
+                    "const": "ATTEST"
+                },
+                "i": {
+                    "type": "string",
+                    "description": "Autonomic Identifier (AID) of the signer, CESR qb64."
+                },
+                "d": {
+                    "type": "string",
+                    "description": "Digest of the attested data, CESR qb64. The KEL event at s anchors this digest or, from version 1.1, the metadata seal computed from it."
+                },
+                "s": {
+                    "type": "string",
+                    "pattern": "^[0-9A-Fa-f]+$",
+                    "description": "Hex-encoded sequence number of the anchoring KEL event."
+                },
+                "v": {
+                    "$ref": "#/definitions/cipVersion",
+                    "description": "Absent means version 1.0. Must be 1.1 or later if the KEL anchor is a metadata seal."
+                }
+            },
+            "required": [
+                "t",
+                "i",
+                "d",
+                "s"
+            ],
+            "additionalProperties": false
+        },
+        "attestTx": {
+            "type": "object",
+            "properties": {
+                "t": {
+                    "const": "ATTEST_TX"
+                },
+                "i": {
+                    "description": "AID of the signer, or a list of distinct AIDs when several signers attest the transaction.",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "minItems": 1,
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                },
+                "s": {
+                    "description": "Optional hint: sequence number of the KEL event anchoring the transaction seal. If i is a list, a list of the same length.",
+                    "oneOf": [
+                        {
+                            "type": "string",
+                            "pattern": "^[0-9A-Fa-f]+$"
+                        },
+                        {
+                            "type": "array",
+                            "minItems": 1,
+                            "items": {
+                                "type": "string",
+                                "pattern": "^[0-9A-Fa-f]+$"
+                            }
+                        }
+                    ]
+                },
+                "v": {
+                    "$ref": "#/definitions/cipVersion",
+                    "description": "1.1 or later."
+                }
+            },
+            "required": [
+                "t",
+                "i",
+                "v"
+            ],
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "if": {
+                        "properties": {
+                            "i": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "s": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                {
+                    "if": {
+                        "properties": {
+                            "i": {
+                                "type": "array"
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "s": {
+                                "type": "array"
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "claimTx": {
+            "type": "object",
+            "properties": {
+                "t": {
+                    "const": "CLAIM_TX"
+                },
+                "i": {
+                    "type": "string",
+                    "description": "Autonomic Identifier (AID) of the signer, CESR qb64."
+                },
+                "r": {
+                    "type": "array",
+                    "minItems": 1,
+                    "description": "Transaction IDs of the claimed transactions.",
+                    "items": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}$"
+                    }
+                },
+                "s": {
+                    "type": "string",
+                    "pattern": "^[0-9A-Fa-f]+$",
+                    "description": "Optional hint: sequence number of the KEL event anchoring the transaction seal."
+                },
+                "v": {
+                    "$ref": "#/definitions/cipVersion",
+                    "description": "1.1 or later."
+                }
+            },
+            "required": [
+                "t",
+                "i",
+                "r",
+                "v"
+            ],
+            "additionalProperties": false
+        },
+        "authEnd": {
+            "type": "object",
+            "properties": {
+                "t": {
+                    "const": "AUTH_END"
+                },
+                "s": {
+                    "type": "string",
+                    "description": "Self-addressing identifier (SAID) of the leaf credential schema."
+                },
+                "i": {
+                    "type": "string",
+                    "description": "Autonomic Identifier (AID) of the signer, CESR qb64."
+                },
+                "c": {
+                    "$ref": "#/definitions/byteStream",
+                    "description": "Revocation registry events."
+                },
+                "v": {
+                    "$ref": "#/definitions/authVersion",
+                    "description": "Absent means version 1.0."
+                },
+                "m": {
+                    "type": "object",
+                    "description": "Optional metadata block for indexing.",
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "t",
+                "s",
+                "i",
+                "c"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

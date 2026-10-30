@@ -1,0 +1,20 @@
+{
+  "name": "attestation_003_reject_missing_required",
+  "spec_section": "Vendor attestation manifest",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "lace",
+      "protocol_versions": ["1"],
+      "methods": ["connect", "signTx"],
+      "https_prefix": "https://lace.io/cip30dl/v1/",
+      "scheme": "cip30dl-lace"
+    }
+  },
+  "expected": {
+    "schema_valid": false,
+    "failing_constraint": "required.max_payload_bytes"
+  },
+  "should_reject": true,
+  "rejection_reason": "missing_required_field"
+}

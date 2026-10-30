@@ -1,13 +1,14 @@
 ---
 CIP: 82
 Title: Improved Rewards Scheme Parameters
-Status: Proposed
 Category: Ledger
+Status: Proposed
 Authors:
     - Tobias Fancee <tobiasfancee@gmail.com>
 Implementors: []
 Discussions:
-    - https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/422
+    - Cardano Forum: https://forum.cardano.org/t/cip-improved-rewards-scheme-parameters/112409
 Created: 2022-01-03
 License: CC-BY-4.0
 ---
@@ -18,7 +19,7 @@ The current parameter settings of Cardano's rewards sharing scheme leave much to
 
 The parameter changes in this proposal are an optimization of the current settings and are meant to improve the fairness and decentralization of Cardano. Furthermore, all changes suggested in this proposal have been specifically voiced by the Cardano community.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Definitions
 
@@ -95,7 +96,7 @@ $$poolRateEff = max(poolRate, minPoolRate)$$
 |-----------------------|---------------------|-------------------------|----------------|------------------------------|
 | stakePoolTargetNum    | N                   | N                       | 1000           | See Rationale Section.       |
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Principles
 

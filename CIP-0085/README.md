@@ -1,15 +1,15 @@
 ---
 CIP: 85
 Title: Sums-of-products in Plutus Core
-Authors: 
-  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Implementors: 
-  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
-Status: Proposed
 Category: Plutus
+Status: Active
+Authors:
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Implementors:
+  - Michael Peyton Jones <michael.peyton-jones@iohk.io>
+Discussions:
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/455
 Created: 2023-01-30
-Discussions: 
-  - https://github.com/cardano-foundation/CIPs/pull/455
 License: CC-BY-4.0
 ---
 
@@ -19,7 +19,7 @@ Plutus Core does not contain any native support for datatypes.
 Instead, users who want to use structured data must _encode_ it; a typical approach is to use [Scott encoding][].
 This CIP proposes to add native support for datatypes to Plutus Core using sums-of-products (SOPs), and to use that support more efficient scripts, and better code-generation for compilers targeting Plutus Core.
 
-## Motivation: why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 ### Background
 
@@ -40,7 +40,7 @@ It's clear what to do for a Haskell value of one of the Plutus Core builtin type
 
 For example:
 - `1` lifts to `(con integer 1)` (easy enough)
-- `Just 1` lifts to `(delay (lam case_Nothing (lam case_Just [caseJust (con integer 1)])))` (much more complicated)
+- `Just 1` lifts to `(delay (lam case_Nothing (lam case_Just [case_Just (con integer 1)])))` (much more complicated)
 
 This means that it's difficult to specify how to do lifting for structured data.
 For example, if we want users (or the ledger!) to create Plutus Core terms representing structured data, it will be difficult to explain how to do it.
@@ -159,7 +159,7 @@ However:
 - `constr`s arguments are all evaluated in turn, so we are sure to pay a linear price.
 - `case`'s branches are _not_ all evaluated, but the only place we could do a linear amount work is in selecting the chosen branch. But this can be avoided in the implementation by storing the cases in a datastructure with constant-time indexing.
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 ### Benefits
 
@@ -311,18 +311,18 @@ Finally, this is simply a less common design, and so conservatism suggests stick
 
 ### Acceptance Criteria
 
-- [ ] `plutus` changes
-    - [ ] Specification 
+- [x] `plutus` changes
+    - [x] Specification 
     - [x] Production implementation
     - [x] Costing of the new operations
-- [ ] `cardano-ledger` changes
-    - [ ] Implementation of new ledger language including SOPs
-- [ ] Further benchmarking 
+- [x] `cardano-ledger` changes
+    - [x] Implementation of new ledger language including SOPs
+- [x] Further benchmarking 
     - [x] Ensure that regressions on existing scripts do not occur 
-    - [ ] Check additional real-world examples
-- [ ] Release
-    - [ ] New Plutus language version supported in a released node version
-    - [ ] New ledger language supported in a released node version
+    - [x] Check additional real-world examples
+- [x] Release
+    - [x] New Plutus language version supported in a released node version
+    - [x] New ledger language supported in a released node version
 
 ### Implementation Plan
 
@@ -652,7 +652,7 @@ This is not terribly surprising: pattern-matching on a datatype encoded using `D
 
 On the other hand, for SOPs this is a single machine step.
 
-## Copyright 
+## Copyright
 
 This CIP is licensed under [CC-BY-4.0][].
 

@@ -1,0 +1,27 @@
+; This file was auto-generated from huddle.
+; Source: https://github.com/tweag/cardano-cls/blob/main/scls-cardano/cddl-src/Cardano/SCLS/Namespace/GovProposalsRoots.hs
+
+;  Size of the key
+; 
+;  ```
+;  meta:
+;    endian: be
+; 
+;  seq:
+;    - id: key
+;      type: u1
+;      enum: gov_proposals_purpose:
+;  
+;    enums:
+;      gov_proposals_purpose::
+;        0: pparams_update
+;        1: hard_fork
+;        2: committee
+;        3: constitution
+;  ```
+; 
+record_entry = gov_action_id
+
+gov_action_id = [transaction_id : hash32, gov_action_index : uint .size 2]
+
+hash32 = bytes .size 32

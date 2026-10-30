@@ -2,8 +2,8 @@ ADDRESS = %b0000 | NETWORK-TAG | KEY-HASH    | KEY-HASH       ; type 00, Base Sh
         \ %b0001 | NETWORK-TAG | SCRIPT-HASH | KEY-HASH       ; type 01, Base Shelley address
         \ %b0010 | NETWORK-TAG | KEY-HASH    | SCRIPT-HASH    ; type 02, Base Shelley address
         \ %b0011 | NETWORK-TAG | SCRIPT-HASH | SCRIPT-HASH    ; type 03, Base Shelley address
-        \ %b0100 | NETWORK-TAG | KEY-HASH    | POINTER        ; type 04, Pointer Shelley address
-        \ %b0101 | NETWORK-TAG | SCRIPT-HASH | POINTER        ; type 05, Pointer Shelley address
+        \ %b0100 | NETWORK-TAG | KEY-HASH    | POINTER        ; type 04, Pointer Shelley address deprecated in Conway
+        \ %b0101 | NETWORK-TAG | SCRIPT-HASH | POINTER        ; type 05, Pointer Shelley address deprecated in Conway
         \ %b0110 | NETWORK-TAG | KEY-HASH                     ; type 06, Payment Shelley address
         \ %b0111 | NETWORK-TAG | SCRIPT-HASH                  ; type 07, Payment Shelley address
         \ %b1000 | BYRON-PAYLOAD                              ; type 08, Byron / Bootstrap address

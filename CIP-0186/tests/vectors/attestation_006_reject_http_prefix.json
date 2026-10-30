@@ -1,0 +1,21 @@
+{
+  "name": "attestation_006_reject_http_prefix",
+  "spec_section": "Vendor attestation manifest",
+  "category": "attestation_manifest",
+  "input": {
+    "manifest": {
+      "wallet_id": "lace",
+      "protocol_versions": ["1"],
+      "methods": ["connect", "signTx", "signData", "getUsedAddresses", "getRewardAddresses", "getNetworkId"],
+      "https_prefix": "http://lace.io/cip30dl/v1/",
+      "scheme": "cip30dl-lace",
+      "max_payload_bytes": 12288
+    }
+  },
+  "expected": {
+    "schema_valid": false,
+    "failing_constraint": "https_prefix.pattern"
+  },
+  "should_reject": true,
+  "rejection_reason": "http_not_https"
+}

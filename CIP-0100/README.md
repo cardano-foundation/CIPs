@@ -2,12 +2,12 @@
 CIP: 100
 Title: Governance Metadata
 Category: Metadata
-Status: Proposed
+Status: Active
 Authors:
     - Pi Lanningham <pi@sundaeswap.finance>
 Implementors: []
 Discussions:
-    - https://github.com/cardano-foundation/cips/pulls/556
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/556
 Created: 2023-04-09
 License: CC-BY-4.0
 ---
@@ -18,7 +18,7 @@ This Cardano Improvement Proposal (CIP) introduces a standardized and flexible m
 
 For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 With the advent of the Voltaire era, Cardano is moving towards a decentralized governance model. CIP-1694 addresses a potential technical implementation of ledger rules for creating, voting on, and ratifying proposed changes to the ledger. The ledger has no mechanism or desire to validate this metadata, and as a result, the official specification leaves the format of this metadata unspecified.
 
@@ -41,7 +41,7 @@ This section outlines the high level format and requirements of this standard.
       NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
       "OPTIONAL" in this document are to be interpreted as described in
       [RFC 2119](https://www.rfc-editor.org/rfc/rfc2119).
-      
+
 - On chain metadata actions in CIP-1694 (and likely any alternative proposals) have the notion of an "Anchor"; this is the URL and a hash for additional, non-ledger metadata about the action.
 - Tools which publish governance related transactions SHOULD publish metadata via these fields.
 - While that content MAY be in any format, following any standard or non-standard, for the remainder of this document SHOULD/MUST will refer to documents that are following this specification.
@@ -49,7 +49,7 @@ This section outlines the high level format and requirements of this standard.
 - This document SHOULD include `@context` and `@type` fields below to aid in interpretation of the document.  
 - The JSON document SHOULD be formatted for human readability, for the sake of anyone who is manually perusing the metadata.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
-- The hash in the anchor MUST be the hash of the canonicalized form of the metadata document, using the hashing algorithm specified in the `hashAlgorithm` field. Currently only blake2b-256 is supported.
+- The hash in the anchor MUST be the hash of the the raw bytes of the content, using the hashing algorithm specified in the `hashAlgorithm` field. Currently only blake2b-256 is supported.
 - For the purposes of hashing and signature validation, we should use the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification.
 
 ### Versioning
@@ -148,7 +148,8 @@ Additionally, we highlight the following concepts native to json-ld that are use
 
 When publishing a governance action, the certificate has an "anchor", defined as a URI and a hash of the content at the URI.
 
-For CIP-0100 compliant metadata, the hash in the anchor should be the blake2b-256 hash of the "Canonized" form of the full document. This canonicalization is to remove ambiguities in serialization format and ensure that all consumers arrive at the same hash. The canonicalization algorithm for JSON-LD is specified [here](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/).
+For CIP-0100 compliant metadata, the hash in the anchor should be the blake2b-256 hash of the raw bytes received from the wire.
+Hashing directly the original bytes ensures that there are no ambiguities, since the process doesn't depend on parsing the metadata, which can be the source of conflicts in different implementations.
 
 A metadata has a number of authors, each of which MUST authenticate their endorsement of the document in some way.
 
@@ -158,7 +159,7 @@ Each author should have a witness. The witness will be an object with an `witnes
 
 Because the overall document may change, it is neccesary to hash a subset of the document that is known before any signatures are collected. This is the motivation behind the `body` field.
 
-The signature is an ed5519 signature using the attached public key, and the payload set to the blake2b-256 hash of the `body` field. Specifically, this field is canonicalized in the following way.
+The signature is an ed25519 signature using the attached public key, and the payload set to the blake2b-256 hash of the `body` field. Specifically, this field is canonicalized in the following way.
 - Canonicalize the whole document according to [this](https://w3c-ccg.github.io/rdf-dataset-canonicalization/spec/) specification.
 - Identify the node-ID of the `body` node
 - Filter the canonicalized document to include the body node, and all its descendents
@@ -176,13 +177,14 @@ This section outlines a number of other best practices for tools and user experi
  - You SHOULD provide a way to access the raw underlying data for advanced or diligent users.
    - This MAY be in the form of a JSON viewer, or a simple link to the content.
  - You SHOULD gracefully degrade to a simple raw content view if the metadata is malformed in some way, or not understood.
+   - For example, a proposal has added an extra unexpected field, in addition to expected ones. The tool SHOULD gracefully render expected fields and show users a raw view of unexpected fields. 
  - You SHOULD provide links and cross references whenever the metadata refers to another object in some way
    - For example, a proposal may link to the sponsoring DReps, which may have their own view within the tool you're building
  - If you are hosting the content for the user, you SHOULD use a content-addressable hosting platform such as IPFS or Arweave
  - If the content is self-hosted, you SHOULD take care to warn the user about changing the content
    - For example, you CAN detect well-known content-addressable file storage platforms such as IPFS or Arweave, and display an extra warning if the content is not hosted on one of those
 
-## Rationale: how does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 Here are the goals this CIP seeks to achieve, and the rationale for how this specific solution accomplishes them:
 
@@ -204,6 +206,8 @@ Here are the goals this CIP seeks to achieve, and the rationale for how this spe
 The following alternatives were considered, and rejected:
  - Plain JSON documents
    - While ultimately flexible and simple, there is a risk that with no way to structure what is *officially* supported, and the interpretation of each field, tooling authors would have one hand tied behind their back, and would be limited to a minimum common denominator.
+ - Canonicalising the whole document before hashing it
+   - Canonicalising requires initially parsing the file as a json, which can by itself cause ambiguities
  - A custom JSON format, with reference to CIPs
   - An initial draft of this proposal had an `extensions` field that operated very similar to `@context`
   - Instead, this CIP chose to go with an industry standard format to leverage the existing tooling and thought that went into JSON-LD
@@ -213,11 +217,7 @@ The following alternatives were considered, and rejected:
 
 ### Test Vectors
 
-An example document with an inline context is provided in [this](./example.json) example JSON file.
-
-Canonicalization should produce the following blak2b-256 hash:
-
-`6ea05c0e97b1b7316d48b5587a9e60d47c0c44993c8609c9544d88c111814819`
+See [test-vector.md](./test-vector.md) for example.
 
 ## Path to Active
 
@@ -227,11 +227,30 @@ The path for this proposal to be considered active within the community focuses 
 
 In order for this standard to be active, the following should be true:
 
- - At least 1 month of feedback has been solicited, and any relevant changes with broad consensus to the proposal made
- - At least 2 client libraries in existence that support reading an arbitrary JSON file, and returning strongly typed representations of these documents
- - At least 1 widely used *producer* of governance metadata (such as a wallet, or the cardano-cli)
- - At least 1 widely used *consumer* of governance metadata (such as a blockchain explorer, governance explorer, voting dashboard, etc)
- - At least 1 CIP in the "Proposed" status that outlines additional fields to extend this metadata
+ - [x] At least 1 month of feedback has been solicited, and any relevant changes with broad consensus to the proposal made
+ - [ ] At least 2 client libraries in existence that support reading an arbitrary JSON file, and returning strongly typed representations of these documents
+   - [cardano-governance-metadata-lib](https://github.com/SundaeSwap-finance/cardano-governance-metadata)
+ - [x] At least 1 widely used *producer* of governance metadata (such as a wallet, or the cardano-cli)
+   - [1694.io](https://www.1694.io)
+   - [GovTool](https://gov.tools)
+   - [Tempo.vote](https://tempo.vote)
+ - [x] At least 1 widely used *consumer* of governance metadata (such as a blockchain explorer, governance explorer, voting dashboard, etc)
+   - [1694.io](https://www.1694.io)
+   - [Adastat](https://adastat.net)
+   - [Cardanoscan](https://cardanoscan.io)
+   - [GovTool](https://gov.tools)
+   - [Tempo.vote](https://tempo.vote)
+ - [x] At least 1 CIP in the "Proposed" status that outlines additional fields to extend this metadata
+   - [CIP-108 | Governance Metadata - Governance Actions](../CIP-0108/README.md)
+   - [CIP-119 | Governance metadata - DReps](../CIP-0119/README.md)
+   - [CIP-136 | Governance metadata - Constitutional Committee votes](../CIP-0136/README.md)
+
+### Community Tooling
+
+Below you can find a growing list of community tools which let you sign / verify / canonize / manipulate governance metadata JSON-LD data:
+- [cardano-signer](https://github.com/gitmachtl/cardano-signer?tab=readme-ov-file#cip-100--cip-108--cip-119-mode) : A tool to sign with author secret keys, verify signatures, canonize the body content (Linux/Arm/Win/Mac)
+- [cardano-governance-metadata-lib](https://github.com/SundaeSwap-finance/cardano-governance-metadata) : A rust library for interacting with Cardano Governance Metadata conforming to CIP-100 (rust)
+- [verifycardanomessage.cardanofoundation.org](https://verifycardanomessage.cardanofoundation.org/method=cip100) : A tool to verify CIP-100 compliance of metadata.
 
 ### Implementation Plan
 
