@@ -1,0 +1,13 @@
+# JSON is not tracked from here on. The 155 .json files already committed
+# are unaffected — .gitignore only governs untracked files — but a NEW one
+# will be invisible to git, including a schema added alongside a new CIP.
+# Force it in with `git add -f <path>` when that is what you want.
+*.json
+
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp

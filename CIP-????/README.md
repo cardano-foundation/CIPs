@@ -1,6 +1,6 @@
 ---
 CIP: ????
-Title: Light Client Intents
+Title: Nested Txs Service Layer Light Client Extension 
 Category: Network
 Status: Proposed
 Authors:
