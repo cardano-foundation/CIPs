@@ -8,6 +8,7 @@ Authors:
 Implementors: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1077
+  - Separation of Concerns PR: https://github.com/cardano-foundation/CIPs/pull/1307
 Created: 2025-08-15
 License: CC-BY-4.0
 ---
