@@ -81,7 +81,7 @@ The arguments are the public key, the message, and the signature. Every argument
 - Verification vectors give a public key, a message, a signature and the expected result. For each scheme they check that a genuine signature returns true, that changing one bit of the message returns false, and that changing one bit of the signature returns false. Further vectors check that a signature does not verify under another key of the same scheme, and that evaluation fails when the key and signature declare different schemes, when a key of one family is passed to the builtin of the other, and when a signature is placed in the public key position.
 - Rejection vectors are malformed objects that every builtin must refuse, covering an unsupported version, an unassigned and a reserved identifier, an invalid kind, a body one byte short and one byte long, and a truncated header.
 
-Every vector was generated with one implementation and checked against a second, independent one.
+Every vector is generated from the fixed seeds by the reference generator at https://github.com/quantova-inc/bnb-pq-tooling/tree/main/registry and cross checked against a second independent implementation, so the whole set reproduces byte for byte.
 
 ## Rationale: How does this CIP achieve its goals?
 
