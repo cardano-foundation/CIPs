@@ -64,7 +64,7 @@ Any solution must remain **strictly voluntary**: signalling software identity is
 ## Goals
 
 1. Agree on **one** standard channel per kind of signal, client identity first, so all implementations and consumers interoperate.
-2. If the solution is carried within an existing data field with a different origingating purpose (e.g. header minor version) - Define a **compact encoding** and a lightweight, openly governed **registry of client identifiers** (plausibly maintained in the CIP repository itself). 
+2. If the solution is carried within an existing data field with a different originating purpose (e.g. header minor version) - Define a **compact encoding** and a lightweight, openly governed **registry of client identifiers** (plausibly maintained in the CIP repository itself). 
 3. Preserve **per-block attribution** where the mechanism allows it, and clearly document the trust model where it does not (self-declared, spoofable, non-cryptographic).
 4. Keep the mechanism **generic**: Avoid building dedicated, over-fit features, which increase bloat and complexity of Cardano codebases. Client identity could be the first payload, but the channel should accommodate future one-way signals (feature/fork readiness bits, BIP 8/9-style semantics).
 5. Guarantee the mechanism is **opt-in, zero cost, and consensus-neutral**: no ledger rule changes, no validity impact, no obligation.
@@ -80,7 +80,7 @@ Any solution must remain **strictly voluntary**: signalling software identity is
    - a per-operator switch, as some operators are not allowed to disclose versions ([@gufmar](https://github.com/cardano-foundation/CIPs/pull/1157#issuecomment-4979324073)); exchange teams leave Ethereum graffiti empty for that reason, and only about 40% of graffiti carries client info ([@gufmar](https://discord.com/channels/1202416088776712253/1552017003219259505/1552087085475958831));
    - easy disabling, as exposure aids targeting ([@jeluard](https://github.com/pragma-org/amaru/pull/1446#issuecomment-5925902991), [@coot](https://github.com/IntersectMBO/ouroboros-network/issues/4905#issuecomment-5774239324));
    - public chain data should be available unless there is a heavy security concern ([Porto workshop](https://forum.cardano.org/t/cardano-node-diversity-workshop-in-porto-june-2026/155216)).
-
+- Is node client type sufficient data, or does the ecosystem benefit from more detailed metrics and telemetry, respectively should an effort be made for solutions/channels that report telemetry beyond node client types?  
 
 ## References
 - BIP 9: Version bits with timeout and delay; BIP 8: Version bits with lock-in by height (Bitcoin)
