@@ -207,10 +207,10 @@ described below.
 **zkVM implementations.** The same derivation chain is also implemented as
 zkVM guests in the `cardano-foundation/bls` repository:
 
-- **OpenVM** [BLS-ZKVM-STRONG]: compiles to an OpenVM ELF; host test passes;
-  full proof generation is still being benchmarked.
+- **OpenVM** [BLS-ZKVM-STRONG]: app proof takes ~21 minutes and produces a
+  702 KiB proof on the reference host.
 - **Jolt** [BLS-JOLT-STRONG]: end-to-end proving takes ~4.5 minutes and yields
-  an ~89 kB proof on the reference host, with verification in ~1 second.
+  an ~89 KiB proof on the reference host, with verification in ~1 second.
 
 Both reuse audited Rust crates (`sha2`/`openvm-sha2`, `hmac`, `curve25519-dalek`,
 `num-bigint`) to perform HMAC-SHA512, mod-2^256 addition, and Ed25519 public-key
