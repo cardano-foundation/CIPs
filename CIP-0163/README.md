@@ -63,9 +63,9 @@ With expiry enabled, let a qualifying witness occur in epoch $t$, with numeric a
 | 102 | 102 | Unexpired |
 | 103 | 102 | Expired |
 
-This example does not select an initial numeric parameter value. At $d=0$, the account is unexpired in the qualifying epoch and expires in the next one. Zero therefore enables a zero-period expiry rule; it is distinct from `null`, which disables expiry.
+At $d=0$, the account is unexpired in the qualifying epoch and expires in the next one. Zero therefore enables a zero-period expiry rule.  It is distinct from `null`, which disables expiry.
 
-For pool leader election and rewards, evaluate expiry when a new `mark` snapshot is formed, using the epoch being entered and the parameter state then effective. Apply any null-to-numeric grace-period initialization before this check. Retain the snapshot's eligible stake and delegation through `set` and `go`; later expiration, renewal, or parameter changes do not re-filter it or alter rewards already earned through it.
+For pool leader election and rewards, evaluate expiry when a new `mark` snapshot is formed, using the epoch being entered and the parameter state then effective. Retain the snapshot's eligible stake and delegation through `set` and `go`.  Later changes do not alter rewards already earned.
 
 The [Shelley reward cycle](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L41-L94) and [worked snapshot example](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L210-L225) give the following timeline for a snapshot created at the boundary entering epoch $n$:
 
@@ -78,7 +78,7 @@ The [Shelley reward cycle](https://github.com/IntersectMBO/cardano-ledger/blob/d
 
 In the example above, an account not renewed is excluded from `mark` entering epoch 103, then from `set` in epoch 104 and `go` in epoch 105, with the corresponding reward update applied entering epoch 106. Its earlier eligible snapshot from epoch 102 can still support production in epoch 103 and rewards calculated in epoch 104 and applied entering epoch 105. Explorer and SPO estimates of leader schedules or block-production luck should use the eligible stake in the corresponding historical snapshot, rather than current account expiry status.
 
-Governance voting power follows the existing Conway stake-distribution and ratification timing, rather than this pool reward pipeline. Apply expiry when governance voting power is computed, using that computation's epoch and parameter state; `null` adds no expiry restriction. Renewal and parameter changes affect subsequent computations, without rewriting already formed distributions used by the prevailing rules or completed tallies.
+Governance voting power follows the existing Conway stake-distribution and ratification timing, rather than this pool reward pipeline. Apply expiry when governance voting power is computed, using that computation's epoch and parameter state.
 
 ### Eligibility and reward calculation
 
