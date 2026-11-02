@@ -65,26 +65,20 @@ With expiry enabled, let a qualifying witness occur in epoch $t$, with numeric a
 
 This example does not select an initial numeric parameter value. At $d=0$, the account is unexpired in the qualifying epoch and expires in the next one. Zero therefore enables a zero-period expiry rule; it is distinct from `null`, which disables expiry.
 
-### Pool snapshot timing
+For pool leader election and rewards, evaluate expiry when a new `mark` snapshot is formed, using the epoch being entered and the parameter state then effective. Apply any null-to-numeric grace-period initialization before this check. Retain the snapshot's eligible stake and delegation through `set` and `go`; later expiration, renewal, or parameter changes do not re-filter it or alter rewards already earned through it.
 
-Determine expiry eligibility when a new `mark` snapshot is formed, using the epoch being entered and the parameter state effective for that snapshot. If a numeric period has just been enabled, apply the full grace-period initialization before this check. Retain the snapshot's eligible stake and delegation data as it progresses through `set` and `go`. Expiration, renewal, and parameter changes after its creation do not retroactively re-filter it. Implementations need not add expiration metadata to historical snapshots solely to repeat the expiry check later.
+The [Shelley reward cycle](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L41-L94) and [worked snapshot example](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L210-L225) give the following timeline for a snapshot created at the boundary entering epoch $n$:
 
-The [Shelley reward cycle](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L41-L94) and [worked snapshot example](https://github.com/IntersectMBO/cardano-ledger/blob/d6eec237df7884aa7ee9854b4b1a83679d9eb99b/eras/shelley/formal-spec/epoch.tex#L210-L225) establish the following lineage for one snapshot:
-
-| Epoch | Stage of the snapshot created at the boundary entering epoch $n$ | Use and expiry treatment |
+| Epoch | Snapshot stage | Use |
 | --- | --- | --- |
 | $n$ | `mark` | Capture stake and delegation with expiry eligibility evaluated in epoch $n$. |
-| $n+1$ | `set` | Use the retained eligible stake for pool leader election and production in epoch $n+1$. |
-| $n+2$ | `go` | Calculate rewards for production in epoch $n+1$ using the retained snapshot, subject to the other reward rules. |
-| Boundary entering $n+3$ | Reward update applied | Apply the resulting rewards through the existing epoch-boundary process; do not deny previously earned rewards because the account has since expired. |
+| $n+1$ | `set` | Use the retained eligible stake for pool leader election and production. |
+| $n+2$ | `go` | Calculate rewards for production in epoch $n+1$ under the existing reward rules. |
+| Boundary entering $n+3$ | Reward update applied | Apply the resulting rewards through the existing epoch-boundary process. |
 
-In the expiration example above, if the account is not renewed, the new `mark` snapshot at the boundary entering epoch 103 excludes its stake. That exclusion reaches `set` in epoch 104 and `go` in epoch 105, with the corresponding reward update applied at the boundary entering epoch 106. The earlier snapshot taken entering epoch 102 can still support production in epoch 103 and rewards calculated in epoch 104 and applied entering epoch 105. A renewal likewise affects future snapshots rather than changing ones already formed.
+In the example above, an account not renewed is excluded from `mark` entering epoch 103, then from `set` in epoch 104 and `go` in epoch 105, with the corresponding reward update applied entering epoch 106. Its earlier eligible snapshot from epoch 102 can still support production in epoch 103 and rewards calculated in epoch 104 and applied entering epoch 105. Explorer and SPO estimates of leader schedules or block-production luck should use the eligible stake in the corresponding historical snapshot, rather than current account expiry status.
 
-Explorers and SPO tools should use the eligible pool stake in the snapshot corresponding to the production epoch when estimating leader schedules or block-production luck. An account's current expiry status is not a substitute for that historical snapshot.
-
-### Governance timing
-
-Governance voting power follows the prevailing Conway governance stake-distribution and ratification timing, not the pool `mark`/`set`/`go` reward pipeline. At the computation that forms the governance voting power used by those rules, apply the expiry comparison using that computation's epoch and the parameter state then in force. With a numeric period, expired accounts contribute no voting stake to that computation; with `null`, expiry adds no restriction. Preserve any already formed governance distribution for the decisions for which the prevailing rules use it. Renewal or a parameter transition affects subsequent computations, without rewriting completed tallies or other historical state.
+Governance voting power follows the existing Conway stake-distribution and ratification timing, rather than this pool reward pipeline. Apply expiry when governance voting power is computed, using that computation's epoch and parameter state; `null` adds no expiry restriction. Renewal and parameter changes affect subsequent computations, without rewriting already formed distributions used by the prevailing rules or completed tallies.
 
 ### Eligibility and reward calculation
 
@@ -107,14 +101,6 @@ Pool saturation and block performance remain separate parts of the reward calcul
 Introducing inactivity expiry could, in the short term, allow portions of stake to lapse if large wallets forget or delay renewal. This temporarily reduces the **active‑stake ratio**, widening the gap between total and active stake. In such windows, the cost for an adversary to assemble a large share of active stake is lower than usual, and block production can concentrate among a smaller set of pools until new delegations occur.
 
 This risk may be assessed for time-bound delegation on its own or it may be considered in conjunction with the [Dynamic Rewards proposal](https://github.com/cardano-foundation/CIPs/pull/1306).
-
-### Evidence for the activity period
-
-The [adoption ballot's supporting links](https://app.ekklesia.vote/ballots/69fb4bef11b259b0b192d40b/proposals/69fb4bef11b259b0b192d40e) collect the original CIP discussion, forum discussion, seminar recording and slides, modeling tool, and FAQ. The [parameter-value ballot](https://app.ekklesia.vote/ballots/69fb4bef11b259b0b192d40b/proposals/69fb4bef11b259b0b192d40f) considered periods around two to six years, alongside shorter and longer alternatives. These are exploratory choices, not established safe minimums, maximums, or an agreed initial numeric value.
-
-The parameter ballot dates the [historical inactivity chart](https://raw.githubusercontent.com/Cerkoryn/governance-reference/e12d2b585d817890f1878372616abc6345b76265/delegatorInactivity_values.jpg) to October 15, 2025. This link pins the repository-hosted artifact to a specific commit; the commit date is not the observation date. The [per-pool inactivity search](https://earncoinpool.com/CIP-163.html) is a live external tool rather than an immutable research snapshot. Its results and the historical chart describe transaction inactivity, not necessarily the absence of a qualifying staking-credential witness. They do not measure permanently lost stake or predict how many accounts would actually expire after notice and opportunities to renew. The author also [corrected an earlier analysis](https://github.com/cardano-foundation/CIPs/pull/1077#issuecomment-3358578912) because inbound-only transactions had incorrectly indicated activity.
-
-These materials are dated background and may have become stale. Some describe the earlier bundled proposal, use the old parameter name, or assume retroactive migration rather than the full grace period specified here. Presentations and external tools without an identifiable immutable version remain background links, not implementation references. A governance proposal selecting the first numeric period should use refreshed analysis of qualifying witnesses, operational readiness, and the effects of the grace period and snapshot timing.
 
 ## Path to Active
 
