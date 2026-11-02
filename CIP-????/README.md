@@ -73,6 +73,7 @@ with a bigger variety of needs.
 | [Service profile](#service-profile) | declares the client models served, the dialects spoken, and what it will build | A client cannot otherwise tell whether to ask, or what it will be charged |
 | [Rejection reasons](#the-exchange) | new codes, and a refusal may carry a profile | "No" is useless to a client that cannot see why; a profile tells it where to go next |
 | [Protocol constants](#protocol-constants) | caps on bound entries and list length, an intent TTL and rate limit | Bounds are flat but not few, and an intent carries no spend input to make it costly |
+| [Witnessing](#who-is-asking) | an intent spending from a key carries that key's signature | Naming a key is a claim to control it, and a service should not build against credentials the sender does not hold |
 
 A blind version of the client is outlined here, but not fully specified or 
 prototyped. 
@@ -175,7 +176,13 @@ intent =
          , expiry           : uint             ; POSIX milliseconds
          , top_level        : bool             ; fill as a top-level tx,
                                                ; so no interpreter runs
+         , witnesses        : [* intent_witness] ; see "who is asking"
          ])
+
+intent_witness =
+  [ vkey : bytes .size 32
+  , sig  : bytes .size 64                      ; over everything above
+  ]
 ```
 
 **A top-level transaction instead.** Setting `top_level` asks the service
@@ -188,8 +195,9 @@ A valid intent message is such that :
 - `network_id` matches, 
 - the constraint is within the [shape caps](#protocol-constants), 
 - `expiry` within `MAX_INTENT_TTL`, 
-- size within `MAX_INTENT_BYTES`, and 
-- the credentials its bounds name resolve. 
+- size within `MAX_INTENT_BYTES`, 
+- the credentials its bounds name resolve, and 
+- it is witnessed 
 
 **Why `offered` and `needed` are useful but not binding.** Both are derivable
 from the constraint, however, this is complicated. 
@@ -208,6 +216,17 @@ by `MAX_INTENT_TTL`; `valid_within` bounds when the resulting batch may land,
 and is the only one a guard enforces.
 
 The **`intent_version`** ensures that the intent is correctly interpreted by the SP.
+
+**Witnessing**
+Naming a key credential in a `Spends` is a claim to control it, and checking 
+this will help reduce spam. So a service must 
+check the following (and reject intents that do not satisfy this rule):
+
+> **Iff the constraint spends from a public-key credential, the `intent`
+> containing that constraint must carry that key's signature associated to the corresponding public key hash.** 
+
+Each signature is on the whole message except for the `witnesses` list, prefixed with
+`cip-lc/intent/v1`. 
 
 ### Finding a service
 
@@ -480,6 +499,7 @@ is exactly what will not work.
 | *insufficient-funds* | a value | change their intent or give up | never |
 | *script-failed* | script hash (of failing script) | fix intent to ensure script validation | never |
 | *misrouted* | — | the declared `offered`/`needed` contradict the constraint, or it arrived under a key the constraint does not derive: correct the message | never |
+| *unauthorised* | the key at fault | a key the constraint spends from has no witness, has a bad one, or a witness names a key it never spends from: see [who is asking](#who-is-asking) | never |
 | *underpriced* | price, maybe ExUnits (if calculated by SP) | raise the ceiling to the reported cost through this service's hint (CIP-0198, *price hints*) | at the new price |
 | *terms-changed* | the current [profile](#service-profile) | re-read it and decide again | at the new terms |
 | *unsatisfiable* | — | try elsewhere, or relax the constraint | elsewhere |
@@ -958,6 +978,8 @@ intent satisfaction.
   explicit payment is checkable by the SP for free.
 - [Protocol constants](#protocol-constants): an intent carries no spend
   input, so nothing else makes asking costly.
+- [Witnessing](#who-is-asking): a key named as a spend source is a claim,
+  and the claim is cheap to prove and cheap to check.
 
 **Pluggability**
 In the reference implementation, the `IntentLanguage` and the

@@ -263,8 +263,8 @@ Each figure below is the constraint as it would ride on-chain, measured.
 | 2. DEX swap | 312 B | 6 | 2 |
 | 3. Sponsored mint | 200 B | 5 | 1 |
 
-Against a 16 KB `maxTxSize`, one intent's datum is **2–2.5%**. At
-`minFeeA = 44` lovelace/byte that is roughly **0.018 ADA** of fee per intent,
+Against a 16 KB `maxTxSize`, one intent's datum is **1.2–2%**. At
+`minFeeA = 44` lovelace/byte that is roughly **0.012 ADA** of fee per intent,
 which nobody will notice.
 
 The batch is where it adds up. **Ten intents in one batch is ~2.5 KB of guard
