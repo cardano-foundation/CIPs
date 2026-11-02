@@ -16,14 +16,18 @@ License: CC-BY-4.0
 
 An optional, additive post-quantum signing layer for Cardano HD wallets using the
 BIP32-Ed25519 derivation of [CIP-1852]. Keys, addresses, and derivation are
-unchanged; the classical Ed25519 signature is replaced by (or, in the recommended
-deployment, accompanied by) a zero-knowledge proof of knowledge of the seed witness
-underlying the existing public key, per the ZKPoSP construction [ZKPoSP].
+unchanged; the classical Ed25519 signature is accompanied by a zero-knowledge proof
+of knowledge of the seed witness underlying the existing public key, per the ZKPoSP
+construction [ZKPoSP]. The deployable path uses NovaSlim [NOVASLIM], whose on-chain
+proofs can be as small as ~0.4 KiB (slim, honest-execution model) or ~1.7 KiB
+(level-1, untrusted-prover model), depending on the required trust assumption.
 Post-quantum security reduces to the conjectured quantum hardness of SHA-256/SHA-512
-and the soundness of the STARK proof system — no key re-registration, no address
-migration, no change to the derivation path. Adoption is opt-in and phased; the
-recommended deployment needs no network upgrade. Covers payment, staking, DRep, and
-constitutional-committee roles uniformly.
+and the soundness argument of the chosen proof system — no key re-registration, no
+address migration, no change to the derivation path. Adoption is opt-in and phased;
+the recommended Phase 1 deployment needs no network upgrade and positions NovaSlim as
+a fund-recovery / post-quantum-fallback mechanism rather than a day-to-day signing
+replacement. Covers payment, staking, DRep, and constitutional-committee roles
+uniformly.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -41,14 +45,14 @@ constitutional-committee roles uniformly.
 For the key material behind Cardano signatures there are exactly two coherent
 strategies — and they are alternatives, not complements:
 
-| | **Path A — prove over today's keys** (this CIP) | **Path B — native PQ keys** |
+| | **Path A — prove over today's keys** (this CIP) | **Path B — native PQ keys (see CIP-0206)** |
 |---|---|---|
-| **Signature primitive** | ZKPoSP zero-knowledge proof over the existing BIP32-Ed25519 key | Standard PQ scheme (ML-DSA, Falcon, SPHINCS+) |
+| **Signature primitive** | ZKPoSP zero-knowledge proof over the existing BIP32-Ed25519 key | Standard PQ scheme such as ML-DSA or SLH-DSA (CIP-0206) |
 | **Key derivation** | unchanged BIP32-Ed25519 | comes with its own PQ derivation (QBIP32-style) — BIP32 cannot produce PQ-scheme keys |
 | **Migration needed** | none — addresses, keys, hardware wallets stay as they are | yes — new key formats mean new addresses; existing funds still need Path A as a bridge |
-| **Signature size** | ~219 KB | ~1–8 KB |
-| **Proving cost** | ~12.5 s per transaction | near-instant |
-| **On-chain settlement** | not feasible today | plausible |
+| **Signature size** | ~0.4–1.7 KiB (NovaSlim, depending on mode) | ~2.4–7.9 KB (CIP-0206 parameter sets) |
+| **Proving cost** | ~12.5 s per transaction (RISC Zero baseline); NovaSlim figures in [Proving backend options](#proving-backend-options) | near-instant |
+| **On-chain settlement** | feasible today via NovaSlim level-1 | plausible |
 
 The key insight is that **PQ derivation is not a third, independent option — it is a
 built-in consequence of Path B.** A native PQ signature scheme brings its own key
@@ -60,10 +64,17 @@ existing funds.
 **This CIP pursues Path A.** The whole design — unchanged derivation and addresses,
 proofs anchored at the hardened `account'`, the two-phase deployment — exists to keep
 today's BIP32-Ed25519 keys quantum-safe without migration. **Path B is deliberately out
-of scope here and should be pursued in a separate CIP** (native PQ signature schemes for
-newly generated keys, together with their PQ derivation scheme); this CIP references it
-only to delineate the boundary and to frame Path A as the migration bridge that Path B
-would lean on for existing funds.
+of scope here; it is being pursued in [CIP-0206](../CIP-0206/README.md)**, which adds
+ML-DSA and SLH-DSA verification builtins to Plutus for newly generated keys together
+with their PQ derivation scheme. This CIP references Path B only to delineate the
+boundary and to frame Path A as the migration bridge that Path B would lean on for
+existing funds.
+
+CIP-0206 and this CIP are therefore complementary: CIP-0206 gives Cardano native PQ
+signature verification for newly generated keys, while this CIP provides a
+zero-migration bridge that makes existing BIP32-Ed25519 keys quantum-safe. Existing
+funds that have not yet moved to CIP-0206-style keys can rely on the ZKPoSP/NovaSlim
+path described here.
 
 These paths answer *which keys and schemes* to use; they are orthogonal to the CIP's
 Phase 1/2, which answer *where proofs are verified* (off-chain vs on-chain) — either path
@@ -153,12 +164,14 @@ Phase 2):
 
 ### Instantiation
 
-**The proving system.** Proofs are ZK-STARKs — the proof family that stays secure
-against quantum adversaries — produced by the RISC Zero virtual machine [RISC-ZERO] in
-the reference implementation. Using a zkVM means the proof relations are written in
-ordinary Rust, reusing well-tested libraries (`curve25519-dalek`, `hmac`, `sha2`)
-instead of hand-built arithmetic circuits, which keeps engineering and audit cost
-low.
+**The proving system.** The [ZKPoSP] paper uses a ZK-STARK produced by the RISC Zero
+virtual machine [RISC-ZERO] as its reference backend. The deployable Cardano
+reference implementation described in this CIP is instead based on NovaSlim
+[NOVASLIM], a transparent folding/sumcheck proof system; see [Proving backend
+options](#proving-backend-options) for the comparison. Using a zkVM or a
+backend-agnostic circuit means the proof relations can be written in ordinary Rust,
+reusing well-tested libraries (`curve25519-dalek`, `hmac`, `sha2`) instead of
+hand-built arithmetic circuits, which keeps engineering and audit cost low.
 
 **The hashes.** Binding hashes use SHA-256; the key-derivation MAC remains
 HMAC-SHA512, unchanged from BIP32-Ed25519 — so the derivation itself is not touched.
@@ -222,21 +235,43 @@ zkVM. The comparison and selection of these options is discussed in
    maturity — a first-of-its-kind Nova implementation, unproven at Cardano scale — so it
    is a candidate for Phase 1 evaluation alongside the STARK route, not the default
    baseline.
-6. **NovaSlim [NOVASLIM] — experimental Phase 2 stepping stone.** A Nova-family IVC
-    system that produces **sub-kilobyte transparent proofs** (~0.4–2.5 KiB, independent
-    of commitment scheme) with **sub-millisecond verification** (~0.2 ms) and **no
-    trusted setup**. It is implemented in Rust with support for six curves (including
-    BLS12-381, Cardano's native curve) and three commitment schemes (Pedersen, SIS,
-    Hash).  **Hash is operationally SIS/Ajtai in disguise** (Blake2b-derived matrix
-    entries), so the same norm-enforcement caveat applies to both; neither gives a
-    proven post-quantum guarantee without additional range proofs.  Critically, it
-    already has a **working Aiken eUTXO verifier** running in Plutus V3 on BLS12-381
-    scalar arithmetic. Its protocol design, security proofs, and benchmark analysis are
-    specified in the NovaSlim whitepaper [NOVASLIM-WP].
-    Reference figures (VRF circuit, BLS12-381, Pedersen, 254 steps): fold ~3.5 s,
-    compress ~0.04 s, verify slim ~0.2 ms, proof ~0.4 KiB.  **Honest sizing:**
-    a fully sound system would be ~5–12 KiB (classical) and ~30–100+ KiB
-    (post-quantum) once PCS openings, fold verification, and norm proofs are included.
+ 6. **NovaSlim [NOVASLIM] — experimental Phase 2 infrastructure.** A Nova-family IVC
+     system that folds step-circuit witnesses into a Relaxed-R1CS accumulator and
+     compresses the result with a transparent sumcheck argument. It produces proofs
+     sized according to the verification mode, runs on BLS12-381 (Cardano's native
+     curve), and has a working Aiken/Plutus V3 verifier. Its protocol design, security
+     proofs, and benchmark analysis are specified in the NovaSlim whitepaper
+     [NOVASLIM-WP] and the supplementary documentation [NOVASLIM-DOCS].
+
+     **Proof-mode ladder (VRF stand-in circuit, 254 steps, BLS12-381/Pedersen):**
+
+     | Mode | Size | What it proves | On-chain? |
+     |---|---|---|---|
+     | slim (level-0) | ~0.4 KiB | Honest pipeline execution | Yes |
+     | full sumcheck | ~1.6 KiB | Sumcheck + HashPC openings (audit) | Off-chain |
+     | level-1 | ~1.7 KiB | Degree-2 sumcheck + final-claim-zero + openings | Yes |
+     | level-1 + norm-range | ~34 KiB | Level-1 + per-step range shortness certs | Audit-only |
+     | level-1 + norm-jl | ~42 KiB | Level-1 + per-step JL shortness certs | Audit-only |
+
+     **Soundness caveats.** The slim proof is sound only in the **batch-proving
+     model** where the prover is trusted during folding; an untrusted prover can make
+     an all-zero transcript pass. Level-1 closes the free-`E` / all-zero attack by
+     checking the MLE-of-product residual and binding the transcript to committed
+     witness/error openings. Full knowledge soundness under an untrusted prover awaits
+     Level-2 (sumcheck-based matrix evaluation), which is on the NovaSlim roadmap.
+
+     **Commitment schemes.** Pedersen (classical), SIS/Ajtai and Hash
+     (post-quantum-conjectured), and Module-SIS (parameter exploration complete;
+     implementation pending committed-shortness-preserving folding). Hash is
+     operationally SIS/Ajtai in disguise and inherits the same norm-enforcement caveat.
+
+     **On-chain footprint.** The Aiken Plutus V3 verifier costs approximately
+     **377K memory / 141M CPU** units; level-1 proofs fit comfortably inside current
+     `maxTxSize` limits.
+
+     **Positioning.** NovaSlim is intended as a **fund-recovery / post-quantum-fallback**
+     mechanism once classical signatures are disabled, not as a drop-in replacement for
+     everyday Ed25519 signing.
 
 ### Deployment: two phases
 
@@ -252,11 +287,12 @@ in what goes on-chain.
   quantum-safe *settlement* requires Phase 2 or the post-Q-day rule. Lova [LOVA],
   the lattice-based, quantum-proof descendant of Nova, can also be evaluated as an
   alternative prover-verifier pair within this off-chain Phase 1.
-- **Phase 2 — native STARK verifier in the node (future, conditional).** The proofs
-  replace the classical witness on-chain and the ledger verifies them via a native
-  (non-Plutus) STARK-verifier primitive. Requires a consensus/ledger change, a
-  proof-size reduction from ≈219 KB to within `maxTxSize`/`maxBlockBodySize`, and
-  parameter/governance action. Not feasible with current proof sizes.
+- **Phase 2 — NovaSlim verifier on-chain (future, conditional).** With NovaSlim,
+  the level-1 proof already fits inside `maxTxSize` and can be verified by the
+  existing Aiken/Plutus V3 verifier (~377K mem / 141M CPU). This path requires a
+  consensus/ledger change only to recognise the witness format and enforce its use,
+  not to add a new STARK primitive. The STARK-based alternative remains a fallback
+  requiring proof-size reduction from ≈219 KB before it can settle on-chain.
 
 **Why the sequence 1 → 2.** Phase 1 builds everything Phase 2 needs: wallet
 integration, the witness format and transport, conformance vectors, and a population
@@ -283,14 +319,15 @@ primary deployment (Conway-era limits; updatable via governance):
 | Plutus `maxTxExecutionUnits` | 14M memory / 10G steps per tx | No STARK verifier exists in Plutus; verification is orders of magnitude beyond this budget |
 | Native scripts (V1–V3) | threshold multisig only | Cannot express arbitrary NIZK verification |
 
-**However, NovaSlim [NOVASLIM] already bypasses the size constraints:** its slim
-proofs are **~0.4–2.5 KiB** (well under `maxTxSize`) and its Aiken verifier runs in
-**Plutus V3** on BLS12-381 scalar arithmetic. This makes NovaSlim the only backend
-with a working Phase 2 *infrastructure* path today — the verifier checks
-sumcheck consistency and algebraic correctness, but does not yet evaluate the
-circuit MLEs or open commitments, so it is suitable for **fund-recovery**
-(trusted prover) rather than day-to-day untrusted signing; see [Proving backend
-options](#proving-backend-options).
+**However, NovaSlim [NOVASLIM] already bypasses the size constraints:** a slim
+proof is **~0.4 KiB** and a level-1 proof is **~1.7 KiB** (both well under
+`maxTxSize`), while its Aiken verifier runs in **Plutus V3** on BLS12-381 scalar
+arithmetic at approximately **377K memory / 141M CPU** units. This makes NovaSlim
+the only backend with a working Phase 2 *infrastructure* path today. The slim proof
+is sound only in the batch-proving model (trusted prover); the level-1 proof closes
+the free-`E` attack and is the recommended on-chain mode for untrusted provers. Both
+are positioned as **fund-recovery / post-quantum-fallback** mechanisms rather than
+day-to-day signing replacements; see [Proving backend options](#proving-backend-options).
 
 Raising `maxTxSize` alone would not suffice for STARKs (the receipt also exceeds
 `maxBlockBodySize`), and the post-Q-day variant does not reduce proof size — it only
@@ -307,13 +344,12 @@ only if the previous one is closed for some reason:
 2. **One proof across several txs.** If no single tx can hold the receipt, split it
    over multiple mutually-referencing transactions, so the fragment proofs together
    form the full receipt.
-3. **NovaSlim for Phase 2 infrastructure now.** If neither STARK option fits, use
-    NovaSlim's sub-kilobyte proofs with the existing Aiken verifier for the
-    **fund-recovery** use case (trusted prover, verifier checks algebraic
-    consistency). This is the only backend that already works end-to-end on
-    Cardano today, although it remains experimental and unaudited and its
-    verifier does not yet establish full knowledge soundness under an untrusted
-    prover.
+ 3. **NovaSlim for Phase 2 infrastructure now.** Use NovaSlim's existing Aiken
+     verifier with either the slim proof (batch-proving trust model, ~0.4 KiB) or the
+     level-1 proof (untrusted-prover model, ~1.7 KiB) for the **fund-recovery** use
+     case. This is the only backend that already works end-to-end on Cardano today,
+     although it remains experimental and unaudited; full knowledge soundness under an
+     untrusted prover awaits Level-2.
 4. **Out-of-band proofs + node-side cache.** If none of the above, proofs travel
    out-of-band; nodes keep a cache of proofs and only adopt blocks of signatures for
    which they have seen the corresponding zk proof. This needs additional handling of
@@ -342,9 +378,9 @@ sequenceDiagram
         V->>V: verify pi_deriv & pi_sign, cross-check hkR, address = blake2b-224(A)
         W->>N: submit tx (witness: classical Ed25519)
         N->>N: validate as today (unchanged)
-    else Phase 2 — native verifier (future)
-        W->>N: submit tx (witness: tau, sigma) [needs proof-size reduction]
-        N->>N: native STARK verification (not Plutus)
+    else Phase 2 — NovaSlim verifier on-chain (future)
+        W->>N: submit tx (witness: tau, sigma)
+        N->>N: NovaSlim level-1 verification (Plutus V3)
     end
     N->>N: include in block
 ```
@@ -370,13 +406,14 @@ server.
   derivation (incompatible with existing funds — only a future-purpose-field option);
   lattice/isogeny HD wallets (change key material and addresses, no zero-migration
   property); full-path relation (heavier, only where seed linkability is required).
-- **Why a hash-based STARK:** post-quantum security is the point, which rules out
-  pairing-based SNARKs, Bulletproofs, and classical folding (Nova) — all broken by
-  Shor's algorithm. FRI-STARKs are the remaining family: transparent (no trusted
-  setup), and a zkVM (RISC Zero) proves the SHA-512/HMAC/Ed25519 relations written in
-  ordinary Rust instead of hand-built arithmetic circuits. Verification is constant
-  (~9–10 ms). The relations are backend-agnostic, but any backend change must re-open
-  the security argument.
+- **Why a transparent proof system:** post-quantum security is the point, which rules
+  out pairing-based SNARKs, Bulletproofs, and classical folding (Nova) — all broken by
+  Shor's algorithm. The deployable instantiation is NovaSlim [NOVASLIM], a transparent
+  folding/sumcheck system with no trusted setup and a working Aiken/Plutus V3 verifier
+  on BLS12-381. The [ZKPoSP] paper uses an FRI-STARK via the RISC Zero zkVM as a
+  research baseline; both backends express the same SHA-512/HMAC/Ed25519 relations in
+  ordinary Rust, keeping engineering and audit cost low. The relations are
+  backend-agnostic, but any backend change must re-open the security argument.
 - **Transition is non-intrusive and reversible:** nothing is forced on anyone;
   activation is local to a signer (one one-time proof per `account'`), no network
   upgrade for Phase 1, and adoption can be rolled back without impact. Because all
@@ -400,9 +437,15 @@ is a research prototype lacking production maturity (Lova):
 | Plonky3 | 🔜 Requires implementation | ❌ No (~10–50 KB) | Early maturity |
 | Nova / groth16-prover | ❌ No (DLOG-based) | — | Classical only |
 | Lova | ✅ Conjectured | 🔜 Future (~5–10 KB) | Research prototype |
-| **NovaSlim** | ✅/🔜 Conjectured (SIS & Hash) | ✅ **Yes** (~0.4–2.5 KiB slim) | **Implemented (experimental, unaudited)** |
+| **NovaSlim slim** | ✅/🔜 Conjectured (SIS & Hash) | ✅ Yes (~0.4 KiB) | Implemented; batch-proving trust model |
+| **NovaSlim level-1** | ✅/🔜 Conjectured (SIS & Hash) | ✅ Yes (~1.7 KiB) | Implemented; closes free-`E` attack |
+| **NovaSlim + norm certs** | ✅ Conjectured | ❌ No (~34–42 KiB) | Audit-only / off-chain |
 
-Hash is operationally SIS/Ajtai in disguise; neither gives a proven PQ guarantee without norm enforcement. NovaSlim's honest sound size is ~5–12 KiB (classical) / ~30–100+ KiB (PQ).
+Hash is operationally SIS/Ajtai in disguise; neither gives a proven PQ guarantee
+without norm enforcement. Module-SIS parameter exploration is complete and offers a
+possible “standard-assumption (tight)” PQ path once committed-shortness-preserving
+folding is implemented. NovaSlim's honest fully-sound size is ~5–12 KiB (classical) /
+~30–100+ KiB (PQ) once PCS openings, fold verification, and norm proofs are included.
 
 That narrows the field to **two usable ways forward**, which is why the comparison
 serves only a small number of decisions:
@@ -414,17 +457,18 @@ serves only a small number of decisions:
   proof-size-reduction programme (ZK-friendly hashing, smaller FRI configurations)
   brings it within budget. It is the low-risk default for Phase 1.
 - **Way 2 — NovaSlim, the experimental backend, demonstrated to work.** Its
-  **SIS** and **Hash** commitments are post-quantum (conjectured), giving a PQ path
-  today, and it is the *only* option with sub-kilobyte proofs (~0.4–2.5 KiB),
-  sub-millisecond verification, **and** a working on-chain Aiken verifier (Plutus V3).
-  The author has demonstrated the end-to-end pipeline — step-circuit folding,
-  slim-proof generation, and on-chain verification — at `cardano/cip197`
-  [NOVASLIM-CIP197].  Its caveats are that (a) it is experimental and unaudited,
-  (b) its verifier does not yet evaluate circuit MLEs or open commitments, so
-  acceptance attests honest execution rather than knowledge of a valid witness,
-  (c) Hash is operationally SIS/Ajtai in disguise and inherits the same
-  missing-norm-enforcement caveat, and (d) the underlying sumcheck folding is
-  classical (random-oracle / Fiat–Shamir based), not lattice-hardened like Lova.
+  **SIS**, **Hash**, and **Module-SIS** commitments give a post-quantum
+  (conjectured) path today, and it is the *only* option with sub-kilobyte proofs
+  (~0.4 KiB slim / ~1.7 KiB level-1), sub-millisecond verification, **and** a working
+  on-chain Aiken verifier (Plutus V3 at ~377K mem / 141M CPU). The author has
+  demonstrated the end-to-end pipeline — step-circuit folding, slim/level-1 proof
+  generation, and on-chain verification — at `cardano/cip197` [NOVASLIM-CIP197]. Its
+  caveats are that (a) it is experimental and unaudited, (b) the slim verifier is
+  sound only in the batch-proving model; level-1 closes the free-`E` attack but full
+  untrusted-prover knowledge soundness awaits Level-2, (c) Hash is operationally
+  SIS/Ajtai in disguise and inherits the same missing-norm-enforcement caveat, and
+  (d) the underlying sumcheck folding is classical (random-oracle / Fiat–Shamir
+  based), not lattice-hardened like Lova.
 
 The CIP leans on **Way 2 (NovaSlim)** for the Phase 2 infrastructure path, because it
 solves the exact problem that blocks every other option: proof size, verification cost,
@@ -437,33 +481,43 @@ This mirrors the CIP's Phase 1→2 philosophy: build the road before the car is 
 
 ### Open Questions
 
-- Proof size (~219 KB STARK) vs `maxTxSize` (16,384 B): Phase 1 is feasible today;
-  Phase 2 for STARKs is gated on reducing proofs to a few KB. **NovaSlim already
-  achieves sub-kilobyte proofs (~0.4–2.5 KiB) and a working Aiken verifier,
-  demonstrating that Phase 2 infrastructure is technically feasible today; the open
-  questions are (a) closing the verifier soundness gap (MLE evaluation, commitment
-  opening, fold verification) and (b) PQ hardening of its folding scheme.**
-- Native STARK verifier feasibility in the ledger: Plutus budgets are orders of
-  magnitude too small; only a native (non-Plutus) primitive is credible. NovaSlim's
-  Plutus V3 verifier sidesteps this by using BLS12-381 scalar arithmetic directly.
-- Recursion/folding for the derivation proof; simulation extractability under
+- **STARK proof size vs `maxTxSize`:** the ~219 KB RISC Zero receipt cannot settle
+  on-chain; Phase 2 for the STARK backend is gated on reducing proofs to a few KB.
+  NovaSlim already achieves on-chain proofs (~0.4 KiB slim / ~1.7 KiB level-1) and a
+  working Aiken verifier, demonstrating that Phase 2 infrastructure is technically
+  feasible today. The remaining open questions are (a) completing Level-2 to close
+  the untrusted-prover knowledge-soundness gap, (b) PQ hardening of the NIFS folding
+  scheme (lattice-based replacement of the classical sumcheck assumptions, à la Lova),
+  and (c) audit and formal verification of the Aiken verifier.
+- **Native STARK verifier feasibility in the ledger:** Plutus budgets are orders of
+  magnitude too small for a generic STARK verifier; only a native (non-Plutus)
+  primitive is credible. NovaSlim's Plutus V3 verifier sidesteps this by using
+  BLS12-381 scalar arithmetic directly.
+- **Recursion/folding for the derivation proof:** simulation extractability under
   composition is unresolved (paper Rem. 10.1).
-- Proof-format versioning and fork/parameter handling.
-- Quantum-hardening of NovaSlim's NIFS folding scheme (lattice-based replacement of
-  the classical sumcheck assumptions, à la Lova).
+- **Proof-format versioning and fork/parameter handling:** how wallets negotiate
+  backend versions and on-chain parameters.
+- **Interaction with CIP-0206:** how wallets should combine the ZKPoSP/NovaSlim
+  bridge for existing keys with the ML-DSA/SLH-DSA native PQ keys introduced by
+  CIP-0206.
 
 ## Path to Active
 
 ### Acceptance Criteria
 
 - Reference implementation of the ZKPoSP scheme for the Cardano path
-  `m/1852'/1815'/account'/role/index` over an audited STARK backend (e.g. RISC Zero).
+  `m/1852'/1815'/account'/role/index` over NovaSlim [NOVASLIM], with RISC Zero
+  [RISC-ZERO] retained as a research baseline.
 - Conformance test vectors for the Cardano path covering derivation, signing, and
   verification, including the anchor-at-`account'` constraint.
 - Public, independent security audit of the proof system and its Cardano integration.
-- Benchmark report for the reference implementation on the [ZKPoSP] paper's machine (AMD Ryzen 9
-  9950X3D) and on a browser/WASM target, covering proving and verification time, proof
-  size, and peak prover memory (including the FRI-commitment-phase peak).
+- Benchmark report covering:
+  - NovaSlim on the current 4-core reference environment (fold time, slim/level-1
+    proof size, verification time, peak prover memory);
+  - Plutus V3 on-chain cost of the Aiken verifier;
+  - browser/WASM verification and proving performance;
+  - RISC Zero baseline figures on the [ZKPoSP] paper's machine (AMD Ryzen 9 9950X3D)
+    for comparison.
 - At least one wallet adopting Phase 1 (off-chain witness).
 - A documented proposal for the post-Q-day rule as a protocol parameter.
 
@@ -479,15 +533,18 @@ selection](#backend-selection) for the motivation); nothing here is final.
 - Browser/WASM benchmark of the wallet integration: verification, the per-transaction
   signing proof, and the one-time derivation proof (timing and peak memory), to confirm
   the Phase 1 off-chain verification story on the worst-case environment.
+- NovaSlim reference implementation:
+  - complete the BIP32-Ed25519 step circuit;
+  - produce slim and level-1 proofs for the Cardano path;
+  - run the Aiken verifier on-chain and report Plutus V3 memory/CPU costs;
+  - validate the proof-mode ladder (slim, level-1, level-1+norm) end-to-end.
+  A working VRF stand-in demonstration already exists at `cardano/cip197`
+  [NOVASLIM-CIP197], including the `E2E.md` runbook.
 - Evaluation of proof-size reduction (ZK-friendly hashing, smaller FRI
-  configurations) to unlock Phase 2 with the STARK backend.
-- NovaSlim proof-of-concept: end-to-end pipeline validation (VRF stand-in
-  circuit; the BIP32-Ed25519 circuit is still under construction) + slim
-  proof generation + Aiken on-chain verification, to validate the Phase 2
-  infrastructure path. A working end-to-end demonstration already exists at
-  `cardano/cip197` [NOVASLIM-CIP197], including the `E2E.md` runbook.
-- CDDL specification of the witness format for a future native STARK-verifier
-  primitive.
+  configurations) to unlock Phase 2 with the STARK backend, kept as a fallback.
+- CDDL specification of the NovaSlim witness format for Plutus V3 on-chain use.
+- Document how wallets combine this CIP with [CIP-0206](../CIP-0206/README.md)
+  (native ML-DSA/SLH-DSA keys) during a gradual migration.
 
 ## References
 
@@ -516,6 +573,9 @@ selection](#backend-selection) for the motivation); nothing here is final.
 - [NOVASLIM-CIP197] NovaSlim CIP-197 end-to-end demonstration: step-circuit folding,
   slim proof generation, and on-chain Aiken verification (`E2E.md` runbook).
   https://github.com/paweljakubas/nova-slim/tree/master/cardano/cip197
+- [NOVASLIM-DOCS] NovaSlim supplementary documentation: proof-mode ladder, soundness
+  caveats, Plutus V3 footprint, and PQ analysis.
+  https://github.com/paweljakubas/nova-slim-docs
 - [LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
   Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
   https://eprint.iacr.org/2024/1964
@@ -539,5 +599,6 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [NOVASLIM]: https://github.com/paweljakubas/nova-slim
 [NOVASLIM-WP]: https://github.com/paweljakubas/nova-slim/raw/master/whitepaper.pdf
 [NOVASLIM-CIP197]: https://github.com/paweljakubas/nova-slim/tree/master/cardano/cip197
+[NOVASLIM-DOCS]: https://github.com/paweljakubas/nova-slim-docs
 [LOVA]: https://eprint.iacr.org/2024/1964
 [ZCASH-QR]: https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
