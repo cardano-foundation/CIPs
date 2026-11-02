@@ -8,7 +8,7 @@ Authors:
 Proposed Solutions: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1310
-  - Data Availability Technical Workshop, 3 September 2026 
+  - Data Availability Technical Workshop: https://docs.google.com/document/d/1-7vZviAk_YKf14hewgE4BErZ7uDpr0WIY77q2w3zf9o/edit?usp=sharing
 Created: 2026-10-29
 License: CC-BY-4.0
 ---
@@ -156,7 +156,7 @@ The goals of this CPS are derived from requirements stated in the Data Availabil
 
 ## References
 
-- **[1]** Data Availability Technical Workshop. IO Research, 3 September 2026. Requirements gathered from multiple layer 2 projects. [Recording](https://drive.google.com/file/d/1iVEuNebQcVMIlWpO_8GcszGMJigMIGIB/view?referrer=luma). 
+- **[1]** Data Availability Technical Workshop. IO Research, 3 September 2026. Requirements gathered from multiple layer 2 projects. [Recording](https://drive.google.com/file/d/1iVEuNebQcVMIlWpO_8GcszGMJigMIGIB/view?referrer=luma) [Minutes](https://docs.google.com/document/d/1-7vZviAk_YKf14hewgE4BErZ7uDpr0WIY77q2w3zf9o/edit?usp=sharing). 
 - **[2]** Sharding CPS — Horizontal Scaling of Cardano through Sharding. *(CPS number TBC; coupled problem statement.)*
 - **[3]** Cardano PubSub: A Verifiable Publish/Subscribe Communication Layer for the Cardano Ecosystem. Project documentation and source-code repository. [GitHub](https://github.com/input-output-hk/pubsub).
 - **[4]** Celestia. External data availability layer. [Website](https://celestia.org).
