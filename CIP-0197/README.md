@@ -204,6 +204,22 @@ key), each step comprising the HMAC-SHA512 CKD, mod-2^256 addition, and Ed25519
 public-key derivation. It is the direct circuit counterpart to the NovaSlim path
 described below.
 
+**zkVM implementations.** The same derivation chain is also implemented as
+zkVM guests in the `cardano-foundation/bls` repository:
+
+- **OpenVM** [BLS-ZKVM-STRONG]: compiles to an OpenVM ELF; host test passes;
+  full proof generation is still being benchmarked.
+- **Jolt** [BLS-JOLT-STRONG]: end-to-end proving takes ~4.5 minutes and yields
+  an ~89 kB proof on the reference host, with verification in ~1 second.
+
+Both reuse audited Rust crates (`sha2`/`openvm-sha2`, `hmac`, `curve25519-dalek`,
+`num-bigint`) to perform HMAC-SHA512, mod-2^256 addition, and Ed25519 public-key
+derivation, and commit the final 32-byte payment public key as the public
+output. They are useful for rapid prototyping, cross-checking the circuit
+semantics, and exploring zkVM-specific optimizations. A comparison of Groth16,
+Nova/NovaSlim, OpenVM, and Jolt for this statement is maintained in
+[BLS-COMPARISON].
+
 ### Proving backend options
 
 The proving system can be instantiated in several ways, each serving a different
@@ -592,6 +608,15 @@ selection](#backend-selection) for the motivation); nothing here is final.
 - [BLS-CIRCOM-STRONG] `cardano-foundation/bls` Circom implementation of the full
   CIP-1852 child-key-derivation chain (`CardanoKeyOwnershipStrong`).
   https://github.com/cardano-foundation/bls/tree/main/circom/CardanoKeyOwnershipStrong
+- [BLS-ZKVM-STRONG] `cardano-foundation/bls` OpenVM zkVM implementation of the
+  same CIP-1852 child-key-derivation chain.
+  https://github.com/cardano-foundation/bls/tree/main/zkVM/openvm/cardano-key-ownership-strong
+- [BLS-JOLT-STRONG] `cardano-foundation/bls` Jolt zkVM implementation of the
+  same CIP-1852 child-key-derivation chain.
+  https://github.com/cardano-foundation/bls/tree/main/zkVM/jolt/cardano-key-ownership-strong
+- [BLS-COMPARISON] `cardano-foundation/bls` comparison of Groth16, Nova/NovaSlim,
+  OpenVM, and Jolt for `CardanoKeyOwnershipStrong`.
+  https://github.com/cardano-foundation/bls/blob/main/zkVM/comparison.md
 - [LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
   Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
   https://eprint.iacr.org/2024/1964
@@ -617,5 +642,8 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [NOVASLIM-CIP197]: https://github.com/paweljakubas/nova-slim/tree/master/cardano/cip197
 [NOVASLIM-DOCS]: https://github.com/paweljakubas/nova-slim-docs
 [BLS-CIRCOM-STRONG]: https://github.com/cardano-foundation/bls/tree/main/circom/CardanoKeyOwnershipStrong
+[BLS-ZKVM-STRONG]: https://github.com/cardano-foundation/bls/tree/main/zkVM/openvm/cardano-key-ownership-strong
+[BLS-JOLT-STRONG]: https://github.com/cardano-foundation/bls/tree/main/zkVM/jolt/cardano-key-ownership-strong
+[BLS-COMPARISON]: https://github.com/cardano-foundation/bls/blob/main/zkVM/comparison.md
 [LOVA]: https://eprint.iacr.org/2024/1964
 [ZCASH-QR]: https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
