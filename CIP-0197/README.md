@@ -196,6 +196,14 @@ fast and constant, so wallets, exchanges, and indexers can afford to check every
    transaction. The one-time derivation proof can be generated lazily or delegated to a
    proving server, so it does not slow down or complicate everyday signing.
 
+**Circom implementation.** The full CIP-1852 derivation chain for the ZKPoSP
+relation has been implemented in Circom in the `CardanoKeyOwnershipStrong` family
+of the `cardano-foundation/bls` repository [BLS-CIRCOM-STRONG]. The circuit folds
+six uniform steps (seed → 1852H → 1815H → accountH → role → index → final public
+key), each step comprising the HMAC-SHA512 CKD, mod-2^256 addition, and Ed25519
+public-key derivation. It is the direct circuit counterpart to the NovaSlim path
+described below.
+
 ### Proving backend options
 
 The proving system can be instantiated in several ways, each serving a different
@@ -243,7 +251,11 @@ zkVM. The comparison and selection of these options is discussed in
      proofs, and benchmark analysis are specified in the NovaSlim whitepaper
      [NOVASLIM-WP] and the supplementary documentation [NOVASLIM-DOCS].
 
-     **Proof-mode ladder (VRF stand-in circuit, 254 steps, BLS12-381/Pedersen):**
+      The Cardano step circuit is ported from the Circom implementation in
+      [BLS-CIRCOM-STRONG]; the figures below are currently for the VRF stand-in
+      circuit while the BIP32-Ed25519 circuit is being integrated.
+
+      **Proof-mode ladder (VRF stand-in circuit, 254 steps, BLS12-381/Pedersen):**
 
      | Mode | Size | What it proves | On-chain? |
      |---|---|---|---|
@@ -534,7 +546,8 @@ selection](#backend-selection) for the motivation); nothing here is final.
   signing proof, and the one-time derivation proof (timing and peak memory), to confirm
   the Phase 1 off-chain verification story on the worst-case environment.
 - NovaSlim reference implementation:
-  - complete the BIP32-Ed25519 step circuit;
+  - port the Cardano step circuit from the Circom implementation
+    [BLS-CIRCOM-STRONG] and complete the BIP32-Ed25519 step circuit;
   - produce slim and level-1 proofs for the Cardano path;
   - run the Aiken verifier on-chain and report Plutus V3 memory/CPU costs;
   - validate the proof-mode ladder (slim, level-1, level-1+norm) end-to-end.
@@ -576,6 +589,9 @@ selection](#backend-selection) for the motivation); nothing here is final.
 - [NOVASLIM-DOCS] NovaSlim supplementary documentation: proof-mode ladder, soundness
   caveats, Plutus V3 footprint, and PQ analysis.
   https://github.com/paweljakubas/nova-slim-docs
+- [BLS-CIRCOM-STRONG] `cardano-foundation/bls` Circom implementation of the full
+  CIP-1852 child-key-derivation chain (`CardanoKeyOwnershipStrong`).
+  https://github.com/cardano-foundation/bls/tree/main/circom/CardanoKeyOwnershipStrong
 - [LOVA] Fenzi, Knabenhans, Nguyen, Pham, "Lova: Lattice-Based Folding Scheme from
   Unstructured Lattices" (ASIACRYPT 2024), lattice-based and quantum-secure.
   https://eprint.iacr.org/2024/1964
@@ -600,5 +616,6 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [NOVASLIM-WP]: https://github.com/paweljakubas/nova-slim/raw/master/whitepaper.pdf
 [NOVASLIM-CIP197]: https://github.com/paweljakubas/nova-slim/tree/master/cardano/cip197
 [NOVASLIM-DOCS]: https://github.com/paweljakubas/nova-slim-docs
+[BLS-CIRCOM-STRONG]: https://github.com/cardano-foundation/bls/tree/main/circom/CardanoKeyOwnershipStrong
 [LOVA]: https://eprint.iacr.org/2024/1964
 [ZCASH-QR]: https://www.coindesk.com/research/building-the-zcash-machine-tachyon-and-quantum-readiness
