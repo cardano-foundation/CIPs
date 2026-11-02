@@ -21,30 +21,31 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano is transitioning from a single-implementation network to a multi-node network, with several independent block-producing implementations expected to forge valid mainnet blocks under one consensus. There is currently no standardized, voluntary way for an SPO to signal *which* software produced a given block. This is the most pressing case of a wider gap: block producers have no agreed way to signal readiness for forks and features (e.g. Leios, Peras), participation in sub-protocols (e.g. Mithril), or other stake-weighted positions.
-Implementations already tag blocks ad hoc through the block header's protocol *minor* version (formally a self-reported software tag from the Dijkstra era), and small on-chain marker transactions (~60 bytes) are an alternative, but no ecosystem-wide agreement exists on which to use or how to encode it.
+Cardano is transitioning from a single-implementation network to a multi-node network, with several independent block-producing implementations forging valid mainnet blocks under one consensus. Client diversity then becomes a first-order resilience metric, yet today it can only be estimated indirectly — nothing attributes individual blocks to a client. There is currently no standardized, voluntary way for an SPO to signal *which* software produced a given block.
+For lack of better alternatives, implementations started to tag blocks ad hoc through the block header's protocol *minor* version (formally a self-reported software tag), and countless other solutions are proposed, but no ecosystem-wide agreement exists on which to use or how to encode it. 
 
-This CPS states the problem and calls for a standard, strictly opt-in, one-way signalling mechanism, comparable in spirit to Bitcoin's version-bits signalling (BIP 8 / BIP 9) or Ethereum's graffiti field.
+This CPS states the problem and calls for a standard, opt-in, one-way signalling mechanism, comparable in spirit to Bitcoin's version-bits signalling (BIP 8 / BIP 9) or Ethereum's graffiti field.
 
 
 ## Problem
 
-1. **No per-block attribution of producing software.** Once multiple implementations forge mainnet blocks, client diversity becomes a first-order network-resilience metric. Today it can only be estimated indirectly (relay handshakes, surveys, self-reporting), none of which attribute *individual blocks* to a client.
+1. **No per-block attribution of producing software.** With multiple implementations forging mainnet blocks, client diversity becomes a first-order network-resilience metric. Today it can only be estimated indirectly (relay handshakes, surveys, self-reporting), none of which attribute *individual blocks* to a client.
 2. **Existing channels are unstandardized and mutually incompatible.** Block producers can already signal through several channels, each with its own binding to the pool, cadence and cost:
 
    | Channel | Bound to the pool | Cadence | Examples |
    |---|---|---|---|
-   | Header major version | yes (KES-signed block) | every block | hard-fork readiness ([CIP-0059](../CIP-0059/README.md)) |
+   | Header major version | yes (KES-signed block) | every block | era/hard fork readiness ([CIP-0059](../CIP-0059/README.md)) |
    | Header minor version (`self_reported_software_tag`) | yes (KES-signed block) | every block | cardano-node releases, Dingo, CIP-0203 |
    | New header or body field (needs a new era) | yes (KES-signed block) | every block | CIP-0180 |
    | Transaction metadata ("marker transactions") | only if signed with pool keys | any time | [CIP-0094](../CIP-0094/README.md) polls |
    | Pool registration and extended metadata | yes (cold key) | on update | [CIP-0006](../CIP-0006/README.md), [CIP-0151](../CIP-0151/README.md) |
    | Governance votes | yes (cold key) | per action | [CIP-1694](../CIP-1694/README.md) hard-fork and info actions |
-   | Node-to-node protocol | no; per connection, also reaches relays | per connection | handshake ([ouroboros-network#4905](https://github.com/IntersectMBO/ouroboros-network/issues/4905)), CIP-0202 |
+   | Node-to-node protocol | not signed; per connection, also reaches relays | per connection | handshake ([ouroboros-network#4905](https://github.com/IntersectMBO/ouroboros-network/issues/4905)), CIP-0202 |
    | Signed message diffusion | yes (KES) | any time | [CIP-0137](../CIP-0137/README.md) (Mithril, Leios, Peras) |
    | Off-chain reporting | optional ([CIP-0022](../CIP-0022/README.md)) | ad hoc | PoolTool via cncli, surveys |
 
-   The header minor version is the de-facto choice for client identity: never validated by the ledger, and formally a `self_reported_software_tag` from the Dijkstra era ([cardano-ledger#6084](https://github.com/IntersectMBO/cardano-ledger/pull/6084)). cardano-node uses it as a release counter and other implementations as a client identifier (Dingo: 69), but there is no agreed encoding or registry, and values already collide (67 is used by both cardano-bean and Gerolamo). Marker transactions are flexible, but a transaction author is not necessarily the block producer.
+   The header minor version is the de-facto choice for client identity: never validated by the ledger, and formally a `self_reported_software_tag` from the Dijkstra era ([cardano-ledger#6084](https://github.com/IntersectMBO/cardano-ledger/pull/6084)). cardano-node uses it as a release counter and other implementations as a client identifier (e.g. Dingo: 69), but there is no agreed encoding or registry, and values already collide (67 is used by both cardano-bean and Gerolamo). 
+
 3. **No general-purpose, low-friction (unlike Governance Info Actions), "fluid" (per block, time-unbounded) one-way signalling channel.** Beyond client identification, the ecosystem lacks an agreed low-bandwidth channel for SPOs to signal readiness or positions (feature support, informal polling, (fork readiness)), the way Bitcoin miners do via version bits, or Ethereum BPs do via graffiti. Each future need currently reinvents an ad-hoc scheme, creates technical debt, and would in some cases even require hard forks.
 4. **Risk of de-facto fragmentation.** If each node implementation ships its own signalling convention, downstream consumers (explorers, dashboards, researchers, exchanges assessing network health) must special-case every client, and signals become ambiguous or unparseable.
 Any solution must remain **strictly voluntary**: signalling software identity is an SPO's choice, never an obligation, and non-signalling blocks must remain fully valid and unpenalized.
@@ -63,23 +64,16 @@ Any solution must remain **strictly voluntary**: signalling software identity is
 ## Goals
 
 1. Agree on **one** standard channel per kind of signal, client identity first, so all implementations and consumers interoperate.
-2. Define a **compact encoding** and a lightweight, openly governed **registry of client identifiers** (plausibly maintained in the CIP repository itself).
+2. If the solution is carried within an existing data field with a different origingating purpose (e.g. header minor version) - Define a **compact encoding** and a lightweight, openly governed **registry of client identifiers** (plausibly maintained in the CIP repository itself). 
 3. Preserve **per-block attribution** where the mechanism allows it, and clearly document the trust model where it does not (self-declared, spoofable, non-cryptographic).
 4. Keep the mechanism **generic**: Avoid building dedicated, over-fit features, which increase bloat and complexity of Cardano codebases. Client identity could be the first payload, but the channel should accommodate future one-way signals (feature/fork readiness bits, BIP 8/9-style semantics).
 5. Guarantee the mechanism is **opt-in, zero cost, and consensus-neutral**: no ledger rule changes, no validity impact, no obligation.
-6. Keep **deliberate non-signalling** distinguishable from an absent or default value: not signalling is a valid choice, and no SPO should signal unknowingly.
+6. Keep **deliberate non-signalling** distinguishable from an absent or default value: not signalling is a valid choice, and no SPO should signal unknowingly. This is especially relevant if the solution is carried within an existing data field (e.g. header minor version).
 
 
 ## Open Questions
-- Implementations already converge on the header minor version; is a second channel (marker transactions, or the network layer as in CIP-0202) needed for richer signals, relays, or a halted chain? Per-block transactions are unwanted (Adam Dean); one signed metadata transaction per release could declare what a tag means (@gufmar).
-- Scope: which signals belong in one standard, and which need their own channel? Candidates: software identity, readiness, sub-protocol participation (Mithril, CIP-0137), and hardware, OS and network topology (@rphair, @Crypto2099).
-- Who assigns and maintains client/version identifiers, and how are collisions and deprecations handled? A CIP, a repo?
-   - In Cardano, we have lots of precedent in that regard, as we maintain various registries already. Yet, none of these registry concepts are standardized. 
-- How should consumers treat the signal given it is unauthenticated and trivially spoofable — is "self-declared" an acceptable trust model, or is binding to the operational (KES/VRF) credentials desirable?
-- How does the mechanism survive planned header changes (e.g., Ouroboros Leios / CIP-0164 era block structure)?
-- Should the standard define BIP 8/9-style state machines (start/timeout/lock-in) for readiness signals over a certain period of time (like the difficulty adjustment period, or an epoch), or is it a continuously rolling window and keep it a raw channel on purpose, leaving semantics to per-signal CIPs? 
-   - If yes, how are contradictions between such state machine signals and Hard Fork votes handled? (Signalling a certain way, but voting another)
-- Are there privacy or targeting concerns for SPOs who disclose their software (e.g., exploit targeting of a known-vulnerable client), and should the standard note this trade-off explicitly?
+- Who assigns and maintains client/version identifiers, and how are collisions and deprecations handled? 
+   - CIP-203 provides an answer. 
 - Opt-in or on by default? This CPS asks for opt-in; positions raised so far:
    - an optional field, with `nil` for privacy (CIP-0180);
    - on by default, with an explicit opt-out value (CIP-0203, [Amaru](https://github.com/pragma-org/amaru/pull/1446)); cardano-node already sets its release counter in every block;
