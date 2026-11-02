@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: ????
 Title: Nested Txs Service Layer Light Client Extension
 Category: Network
 Status: Proposed
@@ -21,10 +21,12 @@ light clients with limited access to the UTxO and other chain data to co-constru
 a batchable sub-tx with a service provider. 
 The client states what it wants
 as a constraint in an expanded version of CIP-0198's constraint
-DSL, then a service resolves the client's credentials and builds a sub-transaction
-on its behalf, sending it back to the client to sign. The client's
-constraint is included in that sub-transaction as a required top-level
-guard, ensuring on-chain that the client's intent is satisfied by the constructed 
+DSL, then a service resolves the client's credentials and builds a (sub-)transaction
+on its behalf, sending it back to the client to sign. In some cases, a client cannot check 
+that all constraints of its intent have been satisfied by the service provider's response
+transaction due to lack of chain state access. Then, the client's intent guard
+and datum are included in that sub-transaction as a required top-level
+guard, ensuring *on-chain* that the client's intent is satisfied by the constructed 
 transaction.
 
 The design proposed here adapts
@@ -68,7 +70,7 @@ with a bigger variety of needs.
 | [Interpreter scope](#constraint-language-extensions) | a sub-transaction guard, not a top-level one | A guard that saw the batch would over-constrain every co-participant, and would first have to work out which entry it belongs to |
 | [Intent message](#the-intent-message) | new: a constraint plus a reply address and an expiry | An offer carries a built sub-transaction; a client that cannot build one has nothing to put in an offer |
 | [Filter keys](#intent-filter-keys) | four new keys, derived from the intent | Services subscribe to the intents they can fill, rather than receiving all and declining most |
-| Service profile (CIP-0198, *service profile*) | declares the client models served, the dialects spoken, and the fee | A client cannot otherwise tell whether to ask, or what it will be charged |
+| [Service profile](#service-profile) | declares the client models served, the dialects spoken, and what it will build | A client cannot otherwise tell whether to ask, or what it will be charged |
 | [Rejection reasons](#the-exchange) | new codes, and a refusal may carry a profile | "No" is useless to a client that cannot see why; a profile tells it where to go next |
 | [Protocol constants](#protocol-constants) | caps on bound entries and list length, an intent TTL and rate limit | Bounds are flat but not few, and an intent carries no spend input to make it costly |
 
@@ -220,11 +222,9 @@ protocol](#single-and-multi-sp-protocol-versions)). There are three ways to addr
    send a directed price request (CIP-0198, *price discovery*) to relevant services.
 3. **Pin** Services cached locally.
 
-**New service profile filed**
-A service must be able to say in its profile (CIP-0198, *service profile*)
-whether it answers intents at all and on what terms, or a client cannot tell
-before disclosing its credentials. That is a new profile field, and so a
-`schema_version` bump in the registration.
+**New service profile fields.** A service must be able to say whether it
+answers intents at all and on what terms, or a client cannot tell before
+disclosing its credentials. See [service profile](#service-profile).
 
 **Reading hints.** A hint query is served from relay storage.
 The price request that follows goes to one
@@ -481,7 +481,7 @@ is exactly what will not work.
 | *script-failed* | script hash (of failing script) | fix intent to ensure script validation | never |
 | *misrouted* | — | the declared `offered`/`needed` contradict the constraint, or it arrived under a key the constraint does not derive: correct the message | never |
 | *underpriced* | price, maybe ExUnits (if calculated by SP) | raise the ceiling to the reported cost through this service's hint (CIP-0198, *price hints*) | at the new price |
-| *terms-changed* | the current profile (CIP-0198, *service profile*) | re-read it and decide again | at the new terms |
+| *terms-changed* | the current [profile](#service-profile) | re-read it and decide again | at the new terms |
 | *unsatisfiable* | — | try elsewhere, or relax the constraint | elsewhere |
 
 The **value** in the *insufficient-funds* response indicates, for 
@@ -516,9 +516,9 @@ splitting change across
 many outputs to multiply min-UTxO, attaching datums that inflate the sub-tx, etc. 
 To further mitigate this, and LC can compare answers from multiple SPs, rejecting 
 all but the optimal transactions. For example, this can be done if the SPs respond
-with a firm quote, which is already signed under the registration key
+with a quote, which is already signed under the registration key
 and already bounded by `MAX_QUOTE_TTL`. That needs an amendment:
-`POST /quote` (CIP-0198, *firm quotes*) describes an offer by its assets,
+`POST /quote` (CIP-0198, *quotes*) describes an offer by its assets,
 size and ExUnits estimate, none of which a client holds before the service
 has built anything, so either `/quote` takes an intent or `POST /intents`
 answers with a quote of its own. 
@@ -543,7 +543,7 @@ off-chain service layer. For example, `GET /hints`, `GET /interest`,
 `GET /profile`, `GET /status` and `POST /quote` are all unauthenticated, all
 cost the operator work, and all can be walked away from. An operator willing to
 answer those can construct a sub-tx on the same terms, in fact, this already happens 
-when giving firm quotes (CIP-0198, *firm quotes*).
+when giving quotes (CIP-0198, *quotes*).
 
 **Uncompensated benefitting of the client** A client may take advantage of an SPs 
 work done when constructing a sub-tx an SP constructed for them. In particular, 
@@ -894,6 +894,28 @@ and the two match the same UTxOs.
 
 A selector that names a script credential or a beacon policy yields a
 [filter key](#intent-filter-keys).
+
+### Service profile
+
+A client will want to contact services that are willing to fill the kind of intent 
+it constructs. To allow a client to make decisions about this,
+the following fields are added to CIP-0198's `service_profile`,
+which is a `schema_version` bump in the registration.
+
+```cddl
+; added to CIP-0198's service_profile
+  , answers_intents : bool            ; false means the rest is absent
+  , blind           : bool            ; will serve a blind intent
+  , top_level       : bool            ; will build a top-level transaction
+  , sub_tx          : bool            ; will build a sub-tx
+```
+
+The dialects a service speaks are already its
+`constraint_versions`.
+
+A service cannot reliably
+tell C0, C1, and C2-capable light clients, and will not base its service decisions 
+on what an LC claims to be capable of.
 
 ### Protocol constants
 
