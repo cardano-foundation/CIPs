@@ -1,6 +1,6 @@
 ---
 CIP: "?"
-Title: Nested Txs Service Layer Light Client Extension
+Title: Nested Transactions - Service Layer - Light Clients
 Category: Network
 Status: Proposed
 Authors:
