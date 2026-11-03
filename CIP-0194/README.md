@@ -52,10 +52,12 @@ That sequence repeats evaluator, builtin-application, pair, list, and tag-compar
 each structural node. It also tends to serialize traversal code proportional to the number and
 location of the selected fields.
 
-Builtin `Case` does not solve this problem. `Case` can dispatch efficiently on an existing
-`Constr` value, but a `Data.Constr` is an opaque builtin constant. Its runtime tag and field list
-must first be decoded. Extending `Case` directly to all `Data` values would also leave a typed
-arity problem: PLC cannot derive a branch result shape from the type `Data` alone.
+Builtin `Case` only partly solves this problem. `Case` on `Data` (see the
+[Appendix](#appendix)) dispatches on the `Data.Constr` tag without `unConstrData`, but it passes
+every branch the complete field list as `list data`. It checks no arity, and each branch must
+still traverse the list to retain the fields it needs. Giving each branch its own captured-field
+shape would leave a typed arity problem: PLC cannot derive a branch result shape from the type
+`Data` alone.
 
 `matchDataConstr` moves this operation behind one builtin boundary. It selects among explicitly
 listed `Data.Constr` tags, checks the exact immediate field count, and scans one selector bit per
@@ -843,7 +845,9 @@ and is not used for ledger costing. The execution-budget tables provide that com
 
 The native prototypes are faster on many narrow or highly branching cases. Traditional
 deconstruction is the direct baseline for `matchDataConstr`; the native results quantify the
-performance tradeoff of using a builtin instead of adding a `Match` term.
+performance tradeoff of using a builtin instead of adding a `Match` term. These measurements
+predate `Case` on `Data` (see the [Appendix](#appendix)), so the traditional baseline uses
+`unConstrData`.
 
 All 22 `matchDataConstr` cases returned the expected value and passed the benchmark runner's
 script-size, CPU, and memory limits. The recorded data is retained in the
@@ -927,9 +931,10 @@ need this machinery because it only deconstructs one `Data.Constr` layer per cal
 
 #### Extending `Case` over `Data`
 
-Direct root discrimination would provide a more efficient `chooseData`, but it would not express
-exact constructor arity or selective field capture. Adding field masks and result-shape metadata to
-`Case` would effectively create a second pattern language while changing an established term.
+Dispatch on the `Data.Constr` tag has since been added to `Case` independently of this CIP (see
+the [Appendix](#appendix)). It passes each branch the complete field list and does not express
+exact constructor arity or selective field capture. Adding field masks and result-shape metadata
+to `Case` would effectively create a second pattern language while changing an established term.
 
 #### Traditional deconstruction
 
@@ -1015,6 +1020,115 @@ node releases then add the builtin with the approved cost parameters.
 | Fitted sparse `matchDataConstr` costing | [`140c5e6e`](https://github.com/SeungheonOh/plutus/commit/140c5e6ef) |
 | Sparse-tag `matchDataConstr` validation | [`5f08b9cd`](https://github.com/SeungheonOh/plutus/commit/5f08b9cd1) |
 | Explicit checked representations | [`e6aba017`](https://github.com/SeungheonOh/plutus/commit/e6aba0171) |
+
+## Appendix
+
+### Addendum: `Case` on `Data.Constr`
+
+After this CIP was drafted, [IntersectMBO/plutus#7914](https://github.com/IntersectMBO/plutus/pull/7914)
+added casing on builtin `Data` values to the existing `Case` term. This is not the mechanism
+proposed above. It adds no builtin function, no `BuiltinRep` type or `builtinrep` term, no new AST
+node, no new value form, and no new cost-model parameters. It is independent of this CIP, and
+nothing in the Specification above depends on it or conflicts with it.
+
+This approach was not pursued originally because, at the time, most of the cost of matching a
+`Data.Constr` came from traversing its field list rather than from decoding its tag. With the
+`dropList` builtin, skipping to a selected field is cheap enough that removing the `unConstrData`
+call, the pair projections, and the tag comparisons alone gives a substantial improvement.
+
+#### Semantics
+
+`Case` now accepts a `data` scrutinee. Its branches are indexed by the original `Data.Constr`
+tag, and the selected branch is applied to the complete field list:
+
+```text
+case d [b_0, ..., b_(n-1)]
+```
+
+evaluates as follows:
+
+1. If `d` is `Constr i fields` and $0 \le i < n$, the result is `b_i` applied to `fields` as a
+   `(list data)` constant.
+2. If $i \ge n$, evaluation fails.
+3. If `d` is not a `Data.Constr` (that is, `Map`, `List`, `I`, or `B`), evaluation fails.
+
+The handler for tag $i$ is branch $i$, so a tag such as 42 requires 43 branches. No arity check
+is performed, and no field is selected: every branch receives the entire field list and traverses
+it with existing list operations such as `dropList`, `headList`, and `Case` on lists.
+
+For example:
+
+```lisp
+(case
+  (con data (Constr 1 [I 42, B #abcd, List [I 7]]))
+  (lam fields (con integer 0))
+  (lam fields fields)
+)
+```
+
+evaluates to:
+
+```lisp
+(con (list data) [I 42, B #abcd, List [I 7]])
+```
+
+In typed PLC, each branch takes the field list as its only argument:
+
+$$
+\text{TY-CASE-DATA}
+\frac{
+  \Gamma\vdash d:\mathsf{data}
+  \qquad
+  \Gamma\vdash b_i:\mathsf{list}(\mathsf{data})\to R
+  \quad (0\le i<n)
+}{
+  \Gamma\vdash
+  \mathsf{case}\ R\ d\ [b_0,\ldots,b_{n-1}]
+  :R
+}.
+$$
+
+Because every branch has the same argument type, the result shape does not depend on the runtime
+tag. This avoids the typed arity problem that `matchDataConstr` addresses with `BuiltinRep`.
+
+#### Costing and activation
+
+Casing on `Data` is charged with the existing CEK step costs for `Case` and application. It adds
+no builtin cost model.
+
+The feature is gated by protocol version, using the same mechanism as casing on other builtin
+types. Before the van Rossem protocol version, casing on builtin values is unavailable. From
+van Rossem until Dijkstra, casing is available on builtin types other than `Data`. From the
+Dijkstra protocol version onwards, casing on `Data` is also available. The same gating applies
+to Plutus V1, V2, and V3.
+
+#### Plinth support
+
+Plinth exposes the operation as:
+
+```haskell
+caseData :: BuiltinData -> [BuiltinList BuiltinData -> a] -> a
+```
+
+With sums-of-products compilation, `caseData` compiles to one native `Case` on the `Data` value.
+With Scott-encoding compilation, it compiles to `unConstrData` followed by an
+`equalsInteger`/`ifThenElse` chain over the tag. The generated `UnsafeFromData` instances and
+`AsData` matchers now use `caseData`.
+
+#### Performance
+
+Casing on `Data.Constr` improves execution costs by roughly 30–50% on many scripts. The
+performance tables in this CIP were measured before that change, so their traditional baseline
+still uses `unConstrData`. The additional gain of `matchDataConstr` over the new `Case`-on-`Data`
+baseline has not yet been re-measured, and the benchmarks must be rerun against that baseline.
+
+#### Relation to this CIP
+
+`Case` on `Data.Constr` performs tag dispatch only. Exact-arity checking and selective field
+capture still require list traversal code in every branch. `matchDataConstr` combines tag
+selection, exact-arity checking, and selective field capture in one costed call, and returns
+compact SOP branch positions rather than dense constructor tags. This CIP therefore remains open,
+and its proposal is unchanged by this addendum.
 
 ## Copyright
 
