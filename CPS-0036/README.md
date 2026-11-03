@@ -73,7 +73,7 @@ Any solution must remain **strictly voluntary**: signalling software identity is
 
 ## Open Questions
 - Who assigns and maintains client/version identifiers, and how are collisions and deprecations handled? 
-   - CIP-203 provides an answer. 
+   - [CIP-0203](https://github.com/cardano-foundation/CIPs/pull/1276) provides an answer. 
 - Opt-in or on by default? This CPS asks for opt-in; positions raised so far:
    - an optional field, with `nil` for privacy (CIP-0180);
    - on by default, with an explicit opt-out value (CIP-0203, [Amaru](https://github.com/pragma-org/amaru/pull/1446)); cardano-node already sets its release counter in every block;
