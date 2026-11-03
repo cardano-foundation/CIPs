@@ -33,6 +33,16 @@ Two verification builtins are added.
 
 Each builtin takes a versioned public key, a message and a versioned signature, and returns a boolean. Verification is pure ML-DSA or pure SLH-DSA with an empty context string, which is the form every reference implementation produces by default.
 
+### Supported and excluded variants
+
+Only the pure ML-DSA and SLH-DSA verification procedures from FIPS 204 and FIPS 205 are in scope, each with the empty context string `ctx = ""`. The following are out of scope and are not reachable through these builtins.
+
+- The pre hashed variants `HashML-DSA` and `HashSLH-DSA`.
+- Any non empty context string.
+- Stateful hash based signatures such as XMSS or LMS, which carry key state that a stateless builtin cannot track.
+
+A later identifier can add a further NIST parameter set under the versioned encoding without reopening this scope.
+
 ### Versioned encoding
 
 A post quantum key or signature is carried as a versioned object so that a verifier reads the scheme from a declared identifier and never from the length of a field.
@@ -54,7 +64,7 @@ The initial identifiers are
 | `0x0003` | ML-DSA-87 | FIPS 204 | 2592 | 4627 |
 | `0x0004` | SLH-DSA-SHA2-128s | FIPS 205 | 32 | 7856 |
 
-A builtin rejects an object whose version is not `0x01`, whose identifier is not one it supports, whose kind is not valid, or whose body length does not match the table.
+A builtin rejects an object whose version is not `0x01`, whose identifier is not one it supports, whose kind is not valid, or whose body length does not match the table. In addition the public key argument must declare `kind = 0x01`, the signature argument must declare `kind = 0x02`, and the public key and the signature must declare the same `algId`. Any deviation is a malformed object and fails evaluation rather than returning false.
 
 ### CDDL
 
@@ -89,9 +99,11 @@ Every vector is deterministic from the fixed seeds and is cross checked between 
 
 CPS-0027 raises the question of whether more than one scheme should be available, and notes that Cardano already carries three pre quantum builtins. ML-DSA and SLH-DSA are the two signature schemes that NIST has finalised, as [FIPS 204][fips204] and [FIPS 205][fips205], both published in August 2024 at the end of the NIST post quantum standardisation process described in [NIST IR 8413][ir8413]. They rest on unrelated hard problems, so the pair gives Cardano a fallback if one family is weakened. Falcon is cited by CPS-0027 and by earlier work, but it is still in review as the draft FIPS 206, as listed on the [NIST post quantum cryptography project page][nistpqc], and its signing uses floating point, which is a portability and side channel concern on chain. SQIsign is attractive for size but is not standardised and verifies slowly. [NIST IR 8547][ir8547] sets out the transition away from quantum vulnerable signatures, proposing to deprecate them after 2030 and disallow them after 2035, which gives a concrete horizon for having post quantum verification available on chain. This CIP recommends shipping the two finalised schemes first and leaving Falcon and SQIsign to a later identifier once standardised, which the versioned encoding supports without a second format break.
 
+Offering both a lattice scheme and a hash based scheme is consistent with the direction other ecosystems are taking. Ethereum is standardising ML-DSA verification precompiles under [EIP-8355][eip8355] and is adding a hash based validator key registry under [EIP-8450][eip8450], treating the lattice and hash based families as answers to different threat models. Zcash is adding hash based signatures to its transparent pool for the same reason. Carrying one scheme from each family gives Cardano the same coverage.
+
 ### Sizes and cost
 
-The sizes below are fixed by the standards. The verification times are from a JavaScript reference implementation on a single core and are indicative of relative cost only, not of a native Cardano builtin, which would be faster.
+The sizes below are fixed by the standards. The verification times are measured on a single core and are indicative of relative cost only, not of a native Cardano builtin, which would be faster. The final Plutus cost model must be calibrated from native benchmarks on the target node hardware before any of these builtins is priced.
 
 | scheme | public key | signature | reference verify |
 | --- | --- | --- | --- |
@@ -106,6 +118,8 @@ SLH-DSA has the smallest key and the largest signature, and ML-DSA has the oppos
 
 Per CIP-0035, the cost shape for each builtin is as follows. Verification cost is constant in the public key size and the signature size, which are fixed per scheme in the table above, and linear in the message length. This is the same shape as the Ed25519 builtin and the ECDSA and Schnorr builtins in CIP-0049, so the existing costing approach applies and the only new inputs are the per scheme constants from the native benchmark.
 
+Memory usage is constant in the fixed key and signature sizes plus a small linear term in the message length for the internal hash input, so the memory cost can use a single per scheme constant and a message length coefficient. Neither builtin supports signature aggregation or batch verification. Each call verifies one signature against one key, which keeps the cost model one dimensional in the message length.
+
 The signatures are larger than the pre quantum builtins. ML-DSA-65 at 3309 bytes and SLH-DSA-SHA2-128s at 7856 bytes take a real share of the 16 kB transaction limit, so a witness of that size leaves less room for other data. ML-DSA is the smaller signature lattice option and SLH-DSA is the hash based fallback on a different hardness assumption. An implementation can take the smaller parameter sets first where size is the binding constraint. Raising block and transaction limits is a separate consensus change outside this CIP, and the Praos block rate is fixed.
 
 The versioned encoding stays quantum agile. A new scheme is a new identifier with its own builtin name and no second format break.
@@ -113,6 +127,12 @@ The versioned encoding stays quantum agile. A new scheme is a new identifier wit
 ### Why a versioned encoding
 
 CPS-0027 is a signature problem, but Cardano will also need to name the scheme wherever a post quantum key or signature appears. Declaring the scheme by an identifier, rather than by field width, lets a later identifier be added without a second format break, and lets one builtin serve several parameter sets. This follows the versioned hash precedent that other ecosystems already use.
+
+An alternative design is fixed length concatenation of the public key, the message and the signature, with one precompile per parameter set, which is the approach [EIP-8355][eip8355] takes on Ethereum. That saves the few bytes of the version, identifier and kind header, but it needs a new precompile for every new scheme or parameter set. The versioned envelope here trades those few bytes for the ability to add a future NIST parameter set as a new `algId` under the same builtin, with no second format break and no new builtin per set.
+
+### Backward compatibility
+
+At the Plutus Core level these new primitives do not change the behaviour of any existing builtin or script. They are available only after a hard fork that introduces the corresponding cost model protocol parameters, so a script that does not call them runs exactly as before.
 
 ## Path to Active
 
@@ -136,12 +156,16 @@ CPS-0027 is a signature problem, but Cardano will also need to name the scheme w
 - [NIST IR 8413, Status Report on the Third Round of the NIST Post Quantum Cryptography Standardization Process][ir8413]
 - [NIST IR 8547, Transition to Post Quantum Cryptography Standards (initial public draft)][ir8547]
 - [NIST Post Quantum Cryptography project][nistpqc]
+- [EIP-8355, Precompiles for ML-DSA verification][eip8355]
+- [EIP-8450, Post-Quantum Validator Key Registry][eip8450]
 
 [fips204]: https://csrc.nist.gov/pubs/fips/204/final
 [fips205]: https://csrc.nist.gov/pubs/fips/205/final
 [ir8413]: https://csrc.nist.gov/pubs/ir/8413/upd1/final
 [ir8547]: https://csrc.nist.gov/pubs/ir/8547/ipd
 [nistpqc]: https://csrc.nist.gov/projects/post-quantum-cryptography
+[eip8355]: https://eips.ethereum.org/EIPS/eip-8355
+[eip8450]: https://eips.ethereum.org/EIPS/eip-8450
 
 ## Copyright
 
