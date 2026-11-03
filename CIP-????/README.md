@@ -7,8 +7,9 @@ Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
 Implementors: []
 Discussions:
-    - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1313
     - CIP-0198 | Nested Transactions - Service Layer: https://github.com/cardano-foundation/CIPs/pull/1257
+    - CIP-0118 | Nested Transactions: https://github.com/cardano-foundation/CIPs/pull/862
 Created: 2026-10-14
 License: CC-BY-4.0
 ---
