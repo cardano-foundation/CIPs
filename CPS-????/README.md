@@ -8,7 +8,7 @@ Authors:
 Proposed Solutions: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1310
-  - Data Availability Technical Workshop: https://docs.google.com/document/d/1-7vZviAk_YKf14hewgE4BErZ7uDpr0WIY77q2w3zf9o/edit?usp=sharing
+  - Data Availability Technical Workshop: https://docs.google.com/document/d/1-7vZviAk_YKf14hewgE4BErZ7uDpr0WIY77q2w3zf9o
 Created: 2026-10-29
 License: CC-BY-4.0
 ---
