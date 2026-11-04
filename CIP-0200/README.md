@@ -162,7 +162,7 @@ We also specify a modification that corrects a problem at moderate load, when RB
 
 ### The recommended construction
 
-The settled recommendation in one place. Each component is specified in detail in the sections that follow, except the controller update rule and signals, which are defined immediately below the table.
+The recommended operating configuration in one place. Each component is specified in detail in the sections that follow. [Initial compatibility settings](#initial-compatibility-settings) describes the launch configuration, and [Controller updates and signals](#controller-updates-and-signals) defines the pricing controllers.
 
 | Component | Specification |
 |---|---|
@@ -184,6 +184,15 @@ The settled recommendation in one place. Each component is specified in detail i
 The adopted simulator configuration is [`block-window-10-cert-reset.json`](./block-window-10-cert-reset.json), a copy of `abstract-sim-hs/config/variants/standard-window-confirm/block-window-10-cert-reset.json` from the tiered-pricing repository. The historical canonical configuration for the earlier experiments is [`thr-k10.json`](./thr-k10.json). [Announcement semantics and the standard-window length](#announcement-semantics-and-the-standard-window-length) records the differences and the evidence for the adoption. Each file's embedded load is only the simulator's default workload, and experiment manifests override it. Neither file is part of the mechanism recommendation. The simulator implements only the byte component of the multidimensional EB threshold specified above. The max-of-two fee-cap rule is the simulator's rb-only fee semantics rather than a configurable alternative. The simulator's fee-cap headroom retains a `1/D` floor on each lane's stepBound (the historical policy); [Fee headroom comparison](#fee-headroom-comparison) assesses this difference from the specified rule.
 
 The parameter values, the grid points tested, and the loads at which each was stressed are tabulated in [Parameter calibration and tested ranges](#parameter-calibration-and-tested-ranges).
+
+### Initial compatibility settings
+
+The initial rollout uses the following settings before adopting the recommended operating targets above:
+
+- **Purpose:** Keep both lane quotes at the ordinary minimum fee during the initial rollout.
+- **Launch settings:** Both pricing coefficients start at `1.0`, and both `urgentTargetUtilisation` and `standardTargetUtilisation` start at `1.0`.
+- **Fee behaviour:** Utilisation cannot exceed `1.0`, so neither controller can increase its coefficient at these targets. The coefficient floor prevents a decrease below `1.0`, keeping both lane quotes at the ordinary minimum fee.
+- **Gradual activation:** Governance may enable dynamic pricing independently for each lane by lowering its target utilisation. The recommended operating targets are `0.5` for urgent and `0.75` for standard; either lane can retain its initial settings while the other is enabled.
 
 ### Controller updates and signals
 
