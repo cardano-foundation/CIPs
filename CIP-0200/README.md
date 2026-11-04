@@ -177,7 +177,7 @@ The settled recommendation in one place. Each component is specified in detail i
 | Admission, revalidation, and selection (node policy) | Admission requires the posted max fee to cover the maximum applicable lane quote after one worst-case lane-specific controller step. While the transaction is queued, the max fee must cover the current fee-cap quote, or the node evicts the transaction. Prudent EB selection takes a transaction only if the max fee also covers one further lane-specific step (RB selection needs only the current quote, since inclusion is immediate) |
 | Settlement and refund | Inclusion charges the applicable inclusion quote. The ordinary min-fee component goes to the fee pot, the premium above it goes to the treasury, and the posted excess goes back to the refund account. A posted maximum below the applicable quote is invalid |
 | Standard controller | Target utilisation 0.75, max-change denominator 16, capacity-weighted utilisation over a window of the 10 most recent processed blocks, initial coefficient 1.0 |
-| Urgent controller | Target utilisation 0.5, max-change denominator 16, reservation utilisation over a 5-sample window, initial coefficient 2.0 |
+| Urgent controller | Target utilisation 0.5, max-change denominator 16, reservation utilisation over a 5-sample window, initial coefficient 1.0 |
 | Floors | Absolute coefficient floor 1.0 (no quote below the ordinary min fee). No cross-lane multiplier floor |
 | Enforcement boundary | Ledger rules enforce RB lane eligibility, inclusion-point fee validity, settlement, and the deterministic per-lane quote update. The EB threshold and the age escape are ledger rules checked at certificate inclusion, specified in the Endorser Block announcement threshold section. Wallet choice, the urgent queue view, FIFO construction, admission headroom, revalidation, eviction, and producer headroom are node policy |
 
@@ -194,11 +194,11 @@ The design uses two independent pricing controllers, one for each lane:
 
 A pricing controller is a feedback mechanism. It observes recent utilisation of its lane and adjusts that lane's pricing coefficient. Utilisation above the target raises the coefficient; utilisation below the target reduces it. The lane's quote is obtained by applying its current coefficient to the ordinary minimum fee.
 
-The two controllers use the same update rule and the same recommended `D` value. They differ in their recommended target utilisation, their initial coefficient and, more importantly, in how they calculate utilisation:
+The two controllers use the same update rule and the same recommended `D` value. They differ in their recommended target utilisation and, more importantly, in how they calculate utilisation:
 
 | Controller | Target utilisation | Initial `coeff` | Utilisation signal | Window |
 |---|---:|---:|---|---:|
-| Urgent | `0.5` | `2.0` | Urgent usage measured against RB reservation capacity | **5 payload samples** |
+| Urgent | `0.5` | `1.0` | Urgent usage measured against RB reservation capacity | **5 payload samples** |
 | Standard | `0.75` | `1.0` | Standard usage measured against the combined capacity of recent blocks | **10 processed-block summaries** |
 
 The urgent window of **5 samples** balances responsiveness and quote stability; see [Parameter calibration and tested ranges](#parameter-calibration-and-tested-ranges) for the supporting evidence.
@@ -755,11 +755,8 @@ There is a new state variable
 
 in the `UTxOState`. At mechanism activation
 `diversityPolicy(t)` is seeded with a single initial coefficient
-(`2.0 × 10^tierDec` urgent, `1.0 × 10^tierDec` standard, per
+(`1.0 × 10^tierDec` urgent, `1.0 × 10^tierDec` standard, per
 [The recommended construction](#the-recommended-construction)) and zero usage and capacity.
-
-The Agda ledger specification has no seeding rule, and its fallback for an empty window
-is the `10^tierDec` floor, so it would start the urgent lane at `1.0` rather than `2.0`.
 
 The urgent and standard controllers remain fully independent
 as specified in 
