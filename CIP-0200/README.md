@@ -82,7 +82,7 @@ flowchart LR
         Q["Canonical FIFO queue"]
         UV["Urgent view:<br/>indices into the queue"]
     end
-    Q -- "evicted if the quote rises<br/>above max fee;<br/>wallet resubmits" --> EV["Evicted"]
+    Q -- "evicted if no permitted<br/>lane quote is covered;<br/>wallet resubmits" --> EV["Evicted"]
     UV --> RULE["Ledger rule:<br/>every RB transaction<br/>pays the urgent quote"]
     RULE --> RB["Ranking Block"]
     Q -- "FIFO, gated by the<br/>announcement rule<br/>(threshold section)" --> EB["Endorser Block"]
@@ -121,8 +121,8 @@ We also specify a modification that corrects a problem at moderate load, when RB
 
 **Transactions and reservation**
 
-- **Standard transaction:** A transaction that does not pay to enter the urgent lane.
-- **Urgent transaction:** A transaction that pays to enter the urgent lane. The payment asks nodes to include the transaction before standard transactions, where possible.
+- **Standard transaction:** A transaction that explicitly selects the standard lane.
+- **Urgent transaction:** A transaction that selects the urgent lane, explicitly or by default. The selection asks nodes to include the transaction before standard transactions, where possible and affordable.
 - **Reserved:** An urgent-lane mechanism that reserves RB block space for urgent transactions. The ledger enforces the reservation.
 
 **Lanes and routing**
@@ -149,7 +149,7 @@ We also specify a modification that corrects a problem at moderate load, when RB
 
 - **Posted fee vs actual fee:** The posted fee is the amount attached to the transaction at submission. The actual fee is the quote at inclusion time. The ledger refunds the difference.
 - **Refund:** The return of the excess fee to a specified address.
-- **Max fee (the fee ceiling on the user side):** The most a user agrees to pay, posted with the transaction. In the transaction representation this is the ordinary `txfee` field; the excess over the actual fee is credited to the transaction's `feeChangeAccount`. It buffers against quote movement. If the quote exceeds it, the transaction cannot be included.
+- **Max fee (the fee ceiling on the user side):** The most a user agrees to pay, posted with the transaction. In the transaction representation this is the ordinary `txfee` field; the excess over the actual fee is credited to the transaction's `feeChangeAccount`. It buffers against quote movement. If a lane's quote exceeds it, the transaction cannot be included through that lane.
 
 **Value / actors**
 
@@ -172,9 +172,9 @@ The recommended operating configuration in one place. Each component is specifie
 | EB announcement threshold | Let `thresholdFraction = max(1 - urgentTargetUtilisation, 1/2)`. Unless the age escape applies, a non-empty certified EB qualifies when any one of its serialised transaction size, its reference-script size, or either component of its execution-unit budget reaches that fraction of the corresponding RB limit. The default fraction is 1/2 (45,056 B for the simulated transaction-size component) |
 | EB announcement age escape | A certificate for a non-empty EB below the threshold can enter an RB once at least K = 10 Ranking Blocks have been produced since the last certified EB |
 | Fee semantics | Per-lane EIP-1559: each lane's quote is its pricing coefficient × the ordinary min fee |
-| Fee-cap basis | For an urgent transaction under rb-only settlement, wallet choice and every max-fee validity check use max(standard quote, urgent quote). Temporary quote crossings are permitted and do not alter either controller |
+| Fee-cap basis | For an urgent transaction under rb-only settlement, wallet choice and admission use max(standard quote, urgent quote). Temporary quote crossings are permitted and do not alter either controller |
 | Premium scope | rb-only: the applicable inclusion quote is the urgent quote in an RB and the standard quote in an EB |
-| Admission, revalidation, and selection (node policy) | Admission requires the posted max fee to cover the current fee-cap quote, with no mandatory headroom for future price increases. While the transaction is queued, the max fee must cover the current fee-cap quote, or the node evicts the transaction. Prudent EB selection takes a transaction only if the max fee also covers one further lane-specific step. RB selection needs only the current quote, since inclusion is immediate |
+| Admission, revalidation, and selection (node policy) | Admission requires the posted max fee to cover the current fee-cap quote, with no mandatory headroom for future price increases. Fee revalidation retains a transaction while its max fee covers a current quote for a permitted inclusion path. Prudent EB selection takes a transaction only if the max fee covers the standard quote one further standard-lane step ahead. RB selection needs only the current urgent quote, since inclusion is immediate |
 | Settlement and refund | Inclusion charges the applicable inclusion quote. The ordinary min-fee component goes to the fee pot, the premium above it goes to the treasury, and the posted excess goes back to the refund account. A posted maximum below the applicable quote is invalid |
 | Standard controller | Target utilisation 0.75, max-change denominator 16, capacity-weighted utilisation over a window of the 10 most recent processed blocks, initial coefficient 1.0 |
 | Urgent controller | Target utilisation 0.5, max-change denominator 16, reservation utilisation over a 5-sample window, initial coefficient 1.0 |
@@ -486,8 +486,8 @@ because the four kinds of governance content behave differently:
 
 Governance-proposing transactions must be allowed in exactly one lane to ensure commutativity.
 In order for governance actions to not be censored during a Praos fallback, we
-chose the urgent lane to be where they are admissible, so they must
-always pay the urgency price.
+chose the urgent lane to be where they are admissible, and they
+pay the urgency price when included in an RB.
 However, these governance-proposing or DRep-(de)registration constraints are entirely
 mempool/node policy (required to enable
 safe, predictable reordering behaviour), and are not enforced at the ledger level.
@@ -560,9 +560,9 @@ specification is made up of two lists, it can also be expressed via a view (as d
 
 #### Queue structure
 
-RB construction must identify the urgent transactions in the mempool without a scan of the whole queue. The queue structure therefore remains as it is today, but with an additional component: a view of urgent transaction indices (the indices point at the main queue). RB construction consults this view.
+RB construction must identify the urgent transactions in the mempool without a scan of the whole queue. The queue structure therefore remains as it is today, but with an additional component: a view of urgent transaction indices (the indices point at the main queue). RB construction consults this view, selecting transactions whose max fee covers the current urgent quote.
 
-EB construction operates the same way block construction operates on Cardano today: the node consults the canonical queue in FIFO order.
+EB construction operates the same way block construction operates on Cardano today: the node consults the canonical queue in FIFO order. A change in fee eligibility leaves a retained transaction's declared tier and FIFO position unchanged.
 
 Mempool structure remains node policy, so the ledger does not enforce it.
 
@@ -570,7 +570,7 @@ Mempool structure remains node policy, so the ledger does not enforce it.
 
 ##### Key points
 
-* A transaction whose offered fee no longer covers the current price should be evicted so as to not take up space in the mempool
+* A transaction whose offered fee no longer covers any permitted inclusion path should be evicted so as to not take up space in the mempool
 * Admission checks current fee requirements without mandatory headroom for future price increases
 * Submitters may add extra headroom to decrease the likelihood of eviction
 * If a registered refund account is specified, any unnecessary headroom will be refunded
@@ -579,7 +579,7 @@ Mempool structure remains node policy, so the ledger does not enforce it.
 
 A dynamic quote can rise after admission. A posted max fee that covered the quote at submission can then fall short when the transaction is selected. We handle this with three layers of node policy, ordered by when each acts.
 
-The two controllers are independent, so the standard quote can temporarily rise above the urgent quote. This is a permitted controller state, not a reason to impose a cross-lane multiplier floor. Because an urgent transaction can settle through either path, its fee-cap quote is `max(standard quote, urgent quote)` throughout wallet lane choice, admission, revalidation, and producer selection. Its actual fee remains inclusion-point-specific: the urgent quote in an RB and the standard quote in an EB.
+The two controllers are independent, so the standard quote can temporarily rise above the urgent quote. This is a permitted controller state, not a reason to impose a cross-lane multiplier floor. Because an urgent transaction can settle through either path, its fee-cap quote is `max(standard quote, urgent quote)` for wallet lane choice and admission. Its actual fee remains inclusion-point-specific: the urgent quote in an RB and the standard quote in an EB.
 
 A possible alternative is a 1× cross-lane clamp, which enforces `urgent quote ≥ standard quote`: it raises the urgent quote whenever the lanes invert. We do not adopt it because it couples the controllers and can raise the RB price when urgent-lane utilisation does not justify it. Max-of-two instead changes only the fee cap needed to cover both settlement paths. It does not change either controller or the inclusion-point-specific charge.
 
@@ -593,7 +593,7 @@ For an urgent transaction, the admission fee check is:
 
 $$ \mathrm{maxFee} \ge \max\left( \mathrm{quote}_{\mathrm{standard}}, \mathrm{quote}_{\mathrm{urgent}} \right) $$
 
-Submitters may provide additional headroom to reduce the risk of becoming underfunded while queued. For example, if the standard quote rises above an urgent transaction's posted max fee, that transaction no longer covers the fee for EB inclusion (see the fee-sufficiency rule in [Ledger Rule Changes](#ledger-rule-changes)). It also fails the current fee-cap check used for revalidation. Optional headroom can protect against bounded quote increases.
+Submitters may provide additional headroom to reduce the risk of becoming underfunded while queued. For example, if the standard quote rises above an urgent transaction's posted max fee, that transaction no longer covers the fee for EB inclusion (see the fee-sufficiency rule in [Ledger Rule Changes](#ledger-rule-changes)). It can remain queued for RB inclusion if it still covers the urgent quote. Optional headroom can protect against bounded quote increases.
 
 For optional wallet headroom and EB producer selection, the largest single-update rise can be calculated as follows.
 
@@ -607,9 +607,9 @@ $$ \mathrm{stepBound}_{l} = 0 $$
 
 The stepBound above is the largest single-update rise the update rule permits. A wallet may use it to choose a buffer against future quote increases; it is not an admission requirement. At the recommended operating targets and D = 16, one step is 6.25% of the urgent quote (target 0.5) and 2.08% of the standard quote (target 0.75). See [Fee headroom comparison](#fee-headroom-comparison) for the historical comparison of step bounds and its limitations.
 
-At selection into an EB, a producer takes only transactions that remain valid through the one further price update that can fire before the certification check. This guarantees that a certified EB cannot fail fee validation. The producer re-checks against current prices because prices can rise while a transaction queues. This extra step applies only to EBs. RB inclusion is immediate: no price update can fire between selection and inclusion, so RB selection checks the current quote alone.
+At selection into an EB, a producer takes only transactions that cover the standard quote through the one further price update that can fire before the certification check. This guarantees that a certified EB cannot fail fee validation. The producer re-checks against current prices because prices can rise while a transaction queues. This extra step applies only to EBs. RB inclusion is immediate: no price update can fire between selection and inclusion, so RB selection checks the current urgent quote alone.
 
-The node evicts an admitted transaction whose max fee is overtaken anyway. Eviction must be the outcome here. The transaction must not enter an invalid block, and a transaction that cannot be included wastes mempool space.
+An admitted urgent transaction whose max fee no longer covers the urgent quote remains queued for EB selection if it still covers the standard quote. The node evicts a transaction on fee grounds when its max fee covers no permitted inclusion path: neither current quote for an urgent transaction, or the standard quote for a standard transaction.
 
 The ledger enforces none of this, since mempool state is not observable on-chain.
 
@@ -633,7 +633,7 @@ see [Safe Reordering of Urgent Transactions](#safe-reordering-of-urgent-transact
 
 Urgent transactions get at least an RB's worth of space and ExUnits allocated to them in the 
 mempool, and may be admitted to an EB when that space is full. The eviction process for 
-transactions that become Phase-1 invalid remains the same as in prior eras. That is, 
+transactions that become Phase-1 invalid for all permitted inclusion paths remains the same as in prior eras. That is,
 when a new block arrives, the entire mempool is revalidated (kicking out stale transactions, 
 or ones whose inputs were spent, etc.). If the newly arrived block is an RB containing 
 an EB certificate which (1) matches the one in the `heldEB` variable in the mempool, and (2) the RB 
@@ -1034,9 +1034,9 @@ Block producers must account for fee change over time under dynamic fees. Consid
 
 1. A transaction is submitted to the dynamically priced urgent lane during a time of congestion, with more urgent transactions than Ranking Block space. The transaction's posted fee covers the necessary fee _at that time_ but no more.
 2. A Ranking Block is produced, but the submitted transaction misses it due to the congestion.
-3. The price increases, and the submitted transaction becomes stale. It wasted mempool space while it queued.
+3. The urgent price increases, and the submitted transaction becomes ineligible for RB inclusion. It remains queued for EB selection if it still covers the standard quote.
 
-The producer-side rule follows from this: a prudent producer fills an EB only with transactions whose max fee covers the quote one price update ahead. One update can fire between selection and the certification check, and an EB filled this way cannot fail fee validation when certified. The rule is EB-specific: RB inclusion is immediate, so RB selection needs only the current quote. Admission checks current quotes without requiring this buffer, as specified in [Revalidation and stale fees](#revalidation-and-stale-fees).
+To protect EB fee validity, a prudent producer fills an EB only with transactions whose max fee covers the standard quote one price update ahead. One update can fire between selection and the certification check, and an EB filled this way cannot fail fee validation when certified. The rule is EB-specific: RB inclusion is immediate, so RB selection needs only the current urgent quote. Admission checks current quotes without requiring this buffer, as specified in [Revalidation and stale fees](#revalidation-and-stale-fees).
 
 Reminder:
 
@@ -1048,21 +1048,17 @@ Otherwise:
 
 $$ \mathrm{stepBound}_{l} = 0 $$
 
-For EB selection of a standard transaction:
+For EB selection of either a standard or an urgent transaction:
 
 $$ \mathrm{maxFee} \ge \mathrm{quote}_{\mathrm{standard}} \times \left(1+\mathrm{stepBound}_{\mathrm{standard}}\right) $$
 
-For EB selection of an urgent transaction:
+This buffered fee-cap check applies at EB selection. Admission requires only the current fee-cap quote. The ledger itself demands no buffer: at inclusion, the posted maximum need only cover the quote at that moment.
 
-$$ \mathrm{maxFee} \ge \max\left( \mathrm{quote}_{\mathrm{standard}} \times \left(1+\mathrm{stepBound}_{\mathrm{standard}}\right), \mathrm{quote}_{\mathrm{urgent}} \times \left(1+\mathrm{stepBound}_{\mathrm{urgent}}\right) \right) $$
-
-These buffered fee-cap checks apply at EB selection. Admission requires only the current fee-cap quote. The ledger itself demands no buffer: at inclusion, the posted maximum need only cover the quote at that moment.
-
-Submitters may use the lane-specific $\mathrm{stepBound}$ values to choose optional headroom. A lane's quote can rise to at most $\mathrm{quote} \times (1 + \mathrm{stepBound})^k$ over $k$ worst-case updates. A transaction that queues through those updates remains eligible for retention only while its posted maximum covers the current fee-cap quote. At the recommended operating targets and $D = 16$, the urgent-lane $\mathrm{stepBound}$ is $1/16$ (target $0.5$) and the standard-lane $\mathrm{stepBound}$ is $1/48$ (target $0.75$). To cover four worst-case updates, a wallet may post roughly 27% above the current urgent quote or roughly 8.6% above the current standard quote; for an urgent transaction, it uses the larger of its two lane amounts. These are optional buffers against price movement, not admission requirements. Any unused buffer is refunded if the transaction specifies a registered refund account. [CIP-0192](https://github.com/cardano-foundation/CIPs/pull/1218) describes this refund mechanism.
+Submitters may use the lane-specific $\mathrm{stepBound}$ values to choose optional headroom. A lane's quote can rise to at most $\mathrm{quote} \times (1 + \mathrm{stepBound})^k$ over $k$ worst-case updates. A transaction that queues through those updates remains eligible for retention while its posted maximum covers a current quote for a permitted inclusion path. At the recommended operating targets and $D = 16$, the urgent-lane $\mathrm{stepBound}$ is $1/16$ (target $0.5$) and the standard-lane $\mathrm{stepBound}$ is $1/48$ (target $0.75$). To cover four worst-case updates, a wallet may post roughly 27% above the current urgent quote or roughly 8.6% above the current standard quote; to cover both paths for an urgent transaction, it uses the larger of its two lane amounts. These are optional buffers against price movement, not admission requirements. Any unused buffer is refunded if the transaction specifies a registered refund account. [CIP-0192](https://github.com/cardano-foundation/CIPs/pull/1218) describes this refund mechanism.
 
 The urgent premium is scoped to the Ranking Block (rb-only). An urgent transaction included via an Endorser Block instead pays the standard quote at inclusion time, and the refund returns everything above it. The premium buys the reserved lane. A user whose transaction does not receive Ranking Block inclusion does not pay for it.
 
-Settlement must never silently cap the charge below the applicable quote. If the posted maximum does not cover the inclusion-point quote, the transaction is invalid for inclusion. The max-of-lane fee-cap rule above makes that invariant hold even while the lane quotes are inverted.
+If the posted maximum does not cover the inclusion-point quote, the transaction is invalid for inclusion. Checking the quote for the actual inclusion path makes that invariant hold even while the lane quotes are inverted.
 
 Settlement at inclusion splits the posted bid three ways:
 
@@ -1221,7 +1217,7 @@ Yes, at a measured delay cost and with a rule that repairs the worst case. Stand
 
 **How can we retain fee quote validity across repricing intervals?**
 
-Three tools help a queued transaction's fee remain valid while prices move: a posted maximum fee, a refund, and bounded price steps. A user posts the most they agree to pay. Settlement charges only the applicable quote at inclusion and returns the excess to the registered refund account when one is specified. Each controller step is bounded at the recommended operating parameters: the urgent quote moves at most 6.25% per update in either direction, and the standard quote rises at most 2.08% and falls at most 6.25% per update. A submitter can therefore calculate optional headroom for k updates: roughly 27% covers four worst-case urgent updates, and roughly 8.6% covers four standard ones. Node policy then layers the checks by when they act. Admission requires the posted maximum to cover the current fee-cap quote without mandatory headroom. An Endorser Block producer separately requires one further step at selection so that a certified EB cannot fail fee validation. Eviction removes transactions whose posted maximum no longer covers the current fee-cap quote. The ledger itself demands validity only at the inclusion point. [Revalidation and stale fees](#revalidation-and-stale-fees) and [Block production and node policy](#block-production-and-node-policy) specify the two sides.
+Three tools help a queued transaction's fee remain valid while prices move: a posted maximum fee, a refund, and bounded price steps. A user posts the most they agree to pay. Settlement charges only the applicable quote at inclusion and returns the excess to the registered refund account when one is specified. Each controller step is bounded at the recommended operating parameters: the urgent quote moves at most 6.25% per update in either direction, and the standard quote rises at most 2.08% and falls at most 6.25% per update. A submitter can therefore calculate optional headroom for k updates: roughly 27% covers four worst-case urgent updates, and roughly 8.6% covers four standard ones. Node policy then layers the checks by when they act. Admission requires the posted maximum to cover the current fee-cap quote without mandatory headroom. An Endorser Block producer separately requires one further standard-lane step at selection so that a certified EB cannot fail fee validation. Eviction removes transactions whose posted maximum no longer covers any permitted inclusion path. The ledger itself demands validity only at the inclusion point. [Revalidation and stale fees](#revalidation-and-stale-fees) and [Block production and node policy](#block-production-and-node-policy) specify the two sides.
 
 **What information is leaked when a transaction signals urgency?**
 
@@ -1351,7 +1347,7 @@ The threshold expression uses the urgent-controller target. The historical sweep
 | EB announcement threshold | `thresholdFraction = max(1 - urgentTargetUtilisation, 1/2)`. Unless the age escape applies, a non-empty EB qualifies when any single resource component (transaction size, reference-script size, or either execution-unit component) reaches `ceil(thresholdFraction × corresponding RB limit)`. The default fraction is 1/2 (45,056 B for the simulated transaction-size component) | only the transaction-size threshold was tested: the headroom branch was swept while both controller targets moved together over 0.25-0.75. Historical shared-stream fixed-byte-threshold comparisons exercised 45,056 B at targets 0.25 and 0.75. The reference-script and execution-unit branches remain untested |
 | EB announcement age escape (K) | 10 RB intervals | K ∈ {5, 10, 20} swept under the simulator's historical announcement-reset policy. 10 is bit-identical to no escape at ordinary low load and repairs trickle starvation with no statistically detectable urgent-class cost. The specified certification-time reset was later implemented and confirmed. At trickle load it improves standard retained value further ([Announcement semantics and the standard-window length](#announcement-semantics-and-the-standard-window-length)) |
 | Absolute coefficient floor | 1.0 × ordinary min fee (i.e. `10^tierDec` in the fixed-point representation) | not swept |
-| Cross-lane multiplier floor | none. Temporary quote crossings are permitted, and urgent max-fee checks use the larger current quote | tested at 3× and 16×, rejected |
+| Cross-lane multiplier floor | none. Temporary quote crossings are permitted, and urgent admission checks use the larger current quote | tested at 3× and 16×, rejected |
 
 See the [parameter stress test section of the experiment report](https://github.com/input-output-hk/tiered-pricing/blob/bd3de91fc0afe6cea83ff7842c6ba1e6c2aa892a/docs/phase-2/preliminary-experiment-report.md#parameter-stress-test-controller-settings-and-the-threshold-rule).
 
