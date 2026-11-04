@@ -64,9 +64,11 @@ new, unique authority. This CIP uses two:
 2. `pool`, registered by this CIP, for a stake pool, in the bech32 form of
    CIP-0005 (prefix `pool`, the 28-byte pool ID).
 
-The `stake` authority of CIP-0013 and the `drep` authority of CIP-0162 are
+The `stake` authority of CIP-0013 and the `drep` authority of CIP-0162 create, in general,
+unambiguous references to these objects (or lists of objects, in the case of a multi-pool
+`stake` link) and may also be interpreted as
 instructions to a wallet to delegate. They are not role URIs, and a tool MUST
-NOT read them as declarations.
+NOT read them as declarations when implementing this CIP.
 
 ```abnf
 roleuri    = "web+cardano://" ( poolrole / dreprole / ccrole )
