@@ -121,7 +121,7 @@ We also specify a modification that corrects a problem at moderate load, when RB
 
 **Transactions and reservation**
 
-- **Standard transaction:** A transaction that does not pay to enter the urgent lane. Cardano's current transactions.
+- **Standard transaction:** A transaction that does not pay to enter the urgent lane.
 - **Urgent transaction:** A transaction that pays to enter the urgent lane. The payment asks nodes to include the transaction before standard transactions, where possible.
 - **Reserved:** An urgent-lane mechanism that reserves RB block space for urgent transactions. The ledger enforces the reservation.
 
@@ -383,8 +383,9 @@ signature. A peer may advertise a standard transaction as urgent and, on a node 
 without checking, obtain fetch precedence it did not pay for. The envelope copy is therefore an
 optimisation hint only, and the following are required of any implementation:
 
-- a node MUST compare the envelope's `tier_no` against the body's after download, and MUST treat the body
-  as authoritative for every subsequent decision — queue placement, fee validation, and block selection;
+- a node MUST compare the envelope's `tier_no` against the body's tier after download, applying the
+  default urgent tier if `tx_tier` is omitted, and MUST treat the body as authoritative for every
+  subsequent decision — queue placement, fee validation, and block selection;
 - a mismatch MUST be attributed to the peer that supplied it, and repeated mismatches from one peer MUST
   reduce that peer's fetch precedence and eventually disconnect it;
 - fetch precedence granted on an unverified envelope claim MUST be bounded independently per peer, so that
@@ -651,13 +652,17 @@ tier_no    = 0 / 1          ; 0 = urgent, 1 = standard
 tx_tier    = [tier_no]
 
 transaction_body = { ...
-  , ? x     : tx_tier          ; claimed tier, defaults to standard if omitted
+  , ? x     : tx_tier          ; claimed tier, defaults to urgent if omitted
   , ? x + 1 : account_address  ; feeChangeAccount, per CIP-0192
   }
 ```
 
 `x` is the first free transaction-body key in the era this CIP is deployed into. It is not
 fixed here because this CIP does not name a target era.
+
+If `tx_tier` is omitted, the transaction is treated as urgent, equivalent to specifying
+`tx_tier = [0]`. Selecting the standard lane requires an explicit `tx_tier = [1]`.
+Nodes and ledger validation apply this interpretation consistently.
 
 A transaction body may optionally specify the `tier_no` which indicates whether it's an urgent or standard 
 transaction. It carries no coefficient because the amount charged is the ledger's own quote for the tier the 
@@ -776,7 +781,7 @@ In the rules below, `rawCoeff(t)` is read from `policyState` at the point of val
 field of its own: it is derived, as the `coeff` of the head entry of `diversityPolicy(t)`. When
 `rawCoeff(standard) = 10^tierDec`, `minfeeAt(rawCoeff(standard)) = minfee`, so the standard lane
 requires no more than the ordinary minimum fee. If `tx` omits `tx_tier`, the rules below apply as
-though `tx` had specified `tx_tier = [standard]`. 
+though `tx` had specified `tx_tier = [urgent]`.
 
 Let `adjusted_tier_no` be `urgent` if `tx` was in an RB with a *transaction list*, 
 and `standard` if `tx` was in an EB. Let `adjusted_tier_coeff` be `effectiveTierCoeff(adjusted_tier_no)`. 
