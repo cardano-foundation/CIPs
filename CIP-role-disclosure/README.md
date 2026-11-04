@@ -4,9 +4,9 @@ Title: Disclosure of Governance Roles
 Category: Metadata
 Status: Proposed
 Authors:
-    - Smit Blockchain Operations (Pool BKIND) <developmentbkind@gmail.com>
+    - Smit Blockchain Operations <developmentbkind@gmail.com>
 Implementors:
-    - Smit Blockchain Operations (BKIND) <https://smitblockchainops.nl>
+    - Smit Blockchain Operations <https://smitblockchainops.nl>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1311
 Solution To:
