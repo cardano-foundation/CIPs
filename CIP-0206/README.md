@@ -91,7 +91,7 @@ The arguments are the public key, the message, and the signature. Every argument
 - Verification vectors give a public key, a message, a signature and the expected result. For each scheme they check that a genuine signature returns true, that changing one bit of the message returns false, and that changing one bit of the signature returns false. Further vectors check that a signature does not verify under another key of the same scheme, and that evaluation fails when the key and signature declare different schemes, when a key of one family is passed to the builtin of the other, and when a signature is placed in the public key position.
 - Rejection vectors are malformed objects that every builtin must refuse, covering an unsupported version, an unassigned and a reserved identifier, an invalid kind, a body one byte short and one byte long, and a truncated header.
 
-Every vector is deterministic from the fixed seeds and is cross checked between two independent implementations, the Quantova Rust core at https://github.com/Quantova/Q-Crypto and a stock OpenSSL 3.5 or newer that ships ML-DSA and SLH-DSA, so it does not rest on one implementation. OpenSSL is the trusted reference an implementer can check against, and the verification behaviour matches the official NIST ACVP known answers for FIPS 204 and FIPS 205 from https://github.com/usnistgov/ACVP-Server, confirmed case for case at https://github.com/quantova-inc/bnb-pq-tooling/tree/main/cardano/acvp.
+Every vector is deterministic from the fixed seeds and is cross checked between two independent implementations, the Quantova Rust core at https://github.com/Quantova/Q-Crypto and a stock OpenSSL 3.5 or newer that ships ML-DSA and SLH-DSA, so it does not rest on one implementation. OpenSSL is the trusted reference an implementer can check against, and the verification behaviour matches the official NIST ACVP known answers for FIPS 204 and FIPS 205 from https://github.com/usnistgov/ACVP-Server, confirmed case for case at https://github.com/quantova-inc/cardano-pq-tooling/tree/main/acvp.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -144,7 +144,7 @@ At the Plutus Core level these new primitives do not change the behaviour of any
 
 ### Implementation Plan
 
-- A reference encoder, decoder and verification check are published at https://github.com/quantova-inc/bnb-pq-tooling/tree/main/registry and are linked rather than included here.
+- A reference encoder, decoder and verification check are published at https://github.com/quantova-inc/cardano-pq-tooling/tree/main/registry and are linked rather than included here.
 - The test vectors in this CIP are the conformance target for any implementation.
 - Quantova Inc maintains the reference vectors and supports the Plutus implementation team with conformance checks.
 - The in evaluator builtin and the cost model are the work of the ledger and Plutus maintainers, since they are consensus critical and require a hardfork.
