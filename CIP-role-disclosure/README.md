@@ -325,8 +325,15 @@ not cover most committee members. Registration and update certificates
 support both key and script credentials, which is why the CIP keeps
 certificate-anchored declarations and reciprocity. For a committee credential
 there is no metadata certificate, so the CIP claims no reciprocal proof
-there: that relation stays one-sided. An optional signature proof for key
-credentials can be defined in a later CIP.
+there: that relation stays one-sided. Reciprocity also gives what a
+signature inside one document cannot. Either side can withdraw by anchoring a
+new document, while a signature in the other side's document cannot be taken
+back. Each statement sits at a known block, so a reader knows what was
+declared at a given time. And registered pool metadata is limited to 512
+bytes: a signature with its public key takes about 230 bytes, so a proof
+would not fit next to a normal description and could only live in the DRep
+document. An optional signature proof for key credentials can be defined in
+a later CIP.
 
 **Status before relation, and current before former.** A missing or broken
 document says nothing about what its holder declares, so it gives "unknown"
