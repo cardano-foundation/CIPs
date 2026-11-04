@@ -298,9 +298,10 @@ read and leaves truth and completeness with the holder.
 label and a URI, and explorers already read it. A new type in this CIP's own
 namespace reaches readers through tools that exist today and changes no other
 CIP. CIP-0134 already gives a DRep and a committee credential a URI form, so
-this CIP reuses it. A pool had no such form: the `stake` authority of
-CIP-0013 and the `drep` authority of CIP-0162 are delegation instructions for
-a wallet, and a declaration must not be one. Hence the `pool` authority.
+this CIP reuses it. A pool had no such form: a `stake` link of CIP-0013
+refers to a pool or a list of pools and can also be read as a delegation
+instruction, and a declaration must not be confused with either. Hence the
+`pool` authority.
 Only the pool ID is a role, because a ticker can be shared and can change.
 
 **Only certificate-anchored documents.** Every version of the DRep document
