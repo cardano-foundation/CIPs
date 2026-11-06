@@ -1533,6 +1533,8 @@ approach is outside the scope of this CIP.
 
 ## Path to Active
 
+Mainnet activation uses the [initial compatibility settings](#initial-compatibility-settings), with dynamic pricing disabled. Governance may enable dynamic pricing later, independently for each lane.
+
 ### Acceptance Criteria
 
 The proposal is active when all of the following are true:
@@ -1543,11 +1545,12 @@ The proposal is active when all of the following are true:
 - [ ] The Agda mempool specifications for Leios with urgency signalling are complete and merged upstream.
 - [ ] Simulation or testnet evidence covers the reference-script and execution-unit branches of the EB threshold rule.
 - [ ] A peer-reviewed node implementation of the mempool changes, the block production policy, and the ledger rules is available.
-- [ ] An implementation-independent conformance test suite covers the new rules, and the node implementation passes it.
-- [ ] Load tests on a public testnet replay a published synthetic workload with assigned value-decay profiles against a flat-fee comparator. The metrics and pass margins are declared before the tests run, and they include both a central measure and a 95th-percentile measure of urgent-class inclusion delay in blocks. Under congestion, urgent-class results improve by at least the declared margins. At low and trickle load, standard-class and overall results stay within the declared regression bounds, and those bounds cover the 95th-percentile standard-class delay as well as its mean.
+- [ ] An implementation-independent conformance test suite covers the new rules, and the node implementation passes it. Tests include the urgent default, admission at the standard quote without headroom, fallback and recovery, and RB and EB fee checks.
+- [ ] Compatibility tests confirm that otherwise valid existing transactions omitting the lane field and offering the ordinary minimum fee remain admissible and RB-eligible under the initial settings, including when EB production is unavailable.
+- [ ] Load tests on a public testnet use the recommended dynamic operating settings and replay a published synthetic workload with assigned value-decay profiles against a flat-fee comparator. The metrics and pass margins are declared before the tests run, and they include both a central measure and a 95th-percentile measure of urgent-class inclusion delay in blocks. Under congestion, urgent-class results improve by at least the declared margins. At low and trickle load, standard-class and overall results stay within the declared regression bounds, and those bounds cover the 95th-percentile standard-class delay as well as its mean.
 - [ ] An independent audit of the specification, the implementation, and the incentives analysis is published. Material findings from the audit are resolved.
 - [ ] Wallets and transaction-construction libraries support the new transaction fields: lane choice, maximum fee, and refund account.
-- [ ] The community agrees on the initial values of the protocol parameters listed in "The recommended construction".
+- [ ] The community agrees on the initial values of the protocol parameters, consistent with [Initial compatibility settings](#initial-compatibility-settings).
 - [ ] A hard fork enables the mechanism on mainnet.
 
 ### Implementation Plan
@@ -1558,11 +1561,11 @@ The work items, in approximate order:
 - [ ] Extend the experimental evidence to the reference-script and execution-unit branches of the EB threshold.
 - [ ] Write a node-level technical specification, coordinated with the CIP-164 node work.
 - [ ] Implement the changes in `cardano-node`, integrated with the linear Leios implementation.
-- [ ] Develop implementation-independent conformance tests, aligned with the CIP-164 blueprint work.
+- [ ] Develop implementation-independent conformance tests for the initial settings and independent activation of each lane's pricing, aligned with the CIP-164 blueprint work.
 - [ ] Update wallets and libraries for the new CDDL fields.
-- [ ] Publish the synthetic testnet workload, the metrics, and the pass margins. Then run load tests on a Leios testnet, and compare the results with the declared margins.
+- [ ] Publish the synthetic testnet workload, the metrics, and the pass margins. Then run compatibility and load tests on a Leios testnet, and compare the load-test results with the declared margins.
 - [ ] Audit the specification, the implementation, and the incentives analysis.
-- [ ] Schedule the hard-fork activation with, or after, the linear Leios rollout.
+- [ ] Schedule the hard-fork activation with, or after, the linear Leios rollout, using the initial compatibility settings.
 
 ## Versioning
 
