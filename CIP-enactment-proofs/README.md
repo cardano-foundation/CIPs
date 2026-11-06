@@ -15,8 +15,8 @@ License: CC-BY-4.0
 
 This CIP introduces an optional `required_enactments` transaction-body field.
 The ledger checks the supplied governance action IDs against a permanent set of
-enacted actions during phase 1 and exposes them in Plutus `TxInfo`. An agreed
-historical snapshot initializes the set with all prior enactments.
+enacted actions during phase 1 and exposes them in Plutus `TxInfo`. The set starts
+empty at activation and records enactments processed under the new rules.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -42,9 +42,9 @@ do not enact.
 
 ### Ledger state
 
-Add a `Set GovActionId` to governance state. At each epoch transition, insert the
-IDs of all actions whose enactment takes effect. In the reference implementation,
-these are the keys of `enactedActions` returned by
+Add a `Set GovActionId` to governance state. At each epoch transition under the
+new rules, insert the IDs of all actions whose enactment takes effect. In the
+reference implementation, these are the keys of `enactedActions` returned by
 [`proposalsApplyEnactment`][apply-enactment] and committed by the
 [`EPOCH` rule][epoch-enactment]. Do not insert pending ratification results,
 expired actions, or actions removed because a competing action enacted.
@@ -57,29 +57,15 @@ of the state on rollback.
 Validation uses the state immediately before applying the transaction, after any
 epoch transition due for its block.
 
-### Historical initialization
+### Initialization
 
-At activation, the set must contain all governance action IDs enacted previously
-on that network. Initialize it from an agreed historical snapshot with a specified
-cutoff chain point, identified by slot and block hash.
+The hard-fork transition initializes the set to empty. From that point, insert
+only IDs whose enactment is processed under the new rules. Actions enacted before
+activation are not added, and their IDs fail membership checks. No historical
+snapshot or retrieval of pre-activation enactments is required.
 
-The network's upgrade configuration must fix that point and a hash of the
-snapshot's canonical encoding. Nodes must reject a snapshot that does not match.
-The snapshot contains each enacted ID once, sorted in ascending order by
-transaction hash bytes and then numerical action index. Its exact encoding and
-hash algorithm must be fixed before activation.
-
-A candidate snapshot can be exported from [db-sync][db-sync-schema], using
-`gov_action_proposal.enacted_epoch`, the proposal index, and the transaction hash,
-restricted to the cutoff. Independent ledger replay must verify both its contents
-and completeness. The hash establishes agreement on the list; replay establishes
-its correctness.
-
-The migration must also include all enactments between the cutoff and activation,
-including those taking effect at the activation boundary. Nodes reconstructing
-state and nodes restoring snapshots must produce the same set before validating
-the first transaction under the new rules. The snapshot rollout and the mechanism
-for collecting these intervening enactments remain activation prerequisites.
+An action proposed or ratified before activation is included if its enactment is
+processed under the new rules.
 
 ### Transaction-body field
 
@@ -135,9 +121,9 @@ using the existing `GovernanceActionId` encoding for each entry.
 
 ### Repeated reads and availability
 
-IDs remain available after newer actions enact and can be required repeatedly.
-Contracts can enforce single use through their own state. A rollback removes
-enactments that are no longer part of the selected chain.
+Recorded IDs remain available after newer actions enact and can be required
+repeatedly. Contracts can enforce single use through their own state. A rollback
+removes enactments that are no longer part of the selected chain.
 
 ### Versioning and activation
 
@@ -148,8 +134,8 @@ After activation, changes to the specified encoding or validation rules require 
 new CIP that supersedes this one. The replacement CIP must define its protocol
 activation and any further ledger language change.
 
-The field is accepted from the activating protocol version onward, after the
-historical set has been initialized.
+The field is accepted from the activating protocol version onward. The hard-fork
+transition initializes the enacted set as specified above.
 
 This draft covers top-level transactions only.
 
@@ -158,6 +144,9 @@ This draft covers top-level transactions only.
 Retaining enacted IDs keeps proofs available after subsequent enactments and
 covers treasury withdrawals, which have no stored proposal root. This requires
 permanent state beyond the latest roots currently retained by the ledger.
+
+Starting with an empty set keeps activation independent of historical enactment
+data.
 
 Supplying IDs in the transaction keeps script inputs fixed. Ledger state decides
 whether the requirements are met; it does not change what the script sees.
@@ -194,8 +183,6 @@ receive. The policy for combining this field with older scripts remains open.
 - Assign the transaction-body key and activation protocol version.
 - Select the Plutus ledger language version and `TxInfo` field position, and
   define handling of transactions that also use older script versions.
-- Fix the historical snapshot encoding, hash algorithm, cutoff and distribution
-  process, and the mechanism covering enactments through activation.
 
 These choices, community review, and an implementation commitment are pending.
 
@@ -206,8 +193,8 @@ These choices, community review, and an implementation commitment are pending.
 - [ ] Assign the body key, activation version, and Plutus context encoding.
 - [ ] Implement the enacted set, state codecs, body codecs, phase-1 checks, and
       context translation.
-- [ ] Publish the historical snapshot and replay verification, fix its hash in
-      upgrade configuration, and demonstrate complete coverage through activation.
+- [ ] Verify empty-set initialization at activation and accumulation of enactments
+      processed under the new rules.
 - [ ] Update the `plutus` repository's interface specification and implementation.
 - [ ] Provide node queries for membership of supplied IDs and support in external
       transaction builders and script libraries.
@@ -224,28 +211,30 @@ Required test cases:
   duplicate and malformed IDs; all-present and partly missing requirements.
 - Both validation branches and unconditional structural checks; transactions
   without Plutus scripts; deterministic context encoding across input orderings.
-- Every enactable action type, including treasury withdrawals; historical and
-  repeated reads; all actions enacted at the same boundary remain available.
+- Every enactable action type, including treasury withdrawals; repeated reads and
+  reads after subsequent enactments; all actions enacted at the same boundary
+  under the new rules remain available.
 - Merely proposed or ratified actions, expired actions, removed competitors,
   information actions and unknown IDs fail membership checks; pending ratification
   and pulser progress do not add IDs.
-- Full-history initialization, rejection of a wrong snapshot hash, replay
-  detection of omitted or spurious entries, and coverage through activation.
+- Empty-set initialization at activation; pre-activation enactments fail membership
+  checks; enactments processed under the new rules accumulate, including actions
+  proposed or ratified before activation.
 - Equivalent results after replay, snapshot restoration, restart, and rollback,
   including removal of enactments from an abandoned branch.
 
 ### Implementation Plan
 
 1. Obtain Plutus and Ledger review and resolve the version and encoding
-   assignments and migration choices above.
-2. Add the enacted set and its epoch-transition updates, state codecs and
-   snapshot migration. Generate and independently verify the historical set.
+   assignments above.
+2. Add the enacted set, empty-set initialization at the hard fork, epoch-transition
+   updates, and state codecs for persistence and snapshots.
 3. Add the body field and codecs, and place the membership check alongside the
    current treasury value check.
 4. Update the Plutus specification and implementation, node queries,
    transaction builders, and script libraries.
-5. Add test vectors, integration tests and benchmarks; verify complete historical
-   initialization and snapshot/replay agreement on a test network.
+5. Add test vectors, integration tests and benchmarks; verify empty initialization,
+   subsequent enactment tracking, and snapshot/replay agreement on a test network.
 6. Release the node and Plutus changes, then activate through a hard fork enabling
    the selected protocol version and new Plutus ledger language version.
 
@@ -263,7 +252,6 @@ Required test cases:
 [epoch-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Epoch.hs#L318-L329
 [required-signers]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/cddl/data/conway.cddl#L621-L623
 [treasury-check]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Ledger.hs#L375-L379
-[db-sync-schema]: https://github.com/IntersectMBO/cardano-db-sync/blob/master/doc/schema.md#gov_action_proposal
 [set-complexity]: https://hackage-content.haskell.org/package/containers-0.8/docs/Data-Set.html
 [reward-funding]: https://docs.cardano.org/about-cardano/learn/pledging-rewards
 
