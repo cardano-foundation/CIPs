@@ -4,7 +4,8 @@ Title: Required Governance Enactments
 Category: Plutus
 Status: Proposed
 Authors:
-    - keyanm <keyanmaskoot@gmail.com> # Replace the Git username with the author's name.
+    - keyanm <keyanmaskoot@gmail.com>
+    - Philip DiSarro <phil@midgardlabs.io>
 Implementors: []
 Discussions: [] # Add the original PR link when submitted.
 Created: 2026-09-28
@@ -50,9 +51,9 @@ reference implementation, these are the keys of `enactedActions` returned by
 expired actions, or actions removed because a competing action enacted.
 
 Retain IDs when later actions enact, including every action enacted at the same
-boundary. Store only IDs; action contents and parent links are not added. Include
-the set in ledger-state serialization and snapshots, and restore it with the rest
-of the state on rollback.
+boundary. The baseline stores only IDs; action contents and parent links are not
+added. Include the set in ledger-state serialization and snapshots, and restore
+it with the rest of the state on rollback.
 
 Validation uses the state immediately before applying the transaction, after any
 epoch transition due for its block.
@@ -108,7 +109,7 @@ does not prove enactment.
 
 ### Plutus script context
 
-Add the following field to `TxInfo`:
+The baseline adds the following field to `TxInfo`:
 
 ```haskell
 txInfoRequiredEnactments :: [GovernanceActionId]
@@ -118,6 +119,31 @@ Construct this list solely from the transaction body, sorted in ascending order
 by transaction hash bytes and then numerical action index, regardless of the order
 in the body. Omission produces an empty list. Encode it as a Plutus Data list
 using the existing `GovernanceActionId` encoding for each entry.
+
+#### Enriched context — open design question
+
+A desirable extension would let contracts inspect the original proposal contents
+alongside proof of enactment. If adopted, it would replace the baseline list with:
+
+```haskell
+txInfoRequiredEnactments :: Map GovernanceActionId ProposalProcedure
+```
+
+The intended map contains one authenticated original proposal per ID in the
+transaction's `required_enactments`. Omitting the field produces an empty map.
+Entries are ordered by transaction hash bytes and then numerical action index,
+regardless of the order in the transaction body.
+
+Values use the existing Plutus `ProposalProcedure` representation: the original
+deposit, return credential, and governance action. Metadata anchors are omitted,
+as in the existing [`transProposal` translation][proposal-translation]. The map
+would use Plutus Data map encoding with the existing key and value encodings;
+this requires no new UPLC primitive.
+
+The storage and authentication design remains open for reviewer input, including
+resolution behavior when `is_valid = false`. Adoption of this extension is not a
+prerequisite for activating the baseline. Empty initialization at activation and
+the exclusion of pre-activation enactments apply to either design.
 
 ### Repeated reads and availability
 
@@ -148,8 +174,10 @@ permanent state beyond the latest roots currently retained by the ledger.
 Starting with an empty set keeps activation independent of historical enactment
 data.
 
-Supplying IDs in the transaction keeps script inputs fixed. Ledger state decides
-whether the requirements are met; it does not change what the script sees.
+In the baseline, supplying IDs in the transaction keeps script inputs fixed.
+Ledger state decides whether the requirements are met; it does not change what
+the script sees. The enriched context would also require authenticated proposal
+contents for those IDs.
 
 ### Lookup and storage costs
 
@@ -172,6 +200,32 @@ direct payment for storage or a bound on its lifetime cost. The deposit is an
 updatable protocol parameter, and rewards are funded from [reserves and
 transaction fees][reward-funding]. This CIP adds no storage fee.
 
+### Supplying proposal contents
+
+The existing ledger removes enacted proposal records from active proposal
+storage. Their full records are available in the `enactedActions` result of
+[`proposalsApplyEnactment`][apply-enactment] at the enactment transition, but the
+baseline's permanent ID set cannot reconstruct those contents later.
+
+Reviewers are invited to help choose a practical source of authenticated values
+for the enriched context. The following approaches remain open:
+
+| Approach | Benefit | Additional work or cost |
+| --- | --- | --- |
+| Retain enacted proposal records | Direct lookup and reuse of proposal translation; consuming transactions supply only IDs | Permanent storage of variable-size records |
+| Retain a content hash per enacted ID | Fixed-size commitment per ID; consuming transactions supply proposal witnesses | Witness encoding, hashing, verification, and transaction data |
+| Retain only enacted IDs | Preserves the baseline state representation | Authenticate supplied original transaction bodies against the transaction hash and select proposals by index; historical encodings and transaction size need consideration |
+
+A governance action ID identifies a transaction and a proposal index. Supplying
+a proposal record alone does not establish its association with that ID.
+
+Existing proposal translation and Plutus Data maps can be reused. Each design
+must make the same authenticated values available to context construction and
+execution-budget estimation. The ID-only storage estimates above also do not
+cover proposal payloads. A transaction containing a small set of IDs may resolve
+to substantially more data, so context construction and resource accounting need
+separate review.
+
 ### Compatibility
 
 The new context requires scripts to target the new ledger language version.
@@ -183,8 +237,17 @@ receive. The policy for combining this field with older scripts remains open.
 - Assign the transaction-body key and activation protocol version.
 - Select the Plutus ledger language version and `TxInfo` field position, and
   define handling of transactions that also use older script versions.
+- Should the desired enriched context be adopted, and which storage and
+  authentication approach should supply the original proposal contents?
+- If adopted, how should context construction, node queries, and off-chain
+  execution-budget estimation obtain the same authenticated proposal data?
+- What limits or fees should cover resolved proposal sizes and context
+  construction if the enriched context is adopted?
+- How should enriched context resolution handle unavailable or mismatched data
+  when `is_valid = false`, given that the baseline skips membership checks?
 
 These choices, community review, and an implementation commitment are pending.
+The enrichment questions are conditional on adopting that extension.
 
 ## Path to Active
 
@@ -223,6 +286,17 @@ Required test cases:
 - Equivalent results after replay, snapshot restoration, restart, and rollback,
   including removal of enactments from an abandoned branch.
 
+If the enriched context is adopted, additional validation must cover:
+
+- Correct ID-to-proposal associations for every enactable action type; exactly
+  the requested IDs; empty maps on omission; deterministic map encoding.
+- Missing, mismatched, or forged proposal data under the selected authentication
+  design, including resolution behavior in both validity branches.
+- Identical proposal values after replay, snapshot restoration, and restart;
+  rollback of the selected chain's enactments and any retained proposal data.
+- Large resolved contexts, context-construction costs, and agreement between
+  off-chain execution-budget estimates and ledger evaluation.
+
 ### Implementation Plan
 
 1. Obtain Plutus and Ledger review and resolve the version and encoding
@@ -252,6 +326,7 @@ Required test cases:
 [epoch-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Epoch.hs#L318-L329
 [required-signers]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/cddl/data/conway.cddl#L621-L623
 [treasury-check]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Ledger.hs#L375-L379
+[proposal-translation]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/TxInfo.hs#L732-L742
 [set-complexity]: https://hackage-content.haskell.org/package/containers-0.8/docs/Data-Set.html
 [reward-funding]: https://docs.cardano.org/about-cardano/learn/pledging-rewards
 
