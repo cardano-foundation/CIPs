@@ -5,7 +5,8 @@ Category: Ledger
 Status: Open
 Authors:
     - Ryan Wiley <rian222@gmail.com>
-Proposed Solutions: []
+Proposed Solutions:
+    - CIP-0163: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0163
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1060
 Created: 2025-07-22
