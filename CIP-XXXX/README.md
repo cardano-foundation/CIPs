@@ -8,7 +8,7 @@ Authors:
 Implementors:
     - DRepTalk <https://dreptalk.com>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1318
 Created: 2026-11-09
 License: CC-BY-4.0
 ---
