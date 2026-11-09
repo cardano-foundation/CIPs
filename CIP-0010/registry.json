@@ -180,6 +180,10 @@
     "description": "claimpaign.com campaigns"
   },
   {
+    "transaction_metadatum_label": 8416,
+    "description": "DRep Groups: on-chain register of DRep groups and their members"
+  },
+  {
     "transaction_metadatum_label": 10297,
     "description": "fida.finance transaction metadata"
   },
