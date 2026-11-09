@@ -1,15 +1,27 @@
 [
   {
     "scheme": 0,
-    "id": 67,
-    "name": "Gerolamo",
+    "id": 65,
+    "name": "Amaru",
     "status": "active",
     "maintainers": [],
-    "repository": "https://github.com/HarmonicLabs/gerolamo",
+    "repository": "https://github.com/pragma-org/amaru",
     "payload_specification": null,
-    "registered": "2026-09-21",
+    "registered": "2026-11-09",
     "retired": null,
-    "description": "TypeScript implementation of the Cardano node."
+    "description": "Rust implementation of the Cardano node."
+  },
+  {
+    "scheme": 0,
+    "id": 67,
+    "name": "Bean",
+    "status": "active",
+    "maintainers": [],
+    "repository": "https://github.com/zw3rk/",
+    "payload_specification": null,
+    "registered": "2026-11-09",
+    "retired": null,
+    "description": "Java implementation of the Cardano node."
   },
   {
     "scheme": 0,
