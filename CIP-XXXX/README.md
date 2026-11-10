@@ -226,6 +226,8 @@ The extension is opt-in through the CIP-30 extension mechanism. Existing CIP-30 
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
+AI Assistance (Claude) was used for structuring and grammar checking of the text.
+
 [CIP-21]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0021
 [CIP-30]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0030
 [CIP-95]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0095
