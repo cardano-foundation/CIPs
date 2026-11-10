@@ -134,10 +134,11 @@ assetCount :: BuiltinValue -> BuiltinInteger
 Precise semantics for `keepPolicies` and `dropPolicies`:
 
 - The result is always a well-formed `BuiltinValue`.
-- Policy ids in the argument list that are absent from the value are ignored, and duplicate policy
-  ids in the list have no additional effect.
+- Apart from the limit below, policy ids in the argument list that are absent from the value are
+  ignored, and duplicate policy ids in the list have no additional effect.
+- Both functions fail if `length ps > 256`, where `ps` is the list of policy ids.
 - Lovelace is identified by the empty policy id (`""`).
-- The two functions are duals: for any list of policy ids `ps`,
+- The two functions are duals: for any `ps` with `length ps <= 256`,
   `unionValue (keepPolicies ps v) (dropPolicies ps v) == v`.
 
 ### A Note on Lovelace
@@ -320,6 +321,17 @@ lovelace as unique in the implementation: store the lovelace entry outside the m
 field and cost lovelace-only operations cheaply. This mirrors the ledger's own `MultiAssetValue`
 representation, which separates ADA for exactly this reason. See "A Note on Lovelace" in the
 Specification.
+
+### Why the Policy List Is Bounded
+
+The limit on the policy list makes the cost models for `keepPolicies` and `dropPolicies` more
+accurate. With at most 256 ids, the costing benchmarks can measure every list length a call can
+have, so the charge is fitted over the whole range instead of being extrapolated to longer lists.
+
+Without the limit, a script could pass a list of tens of thousands of ids. Such lists are far
+beyond the useful cases: the contracts that motivate this CIP filter a value by a handful of
+policies, such as the three protocol tokens of the CIP-89 order in the Motivation. Covering them
+would add uncertainty to the cost models for little gain.
 
 ### Does this create a "Slippery Slope"?
 
