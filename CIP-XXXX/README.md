@@ -195,7 +195,7 @@ Instance states are `pending`, `active` and `closed`, with the close reasons `le
 
 ### Group identifier
 
-The display form of a `group_id` is the bech32 encoding, with human-readable prefix `group`, of the 34 bytes `tx_hash || uint16be(event_index)`. Example: `group1x9q04su93gdqvuklks4802dhf82j7j08nsh7qsnr0ve0xmg8qk9sqqqdtx542` is the group created by event 0 of preprod transaction `3140fac3858a1a0672dfb42a77a9b749d52f49e79c2fe042637b32f36d07058b`.
+The display form of a `group_id` is the bech32 encoding, with human-readable prefix `drep_group`, of the 34 bytes `tx_hash || uint16be(event_index)`. Example: `drep_group1x9q04su93gdqvuklks4802dhf82j7j08nsh7qsnr0ve0xmg8qk9sqqqmcftfd` is the group created by event 0 of preprod transaction `3140fac3858a1a0672dfb42a77a9b749d52f49e79c2fe042637b32f36d07058b`.
 
 ### Group profile
 
@@ -283,7 +283,7 @@ Scripts count only when their bytes were published on chain at or before the eve
 
 ### Group identifier
 
-The identifier follows the pattern of the CIP-0129 governance action id, a transaction hash followed by an index, with its own prefix. The index is two bytes because one transaction can carry up to 64 events, and a fixed length keeps the identifier simple to parse.
+The identifier follows the pattern of the CIP-0129 governance action id, a transaction hash followed by an index, with its own prefix. The prefix `drep_group` names what the groups are made of, in the CIP-0005 style of `addr_test` and `cc_hot`, and is registered in CIP-0005 with this CIP. A plain `group` would claim a generic word for one kind of group and leave other kinds, such as groups of stake pools, without an obvious name. The index is two bytes because one transaction can carry up to 64 events, and a fixed length keeps the identifier simple to parse.
 
 ### Label and use before this CIP
 
@@ -295,7 +295,7 @@ This CIP adds a new label and changes nothing in existing standards. Group profi
 
 ### Open questions
 
-- Whether the `group` prefix should be registered in CIP-0005 together with this CIP.
+- Groups of stake pools. Pool operators would join with their cold keys, which are usually kept offline, membership would follow pool registration instead of DRep registration, and weight would come from stake instead of DRep voting power. Such groups would need their own consent and lifecycle rules, so they are left to a separate CIP with its own prefix such as `pool_group`.
 - Plutus script DReps as members, which would need an authorization path beyond `required_signers` and native scripts.
 
 ## Path to Active
