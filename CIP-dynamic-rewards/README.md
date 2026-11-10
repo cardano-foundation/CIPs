@@ -7,7 +7,7 @@ Authors:
   - Ryan Wiley <rian222@gmail.com>
 Implementors: []
 Discussions:
-  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1077
+  - CIP-0163: https://github.com/cardano-foundation/CIPs/pull/1077
   - Removal from Original PR: https://github.com/cardano-foundation/CIPs/pull/1307
   - Separate PR: https://github.com/cardano-foundation/CIPs/pull/1306
 Created: 2026-10-18
