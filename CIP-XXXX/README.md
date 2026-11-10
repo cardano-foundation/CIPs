@@ -9,7 +9,7 @@ Authors:
 Implementors:
     - Eternl <https://eternl.io/>
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1319
     - CIP-0030 balanceTx (closed): https://github.com/cardano-foundation/CIPs/pull/170
 Created: 2026-10-27
 License: CC-BY-4.0
