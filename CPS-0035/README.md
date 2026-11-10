@@ -15,9 +15,9 @@ License: CC-BY-4.0
 
 ## Abstract
 
-The European Union's Ecodesign for Sustainable Products Regulation (ESPR) mandates Digital Product Passports (DPPs) for numerous product categories. The first compliance deadline is 18 February 2027, for certain large batteries, under the Batteries Regulation (EU) 2023/1542. These passports must provide tamperproof, verifiable information about products' materials, origin, lifecycle, and compliance throughout the supply chain.
+The European Union's Ecodesign for Sustainable Products Regulation (ESPR)[^espr] mandates Digital Product Passports (DPPs) for numerous product categories. The first compliance deadline is 18 February 2027, for certain large batteries, under the Batteries Regulation (EU) 2023/1542.[^batteries] These passports must provide tamperproof, verifiable information about products' materials, origin, lifecycle, and compliance throughout the supply chain.
 
-Since this CPS was first drafted, the EU-level foundations have moved from proposal to operation. The central DPP Registry went live in July 2026, and all eight CEN-CENELEC JTC 24 system standards (the EN 1821x and EN 1823x series) are now published and cited as harmonised standards. Despite this, the Cardano ecosystem still lacks standardized approaches for anchoring DPP data on-chain, creating product identity assets, and enabling multi-party verification against this now-published EU baseline. This fragmentation risks incompatible implementations, poor interoperability, and a missed opportunity for Cardano to become a reference platform for supply chain transparency and regulatory compliance.
+Since this CPS was first drafted, the EU-level foundations have moved from proposal to operation. The central DPP Registry went live in July 2026,[^registry] and all eight CEN-CENELEC JTC 24 system standards (the EN 1821x and EN 1823x series) have been published.[^standards] Despite this, the Cardano ecosystem still lacks standardized approaches for anchoring DPP data on-chain, creating product identity assets, and enabling multi-party verification against this now-published EU baseline. This fragmentation risks incompatible implementations, poor interoperability, and a missed opportunity for Cardano to become a reference platform for supply chain transparency and regulatory compliance.
 
 This CPS articulates the problem space and establishes goals for Cardano-specific anchoring standards that support regulatory compliance, ecosystem interoperability, and practical implementation.
 
@@ -32,19 +32,19 @@ Digital Product Passports are becoming mandatory under EU regulation to support:
 - **Regulatory compliance** - Proving adherence to safety, sustainability, and origin requirements
 - **Supply chain accountability** - Creating tamperproof audit trails across multiple parties
 
-The ESPR affects industries including textiles, electronics, batteries, construction materials, furniture, and more, impacting millions of businesses globally. Practical implementation is already underway for batteries in 2026 (the DPP Registry is live, all eight CEN-CENELEC JTC 24 standards are published, and a public testing environment is available), ahead of the mandatory compliance deadline of 18 February 2027 (EV, light-transport, and industrial batteries above 2 kWh) under the Batteries Regulation (EU) 2023/1542. The textile delegated act is now expected towards the end of 2027, with compliance following roughly 18 months after adoption, landing realistically in 2029; other sectors phase in through 2030.
+The ESPR affects industries including textiles, electronics, batteries, construction materials, furniture, and more, impacting millions of businesses globally. Practical implementation is already underway for batteries in 2026 (the DPP Registry is live, all eight CEN-CENELEC JTC 24 standards are published, and a public testing environment is available), ahead of the mandatory compliance deadline of 18 February 2027 (EV, light-transport, and industrial batteries above 2 kWh) under the Batteries Regulation (EU) 2023/1542. Other sectors follow as the European Commission adopts product-specific delegated acts, which define what data each product category must disclose. The Commission publishes an indicative timeline.[^timeline]
 
-DPP implementations must integrate with existing global product identification systems, particularly GS1 standards (GTINs for product identification, Digital Link for web-based resolution, and EPCIS for event tracking). This integration is essential for interoperability with existing supply chain infrastructure.
+DPP implementations must integrate with existing global product identification systems, particularly GS1 standards (GTINs for product identification, Digital Link for web-based resolution, and EPCIS for event tracking).[^gs1] This integration is essential for interoperability with existing supply chain infrastructure.
 
-The EU DPP Registry went live on 20 July 2026 alongside a public testing environment, following adoption of its Implementing Regulation. The Registry is a shared index rather than a central data store: it holds unique identifiers and registration metadata (plus a verification and logging framework), while the DPP content itself remains hosted in a decentralised manner by the economic operator or a DPP service provider. Registration is available through a secure UI or an API, and a free semantic repository of machine-readable data models is provided to support interoperability.
+The EU DPP Registry went live on 20 July 2026 alongside a public testing environment, following adoption of its Implementing Regulation. The Registry is a shared index rather than a central data store: it holds unique identifiers and registration metadata (plus a verification and logging framework), while the DPP content itself remains hosted in a decentralised manner by the economic operator or a DPP service provider.[^registry] Registration is available through a secure UI or an API, and a free semantic repository of machine-readable data models is provided to support interoperability.
 
-Additionally, CEN-CENELEC Joint Technical Committee 24 (JTC 24) has now published all eight system standards for DPP data models and interoperability, the EN 1821x and EN 1823x series. These cover unique identifiers, data carriers, data exchange protocols, data storage and persistence, APIs, system interoperability, access rights and confidentiality, and data authentication. The first six were cited as harmonised standards in the Official Journal in July 2026, giving conforming implementations a presumption of conformity under ESPR. Citation of the final two, access rights and confidentiality (EN 18239) and data authentication (EN 18246), is expected to follow the same path. DPP implementations on Cardano should now be designed for direct alignment with the full published EN series, rather than against a moving target.
+All eight European standards for the Digital Product Passport (DPP) developed by CEN/CENELEC Joint Technical Committee 24 (JTC 24) have been published.[^standards] They cover unique identifiers, data carriers (such as QR codes), data exchange protocols, data storage and persistence, APIs, system interoperability, access rights and confidentiality, and data authentication. DPP implementations on Cardano should be designed for direct alignment with these standards, rather than against a moving target.
 
 ### Current State
 
 Today, each party anchoring DPP evidence on Cardano chooses its own label, payload, canonicalisation and hash rule, issuer-key binding, and versioning scheme. A verifier then has to integrate every vendor separately. This verifier could be market surveillance, a recycler, a marketplace, or another DPP provider. Separate integration for each vendor defeats the purpose of a neutral public anchor.
 
-While Cardano provides foundational capabilities through CIP-25 and CIP-68 metadata standards, the ecosystem lacks:
+While Cardano provides foundational capabilities through CIP-25 and CIP-68 metadata standards,[^cips] the ecosystem lacks:
 
 - Standardized data schemas for product lifecycle information
 - Guidance on linking physical products (GTINs, QR codes) to on-chain identities
@@ -52,7 +52,7 @@ While Cardano provides foundational capabilities through CIP-25 and CIP-68 metad
 - Established approaches for multi-party coordination across supply chains
 - Validation frameworks for regulatory compliance claims
 
-A companion Cardano Foundation working group, which began shortly before this CPS was first drafted, has been publishing early architectural patterns for DPP on Cardano (a draft v0.1 solution-pattern blueprint, open for community feedback), but it has not yet resolved into a ratified reference architecture or standard, so the gaps above remain open.
+A companion Cardano Foundation working group, which began shortly before this CPS was first drafted, has been publishing early architectural patterns for DPP on Cardano (a draft v0.1 solution-pattern blueprint, open for community feedback),[^blueprint] but it has not yet resolved into a ratified reference architecture or standard, so the gaps above remain open.
 
 This creates a "build from scratch" situation where businesses face:
 
@@ -71,11 +71,11 @@ This creates a "build from scratch" situation where businesses face:
 - Opportunity to build general DPP solutions on Cardano, competing on the same commercial terms as conventional-stack platforms
 - A distinct opportunity to lead specifically in the DPP problems (below) where a shared ledger provides genuine technical differentiation
 
-**Enterprise Reality:** ESPR regulations are technology-neutral, and the pattern gaining traction through 2026 is hybrid rather than blockchain-native: a public ledger serves as a neutral verification/anchoring layer beneath a standards-compliant passport, while day-to-day operational data stays in existing ERP/PIM systems. This is visible both in the EU's own reference architecture work (CIRPASS-2) and in how Cardano is currently being positioned for DPP: as an integrity layer anchoring evidence over existing product-information systems, rather than as the primary data store. Industries with long product lifecycles (batteries, automotive, textiles) are the ones most often citing this pattern, for immutable audit trails and cross-organizational coordination without surrendering ownership of operational data.
+**Enterprise Reality:** ESPR regulations are technology-neutral, and the pattern gaining traction through 2026 is hybrid rather than blockchain-native: a public ledger serves as a neutral verification/anchoring layer beneath a standards-compliant passport, while day-to-day operational data stays in existing ERP/PIM systems. This is visible both in the EU's own reference architecture work (CIRPASS-2)[^cirpass] and in how Cardano is currently being positioned for DPP: as an integrity layer anchoring evidence over existing product-information systems, rather than as the primary data store. Industries with long product lifecycles (batteries, automotive, textiles) are the ones most often citing this pattern, for immutable audit trails and cross-organizational coordination without surrendering ownership of operational data.
 
 **Where a Shared Ledger Still Adds Value:**
 
-ESPR compliance itself does not require a ledger, and the working assumption behind this CPS should be that most DPP implementations will be, correctly, satisfied by the conventional VC/SD-JWT/GS1-Digital-Link stack alone. A blockchain-native DPP provider and a conventional-stack provider are not really offering competing answers to compliance. They are different entry points to the same optional layer, since a conventional platform can anchor into a ledger just as readily as a blockchain-native one can serve compliance-only clients without ever exposing the ledger to them. The layer becomes relevant once a client wants something beyond the compliance floor. Some of the areas where this currently applies:
+ESPR compliance itself does not require a ledger, and the working assumption behind this CPS should be that most DPP implementations will be, correctly, satisfied by the conventional VC/SD-JWT/GS1-Digital-Link stack alone.[^vcstack] A blockchain-native DPP provider and a conventional-stack provider are not really offering competing answers to compliance. They are different entry points to the same optional layer, since a conventional platform can anchor into a ledger just as readily as a blockchain-native one can serve compliance-only clients without ever exposing the ledger to them. The layer becomes relevant once a client wants something beyond the compliance floor. Some of the areas where this currently applies:
 
 - **Multi-party confidential proof verification**, where mutually distrusting parties need to agree on a shared claim or commitment without deferring to any single vendor as the source of truth
 - **Item-level anti-counterfeiting and secondary-market provenance**, where an ownership/transfer history needs to remain independently checkable regardless of whether any one platform vendor stays in business
@@ -176,10 +176,10 @@ For static registration, high-volume retail, and consumer verification, anchorin
 - Canonicalisation and hashing rules for the anchored payload, including Merkle structure where relevant
 - A binding method between the on-chain anchor key and the VC issuer identity
 - A resolution path from a GS1 Digital Link-resolved VC to the Cardano anchor
-- Status and supersession handling, consistent with the CIRPASS-2 immutability recommendation noted in Open Questions
+- Status and supersession handling, consistent with the CIRPASS-2 immutability recommendation[^cirpass] noted in Open Questions
 - A verification procedure that works without calling the issuer's API
 
-These standards should align with the published EN 18246 data authentication standard. It is the natural reference point for the anchor's cryptographic design, rather than something to track separately.
+These standards should align with the published European standard for data authentication, reliability, and integrity (EN 18246).[^standards] It is the natural reference point for the anchor's cryptographic design, rather than something to track separately.
 
 ### Ensure Ecosystem Interoperability
 
@@ -226,8 +226,8 @@ These standards should align with the published EN 18246 data authentication sta
 **Physical-Digital Linking:**
 
 - Should product identifiers (GTINs) be plaintext or hashed on-chain?
-- How should a Cardano anchor be referenced from a Digital-Link-resolved VC? DIDs should be treated as optional, consistent with CIRPASS-2 dropping its DID-only track.
-- EN 18219 (unique identifiers) and EN 18220 (data carriers) are now published, and independent implementations are converging on GS1 Digital Link identifiers resolving to a W3C Verifiable Credential over plain HTTPS, rather than a DID-first resolution path. This is worth validating Cardano identifier/resolver design against directly
+- How should a Cardano anchor be referenced from a Digital-Link-resolved VC? DIDs should be treated as optional, consistent with CIRPASS-2 dropping its DID-only track.[^cirpass]
+- The European standards for unique identifiers (EN 18219) and data carriers (EN 18220)[^standards] are published, and independent implementations are converging on GS1 Digital Link identifiers resolving to a W3C Verifiable Credential over plain HTTPS, rather than a DID-first resolution path. This is worth validating Cardano identifier/resolver design against directly
 
 **Scalability and Transaction Cost Management:**
 
@@ -243,7 +243,7 @@ These standards should align with the published EN 18246 data authentication sta
 
 - For static passports: supersession (new NFT) vs. in-place updates (CIP-68)?
 - How to maintain verifiable history across updates?
-- CIRPASS-2's reference architecture recommends treating passports as immutable records, with updates creating new timestamped entries rather than overwriting the original. This aligns naturally with a supersession/new-NFT approach and is worth validating explicitly against CIP-68 in-place update patterns
+- CIRPASS-2's reference architecture[^cirpass] recommends treating passports as immutable records, with updates creating new timestamped entries rather than overwriting the original. This aligns naturally with a supersession/new-NFT approach and is worth validating explicitly against CIP-68 in-place update patterns
 
 ### ESPR Implementation Uncertainty
 
@@ -261,13 +261,13 @@ These standards should align with the published EN 18246 data authentication sta
 **European Technical Standards Alignment:**
 
 *Where the standards landscape stands now:*
-- CEN-CENELEC JTC 24 has now published all eight DPP system standards. The first six, published 27 May 2026, cover unique identifiers (EN 18219), data carriers (EN 18220), data exchange protocols (EN 18216), data storage and persistence (EN 18221), APIs (EN 18222), and interoperability (EN 18223). These were cited as harmonised standards in the Official Journal in July 2026 (Commission Implementing Decision (EU) 2026/1736), giving conforming DPPs a presumption of conformity under ESPR Articles 10 and 11. The final two, access rights and confidentiality (EN 18239) and data authentication (EN 18246), have since been published as well, with Official Journal citation expected to follow the same path.
+- CEN-CENELEC JTC 24 has published all eight DPP system standards. The first six, published 27 May 2026, cover unique identifiers (EN 18219), data carriers (EN 18220), data exchange protocols (EN 18216), data storage and persistence (EN 18221), APIs (EN 18222), and interoperability (EN 18223). The remaining two, access rights and confidentiality (EN 18239) and data authentication (EN 18246), were published on 16 September 2026.
 - The EU DPP Registry went live in July 2026 alongside a testing environment, giving implementers a real integration target rather than a specification on paper.
 - Sector-specific data requirements (what fields textiles vs. electronics must actually disclose) are still being finalised through delegated acts and remain the more volatile layer: the system-level "plumbing" is now comparatively stable, the "what data" layer is not.
 - Even once defined, data requirements are expected to evolve as regulations are refined and new sustainability metrics emerge
 - The CIRPASS-2 project (the EU-funded successor to the original CIRPASS preparatory action) published an updated reference architecture (D4.1 v1.1, June 2026) with 25 implementation recommendations. Notably, it dropped the parallel DID-only identity track present in the original CIRPASS proposal in favour of a single HTTP/Verifiable-Credential-based model. DIDs are now positioned as an optional advanced overlay rather than a requirement.
 - Across independent implementations (e.g. the UN Transparency Protocol, and several EU-aligned DPP platforms), a de facto technology stack is emerging: W3C Verifiable Credentials 2.0 for the passport itself, SD-JWT for selective disclosure of individual fields, and GS1 Digital Link for physical-to-digital identifier resolution, served over plain HTTPS rather than DID-first resolution. Separately, broader EU digital-sovereignty policy (the proposed Cloud and AI Development Act, national sovereign-cloud frameworks) is pushing infrastructure hosting generally toward EU-domiciled providers. This compounds ESPR's own requirement that DPP hosting remain durable and available via an EU-accountable economic operator or DPP service provider.
-- The EU also runs a separate blockchain initiative, EBSI (European Blockchain Services Infrastructure): a permissioned consortium ledger operated by EU-endorsed institutional node operators, governed since 2024 by EUROPEUM-EDIC (a subset of member states, not all 27), used mainly for institutional verifiable-credential issuance (diplomas, business credentials) rather than product data. It has no regulatory link to ESPR or the DPP Registry, Commission funding and support for it ended in February 2026 with member states now running it, and it is not yet in general production. CIRPASS-2's reference architecture did not adopt it, and early DPP implementers have largely gone a different direction.
+- The EU also runs a separate blockchain initiative, EBSI (European Blockchain Services Infrastructure)[^ebsi]: a permissioned consortium ledger operated by EU-endorsed institutional node operators, governed since 2024 by EUROPEUM-EDIC (a subset of member states, not all 27), used mainly for institutional verifiable-credential issuance (diplomas, business credentials) rather than product data. It has no regulatory link to ESPR or the DPP Registry, Commission funding and support for it ended in February 2026 with member states now running it, and it is not yet in general production. CIRPASS-2's reference architecture did not adopt it, and early DPP implementers have largely gone a different direction.
 
 *Design Challenges:*
 - How should a Cardano-anchored DPP interoperate with this VC/SD-JWT/GS1-Digital-Link stack rather than just compete with it (e.g., using Cardano as a verification/anchoring layer under credentials that remain independently resolvable and verifiable off-chain)?
@@ -287,8 +287,8 @@ These standards should align with the published EN 18246 data authentication sta
 - Production pilots with real businesses and products
 - Businesses using standards in production (target: multiple companies within 24 months)
 - Number of DPP and DPP-adjacent solutions anchoring data on Cardano, whether Cardano-native or via a conventional-stack platform anchoring in
-- Production deployments demonstrate viability ahead of each sector's own mandated deadline (batteries: 18 February 2027; textiles: realistically 2029, roughly 18 months after the delegated act's expected late-2027 adoption; other sectors phasing in through 2030)
-- Significant product volume registered (target: 50,000+ products by Q4 2027), most plausibly battery-driven at that point, since batteries is the only sector under a confirmed compliance date by then
+- Production deployments demonstrate viability ahead of each sector's own mandated deadline (batteries: 18 February 2027; other sectors as their delegated acts and transition periods are confirmed, see the Commission's DPP timeline[^timeline])
+- Significant product volume registered (target: 50,000+ products by Q4 2027), most plausibly battery-driven at that point
 
 ### Technical Validation
 
@@ -308,3 +308,25 @@ These standards should align with the published EN 18246 data authentication sta
 ## Copyright
 
 This CPS is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[^espr]: [Regulation (EU) 2024/1781](https://eur-lex.europa.eu/eli/reg/2024/1781/oj/eng), the Ecodesign for Sustainable Products Regulation (ESPR). It sets the framework for Digital Product Passports across product categories.
+
+[^batteries]: [Regulation (EU) 2023/1542](https://eur-lex.europa.eu/eli/reg/2023/1542/oj), the Batteries Regulation. Battery passports become mandatory on 18 February 2027 for electric vehicle batteries, light means of transport batteries (e-bikes, e-scooters), and industrial batteries above 2 kWh. The Batteries Regulation is closely related to, but separate from, the ESPR.
+
+[^standards]: Eight European standards from CEN-CENELEC Joint Technical Committee 24 (JTC 24), "Digital Product Passport - Framework and System", developed under Standardisation Request M/604: EN 18216 (data exchange protocols), EN 18219 (unique identifiers), EN 18220 (data carriers), EN 18221 (data storage, archiving, and persistence), EN 18222 (APIs), EN 18223 (system interoperability), EN 18239 (access rights management, information system security, and business confidentiality), and EN 18246 (data authentication, reliability, and integrity). The published standards are listed on the [CEN-CENELEC website](https://standards.cencenelec.eu/ords/f?p=205:32:::::FSP_ORG_ID,FSP_LANG_ID:3342699,25&cs=1FC22FDE02FD51137ADC6BE8CA4E10E8F). The first six were cited as harmonised standards under Commission Implementing Decision (EU) 2026/1736. For the status of the remaining two, see the [Commission's DPP timeline](https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en#dpp-timeline).
+
+[^timeline]: European Commission, Digital Product Passport page, [indicative DPP timeline](https://single-market-economy.ec.europa.eu/single-market/digital-product-passport_en#dpp-timeline).
+
+[^gs1]: GS1 standards: a GTIN (Global Trade Item Number) identifies a product. [GS1 Digital Link](https://www.gs1.org/standards/gs1-digital-link) encodes identifiers in web addresses so a scan can resolve to online information. [EPCIS 2.0](https://www.gs1.org/standards/epcis) (ISO/IEC 19987) is the standard for capturing supply chain events.
+
+[^registry]: The [EU DPP Registry](https://single-market-economy.ec.europa.eu/single-market/digital-product-passport/dpp-registry_en) became operational on 20 July 2026 with a public testing environment. It holds unique identifiers and registration metadata. The passport content is hosted by the economic operator or a DPP service provider.
+
+[^cips]: [CIP-25](https://cips.cardano.org/cip/CIP-0025) and [CIP-68](https://cips.cardano.org/cip/CIP-0068) are Cardano Improvement Proposals defining token and NFT metadata standards. CIP-25 stores metadata in the minting transaction. CIP-68 stores it in a datum, which allows structured updates.
+
+[^blueprint]: Cardano Foundation DPP working group, ["DPP Blueprint for Cardano v0.1"](https://github.com/cardano-foundation/cardano-dpp-standards/blob/main/DPP-Blueprint-Cardano-v0.1.md).
+
+[^cirpass]: [CIRPASS-2](https://cirpass2.eu/), the EU-funded project developing the DPP reference architecture (deliverable D4.1 v1.1). It recommends treating passports as immutable records, with updates creating new timestamped entries, and it dropped the DID-only identity track in favour of a single HTTP and Verifiable Credential model. DIDs (Decentralized Identifiers) remain an optional overlay.
+
+[^vcstack]: [W3C Verifiable Credentials 2.0](https://www.w3.org/TR/vc-data-model-2.0/) carry the passport itself. SD-JWT ([Selective Disclosure for JWTs, RFC 9901](https://www.rfc-editor.org/info/rfc9901/)) lets individual fields be disclosed selectively. GS1 Digital Link resolves the physical product identifier. These are served over plain HTTPS rather than a DID-first path.
+
+[^ebsi]: [EBSI](https://ebsi.eu/), the European Blockchain Services Infrastructure, is a permissioned consortium ledger used mainly for institutional verifiable-credential issuance such as diplomas and business credentials. It has no regulatory link to the ESPR or the DPP Registry.
