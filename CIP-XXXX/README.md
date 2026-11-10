@@ -4,7 +4,7 @@ Title: DRep Groups
 Category: Metadata
 Status: Proposed
 Authors:
-    - Tommy <31965230+katomm@users.noreply.github.com>
+    - Tommy Kammerer <31965230+katomm@users.noreply.github.com>
 Implementors:
     - DRepTalk <https://dreptalk.com>
 Discussions:
