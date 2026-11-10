@@ -1,7 +1,8 @@
 # CIP-0100 Extension Index
 
 An informative index of the CIPs that extend [CIP-0100](./README.md), how they combine, and their known gotchas.
-If this index disagrees with a CIP, the CIP is authoritative. Please update it when a CIP-0100 extension is merged or revised.
+If this index disagrees with a CIP, the CIP is authoritative.
+Please update it when a CIP-0100 extension is merged or revised.
 
 ## Extensions
 
