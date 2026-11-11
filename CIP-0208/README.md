@@ -9,8 +9,6 @@ Implementors:
     - Smit Blockchain Operations <https://smitblockchainops.nl>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/1311
-Solution To:
-    - CPS-0016: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0016
 Created: 2026-10-29
 License: CC-BY-4.0
 ---
@@ -55,13 +53,12 @@ in RFC 2119.
 
 ### Role URIs
 
-A role is named by a URI under the `web+cardano:` scheme of CIP-0013. CPS-0016
-registers the authorities of that scheme and requires an extension to use a
-new, unique authority. This CIP uses two:
+A role is named by a URI in the form of the `web+cardano:` scheme of
+CIP-0013. This CIP uses two authorities:
 
 1. `addr`, registered by CIP-0134, for a DRep credential and for a
    Constitutional Committee cold credential, in their CIP-0129 bech32 form.
-2. `pool`, registered by this CIP, for a stake pool, in the bech32 form of
+2. `pool`, defined by this CIP, for a stake pool, in the bech32 form of
    CIP-0005 (prefix `pool`, the 28-byte pool ID).
 
 The `stake` authority of CIP-0013 and the `drep` authority of CIP-0162 create, in general,
@@ -69,6 +66,11 @@ unambiguous references to these objects (or lists of objects, in the case of a m
 `stake` link) and may also be interpreted as
 instructions to a wallet to delegate. They are not role URIs, and a tool MUST
 NOT read them as declarations when implementing this CIP.
+
+The `pool` authority has a meaning only inside a `Role` reference as this CIP
+defines it. This CIP does not register `pool` as a general authority of the
+scheme and is not a solution to CPS-0016. A `pool` link in any other place
+has no meaning under this CIP.
 
 ```abnf
 roleuri    = "web+cardano://" ( poolrole / dreprole / ccrole )
@@ -168,7 +170,7 @@ CIP-0006 is not a place for a declaration, see the Rationale.
 The meaning of `Role`, the `pool` authority and the use of `addr` for the two
 credential forms are fixed by this CIP. A change to any of them requires a
 new CIP that supersedes this one. A new kind of governance credential needs
-a new CIP under CPS-0016. A tool treats an authority or an identifier form it
+a new CIP. A tool treats an authority or an identifier form it
 does not know as invalid.
 
 ### How a tool reads declarations
@@ -261,7 +263,9 @@ reference type, and changes neither CIP-0100, CIP-0119 nor CIP-0013.
 4. Registered pool metadata is plain JSON without a context. There the value
    `Role` of `@type` is defined by this text.
 
-The `pool` authority is registered under CPS-0016 by this CIP.
+The `pool` authority is defined for use inside a `Role` reference only. A
+general authority for a stake pool can be proposed in a separate CIP under
+CPS-0016.
 
 ### Backward compatibility
 
