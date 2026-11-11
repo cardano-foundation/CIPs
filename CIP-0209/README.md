@@ -29,6 +29,8 @@ Dijkstra's nested transactions change the picture. A dApp can describe what it w
 
 An earlier attempt to add `balanceTx` to CIP-30 ([PR #170][PR170]) was closed with the advice to make it a separate, optional extension. This CIP is that extension. It also folds signing and submission into one call, so `partialSign` and the separate `submitTx` round trip are no longer needed for this flow.
 
+This does not take away multi-party flows such as dApp co-signing or multisig. The wallet only submits a transaction that is complete: if witnesses from the dApp or another party are still missing, it returns the transaction with the user's witnesses added, for the remaining parties to sign and submit.
+
 ## Specification
 
 ### Extension
@@ -66,14 +68,14 @@ Sub-transaction forms are valid only once the Dijkstra era is active. Before tha
 
 #### Balancing: preserve and add around
 
-When the wallet balances a top-level transaction, it MUST preserve everything the dApp supplied: inputs, outputs and their order, mint, certificates, withdrawals, votes, proposals, reference inputs, guards, validity interval, metadata, datums, scripts and redeemers. The wallet MAY only add:
+When the wallet balances a top-level transaction, it MUST preserve everything the dApp supplied: inputs, outputs and their order, collateral inputs, mint, certificates, withdrawals, votes, proposals, reference inputs, guards, validity interval, metadata, datums, scripts and redeemers. The wallet MAY only add:
 
 - inputs;
 - outputs of its choosing (for example, change);
-- collateral inputs, collateral return and total collateral;
+- collateral inputs, where the dApp supplied none, and collateral return and total collateral;
 - the fee and the validity interval, where the dApp left them unset.
 
-The wallet decides the change address, fee policy, collateral, and validity interval. The request carries no options to steer them.
+The wallet decides the change address, fee policy, and validity interval, and provides collateral when the dApp did not. The request carries no options to steer them.
 
 If the incomplete top-level transaction contains redeemers, the wallet MUST re-index spend redeemers to match the new sorted input set, re-evaluate execution units, and recompute `script_data_hash` and the fee. Re-indexing is the only change the wallet may make to dApp-supplied witness data; redeemer data is never changed.
 
@@ -88,7 +90,7 @@ If the incomplete top-level transaction contains redeemers, the wallet MUST re-i
 
 #### Existing witnesses
 
-A vkey witness signs the transaction body, so balancing invalidates any witness already present on the top-level transaction. If the top-level transaction needs balancing and carries a vkey witness from a key the wallet does not control, the wallet MUST reject with `TxSignError.BodyLocked`. It MUST NOT silently drop such witnesses. A balanced top-level transaction may carry foreign witnesses; the wallet only adds its own.
+A vkey witness signs the transaction body, so balancing invalidates any witness already present on the top-level transaction. If the top-level transaction needs balancing and carries a vkey witness from a key the wallet does not control, the wallet MUST reject with `TxSignError.BodyLocked`. It MUST NOT silently drop such witnesses. This is the case where the dApp or another party signed the top-level transaction before it was balanced: that witness would no longer be valid once the wallet balances it. Only the final, balanced top-level transaction should be signed by the other required parties. A balanced top-level transaction may carry foreign witnesses; the wallet only adds its own.
 
 Parties that need to sign before the wallet SHOULD do so on a sub-transaction, or sign after the wallet has balanced the transaction.
 
@@ -183,7 +185,7 @@ Whether a transaction is complete is something the wallet can determine itself. 
 
 ### Why no balancing options?
 
-Change address, maximum fee, and collateral were considered and rejected as dApp parameters: they are wallet policy. dApp-supplied collateral is not even possible, as any signature on it would be invalidated by balancing.
+Change address, maximum fee, and collateral were considered and rejected as dApp parameters: they are wallet policy. A dApp can still supply its own collateral as part of the transaction, alongside its script inputs and outputs, and the wallet preserves it while balancing. What is not possible is collateral the dApp has already signed for, because balancing would invalidate that signature: the dApp signs after the wallet returns the balanced transaction (`complete: false`), as in today's `signTx` flow.
 
 ### Why a single transaction per call?
 
