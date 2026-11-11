@@ -11,6 +11,7 @@ Authors:
 Proposed Solutions: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1175
+  - Falcon KES measurements: https://github.com/cardano-foundation/CIPs/pull/1320
 Created: 2026-04-02
 License: CC-BY-4.0
 ---
