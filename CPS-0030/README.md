@@ -4,8 +4,8 @@ Title: Quantum-secure settlement layer
 Category: Consensus
 Status: Open
 Authors:
-  - Hamza Jeljeli <hamza.jeljeli@iohk.io>
-  - Gamze Kilic <gamze.kilic@iohk.io>
+  - Hamza Jeljeli <hamza@icangroup.co.uk>
+  - Gamze Kilic <gamze@icangroup.co.uk>
   - Damien Robissout <damien.robissout@iohk.io>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Proposed Solutions: []
