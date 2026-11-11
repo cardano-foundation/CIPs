@@ -250,16 +250,15 @@ scope. A tool reads the latest documents.
 This CIP defines its terms in its own namespace, as CIP-0136 does for its
 reference type, and changes neither CIP-0100, CIP-0119 nor CIP-0013.
 
-1. The prefix `CIPxxxx` (the number of this CIP once assigned) expands to
-   `https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#`.
-2. The term `Role` is `CIPxxxx:RoleReference`, declared inside the context
+1. The prefix `CIP208` expands to
+   `https://github.com/cardano-foundation/CIPs/blob/master/CIP-0208/README.md#`.
+2. The term `Role` is `CIP208:RoleReference`, declared inside the context
    of `references` of a CIP-119 document, next to the CIP-100 terms. The
    Appendix shows a complete document.
-3. This CIP ships `cip-xxxx.common.jsonld` with that context and
-   `cip-xxxx.common.schema.json`, a `reference` definition whose `@type`
+3. This CIP ships `cip-0208.common.jsonld` with that context and
+   `cip-0208.common.schema.json`, a `reference` definition whose `@type`
    enum holds `Role`, for validators that want to accept it. Both files are
-   added to the CIP directory once the number is assigned. The Appendix
-   shows their content.
+   in the CIP directory. The Appendix shows their content.
 4. Registered pool metadata is plain JSON without a context. There the value
    `Role` of `@type` is defined by this text.
 
@@ -398,9 +397,9 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
        over every pool and DRep on mainnet and show document status and
        relation for the pools and DReps they list, since 2026-10-29, as the
        first tool.
-4. [ ] Once the number is assigned: the DRep metadata and the pool metadata
-       of BKIND move to the URI forms and the context of this text, and the
-       context and schema files are added to the CIP directory.
+4. [x] The context and schema files are in the CIP directory.
+5. [ ] The DRep metadata and the pool metadata of BKIND move to the URI
+       forms and the context of this text.
 
 ## Appendix
 
@@ -417,7 +416,7 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
   "@context": {
     "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
     "CIP119": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0119/README.md#",
-    "CIPxxxx": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#",
+    "CIP208": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0208/README.md#",
     "hashAlgorithm": "CIP100:hashAlgorithm",
     "body": {
       "@id": "CIP119:body",
@@ -430,7 +429,7 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
             "Other": "CIP100:OtherReference",
             "Link": "CIP119:LinkReference",
             "Identity": "CIP119:IdentityReference",
-            "Role": "CIPxxxx:RoleReference",
+            "Role": "CIP208:RoleReference",
             "label": "CIP100:reference-label",
             "uri": "CIP100:reference-uri"
           }
@@ -469,8 +468,8 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
 ```json
 {
   "@context": {
-    "CIPxxxx": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-xxxx/README.md#",
-    "Role": "CIPxxxx:RoleReference"
+    "CIP208": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0208/README.md#",
+    "Role": "CIP208:RoleReference"
   }
 }
 ```
@@ -479,14 +478,18 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
 
 ```json
 {
-  "reference": {
-    "title": "Reference",
-    "type": "object",
-    "required": ["@type", "label", "uri"],
-    "properties": {
-      "@type": {"type": "string", "enum": ["GovernanceMetadata", "Other", "Link", "Identity", "Role"]},
-      "label": {"type": "string", "minLength": 1},
-      "uri": {"type": "string"}
+  "title": "CIP-208 Common",
+  "description": "The reference of a CIP-119 document or of registered pool metadata, with the type Role of CIP-208",
+  "definitions": {
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "required": ["@type", "label", "uri"],
+      "properties": {
+        "@type": {"type": "string", "enum": ["GovernanceMetadata", "Other", "Link", "Identity", "Role"]},
+        "label": {"type": "string", "minLength": 1},
+        "uri": {"type": "string"}
+      }
     }
   }
 }
