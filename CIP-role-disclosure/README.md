@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 208
 Title: Disclosure of Governance Roles
 Category: Metadata
 Status: Proposed
