@@ -382,24 +382,27 @@ Constitution and the voting bodies. This CIP makes it readable and stops.
 1. [x] The DRep metadata of BKIND
        (drep1ytc6867ae0xmkekvmex79r9akyy28eu8nu03jf3xu9fle6c82l4eq) carries
        a `Role` reference to pool BKIND: anchor hash
-       `2a41fdeebcd1432e0feb12c68af612c4e2cbd0004a2ee785619d9e6058bd9c3e`,
+       `49c9db2000414e57c8f979c6e4df024f4f59855541035f9871a3cd8e9bfa0bf0`,
        transaction
-       `9593900f25cdb6310cb76761ec3e228e0ac9b8a8563c6bc454785a9c6e9dfc8e`,
-       2026-10-29. It uses the URI forms of the first draft and will be
-       updated to the forms of this text once the number is assigned.
+       `141858acf9583e42cb1b5939bbbc84ad5f4377e368c958e19a37da1edd48e924`,
+       2026-11-11. A first version in the URI forms of the first draft was
+       anchored on 2026-10-29, transaction
+       `9593900f25cdb6310cb76761ec3e228e0ac9b8a8563c6bc454785a9c6e9dfc8e`.
 2. [x] The pool metadata of BKIND carries a `Role` reference to the DRep,
        the first reciprocal pair: metadata hash
-       `f9de5aa69eca5319d5c81f74023f7c84003e9d6bfbc80b6ca64ed526168b35b3`,
+       `c525c6518d9d3f461f470d4272186aa5aabe63831a5c7acc5b04ead9819a76cb`,
        transaction
-       `994936264446dc53873dfc6cdbe504c4faec13e13d039eea418d1e04ef3b7e4d`,
-       2026-10-29. Same remark.
+       `621e8193c5900f2535f164560259e94f3dd8c0dc356cf1d37cd6a5c9b55828ca`,
+       2026-11-11. A first version in the URI forms of the first draft was
+       anchored on 2026-10-29, transaction
+       `994936264446dc53873dfc6cdbe504c4faec13e13d039eea418d1e04ef3b7e4d`.
 3. [x] The DRep list and pool list of smitblockchainops.nl read declarations
        over every pool and DRep on mainnet and show document status and
        relation for the pools and DReps they list, since 2026-10-29, as the
        first tool.
 4. [x] The context and schema files are in the CIP directory.
-5. [ ] The DRep metadata and the pool metadata of BKIND move to the URI
-       forms and the context of this text.
+5. [x] The DRep metadata and the pool metadata of BKIND use the URI forms
+       and the context of this text, since 2026-11-11.
 
 ## Appendix
 
