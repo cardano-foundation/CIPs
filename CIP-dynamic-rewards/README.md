@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 207
 Title: Dynamic Rewards
 Category: Ledger
 Status: Proposed
