@@ -1,6 +1,6 @@
 ---
 CIP: 209
-Title: Web-Wallet Bridge - Balance, sign and submit
+Title: Web-Wallet Bridge - Dijkstra era
 Category: Wallets
 Status: Proposed
 Authors:
@@ -17,7 +17,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-This CIP extends [CIP-30][] with a single method, `api.cipXXXX.balanceAndSignTx(tx)`. It is an upgrade of `signTx`: the dApp passes one CBOR string, and the wallet balances it when needed, signs it, and submits it when it is complete.
+This CIP extends [CIP-30][] with a single method, `api.cip209.balanceAndSignTx(tx)`. It is an upgrade of `signTx`: the dApp passes one CBOR string, and the wallet balances it when needed, signs it, and submits it when it is complete.
 
 The method is designed for the Dijkstra ledger era, where a dApp can express its intent as one or more sub-transactions ([CIP-118][]) and leave fees, collateral, and funding of the enclosing top-level transaction to the wallet. Before Dijkstra, the method works on ordinary Conway transactions.
 
@@ -33,10 +33,10 @@ An earlier attempt to add `balanceTx` to CIP-30 ([PR #170][PR170]) was closed wi
 
 ### Extension
 
-Wallets advertise support through CIP-30 `supportedExtensions` as `{ cip: XXXX }`. A dApp enables it via `cardano.{walletName}.enable({ extensions: [{ cip: XXXX }] })`. The method is exposed under the extension namespace:
+Wallets advertise support through CIP-30 `supportedExtensions` as `{ cip: 209 }`. A dApp enables it via `cardano.{walletName}.enable({ extensions: [{ cip: 209 }] })`. The method is exposed under the extension namespace:
 
 ```ts
-api.cipXXXX.balanceAndSignTx(
+api.cip209.balanceAndSignTx(
   tx: cbor<transaction | sub_transaction | sub_transactions>
 ): Promise<BalanceSignResult>
 ```
