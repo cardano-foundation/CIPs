@@ -198,6 +198,54 @@ part, justifies the need for agility when implementing the transition to PQC
 together with the recency of the standardization, which leaves room for a better
 assessment of the security of the standardized schemes.
 
+### Measured impact: Falcon as the KES leaf
+
+To give a first measure of the impact on KES, we built a prototype in
+cardano-base that replaces the Ed25519 leaf of `Sum6KES`, the KES scheme used on
+mainnet, with Falcon-512. The prototype uses Algorand's deterministic variant of
+Falcon-512, not an FN-DSA implementation. The existing KES test suite passes
+with the Falcon leaf.
+
+A KES leaf scheme must generate its keys deterministically: the same seed must
+give the same key on every machine. KES regenerates leaf keys from their seeds
+as it evolves, and the regenerated keys must match the KES verification key,
+which commits to all of them. As with Ed25519 today, the prototype also
+serialises a signing key as its seed, so a key moved to another machine is
+regenerated there. Falcon's key generation uses floating-point arithmetic, so
+the prototype uses Falcon's integer emulation of floating point, which makes the
+result independent of the hardware and compiler. KES itself does not require
+signing to be deterministic.
+
+The table compares the two leaves in `Sum6KES`, measured on an Apple M4 Max
+laptop with a 32-byte message.
+
+| `Sum6KES`                     | Ed25519 | Falcon-512 | Factor |
+| ----------------------------- | ------- | ---------- | ------ |
+| Signature                     | 448 B   | 2,884 B    | ×6.4   |
+| Verification key              | 32 B    | 32 B       | ×1.0   |
+| Signing key, serialised       | 608 B   | 2,338 B    | ×3.8   |
+| Verification                  | 20.8 µs | 20.5 µs    | ×1.0   |
+| Signing                       | 7.8 µs  | 1.85 ms    | ×240   |
+| Key evolution (period 0 to 1) | 12.7 µs | 6.2 ms     | ×490   |
+| Key generation                | 0.73 ms | 411 ms     | ×560   |
+
+- **Size is the main constraint.** A Falcon `Sum6KES` signature is 2,884 bytes,
+  while the mainnet protocol parameter `maxBlockHeaderSize` allows 1,100 bytes
+  for the whole block header. The two 897-byte Falcon verification keys of the
+  leaves make up 62% of it. The KES verification key remains a 32-byte hash, so
+  operational certificates do not grow. Larger headers bear directly on the
+  open questions about block propagation and the `activeSlotsCoeff` parameter.
+- **Verification is unchanged.** Verifying a KES signature, which is on the
+  critical path of block adoption, takes 20.5 µs with Falcon and 20.8 µs with
+  Ed25519.
+- **Block producers pay more, off the critical path.** Signing takes 1.85 ms per
+  forged block. The key evolves once per KES period (36 hours on mainnet), in
+  6.2 ms for the first step and up to 189 ms when it moves to the second half of
+  its periods. Key generation (411 ms) happens once per operational certificate.
+- **Locked memory fits.** Signing keys are kept in locked memory. A Falcon leaf
+  key takes one memory page, and at most 7 are held at once, which fits within
+  today's default limits on Linux, macOS and Windows.
+
 ### Post-quantum planning in other ecosystems
 
 Cardano is not the only ecosystem facing this problem. Other major blockchain
