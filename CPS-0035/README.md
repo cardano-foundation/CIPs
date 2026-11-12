@@ -5,11 +5,11 @@ Category: Tools
 Status: Open
 Authors:
 - David Clark <david.clark@cardanofoundation.org>
-Proposed Solutions: [
+Proposed Solutions: 
   - Winter Protocol: https://docs-winter.palmyra.app/docs/winter-protocol
   - GS1 Supply Chain Library: https://github.com/agrow-labs/supply-chain-lib
   - Cardano DPP Standards: https://github.com/cardano-foundation/cardano-dpp-standards
-]
+
 Discussions:
 - CPS-0035: https://github.com/cardano-foundation/CIPs/pull/1114
 - Cardano DPP Working Group: https://github.com/cardano-foundation/cardano-dpp-standards
