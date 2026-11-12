@@ -122,11 +122,12 @@ node.
 ### The current scope check is unsound
 
 The scope check in the Haskell node has a bug[^scope-bug], which causes it to
-accept some open terms already. This should be fixed (independently of this
-proposal), but in practice free variables have already been part of the
-semantics for some time.
+accept some open terms. The fix[^scope-fix] will be released with the next hard
+fork, but this shows that free variables have been part of the semantics in
+practice without problems.
 
 [^scope-bug]: [checkScope does not traverse Constr/Case: free variables inside SOP terms pass the ledger scope check](https://github.com/IntersectMBO/plutus/issues/7965)
+[^scope-fix]: https://github.com/IntersectMBO/plutus/pull/7968
 
 
 ### Developer tooling typically performs the scope check off-chain
@@ -142,10 +143,12 @@ machine.
 
 This specification covers changes to the Plutus Core language
 specification[^plutus-spec], the implementation[^plutus-repo], the conformance
-test suite[^plutus-conformance] and the formalized metatheory[^plutus-metatheory].
+test suite[^plutus-conformance], other tests that rely on the CEK API[^] and the
+formalized metatheory[^plutus-metatheory].
 
 [^plutus-repo]: [Plutus repository](https://github.com/IntersectMBO/plutus)
 [^plutus-conformance]: [Plutus conformance test suite](https://github.com/IntersectMBO/plutus/tree/master/plutus-conformance)
+[^cek-api]
 
 
 ### The Plutus Core specification
