@@ -241,8 +241,8 @@ This section is not normative. It addresses the concentration concern of CPS-003
 - Show the control and admission policies with their thresholds, and the membership history.
 - Show an admin key as the DRep whose key credential has the same hash, when there is one, and otherwise as the key hash. Show resigned keys as resigned.
 - Membership changes never change delegations.
-- Tools that build admissions should offer to update the control policy to the current member set, since an unchanged policy leaves control with the founders.
-- Show when a payment address last changed, since a captured control policy could swap it.
+- Tools that build admissions should offer to update the control policy to the current member set, since an unchanged policy leaves control with the founders. This works up to 63 keys, the most a flat policy can list within the node limit. A larger group can let its members elect a smaller council and use that council as its policy.
+- Show when the profile or a policy last changed, since a captured control policy could change any of them. Highlight a changed payment address on its own, since funds follow it.
 - Show where the stake of a group's payment address delegates its votes, especially when that is a member.
 - Lists of groups may hide groups below a minimum number of active members and should sort by the voting power of their active members. A group and a profile cost only a transaction fee, and a single DRep can join any number of its own groups. Distinct members and member voting power are the signals that are expensive to fake. A list can count each DRep toward one group only, for example its oldest active membership, so listed groups never outnumber distinct member DReps. Membership itself stays non-exclusive.
 - Payment addresses of groups without a verified website and without members besides the founders are best not promoted as donation targets.
@@ -250,6 +250,15 @@ This section is not normative. It addresses the concentration concern of CPS-003
 ### Indexer limits
 
 Anyone can post label 8416 for the price of a transaction fee. The limits of 64 events, 8 scripts, 64 script nodes and a nesting depth of 8 bound the work per transaction. A payload that is ignored as a whole changes no state and needs no storage beyond a marker, and a `join` only warrants a registration lookup for a credential that ever was a DRep.
+
+- **64 events.** An `approve` takes about 40 bytes, so without a limit a 16 KB transaction could carry several hundred events, each needing a state lookup and a verdict. Founding with a few founders takes under 10 events, and a batch approval of 50 requests still fits. The limit also keeps the event index in one byte for the group id.
+- **8 scripts.** Control, admission, a payment script and member scripts of one transaction fit with room left.
+- **Nesting depth of 8.** A 16 KB transaction can nest a script several thousand levels deep. A recursive decoder with a default stack would fail where another indexer succeeds, and the two would reach different verdicts.
+- **64 nodes.** Real admin policies such as 3 of 5 with a time lock use fewer than 20 nodes, and a policy stays readable for the people asked to sign it. A flat policy lists at most 63 keys.
+
+These limits apply to scripts published in key 2 only. A script DRep's own script follows the ledger's rules.
+
+The transaction size limits policies as well, since every key new to a role signs explicitly. Measured on a local devnet: a `create` with shared 2/3 control and admission policies of 63 keys takes 10.7 KB of the 16 KB limit, two disjoint policies of 40 keys each take 13.5 KB, and two of 50 keys each no longer fit at 16.8 KB. An `update` signed by 42 of 63 keys takes 5.8 KB. A policy can also grow over several updates, where only the new keys sign.
 
 ### Versioning
 
@@ -267,17 +276,17 @@ A group is a list of affiliations with clear authorization rules. Metadata event
 
 Other designs were considered:
 
-- **Tokens held by members.** A DRep credential has no address, so a token in a wallet is not bound to the DRep and cannot be withdrawn by the group.
-- **A field in the DRep's CIP-0119 document.** It is good for discovery but weak as a register: the group cannot confirm it, every change is a DRep update certificate, and the documents can disappear.
+- **Tokens held by members.** A DRep credential has no address. A token sent to a wallet, or to the payment address a DRep declares in its CIP-0119 document, stays with whoever controls that address. The group cannot take it back when a member leaves or is removed, and the holder can pass it on.
+- **A field in the DRep's CIP-0119 document.** It covers the DRep's side, but the group's side has no place there: who the admins are, who approved or removed a member, and when. The register would live half in documents and half on chain. A document URL can disappear, and the anchors of old certificates then point to content nobody can read, so a past membership cannot be checked later. Indexers that fetch at different times or through different gateways can also disagree on the current state, and every change is a DRep update certificate. The field stays useful for discovery, and a DRep can list its groups there in addition.
 - **Plutus state.** It is only needed when contracts must consume membership, which no use case requires today. A later treasury protocol can bind to a `group_id` with its own state.
 
 ### Own label
 
-Label 1694 is reserved for JSON-LD governance documents in CIP-0100. This payload is binary CBOR, which is why CIP-0179 surveys also use a label of their own.
+Why this CIP uses its own label instead of label 1694: label 1694 is registered for CIP-0100 governance metadata, which are JSON-LD documents. This payload is compact CBOR with its own processing rules, so it takes label 8416, as CIP-0179 surveys took label 17 for the same reason.
 
 ### Native scripts and the consent rule
 
-Groups that matter are run by several people, so control is a native script from the first version, and control and admission are separate policies with their own thresholds. A satisfied threshold alone does not show that the other listed keys agreed: a policy like `any [attacker, alice]` would let anyone present a real person as admin. The consent rule makes every listed key sign explicitly when it takes a role, so a group can only show admins who agreed. Admins and members give consent the same way, through `required_signers`, and an admin can withdraw it with `resign` as a member can with `leave`. Day to day admin actions still need only a satisfied policy. A policy that needs no signature would let anyone change or dissolve the group, so indexers reject it instead of leaving the check to tools.
+Control is a native script from the first version. A single admin is a 1 of 1 policy that costs a few bytes, and supporting both a plain key and a script would add a second authorization path to every rule. Control and admission are separate policies with their own thresholds, so a group can hand admissions to a wider circle than control over the group itself. A satisfied threshold alone does not show that the other listed keys agreed: a policy like `any [attacker, alice]` would let anyone present a real person as admin. The consent rule makes every listed key sign explicitly when it takes a role, so a group can only show admins who agreed. Admins and members give consent the same way, through `required_signers`, and an admin can withdraw it with `resign` as a member can with `leave`. Day to day admin actions still need only a satisfied policy. A policy that needs no signature would let anyone change or dissolve the group, so indexers reject it instead of leaving the check to tools.
 
 ### Exit without permission
 
@@ -289,7 +298,7 @@ Scripts count only when their bytes were published on chain at or before the eve
 
 ### Staleness
 
-`seq` turns concurrent control changes into a race with one winner, so a group cannot apply two conflicting policy changes that were signed against the same state. Admission events carry no `seq`, so several approval batches can be collected at the same time.
+`seq` turns concurrent control changes into a race with one winner, so a group cannot apply two conflicting policy changes that were signed against the same state. A control event carries the `seq` it was signed against, which must equal the group's current `seq`, and the event raises it by one. Two such transactions in one block are ordered by their position, the first applies and the second is stale. An included transaction cannot be replayed, since its inputs are spent. Admission events carry no `seq`, so several approval batches can be collected at the same time.
 
 ### Group identifier
 
@@ -312,16 +321,16 @@ This CIP adds a new label and changes nothing in existing standards. Group profi
 
 ### Acceptance Criteria
 
-- [ ] A second indexer, written independently of the reference library, reaches the same groups, instances and verdicts on the test vectors.
-- [ ] At least one tool builds and submits group transactions on mainnet.
-- [ ] At least one tool displays groups and memberships following this specification on mainnet.
+- [ ] A second indexer, written independently of the reference library by people unaffiliated with the author, DRepTalk or the author's employer, reaches the same groups, instances and verdicts on the test vectors.
+- [ ] At least one tool by such an unaffiliated team builds and submits group transactions on mainnet.
+- [ ] At least one tool by such an unaffiliated team displays groups and memberships following this specification on mainnet.
 
 ### Implementation Plan
 
 - [x] Reference library 0.5.0 with the rules of the 2026-11-10 review: resignation per role, explicit consent, signature-free policies, one byte ids, test vectors for these cases.
 - [x] Reference library: [drep-groups](https://github.com/katomm/cardano-drep-groups) (TypeScript, Apache-2.0, on npm) with the codec, the processing rules, the test vectors and a conformance suite. It is kept separate from DRepTalk on purpose, as a package without ties to any one product, so other governance tools such as wallets, explorers and governance portals can read and build groups by the same rules.
 - [x] Reference implementation: DRepTalk creates and manages groups, collects the signatures of several admins and lists groups. End to end tests on preprod cover founding alone and together, joining, admission with a policy update, leaving and dissolving.
-- [x] DRepTalk live on [mainnet](https://dreptalk.com/groups/) and [preprod](https://preprod.dreptalk.com/groups/) together with the publication of this CIP. An example group with a full profile, a charter and five members is [Commons Council](https://preprod.dreptalk.com/groups/drep_group1mz6spxh0f5huee8c4krz62tpzwr2g85k78lxqvp7asypkt7vsjqsq6rj3w3/) on preprod. All preprod groups are listed at [preprod.dreptalk.com/groups](https://preprod.dreptalk.com/groups/).
+- [x] DRepTalk live on preprod, where all groups are listed at [preprod.dreptalk.com/groups](https://preprod.dreptalk.com/groups/). The mainnet page points to preprod while this CIP is in review. An example group with a full profile, a charter and four members is [Commons Council](https://preprod.dreptalk.com/groups/drep_group1mz6spxh0f5huee8c4krz62tpzwr2g85k78lxqvp7asypkt7vsjqsq6rj3w3/).
 
 ## Copyright
 
