@@ -189,19 +189,22 @@ not used for on-chain evaluation.
 
 ### The Agda metatheory
 
-The plutus-metatheory formalisation in Agda[^plutus-metatheory] has
-formalisations of scoped PLC and typed PLC. In addition to those, it should
-include abstract syntax of UPLC without intrinsic scoping, as well as a
-corresponding CEK machine and reduction semantics. Both semantics will implement
-the rules for free variables as outlined above.
+The `plutus-metatheory` formalisation in Agda[^plutus-metatheory] should, in
+addition to its formalisation of well-scoped UPLC, also support UPLC with open
+terms. The current abstract syntax used is sufficient, but the CEK machine and
+reduction semantics are not. The metatheory should be extended with an
+implementation that uses the new evaluation rules outlined above for open terms.
 
-The existing formalisations for typed PLC and scoped PLC should not implement
-free variables. They remain useful because they formalise intermediate
-representations used in the Plinth compiler.
+The current CEK formalisation (for closed terms only) should also be kept,
+because it describes execution of scripts from earlier language versions.
+Moreover, it can be used to back up a claim of this CIP: closed terms have
+equivalent execution behaviour in the old CEK machine (only well-scoped) and the
+new CEK machine (with free variables). A proof of this statement should be
+included in the metatheory.
 
-An equivalence between the well-scoped and unscoped CEK semantics (for
-well-scoped terms) should be proved, to verify the claim of this CIP that
-evaluation of well-scoped terms is unchanged.
+The existing formalisation of TPLC (Typed Plutus Core) should not change. This
+metatheory component remains useful because it formalises an intermediate
+language used in the Plinth compiler.
 
 
 [^plutus-metatheory]: [Plutus metatheory in Agda](https://github.com/IntersectMBO/plutus/tree/master/plutus-metatheory)
