@@ -6,7 +6,7 @@ Status: Open
 Authors:
   - Hamza Jeljeli <hamza@icangroup.co.uk>
   - Gamze Kilic <gamze@icangroup.co.uk>
-  - Damien Robissout <damien.robissout@iohk.io>
+  - Damien Robissout <robissout@teragone-factory.com>
   - Thomas Vellekoop <thomas.vellekoop@iohk.io>
 Proposed Solutions: []
 Discussions:
