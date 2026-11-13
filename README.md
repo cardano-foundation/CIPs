@@ -150,7 +150,7 @@ CIP editors facilitate discussions and progress submissions on GitHub, reviewing
 | 0160 | [Receiving Script Purpose and Addresses](./CIP-0160) | Proposed |
 | 0161 | [Ouroboros Phalanx - Breaking Grinding Incentives](./CIP-0161) | Proposed |
 | 0162 | [URI Scheme - DRep Links](./CIP-0161) | Proposed |
-| 0163 | [Time-Bound Delegation with Dynamic Rewards](./CIP-0163) | Proposed |
+| 0163 | [Time-Bound Delegation](./CIP-0163) | Proposed |
 | 0164 | [Ouroboros Linear Leios - Greater transaction throughput](./CIP-0164) | Proposed |
 | 0165 | [Canonical Ledger State](./CIP-0165) | Proposed |
 | 0167 | [Remove isValid from transactions](./CIP-0167) | Proposed |
