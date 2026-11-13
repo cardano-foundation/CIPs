@@ -17,6 +17,7 @@ Implementors:
     -   VeriGlyph Sentinel <https://sentinel.veriglyph.io>
     -   Ekklesia <https://ekklesia.vote>
     -   AdaStat <https://adastat.net>
+    -   CardanoScan <https://cardanoscan.io>
 Discussions:
     - Original PR: https://github.com/cardano-foundation/CIPs/pull/999
     - Cardano Forum: https://forum.cardano.org/t/new-calidus-pool-key-for-spos-and-services-interacting-with-pools
@@ -419,7 +420,7 @@ shown an interest in using it as a method of authentication and validation.
     * [x] Typhon
 * Applications
     * [ ] CExplorer
-    * [ ] CardanoScan
+    * [x] CardanoScan
     * [x] AdaStat
     * [ ] PoolTool.io
     * [x] DripDropz
