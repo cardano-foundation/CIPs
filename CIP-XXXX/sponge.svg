@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- background card (keeps the figure legible in dark mode) -->
+  <rect x="0" y="0" width="880" height="320" rx="8" fill="#ffffff" stroke="#dddddd"/>
+
+  <!-- phase divider and labels -->
+  <line x1="528" y1="25" x2="528" y2="295" stroke="#999999" stroke-width="1.2" stroke-dasharray="6 5"/>
+  <text x="290" y="302" font-size="13" fill="#777777" text-anchor="middle" font-style="italic">absorb</text>
+  <text x="704" y="302" font-size="13" fill="#777777" text-anchor="middle" font-style="italic">squeeze</text>
+
+  <!-- initial state I = 0^r || 0^c -->
+  <rect x="58" y="95" width="72" height="170" rx="8" fill="#f5f5f5" stroke="#333333" stroke-width="1.5"/>
+  <text x="94" y="172" font-size="13" font-style="italic" fill="#333333" text-anchor="middle">I = 0<tspan dy="-5" font-size="9">r</tspan><tspan dy="5" font-size="13"> &#8741; 0</tspan><tspan dy="-5" font-size="9">c</tspan></text>
+  <text x="94" y="193" font-size="10" font-style="italic" fill="#777777" text-anchor="middle">length r + c</text>
+
+  <!-- rate lane -->
+  <line x1="130" y1="130" x2="162" y2="130" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="194" y1="130" x2="226" y2="130" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="290" y1="130" x2="322" y2="130" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="354" y1="130" x2="386" y2="130" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="450" y1="130" x2="478" y2="130" stroke="#333333" stroke-width="1.5"/>
+  <text x="502" y="135" font-size="16" fill="#333333" text-anchor="middle">&#8943;</text>
+  <line x1="540" y1="130" x2="636" y2="130" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="700" y1="130" x2="780" y2="130" stroke="#333333" stroke-width="1.5"/>
+  <text x="800" y="135" font-size="16" fill="#333333" text-anchor="middle">&#8943;</text>
+
+  <!-- capacity lane -->
+  <line x1="130" y1="230" x2="226" y2="230" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="290" y1="230" x2="386" y2="230" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="450" y1="230" x2="478" y2="230" stroke="#333333" stroke-width="1.5"/>
+  <text x="502" y="235" font-size="16" fill="#333333" text-anchor="middle">&#8943;</text>
+  <line x1="540" y1="230" x2="636" y2="230" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="700" y1="230" x2="780" y2="230" stroke="#333333" stroke-width="1.5"/>
+  <text x="800" y="235" font-size="16" fill="#333333" text-anchor="middle">&#8943;</text>
+
+  <!-- message inputs (field additions into the rate part) -->
+  <line x1="180" y1="58" x2="180" y2="112" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="180" y="48" font-size="15" font-style="italic" fill="#333333" text-anchor="middle">m<tspan dy="3" font-size="10">1</tspan></text>
+  <circle cx="180" cy="130" r="14" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="180" y="136" font-size="17" fill="#333333" text-anchor="middle">+</text>
+
+  <line x1="340" y1="58" x2="340" y2="112" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="340" y="48" font-size="15" font-style="italic" fill="#333333" text-anchor="middle">m<tspan dy="3" font-size="10">2</tspan></text>
+  <circle cx="340" cy="130" r="14" fill="#ffffff" stroke="#333333" stroke-width="1.5"/>
+  <text x="340" y="136" font-size="17" fill="#333333" text-anchor="middle">+</text>
+
+  <!-- squeezed outputs (read from the rate part) -->
+  <circle cx="590" cy="130" r="3.5" fill="#333333"/>
+  <line x1="590" y1="130" x2="590" y2="74" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="590" y="60" font-size="15" font-style="italic" fill="#333333" text-anchor="middle">z<tspan dy="3" font-size="10">1</tspan></text>
+
+  <circle cx="750" cy="130" r="3.5" fill="#333333"/>
+  <line x1="750" y1="130" x2="750" y2="74" stroke="#333333" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="750" y="60" font-size="15" font-style="italic" fill="#333333" text-anchor="middle">z<tspan dy="3" font-size="10">2</tspan></text>
+
+  <!-- permutation boxes -->
+  <rect x="230" y="95" width="60" height="170" rx="8" fill="#dbe7f6" stroke="#3b6ea5" stroke-width="1.5"/>
+  <text x="260" y="187" font-size="22" font-style="italic" fill="#1f3a5f" text-anchor="middle">P</text>
+
+  <rect x="390" y="95" width="60" height="170" rx="8" fill="#dbe7f6" stroke="#3b6ea5" stroke-width="1.5"/>
+  <text x="420" y="187" font-size="22" font-style="italic" fill="#1f3a5f" text-anchor="middle">P</text>
+
+  <rect x="640" y="95" width="60" height="170" rx="8" fill="#dbe7f6" stroke="#3b6ea5" stroke-width="1.5"/>
+  <text x="670" y="187" font-size="22" font-style="italic" fill="#1f3a5f" text-anchor="middle">P</text>
+</svg>
