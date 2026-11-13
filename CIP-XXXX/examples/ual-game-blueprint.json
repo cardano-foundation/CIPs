@@ -1,0 +1,64 @@
+{
+  "$id": "ual-game",
+  "$schema": "https://cips.cardano.org/cips/cip57/schemas/plutus-blueprint.json",
+  "$vocabulary": {
+    "https://cips.cardano.org/cips/cip57": true,
+    "https://json-schema.org/draft/2020-12/vocab/applicator": true,
+    "https://json-schema.org/draft/2020-12/vocab/core": true,
+    "https://json-schema.org/draft/2020-12/vocab/validation": true
+  },
+  "preamble": {
+    "title": "Guessing game — plutus-apps rule",
+    "description": "Current-Plinth port of the Game.isGoodGuess on-chain rule.",
+    "version": "1.0.0",
+    "plutusVersion": "v2",
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "id": "gameValidator",
+      "title": "Guess the secret",
+      "redeemer": {
+        "purpose": "spend",
+        "schema": {
+          "$ref": "#/definitions/BuiltinData"
+        }
+      },
+      "datum": {
+        "purpose": "spend",
+        "schema": {
+          "$ref": "#/definitions/BuiltinData"
+        }
+      },
+      "arguments": [
+        {
+          "encoding": "asData",
+          "schema": {
+            "$ref": "#/definitions/BuiltinData"
+          }
+        },
+        {
+          "encoding": "asData",
+          "schema": {
+            "$ref": "#/definitions/BuiltinData"
+          }
+        },
+        {
+          "encoding": "asData",
+          "schema": {
+            "$ref": "#/definitions/BuiltinData"
+          }
+        }
+      ],
+      "budget": {
+        "semantics": "D",
+        "steps": 500
+      },
+      "compiledCode": "5828010000332222253330053371e6eb800cdc91bae00214984c98cc01124103505435004995cd2b9c01",
+      "hash": "5a17e32e7323dff337601b761aa246fc2707f237b98cbefa1df7ecfd"
+    }
+  ],
+  "definitions": {
+    "BuiltinData": {}
+  }
+}

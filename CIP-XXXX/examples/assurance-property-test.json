@@ -1,0 +1,50 @@
+{
+  "$schema": "https://cips.cardano.org/cips/cipXXXX/schemas/assurance-v2.json",
+  "preamble": {
+    "title": "hello_world — property-test assurance",
+    "authors": [
+      "Ada Lovelace <ada@example.com>"
+    ],
+    "created": "2026-08-11"
+  },
+  "blueprint": {
+    "uri": "https://raw.githubusercontent.com/aiken-lang/aiken/v1.1.5/examples/hello_world/plutus.json"
+  },
+  "tools": {
+    "aiken": {
+      "name": "Aiken",
+      "version": "1.1.5",
+      "uri": "https://aiken-lang.org"
+    }
+  },
+  "properties": [
+    {
+      "id": "requires-owner-signature",
+      "title": "Spending requires the owner's signature and the magic message",
+      "scope": {
+        "validators": ["hello_world"]
+      },
+      "statement": {
+        "text": "The validator succeeds only if the transaction is signed by the public key hash stored in the datum's 'owner' field and the redeemer's 'msg' field is exactly the UTF-8 bytes of 'Hello, World!'."
+      },
+      "evidence": [
+        {
+          "method": "property-test",
+          "verifier": "Ada Lovelace",
+          "tool": "aiken",
+          "outcome": "verified",
+          "date": "2026-07-15",
+          "scriptHash": "5e1e8fa84f2b557ddc362329413caa3fd89a1be26bfd24be05ce0a02",
+          "artifact": {
+            "uri": "https://github.com/example-org/hello-world-tests/archive/refs/tags/v1.0.tar.gz",
+            "hash": {
+              "alg": "sha256",
+              "digest": "d9e0f1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f70819a2b3c4d5e6"
+            }
+          },
+          "notes": "500 randomized scenarios generated with Aiken's property-testing framework; suite rejects missing signatures and wrong messages."
+        }
+      ]
+    }
+  ]
+}

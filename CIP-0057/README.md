@@ -116,6 +116,14 @@ Validators are the essence of the blueprint. This section describes each validat
 
 A set of extra schemas to be re-used as references across the specification.
 
+### Proposed extension: compiled program interfaces
+
+A coordinated [draft extension](./extensions/compiled-interface) proposes stable
+validator ids, complete invocation argument lists, and explicit Scott parameter
+schemas while preserving CIP-57's existing Data/native distinction. It is paired
+with the [assurance proposal](../CIP-XXXX). Its placement and identifiers are for
+CIP-editor discussion; it is not part of the active CIP-57 dialect documented below.
+
 ### Core vocabulary
 
 Plutus blueprints ultimately describes on-chain data value that can be found at the validator's interface boundaries. This means that while we would generally operate at the level of _Plutus Data_, the vocabulary covers in practice any of the possible Untyped Plutus Core (abbrev. UPLC) primitives that can appear at a validator's boundary (e.g. compile-time parameters). Any UPLC primitive is therefore represented as a schema with a `dataType` keyword. The possible values for `dataType` are detailed just below. In addition, and depending on the value of `dataType`, we may find additional keywords in the vocabulary.
