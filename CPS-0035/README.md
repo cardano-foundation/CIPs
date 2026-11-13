@@ -5,11 +5,7 @@ Category: Tools
 Status: Open
 Authors:
 - David Clark <david.clark@cardanofoundation.org>
-Proposed Solutions: 
-  - Winter Protocol: https://docs-winter.palmyra.app/docs/winter-protocol
-  - GS1 Supply Chain Library: https://github.com/agrow-labs/supply-chain-lib
-  - Cardano DPP Standards: https://github.com/cardano-foundation/cardano-dpp-standards
-
+Proposed Solutions: []
 Discussions:
 - CPS-0035: https://github.com/cardano-foundation/CIPs/pull/1114
 - Cardano DPP Working Group: https://github.com/cardano-foundation/cardano-dpp-standards
@@ -64,6 +60,14 @@ This creates a "build from scratch" situation where businesses face:
 - Expensive custom development for each project
 - Uncertainty about regulatory compliance
 - Duplication of effort solving common problems
+
+### Existing Approaches
+
+Several existing projects relate to this problem space on Cardano:
+
+- [Winter Protocol](https://docs-winter.palmyra.app/docs/winter-protocol): an open-source solution for traceability and tokenization on eUTXO-based chains, developed by zenGate Global
+- [GS1 Supply Chain Library](https://github.com/agrow-labs/supply-chain-lib): a specification-first repository from Agrow Labs defining interoperable metadata formats for logistics blockchains, built around GS1 identifiers such as GTIN, GLN, and GIAI
+- [Cardano DPP Standards](https://github.com/cardano-foundation/cardano-dpp-standards): the Cardano Foundation working group repository, which holds the draft solution-pattern blueprint
 
 ### Why This Matters
 
