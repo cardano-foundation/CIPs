@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 586" width="860" height="586" role="img" aria-labelledby="t d">
+<title id="t">The bucket count trade-off, measured on M2 (historical)</title>
+<desc id="d">Two stacked panels sharing a bucket-count axis, where selection headroom r is the number of peers the gate leaves a node eligible to link to, divided by the number it must pick. Coverage stays on the ungated law while selection headroom is at least 2, then rises fivefold at headroom 1 and collapses below it. Attacker concentration falls as the reciprocal of the bucket count throughout, measured at four of the seven bucket counts and predicted at the rest. The largest bucket count retaining headroom is best on both. Historical: measured on the directional M2 design at pick count 16 in experiments E10 and E12; the selected symmetric design at pick count 10 uses a separate candidate bucket table and requires validation against its coverage law.</desc>
+<rect width="860" height="586" rx="8" fill="#fcfcfb"/>
+<rect x="96.0" y="76.0" width="457.5" height="394.0" fill="#1e8f5e" opacity="0.045"/>
+<line x1="133.1" y1="76.0" x2="133.1" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="133.1" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">10</text>
+<line x1="401.0" y1="76.0" x2="401.0" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="401.0" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">50</text>
+<line x1="553.5" y1="76.0" x2="553.5" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="553.5" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">125</text>
+<line x1="601.7" y1="76.0" x2="601.7" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="601.7" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">167</text>
+<line x1="668.8" y1="76.0" x2="668.8" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="668.8" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">250</text>
+<line x1="716.6" y1="76.0" x2="716.6" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="716.6" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">333</text>
+<line x1="784.2" y1="76.0" x2="784.2" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="784.2" y="489.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">500</text>
+<line x1="96.0" y1="236.3" x2="820.0" y2="236.3" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="240.3" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">10⁻²</text>
+<line x1="96.0" y1="161.6" x2="820.0" y2="161.6" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="165.6" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">10⁻¹</text>
+<line x1="96.0" y1="86.9" x2="820.0" y2="86.9" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="90.9" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">10⁰</text>
+<line x1="96.0" y1="470.0" x2="820.0" y2="470.0" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="474.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">0</text>
+<line x1="96.0" y1="440.9" x2="820.0" y2="440.9" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="444.9" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">5</text>
+<line x1="96.0" y1="411.8" x2="820.0" y2="411.8" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="415.8" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">10</text>
+<line x1="96.0" y1="353.6" x2="820.0" y2="353.6" stroke="#e2e0d8" stroke-width="1"/>
+<text x="86.0" y="357.6" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">20</text>
+<text transform="rotate(-90 30 171.0)" x="30.0" y="171.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">epoch failure probability</text>
+<text transform="rotate(-90 30 406.0)" x="30.0" y="406.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">attacker slots per victim</text>
+<line x1="553.5" y1="76.0" x2="553.5" y2="470.0" stroke="#1e8f5e" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="560.5" y="92.0" font-size="10.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">r = 2</text>
+<text x="104.0" y="92.0" font-size="11" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">selection headroom r ≥ 2 at pick count 16</text>
+<line x1="96.0" y1="240.4" x2="820.0" y2="240.4" stroke="#52514e" stroke-width="1.4" stroke-dasharray="5 4"/>
+<text x="816.0" y="233.4" font-size="10.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">coverage law, ungated</text>
+<path d="M133.1 237.5 L401.0 247.3 L553.5 243.5 L601.7 235.9 L668.8 188.0 L716.6 119.3 L784.2 86.9" fill="none" stroke="#4a3aa7" stroke-width="2.2" stroke-linejoin="round"/>
+<line x1="133.1" y1="244.8" x2="133.1" y2="230.4" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="133.1" cy="237.5" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="401.0" y1="255.7" x2="401.0" y2="239.0" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="401.0" cy="247.3" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="553.5" y1="251.3" x2="553.5" y2="235.6" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="553.5" cy="243.5" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="601.7" y1="242.7" x2="601.7" y2="228.8" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="601.7" cy="235.9" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="668.8" y1="192.7" x2="668.8" y2="183.4" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="668.8" cy="188.0" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="716.6" y1="120.7" x2="716.6" y2="118.0" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="716.6" cy="119.3" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<line x1="784.2" y1="86.9" x2="784.2" y2="86.9" stroke="#4a3aa7" stroke-width="2.0" stroke-linecap="round" opacity="0.45"/>
+<circle cx="784.2" cy="86.9" r="4.4" fill="#4a3aa7" stroke="#fcfcfb" stroke-width="1.6"/>
+<path d="M133.1 353.6 L401.0 446.7 L553.5 460.7 L601.7 463.0 L668.8 465.3 L716.6 466.5 L784.2 467.7" fill="none" stroke="#eda100" stroke-width="2.2" stroke-linejoin="round"/>
+<circle cx="133.1" cy="353.6" r="4.0" fill="#fcfcfb" stroke="#eda100" stroke-width="1.8"/>
+<circle cx="401.0" cy="446.7" r="4.4" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="553.5" cy="460.7" r="4.4" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="601.7" cy="463.0" r="4.0" fill="#fcfcfb" stroke="#eda100" stroke-width="1.8"/>
+<circle cx="668.8" cy="465.3" r="4.4" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="716.6" cy="466.5" r="4.0" fill="#fcfcfb" stroke="#eda100" stroke-width="1.8"/>
+<circle cx="784.2" cy="467.7" r="4.4" fill="#eda100" stroke="#fcfcfb" stroke-width="1.6"/>
+<circle cx="553.5" cy="243.5" r="8.5" fill="none" stroke="#1e8f5e" stroke-width="2.0"/>
+<circle cx="553.5" cy="460.7" r="8.5" fill="none" stroke="#1e8f5e" stroke-width="2.0"/>
+<text x="567.5" y="464.7" font-size="11.5" fill="#1e8f5e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="650">B = 125: E10/E12 operating point (M2, pick count 16)</text>
+<text x="96.0" y="42.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">What the gate costs in coverage</text>
+<text x="96.0" y="57.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" xml:space="preserve">p<tspan font-size="0.72em" dy="0.26em">bad</tspan><tspan dy="-0.26em"> measured, with Wilson 95 % intervals · log scale · lower is better</tspan></text>
+<text x="96.0" y="322.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-weight="600">What the gate buys against a flooder</text>
+<text x="96.0" y="337.0" font-size="10.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif">slots one victim gives an attacker holding 5 % of the network · lower is better</text>
+<text x="816.0" y="354.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">filled = measured · hollow = predicted A/B</text>
+<text x="458.0" y="518.0" font-size="12.5" fill="#1a1a19" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle" font-weight="600">Bucket count B: how many groups the gate splits the population into</text>
+<text x="458.0" y="533.0" font-size="11" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="middle">right = a narrower gate: fewer eligible peers per node, and the attacker's pressure divided further</text>
+<text x="38.0" y="552.0" font-size="10.5" fill="#52514e" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" font-style="italic">Historical: the directional M2 design at pick count 16. It does not size the selected design, whose coverage ceiling binds first.</text>
+<text x="846.0" y="575.0" font-size="9.5" fill="#6f6d66" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif" text-anchor="end">historical · M2 · E10 and E12 · N = 4 000 · μ = 0.2 · pick count 16</text>
+</svg>
