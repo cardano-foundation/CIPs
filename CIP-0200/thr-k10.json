@@ -1,0 +1,81 @@
+{
+  "design": {
+    "laneStructure": "two",
+    "reservationPolicy": {
+      "type": "priority-reservation-rb-eb-threshold",
+      "ebThresholdBytes": 45056,
+      "bytes": 90112,
+      "ebAgeEscapeRbIntervals": 10
+    },
+    "selection": "fifo",
+    "feeSemantics": "eip1559",
+    "priorityPremiumScope": "rb-only",
+    "controllers": {
+      "standardController": {
+        "targetUtilisation": 0.5,
+        "maxChangeDenominator": 16,
+        "initialCoefficient": 1,
+        "signal": {
+          "type": "capacity-weighted-window",
+          "window": 20
+        }
+      },
+      "priorityController": {
+        "targetUtilisation": 0.5,
+        "maxChangeDenominator": 16,
+        "initialCoefficient": 2,
+        "signal": {
+          "type": "priority-reservation-window",
+          "window": 5
+        }
+      },
+      "multiplierFloor": null,
+      "absoluteCoeffFloor": 1
+    }
+  },
+  "curves": "default",
+  "f": 0.05,
+  "D": 13,
+  "load": "severe-congestion",
+  "actors": [
+    {
+      "count": 2,
+      "type": "honest",
+      "feeBuffer": 2,
+      "minValueFeeMultiple": 1,
+      "valueMultiplier": 1,
+      "urgencyMultiplier": 1
+    }
+  ],
+  "rbTxBytesCap": 90112,
+  "rbExUnitsCap": 96991334,
+  "ebTxBytesCap": 12000000,
+  "ebStructureBytesCap": 512000,
+  "ebExUnitsCap": 9499133448,
+  "mempoolBytesCap": 24000000,
+  "admissionHeadroomUpdates": 1,
+  "retryPolicy": {
+    "feeTooLow": {
+      "type": "resubmit-after",
+      "delaySlots": 2,
+      "jitterSlots": 6
+    },
+    "mempoolFull": {
+      "type": "resubmit-after",
+      "delaySlots": 20,
+      "jitterSlots": 20
+    },
+    "evicted": {
+      "type": "resubmit-after",
+      "delaySlots": 10,
+      "jitterSlots": 30
+    },
+    "maxAttempts": 5,
+    "escalationFactor": 1.2
+  },
+  "laneLatencyEstimate": {
+    "expectedStandardLatency": 50,
+    "expectedPriorityLatency": 25
+  },
+  "priceConvergenceBandPct": 0.05
+}
