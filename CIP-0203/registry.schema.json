@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-XXXX/registry.schema.json",
+  "$id": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0203/registry.schema.json",
   "title": "Node Implementation Identifier Registry",
   "description": "Identifiers carried in the block header protocol_version minor component. Entries are unique by (scheme, id).",
   "type": "array",
@@ -45,12 +45,20 @@
         ],
         "format": "uri"
       },
-      "payload_specification": {
+      "payload_documentation": {
         "type": [
           "string",
           "null"
         ],
         "format": "uri"
+      },
+      "payload_definition": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "format": "uri",
+        "description": "URL of a payload definition conforming to a payload-definition.format-N.schema.json in this directory."
       },
       "registered": {
         "type": "string",
@@ -78,6 +86,15 @@
       "registered",
       "description"
     ],
-    "additionalProperties": false
+    "additionalProperties": false,
+    "if": {
+      "not": {
+        "required": ["payload_definition"],
+        "properties": { "payload_definition": { "type": "string" } }
+      }
+    },
+    "then": {
+      "properties": { "payload_documentation": { "type": "null" } }
+    }
   }
 }

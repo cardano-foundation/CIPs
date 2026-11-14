@@ -5,9 +5,11 @@ Category: Consensus
 Status: Proposed
 Authors:
     - Josh Marchand <josh@sundae.fi>
+    - Adam Dean <adam@crypto2099.io>
 Implementors: []
 Discussions:
-    - Original PR: https://github.com/cardano-foundation/CIPs/pull/?
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1276
+    - Block Producer Payloads PR (merged into this CIP): https://github.com/cardano-foundation/CIPs/pull/1282
     - CPS-0036 draft PR: https://github.com/cardano-foundation/CIPs/pull/1260
     - Early CIP-0180 draft: https://github.com/cardano-foundation/CIPs/pull/1157
 Solution To:
@@ -18,15 +20,17 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano has become a multi-implementation network. Blocks on mainnet have been produced by Amaru, Dingo, Gerolamo, and cardano-node, among others. In an attempt to measury client diversity across the network, Dingo, Amaru and Gerolamo have committed to using the vesitigal minor component of the header `protocol_version` to identify blocks produced by each implementation.
+Cardano has become a multi-implementation network. Blocks on mainnet have been produced by Amaru, Dingo, Gerolamo, and cardano-node, among others. In an attempt to measure client diversity across the network, Dingo, Amaru and Gerolamo have committed to using the vestigial minor component of the header `protocol_version` to identify blocks produced by each implementation.
 
-This CIP fixes a bit layout for the 32-bit field: an 8-bit implementation identifier, a 22-bit implementation-defined payload, and a 2-bit scheme version. It also establishes a machine-readable registry of identifiers in this repository with governing rules for assignment, update, and retirement. This is strictly voluntary, and requires no hard fork or changes in existing nodes.
+This CIP fixes a bit layout for the 32-bit field: an 8-bit implementation identifier, a 22-bit implementation-defined payload, and a 2-bit scheme version. It also establishes a machine-readable registry of identifiers in this repository with governing rules for assignment, update, and retirement. Finally, it defines a small JSON format with which an implementation can describe how its payload bits decode into named values, so that generic consumers can read any registered payload without implementation-specific code. This is strictly voluntary, and requires no hard fork or changes in existing nodes.
 
 Importantly, such a signalling mechanism will only ever represent a "best-effort" measurement of node diversity. It is a self-reported value, and there is no way to validate the block was actually produced by the software that it is claiming.
 
 ## Motivation: Why is this CIP necessary?
 
-For the full problem statement, read [the CPS-0036 draft](https://github.com/cardano-foundation/CIPs/pull/1260). In summary, while client diversity becomes a critical metric for Cardano's health, there is currently nothing that attributes individual blocks to a particular implementation. While there has been much discussion on the subject, including a [stalled proposal](https://github.com/cardano-foundation/CIPs/pull/1157), there is already a _de facto_ convention on chain. [Dingo](https://github.com/blinklabs-io/dingo) and [Geromalo](https://github.com/harmoniclabs/gerolamo) have produced mainnet blocks with a minor `protocol_version` value `69` and `67` respectively. Other node implementations have agreed to follow this apporach. Without a registry, it would be impossible to attribute a block to the reported node implementation. Introducing a standard encoding scheme makes it simple for anyone to read the on-chain data. The proposed `CIP-0180` stalled because it required a new ledger era. Importantly, this approach avoids a fork completely.
+For the full problem statement, read [the CPS-0036 draft](https://github.com/cardano-foundation/CIPs/pull/1260). In summary, while client diversity becomes a critical metric for Cardano's health, there is currently nothing that attributes individual blocks to a particular implementation. While there has been much discussion on the subject, including a [stalled proposal](https://github.com/cardano-foundation/CIPs/pull/1157), there is already a _de facto_ convention on chain. [Dingo](https://github.com/blinklabs-io/dingo) and [Gerolamo](https://github.com/harmoniclabs/gerolamo) have produced mainnet blocks with a minor `protocol_version` value `69` and `67` respectively. Other node implementations have agreed to follow this approach. Without a registry, it would be impossible to attribute a block to the reported node implementation. Introducing a standard encoding scheme makes it simple for anyone to read the on-chain data. The proposed `CIP-0180` stalled because it required a new ledger era. Importantly, this approach avoids a fork completely.
+
+The 22 payload bits let an implementation report more than its identity: a release, enabled capabilities, configuration state, or readiness for an upcoming hard fork. If each implementation describes its payload only in prose, every explorer, dashboard and monitoring tool has to write and maintain a decoder per implementation, and payload data ends up useful only to the teams who emitted it. A shared, machine-readable description of the payload bit layout lets a consumer read the identifier, look up the registry entry, fetch the payload definition, and decode the payload with one generic parser. The meaning of the decoded values stays with each implementation.
 
 ## Specification
 
@@ -100,10 +104,10 @@ id      =  minor       & 0xFF
 - A producer MUST set `scheme` to `0`. Values `1`, `2` and `3` are reserved for future CIPs. A future CIP defining a new scheme MAY keep the layout of bits 29 - 0 and use the new scheme value only as a fresh identifier space, or MAY redefine those bits entirely. A future CIP MUST NOT change the meaning of `scheme = 0`.
 - A producer MUST set `id` to a value it is entitled to use under the [registry](#registry) for `scheme = 0`.
 - A producer MUST NOT reserve an `id` defined in [Reserved identifiers](#reserved-identifiers), or an existing entry in the [registry](#registry).
-- A producer MAY set `payload` to any 22-bit value whose meaning is documented in the payload specification linked from its registry entry. A producer whose registry entry has no payload specification MUST set `payload` to `0`.
+- A producer MAY set `payload` to any 22-bit value that decodes under the payload definition linked from its registry entry. A producer whose registry entry has no payload definition MUST set `payload` to `0`.
 - The resulting `minor` MUST be encoded as a CBOR `uint` and MUST NOT exceed `4294967295` (`0xFFFFFFFF`).
 - A consumer MUST NOT interpret `payload` or `id` when `scheme` is not `0`.
-- A consumer MUST treat `payload` as opaque unless it implements the payload specification published for that `id`.
+- A consumer MUST treat `payload` as opaque unless the registry entry for that `id` links a payload definition in a `definition_format` the consumer supports.
 
 #### Test vectors
 
@@ -138,14 +142,16 @@ Reserved identifiers are defined here and do not appear in `registry.json`. A co
 - MUST use either an `id` registered to that implementation, `0`, or `255`.
 - MUST NOT use an `id` registered to a different implementation.
 - MUST NOT use a reserved `id` in `1 - 15`.
-- Payload MAY be any 22-bit value whose meaning is documented at the URL in the implementation's registry entry. It MUST be `0` if the implementation publishes no payload specification.
+- Payload MAY be any 22-bit value that decodes under the payload definition linked from the implementation's registry entry. It MUST be `0` if the implementation publishes no payload definition.
 - SHOULD give the operator a configuration option to emit `255` instead. Some SPOs have operational rules against disclosing software versions.
 - SHOULD default to signalling. SHOULD allow a user of their software to opt-out of signalling.
 
 ### Registry
 
 - Files: `registry.json` (data) and `registry.schema.json` (JSON schema). Both are in this directory.
-- Entry fields (see schema): `scheme`, `id`, `name`, `status` (`active` | `retired`), `maintainers` (array of GitHub accounts), `repository`, `payload_specification` (URL or `null`), `registered` (date), `retired` (date or `null`), `description`.
+- Entry fields (see schema): `scheme`, `id`, `name`, `status` (`active` | `retired`), `maintainers` (array of GitHub accounts), `repository`, `payload_documentation` (URL or `null`), `payload_definition` (URL or `null`), `registered` (date), `retired` (date or `null`), `description`.
+- `payload_definition` links a machine-readable payload definition conforming to [Payload definitions](#payload-definitions). It is the only normative description of how the payload bits decode.
+- `payload_documentation` links human-readable documentation of what decoded payload values mean. It MUST NOT be used in place of a `payload_definition`, and MUST be `null` when `payload_definition` is `null`.
 - The registry lists only identifiers assigned to implementations. Reserved identifiers are defined by this document and MUST NOT be added to `registry.json`.
 - The registry is partitioned by `scheme`. An identifier is the pair `(scheme, id)`, and that pair is unique. The same `id` under two different schemes refers to two unrelated entries. This CIP defines only entries with `scheme = 0`; a future CIP that defines a new scheme adds entries under that scheme to the same file.
 - The schema cannot enforce uniqueness of `(scheme, id)` across entries; editors check it at review. Consider a small CI script later.
@@ -161,7 +167,7 @@ Reserved identifiers are defined here and do not appear in `registry.json`. A co
 #### Update
 
 - Name, maintainers, repository and payload URL change by PR from a listed maintainer (or with their visible consent).
-- Payload format changes are the implementation's responsibility. The published payload specification MUST remain able to decode historical values, either by being backward compatible or by carrying its own version marker inside the 22 bits.
+- Payload format changes are the implementation's responsibility. The published payload definition MUST remain able to decode historical values, either by being backward compatible or by carrying its own version marker inside the 22 bits (see [Layout version](#layout-version)).
 
 #### Retirement
 
@@ -179,6 +185,198 @@ Reserved identifiers are defined here and do not appear in `registry.json`. A co
 - The layout is versioned by the 2 `scheme` bits. A future CIP MAY define `scheme` 1, 2 or 3 and MUST NOT change the meaning of `scheme = 0`.
 - The identifier space is versioned by the same bits. Each scheme has its own range of identifiers in `registry.json`, so a new scheme can be introduced purely to obtain more identifiers, without changing the layout.
 - The registry is versioned by git history. Entries are append-or-amend; never delete.
+
+### Payload definitions
+
+A payload definition is a JSON document that describes how an implementation's 22-bit `payload` decodes into named values. The implementation chooses what its payload contains and how its bits are allocated. This section standardizes only how that choice is described, and does not assign meaning to any payload bit.
+
+An implementation that emits a non-zero `payload` MUST publish a payload definition and link it from the `payload_definition` field of its registry entry. A prose description of the payload layout does not satisfy this requirement. An implementation whose payload layout cannot be expressed in any defined `definition_format` MUST emit a payload of `0` until a future `definition_format` can express it (see [Format versioning](#format-versioning)).
+
+#### Schema
+
+The JSON Schema for `definition_format` `0` is [payload-definition.format-0.schema.json](payload-definition.format-0.schema.json). A document linked from `payload_definition` MUST be valid JSON and MUST validate against the schema for the `definition_format` it declares.
+
+#### Bit numbering
+
+Payload bits are numbered from least significant to most significant, from `0` to `21`. Payload bit `n` is bit `n + 8` of the `minor` value.
+
+```
+bit 21                                        bit 0
+  |                                             |
+  v                                             v
++-----------------------------------------------+
+|                    payload                    |
++-----------------------------------------------+
+```
+
+Bit ranges are written as a two-element array `[low, high]` and are inclusive. `[4, 9]` identifies the six bits numbered 4 through 9. A field's value is `(payload >> low) & ((1 << (high - low + 1)) - 1)`, read as an unsigned integer.
+
+#### Document structure
+
+The top-level document contains a `definition_format` and exactly one of:
+
+- `fields`, an array of field definitions that apply to every payload; or
+- `layout_version`, which reads a bit range and chooses one of several layouts by its value.
+
+The `definition_format` identifies which version of this CIP's definition language the document is written in. It says what the JSON document may contain, and nothing about the payload. An implementation versions its own payload layout with `layout_version`.
+
+#### Field types
+
+Format `0` defines three field types. Every field has a `name`, a `type`, and a `bits` range.
+
+**`integer`** reads its bit range as an unsigned integer.
+
+```json
+{ "name": "build", "type": "integer", "bits": [0, 15] }
+```
+
+**`boolean`** reads exactly one bit. `0` decodes to `false` and `1` decodes to `true`.
+
+```json
+{ "name": "p2p", "type": "boolean", "bits": [16, 16] }
+```
+
+**`enum`** reads its bit range as an unsigned integer and maps it to a label through `values`. Keys of `values` are unsigned integers written in decimal.
+
+```json
+{
+  "name": "release",
+  "type": "enum",
+  "bits": [0, 21],
+  "values": {
+    "1": "1.0.0",
+    "2": "1.1.0-beta",
+    "3": "10.11.20260925^beta"
+  }
+}
+```
+
+#### Layout version
+
+An implementation MAY reserve some payload bits as a layout version, so that its payload layout can change incompatibly without breaking the decoding of historical blocks. A `layout_version` reads its `bits` as an unsigned integer and uses the value to choose a layout from `layouts`. Each layout is an object with its own `fields`. An implementation SHOULD decide whether to reserve layout version bits before emitting any non-zero payload.
+
+Adding a field over previously uncovered bits does not need a new layout version, because those bits were required to be `0` (see [Structural constraints](#structural-constraints)). A `layout_version` is only needed when an existing field changes or is removed.
+
+#### Reserved names
+
+A payload definition MUST NOT redefine information established by the registry or the enclosing signal. The following field names are reserved and MUST NOT be used:
+
+- `name`, which comes from the registry entry;
+- `id`, which comes from the `id` bits and the registry entry;
+- `scheme`, which comes from the `scheme` bits;
+- `definition_format`, which is defined by this section.
+
+The schema rejects these names exactly as written. Consumers SHOULD compare field names against the reserved names case-insensitively.
+
+#### Structural constraints
+
+JSON Schema cannot express every relationship between bit ranges. A conforming payload definition MUST also satisfy the following:
+
+1. The first value of every `bits` range MUST be less than or equal to the second.
+2. A `boolean` field's two `bits` values MUST be equal.
+3. Fields within the same layout MUST NOT overlap.
+4. Field names within the same layout MUST be unique.
+5. When `layout_version` is used, no field range in any of its layouts may overlap the `layout_version` bit range.
+6. Every key in an `enum`'s `values` MUST be representable in the width of its `bits` range.
+7. Every key in a `layout_version`'s `layouts` MUST be representable in the width of its `bits` range.
+
+A producer MUST set every payload bit not covered by a field, or by `layout_version`, in the active layout to `0`.
+
+#### Producer requirements for payload definitions
+
+An implementation publishing a payload definition:
+
+1. MUST publish valid JSON at a stable URL.
+2. MUST declare `definition_format`.
+3. MUST describe only the 22 payload bits.
+4. MUST use the bit numbering defined in this section.
+5. MUST satisfy the [structural constraints](#structural-constraints).
+6. SHOULD keep field names stable once deployed.
+7. MUST keep historical payload values decoding to the same values they had when emitted. The only permitted changes to a published layout are adding `enum` values and adding fields over previously uncovered bits. Any other change MUST be made under a new `layout_version` value.
+8. SHOULD document in its `payload_documentation` what its decoded values mean, where the field names and labels alone do not make that clear.
+
+Field names SHOULD be concise, stable, and suitable for use by generic software, for example `release`, `p2p`, `hardForkReady` or `networkMode`.
+
+#### Consumer requirements
+
+A consumer implementing this section:
+
+1. MUST decode the 32-bit `minor` as defined in [Bit layout of the minor version](#bit-layout-of-the-minor-version).
+2. MUST resolve `(scheme, id)` through the registry to find the entry and its `payload_definition`.
+3. MAY retrieve the payload definition.
+4. MUST interpret the definition according to its declared `definition_format`, and MUST treat a definition with an unsupported `definition_format` as absent rather than guess its meaning.
+5. MUST preserve the numeric value of an `enum` or `layout_version` value not listed in the definition.
+6. SHOULD NOT assume two implementations share semantics because they use the same field name.
+7. SHOULD keep decoded payload values separate from registry and signal data rather than merge them into one namespace.
+
+Decoding a payload does not necessarily mean a consumer can interpret it. A definition tells a consumer that bits `0 - 15` hold an integer called `releaseDay`. What that number refers to, and how it maps to source code, is documented by the implementation in its `payload_documentation`.
+
+#### Example
+
+An implementation registered with `id` `100` first identified each release by an enum. It later moved to version components and capability flags, and reserved bits `20 - 21` as a `layout_version` from the start so that it could.
+
+Layout `1`:
+
+```
++-----------+-------------+-------------+-------------+--------+--------+
+|  layout   |    major    |    minor    |    patch    |  HFR   |  P2P   |
+|  21 - 20  |   19 - 14   |   13 - 8    |    7 - 2    |   1    |   0    |
++-----------+-------------+-------------+-------------+--------+--------+
+```
+
+```json
+{
+  "definition_format": 0,
+  "layout_version": {
+    "bits": [20, 21],
+    "layouts": {
+      "0": {
+        "fields": [
+          {
+            "name": "release",
+            "type": "enum",
+            "bits": [0, 19],
+            "values": { "1": "1.0.0", "2": "1.1.0" }
+          }
+        ]
+      },
+      "1": {
+        "fields": [
+          { "name": "releaseMajor",  "type": "integer", "bits": [14, 19] },
+          { "name": "releaseMinor",  "type": "integer", "bits": [8, 13] },
+          { "name": "releasePatch",  "type": "integer", "bits": [2, 7] },
+          { "name": "hardForkReady", "type": "boolean", "bits": [1, 1] },
+          { "name": "p2p",           "type": "boolean", "bits": [0, 0] }
+        ]
+      }
+    }
+  }
+}
+```
+
+A block with `minor = 310577508` (`0x12830964`) decodes as follows.
+
+1. Split the `minor`: `scheme = 0`, `payload = 1213193` (`0x128309`), `id = 100`.
+2. Resolve `(0, 100)` through the registry and fetch its `payload_definition`.
+3. Read `layout_version` bits `20 - 21` of the payload: `1`.
+4. Decode each field of layout `1`:
+
+| Field           | Bits     | Raw | Decoded |
+|-----------------|----------|-----|---------|
+| `releaseMajor`  | 19 - 14  | 10  | `10`    |
+| `releaseMinor`  | 13 - 8   | 3   | `3`     |
+| `releasePatch`  | 7 - 2    | 2   | `2`     |
+| `hardForkReady` | 1        | 0   | `false` |
+| `p2p`           | 0        | 1   | `true`  |
+
+An older block from the same implementation with `minor = 612` (`0x00000264`) has `payload = 2`. Its `layout_version` bits are `0`, so layout `0` applies and the payload decodes to `release = "1.1.0"`. Both blocks decode with the same document.
+
+#### Format versioning
+
+- A payload layout that an implementation needs but cannot express in any defined `definition_format` is grounds for a new one. The implementation SHOULD raise it as a counterexample against this CIP rather than describe the layout in prose.
+- A future CIP MAY define a new payload definition format with additional field types or capabilities. Each new format MUST use a `definition_format` value greater than every existing one and MUST publish its own schema file.
+- A future format MUST NOT change the meaning of an existing `definition_format` value.
+- Payload definition formats are independent of `scheme`. The outer layout of the `minor` remains governed by `scheme`.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -200,7 +398,7 @@ The low-order byte preserves backwards compatibility. Dingo and Gerolamo have pr
 
 ### Why identifiers 1 to 15 are reserved
 
-cardano-node has, historically, used the minor version to different between node releases within a single major protocol version. The values it has set on mainnet are:
+cardano-node has, historically, used the minor version to differentiate between node releases within a single major protocol version. The values it has set on mainnet are:
 
 | Major | Minors set |
 |-------|------------|
@@ -220,6 +418,24 @@ The scheme bits also solve identifier exhaustion. Because retired identifiers ar
 ### Why the payload is implementation-defined
 
 The obvious alternative is a fixed encoding of software version; for example six bits of major, eight bits each of minor and patch. However, implementations do not share a versioning scheme, and some implementations may choose to encode other information they find more important. Additionally, fixing semantics in this CIP would mean any change requires a new CIP, whereas the registry can be updated by the maintainer.
+
+### Why the payload description format is part of this CIP
+
+The payload definition format was first proposed as a separate CIP in [#1282](https://github.com/cardano-foundation/CIPs/pull/1282), so that any debate over it would not prevent this CIP from progressing. Keeping the two apart had real appeal; The identifier alone is enough to attribute a block to its claimed software, and a separate payload CIP would let an implementation pick whichever description method suited it, whether prose, this JSON format, or something else.
+
+Two companion CIPs that need not both be followed would be worse for consumers, though. An explorer could not count on any payload being decodable, and payload data would drift towards being useful only to the team that emitted it. The two documents would also be maintained separately and fall out of alignment over time. One CIP gives consumers a single place to look and a single standard to implement.
+
+For the same reason, a machine-readable definition is required for every non-zero payload. Allowing prose definitions as a fallback would bring back the per-implementation decoders this section exists to remove, and any payload described that way would be opaque to generic consumers. The cost is some flexibility. If an implementation finds a payload layout that `definition_format` `0` cannot express, that counterexample is a reason to extend the format in a future CIP, and in the meantime the implementation can still identify itself with a zero payload.
+
+### Why the payload description is generic
+
+Standardizing how a payload is described leaves each implementation free to decide what it contains and how its bits are allocated. A consumer that implements one small parser can decode every conforming payload, and no implementation has to invent its own description format or ship a decoder to explorers.
+
+Decoding is not the same as interpreting. Amaru, for example, encodes a release as the number of days since 2026-01-01, because its versions are date based. A generic parser can turn the bits into that integer, but only Amaru's documentation says what the integer means. The format therefore names and types bit ranges, and leaves meaning to the `payload_documentation`.
+
+### Why a small set of field types
+
+`definition_format` `0` supports only unsigned integers, single-bit booleans, and enumerations, plus `layout_version` for versioned layouts. These cover the common cases of release identifiers, numeric version components and capability flags. A more expressive bit description language would make both producing and consuming definitions harder without materially improving the primary use case. New types can be added by a future `definition_format` if a real need appears.
 
 ### Why a registry in this repository
 
@@ -254,10 +470,12 @@ Every block produced before this CIP decodes to a value this document already ac
 - [x] `registry.json` merged with initial entries and at least one additional implementation registered through the PR process.
 - [ ] At least two independent implementations producing blocks on mainnet or a public testnet with their registered identifier.
 - [ ] At least one public explorer or dashboard decoding the identifier per this CIP.
+- [ ] At least one public explorer or dashboard decoding payloads through registered payload definitions.
 
 ### Implementation Plan
 
 - [x] Publish `registry.json` and `registry.schema.json` alongside this CIP.
+- [x] Publish `payload-definition.format-0.schema.json` alongside this CIP.
 - [ ] Reference decoder: a few lines in two languages, or a link to a shared test-vector file.
 - [ ] Reach out to explorers (Cexplorer, PoolTool, Cardanoscan, AdaStat) and node teams.
 - [ ] cardano-node: populate `self_reported_software_tag` with its registered identifier when building Dijkstra headers, in place of the release minor.
@@ -266,6 +484,10 @@ Every block produced before this CIP decodes to a value this document already ac
 
 - [CPS-0036 draft: Voluntary Block Producer Software Signalling](https://github.com/cardano-foundation/CIPs/pull/1260), Alex Moser and Matthias Benkort.
 - [CIP-0180 draft: Block Producer Identification](https://github.com/cardano-foundation/CIPs/pull/1157), Samuel Leathers and Adam Dean.
+- [Block Producer Payloads draft](https://github.com/cardano-foundation/CIPs/pull/1282), Adam Dean, merged into this CIP.
+- [CIP-0202 draft: Node Observability Snapshot Protocol](https://github.com/cardano-foundation/CIPs/pull/1275), Markus Gufler.
+- [JSON Schema 2020-12](https://json-schema.org/draft/2020-12).
+- [Amaru `software_tag`](https://github.com/pragma-org/amaru/blob/main/crates/amaru-kernel/src/cardano/software_tag.rs), an example of a payload that decodes to an integer whose meaning is implementation-defined.
 - [CIP-0001: CIP Process](../CIP-0001), [CIP-9999: Cardano Problem Statements](../CIP-9999).
 - Registry precedents:
   - [CIP-0005: Common Bech32 Prefixes](../CIP-0005)
@@ -283,6 +505,8 @@ Every block produced before this CIP decodes to a value this document already ac
 ## Acknowledgements
 
 - Samuel Leathers and Adam Dean for the CIP-0180 draft.
+- Adam Dean for the payload definition format, first proposed in #1282.
+- Markus Gufler for pushing to merge the payload definition format into this CIP.
 - Alex Moser and Matthias Benkort for the CPS-0036 draft.
 - Matthias Benkort for proposing to fit identification into the minor version without a breaking change.
 - Markus Gufler for the compact-encoding counter-proposal, the abuse analysis, and the operator privacy interviews.
