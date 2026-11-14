@@ -1,29 +1,16 @@
 [
   {
     "scheme": 0,
-    "id": 67,
-    "name": "Gerolamo",
+    "id": 65,
+    "name": "Amaru",
     "status": "active",
-    "maintainers": [],
-    "repository": "https://github.com/HarmonicLabs/gerolamo",
-    "payload_documentation": null,
-    "payload_definition": null,
-    "registered": "2026-09-21",
+    "maintainers": ["yHSJ", "KtorZ", "etorreborre", "jeluard", "rkuhn", "J-GainSec", "arwlf", "Quantumplation", "Dam-CZ", "Quantumplation"],
+    "repository": "https://github.com/pragma-org/amaru",
+    "payload_documentation": "https://github.com/pragma-org/amaru/blob/main/engineering-decision-records/040-cip-0203-block-producer-identifer.md",
+    "payload_definition": "https://github.com/pragma-org/amaru/blob/8fce2fbbf25e8445d4b5060598a02c8aff1df032/cip-203-payload-definition.json",
+    "registered": "2026-11-14",
     "retired": null,
-    "description": "TypeScript implementation of the Cardano node."
-  },
-  {
-    "scheme": 0,
-    "id": 69,
-    "name": "Dingo",
-    "status": "active",
-    "maintainers": [],
-    "repository": "https://github.com/blinklabs-io/dingo",
-    "payload_documentation": null,
-    "payload_definition": null,
-    "registered": "2026-09-21",
-    "retired": null,
-    "description": "Go implementation of the Cardano node."
+    "description": "A rust implementation of Cardano"
   },
   {
     "scheme": 0,
