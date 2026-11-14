@@ -1,0 +1,156 @@
+;
+; Node Observability Snapshot mini-protocol (draft observability-CIP;
+; no CIP number assigned yet; CF CIPs PR is triage-only)
+;
+; Prototype decisions (Amaru first implementation):
+;   - Experimental mux mini-protocol number: 11
+;     (not a permanent allocation; final number needs Ouroboros Network)
+;   - Prototype capability detection: known experimental peers + N2N V16 +
+;     operator config. NOT a general rule that V16 implies protocol 11.
+;   - Final design needs explicit observabilitySupport (or similar) in
+;     NodeToNodeVersionData / a new N2N version; see internal docs.
+;   - One-shot state machine (no msgDone on the wire):
+;         StIdle --MsgGetPublications--> StBusy --MsgPublications--> StDone
+;   - Request path serves pre-serialized cached CBOR only
+;     (no encrypt / proxy / regen on the request path).
+;
+; Destination: intended for the observability-CIP Path to Active, not for
+; commit to the Amaru public tree.
+;
+
+; -------------------------------------------------------------------------
+; Mini-protocol messages
+; -------------------------------------------------------------------------
+
+observabilityMessage =
+    msgGetPublications
+  / msgPublications
+
+; Initiator -> responder. No parameters; returns the current cached bag only.
+msgGetPublications = [0]
+
+; Responder -> initiator. Bag of open and/or encrypted publications.
+; After this message the protocol instance is Done (no separate Done message).
+msgPublications = [1, publications]
+
+; At most 6 publications. Total encoded MsgPublications size limit (below)
+; takes precedence if individual limits would otherwise exceed it.
+publications = [ *6 publication ]
+
+publication =
+    openPublication
+  / encryptedPublication
+
+; -------------------------------------------------------------------------
+; Publications
+; -------------------------------------------------------------------------
+
+; publicationVersion versions the cached object schema (incl. encrypted
+; plaintext). Independent from N2N transport version (needed for blind proxy).
+publicationVersion = 1
+
+; type tag 0 = open
+openPublication = [
+  0,
+  publicationVersion,
+  snapshotSlot,
+  openPayload
+]
+
+; type tag 1 = encrypted (libsodium sealed box to observer X25519 pubkey)
+encryptedPublication = [
+  1,
+  publicationVersion,
+  snapshotSlot,
+  observerPublicKey,
+  ciphertext
+]
+
+; Slot-aligned observation window label (not necessarily chain tip).
+snapshotSlot = base.word64
+
+; X25519 public key, 32 raw bytes (not base64 on the wire).
+observerPublicKey = bstr .size 32
+
+; Sealed-box ciphertext (crypto_box_seal).
+; Plaintext MUST be the canonical CBOR encoding of openPayload for the
+; same publicationVersion (identical map shape to open publications).
+ciphertext = bstr .size (1..16384)
+
+; -------------------------------------------------------------------------
+; Payload map
+; -------------------------------------------------------------------------
+
+; Standardized integer keys are strongly typed. Experimental impl fields use
+; namespaced tstr keys ("amaru.foo", "cardano_node.foo"). Consumers MUST
+; ignore unknown integer keys and unknown namespaced tstr keys.
+;
+; Do not publish handshake / ChainSync data as observability fields
+; (N2N versions, peer-sharing flag, network id, tip slot). 
+;
+; The Amaru experimental catalogue below is typed for cross-impl agreement on
+; Amaru's first shipped bag. Those tstr keys are NOT standardized integer IDs.
+openPayload =
+  {
+    ? 1 => tstr,           ; node_name (Amaru always "amaru")
+    ? 2 => base.word16,    ; node_version_major
+    ? 3 => base.word16,    ; node_version_minor
+    ? 4 => base.word16,    ; node_version_patch
+    ? 5 => tstr,           ; node_type (e.g. "full", "relay", "block_producer")
+    ? 6 => tstr,           ; git_revision (short VCS id when available)
+
+    ; --- Amaru experimental catalogue (publicationVersion = 1) ---
+    ? "amaru.version" => tstr,                 ; full semver, e.g. "10.11.0"
+    ? "amaru.cpu_cores" => uint,               ; host available parallelism
+    ? "amaru.process_rss_bytes" => uint,       ; omitted when unavailable
+    ? "amaru.peers_inbound" => uint,           ; accepted inbound connections
+    ? "amaru.peers_outbound" => uint,          ; established outbound connections
+    ? "amaru.peers_outbound_connecting" => uint, ; outbound dials in flight
+    ? "amaru.peers_using" => uint,             ; Diffusion local-use connections
+    ? "amaru.peers_target_upstream" => uint,   ; configured upstream target
+    ? "amaru.peers_target_downstream" => uint, ; configured inbound cap
+
+    * experimentalFieldKey => experimentalFieldValue
+  }
+
+; Must be a dotted impl namespace, e.g. "amaru.foo" or "cardano_node.bar".
+; Do not use bare topic prefixes (node_, system_, chain_) here.
+experimentalFieldKey = tstr
+
+experimentalFieldValue =
+    tstr
+  / uint
+  / bool
+  / bstr
+  / [ * uint ]
+
+; -------------------------------------------------------------------------
+; Empty response semantics
+; -------------------------------------------------------------------------
+;
+; msgPublications with publications = [] means:
+;   the observability mini-protocol is enabled and reachable, but the node
+;   currently has no publication available in its cache.
+; Do not overload [] for unrelated error conditions; add an explicit status
+; model later only if needed.
+;
+
+; -------------------------------------------------------------------------
+; Resource limits
+; -------------------------------------------------------------------------
+;
+; Expressed in-schema where practical (publication count, pubkey size,
+; ciphertext size). Remaining limits are codec/mux enforcement:
+;
+;   maxEncodedMsgPublications   = 16384   ; bytes, whole MsgPublications CBOR item
+;   maxOpenPayloadBytes         = 8192    ; bytes, per open publication map encoding
+;   agency timeout Idle         = 10s     ; waiting for GetPublications
+;   agency timeout Busy         = 10s     ; waiting for Publications
+;
+; Individual maxima need not be simultaneously reachable. The total encoded
+; message-size limit takes precedence over per-publication limits.
+;
+; Tune with network maintainers before Active.
+;
+
+;# import network.base as base
