@@ -1,0 +1,27 @@
+{
+  "@context": {
+    "@language": "en-us",
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "DRG": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-XXXX/cip-xxxx.jsonld#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
+    "body": {
+      "@id": "DRG:body",
+      "@context": {
+        "name": "DRG:name",
+        "description": "DRG:description",
+        "website": "DRG:website",
+        "image": "DRG:image",
+        "charter": "DRG:charter",
+        "paymentAddresses": {
+          "@id": "DRG:paymentAddresses",
+          "@container": "@set",
+          "@context": {
+            "address": "DRG:address",
+            "purpose": "DRG:purpose",
+            "paymentScript": "DRG:paymentScript"
+          }
+        }
+      }
+    }
+  }
+}
