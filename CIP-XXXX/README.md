@@ -108,7 +108,7 @@ native_script =
 
 Two indexers MUST reach the same verdict on any bytes, so decoding is defined in three layers, each with a fixed failure effect.
 
-General rules for all layers: arrays and maps MAY be definite or indefinite length. Two map keys are equal when both are unsigned integers with the same value, whatever their encoding length, and any other two keys are equal when their encoded bytes are equal. The payload as a whole MUST be well-formed CBOR that uses all bytes of the label 8416 value.
+General rules for all layers: arrays and maps MAY be definite or indefinite length. Two map keys are equal when both are unsigned integers with the same value, whatever their encoding length, and any other two keys are equal when their encoded bytes are equal. The payload as a whole MUST be well-formed CBOR that uses all bytes of the label 8416 value. Indexers decode the raw CBOR bytes of that value. A JSON view of the metadata, such as the one db-sync stores next to the raw bytes, MUST NOT be used, since it turns byte strings into text and loses the difference between the two.
 
 1. **Payload.** The label 8416 value is decoded from its own bytes. It MUST be a map without duplicate keys, with key 0 equal to 1 and key 1 an array of 1 to 64 entries. Otherwise the whole payload is ignored, including its scripts. A payload with another version is ignored by indexers of this version. Unknown keys of the payload map are ignored, and their values are skipped without being inspected, however deeply they nest. Transaction metadata cannot carry CBOR tags or floats, so they need no rule.
 2. **Script list.** If key 2 is present, it MUST be an array of at most 8 entries. Otherwise only key 2 is ignored. Each entry is judged on its own. An entry MUST be a non-empty array of definite-length byte strings of at most 64 bytes each, its concatenated bytes MUST parse as a native script, and that script MUST have at most 64 nodes and a nesting depth of at most 8. An entry that breaks one of these rules is skipped: it resolves no script, and the other entries stay usable. Every `sig`, `all`, `any`, `n_of_k`, `after` and `before` counts as a node, and the outermost script has depth 1.
@@ -198,7 +198,9 @@ Further rules:
 
 ### Derived state
 
-Instance states are `pending`, `active` and `closed`, with the close reasons `left`, `removed`, `retired` and `dissolved`. A DRep is a **member** of a group when it has an `active` instance and the group is not dissolved. Indexers SHOULD expose per instance: `join_id`, credential, state, close reason, and the chain positions of the join, the approval and the close.
+Instance states are `pending`, `active` and `closed`, with the close reasons `left`, `removed`, `retired` and `dissolved`. A DRep is a **member** of a group when it has an `active` instance and the group is not dissolved. Indexers SHOULD expose per instance: `join_id`, credential, state, close reason, and the chain positions of the join, the approval and the close. The approval position is absent in open groups and for instances that were never approved. An instance closed with reason `removed` that has no approval position is a rejected request, and tools SHOULD show it as rejected. Indexers SHOULD also expose per group the chain positions of its last profile change and its last policy change. The profile changes with the `create` and with every valid `update` that carries key 2. A policy changes with the `create`, with every valid `update` that carries key 0 or 1, and with every valid `resign`. Tools compare these positions with the join position of an instance.
+
+The register shows only the affiliations that DReps declared. Tools MUST NOT present the absence of a membership as evidence that DReps are independent of each other. A label such as "independent" for a DRep without a membership is such a presentation.
 
 **Rollbacks.** An indexer MUST undo every event and ledger input of rolled back blocks and recompute the state from the remaining inputs. Waiting for a confirmation depth before showing a state as final is RECOMMENDED (10 blocks), and it does not replace this rule.
 
@@ -239,12 +241,14 @@ This section is not normative. It addresses the concentration concern of CPS-003
 - Label aggregates as "voting power of affiliated DReps", never as the voting power of the group.
 - Distinguish open groups (self-declared affiliation) from permissioned ones (confirmed by the group).
 - Show the control and admission policies with their thresholds, and the membership history.
+- Show the `join_id` with each membership, so that the approvals, leaves and removals that reference it can be checked by hand.
 - Show an admin key as the DRep whose key credential has the same hash, when there is one, and otherwise as the key hash. Show resigned keys as resigned.
 - Membership changes never change delegations.
 - Tools that build admissions should offer to update the control policy to the current member set, since an unchanged policy leaves control with the founders. This works up to 63 keys, the most a flat policy can list within the node limit. A larger group can let its members elect a smaller council and use that council as its policy.
-- Show when the profile or a policy last changed, since a captured control policy could change any of them. Highlight a changed payment address on its own, since funds follow it.
+- Show when the profile or a policy last changed, since a captured control policy could change any of them. Show at a membership when the profile or a policy changed after the member's join. Highlight a changed payment address on its own, since funds follow it.
 - Show where the stake of a group's payment address delegates its votes, especially when that is a member.
-- Lists of groups may hide groups below a minimum number of active members and should sort by the voting power of their active members. A group and a profile cost only a transaction fee, and a single DRep can join any number of its own groups. Distinct members and member voting power are the signals that are expensive to fake. A list can count each DRep toward one group only, for example its oldest active membership, so listed groups never outnumber distinct member DReps. Membership itself stays non-exclusive.
+- A group's payment address does not change the disclosure duty of Article II, Section 4.3 of the Constitution in force at the time of writing. A member DRep that receives funds through a group for its work as a DRep discloses them like any other compensation, and tools can say so next to a payment address.
+- Lists of groups may hide groups below a minimum number of active members or a minimum voting power of their active members. Above that floor, the default order should not rank groups by voting power, so the list does not steer delegators toward the largest groups. A random order or the founding date are alternatives. A group and a profile cost only a transaction fee, and a single DRep can join any number of its own groups. Distinct members and member voting power are the signals that are expensive to fake. A list can count each DRep toward one group only, for example its oldest active membership, so listed groups never outnumber distinct member DReps. Membership itself stays non-exclusive.
 - Payment addresses of groups without a verified website and without members besides the founders are best not promoted as donation targets.
 
 ### Indexer limits
@@ -322,7 +326,7 @@ This CIP adds a new label and changes nothing in existing standards. Group profi
 ### Acceptance Criteria
 
 - [ ] A second indexer, written independently of the reference library by people unaffiliated with the author, DRepTalk or the author's employer, reaches the same groups, instances and verdicts on the test vectors.
-- [ ] At least one tool by such an unaffiliated team builds and submits group transactions on mainnet.
+- [ ] At least one tool by such an unaffiliated team builds and submits group transactions on mainnet, and shows the signer the group and the member that each event touches before signing.
 - [ ] At least one tool by such an unaffiliated team displays groups and memberships following this specification on mainnet.
 
 ### Implementation Plan
