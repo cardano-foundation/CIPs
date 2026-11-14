@@ -1,0 +1,6 @@
+{
+  "@context": {
+    "CIP208": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0208/README.md#",
+    "Role": "CIP208:RoleReference"
+  }
+}
