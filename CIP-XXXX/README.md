@@ -7,7 +7,7 @@ Authors:
   - Tommy Kammerer <31965230+katomm@users.noreply.github.com>
 Implementors: []
 Discussions:
-  - Original PR: (not opened yet)
+  - Original PR: https://github.com/cardano-foundation/CIPs/pull/1322
 Created: 2026-11-13
 License: CC-BY-4.0
 ---
@@ -74,14 +74,20 @@ Term definition to insert into `body.@context`:
 plus the prefix at the top level of the context:
 
 ```json
-"CIPCAT": "<namespace IRI, see Namespace>"
+"CIPCAT": "https://github.com/cardano-foundation/CIPs/pull/1322#"
 ```
 
 `@language: null` keeps identifiers, amounts and addresses as plain literals, independent of the document's language.
 
 ### Namespace
 
-The namespace IRI goes into every canonical hash and can never change for documents already anchored. It is fixed once, before the first mainnet use: the URL of this CIP's pull request with a trailing `#`, for example `https://github.com/cardano-foundation/CIPs/pull/NNNN#`. The CIP keeps that IRI after it is numbered.
+The namespace IRI goes into every canonical hash and can never change for documents already anchored. It is fixed once, before the first mainnet use, as the URL of this CIP's pull request with a trailing `#`:
+
+```
+https://github.com/cardano-foundation/CIPs/pull/1322#
+```
+
+The CIP keeps that IRI after it is numbered.
 
 ### Definition
 
@@ -178,7 +184,7 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 
 No implementation exists yet. The format is put up for review first, so that tool builders, budget process teams and DReps can shape it before any document carries it.
 
-- [ ] Open the CIP pull request and fix the namespace IRI.
+- [x] Open the CIP pull request and fix the namespace IRI.
 - [ ] Publish test vectors with the CIP: valid documents with and without `onChain` and `cip179`, with anchor and canonical body hashes, one invalid document per validity rule, the three recipient results, and one total fixture covering every member status and the `period` bounds.
 - [ ] Ask budget process teams, grant programs and tool builders to review the format.
 - [ ] No tool writes the field on mainnet until the editors confirm this CIP. Testnets are fine.
