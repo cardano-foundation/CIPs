@@ -167,10 +167,17 @@ A `category` object is valid only when all of the following hold. Otherwise read
 - *A free label without a definition action* would let two processes pick the same word and has nothing to check against.
 - *One Info Action defining several categories* would let one tally approve all of them, so DReps could not accept one and reject another.
 - *Tool-side curation* has to be repeated by every tool. It remains the fallback for actions submitted before this CIP.
-
-## Backwards compatibility
+### Backwards compatibility
 
 The field is optional. Tools that do not implement this CIP can ignore it. Earlier actions carry no field and cannot be tagged retroactively.
+
+### Open Questions
+
+- Is there a need for a lighter mode in which an action carries a category without a definition action?
+- Should `budget` be required on definitions?
+- Does the Net Change Limit belong here as an optional pointer on definitions?
+- Does a later version need a link from a new definition to the one it replaces, and what decides between competing replacements?
+- Should a later version open member actions to further action types?
 
 ## Path to Active
 
@@ -188,14 +195,6 @@ No implementation exists yet. The format is put up for review first, so that too
 - [ ] Publish test vectors with the CIP: valid documents with and without `onChain` and `cip179`, with anchor and canonical body hashes, one invalid document per validity rule, the three recipient results, and one total fixture covering every member status and the `period` bounds.
 - [ ] Ask budget process teams, grant programs and tool builders to review the format.
 - [ ] No tool writes the field on mainnet until the editors confirm this CIP. Testnets are fine.
-
-## Open questions
-
-- Is there a need for a lighter mode in which an action carries a category without a definition action?
-- Should `budget` be required on definitions?
-- Does the Net Change Limit belong here as an optional pointer on definitions?
-- Does a later version need a link from a new definition to the one it replaces, and what decides between competing replacements?
-- Should a later version open member actions to further action types?
 
 ## Copyright
 
