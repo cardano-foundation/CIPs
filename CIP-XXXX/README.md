@@ -163,7 +163,7 @@ A `category` object is valid only when all of the following hold. Otherwise read
 - *CIP-0100 `references`* can point at another action, but a reference has no defined meaning, so a tool cannot tell a category link from a citation.
 - *CIP-0169 `onChain`* restates ledger content. A category is a claim by the proposer that the ledger does not hold.
 - *CIP-0179* adds survey links to the same `body`. This CIP follows its context merge.
-- *Governance Action Addendums* ([PR 1180](https://github.com/cardano-foundation/CIPs/pull/1180)) publish later updates under a separate label. A category in the anchored `body` cannot change afterwards, which keeps totals stable. Addendums could reuse this field later.
+- *Governance Action Addendums* ([CIP-0185?](https://github.com/cardano-foundation/CIPs/pull/1180)) publish later updates under a separate label. A category in the anchored `body` cannot change afterwards, which keeps totals stable. Addendums could reuse this field later.
 - *A free label without a definition action* would let two processes pick the same word and has nothing to check against.
 - *One Info Action defining several categories* would let one tally approve all of them, so DReps could not accept one and reject another.
 - *Tool-side curation* has to be repeated by every tool. It remains the fallback for actions submitted before this CIP.
@@ -183,7 +183,8 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 
 ### Acceptance criteria
 
-- [ ] At least one mainnet Info Action that defines a category with this field, and at least one mainnet Treasury Withdrawal that is a member of it.
+- [ ] At least one mainnet Info Action that defines a category with this field.
+  - [ ] At least one mainnet Treasury Withdrawal that is a member of it.
 - [ ] At least one tool that writes the field when submitting governance actions, built by people unaffiliated with the author.
 - [ ] At least one tool that reads the field and shows per-category totals by the counting rule above, built by such an unaffiliated team, and agreeing with the test vectors.
 
@@ -193,8 +194,9 @@ No implementation exists yet. The format is put up for review first, so that too
 
 - [x] Open the CIP pull request and fix the namespace IRI.
 - [ ] Publish test vectors with the CIP: valid documents with and without `onChain` and `cip179`, with anchor and canonical body hashes, one invalid document per validity rule, the three recipient results, and one total fixture covering every member status and the `period` bounds.
-- [ ] Ask budget process teams, grant programs and tool builders to review the format.
-- [ ] No tool writes the field on mainnet until the editors confirm this CIP. Testnets are fine.
+- [x] Ask budget process teams, grant programs and tool builders to review the format.
+
+No tool should write the field on Mainnet until this CIP is merged. Testnets are fine.
 
 ## Copyright
 
