@@ -468,8 +468,8 @@ Every block produced before this CIP decodes to a value this document already ac
 ### Acceptance Criteria
 
 - [x] `registry.json` merged with initial entries and at least one additional implementation registered through the PR process.
-- [ ] At least two independent implementations producing blocks on mainnet or a public testnet with their registered identifier.
-- [ ] At least one public explorer or dashboard decoding the identifier per this CIP.
+- [x] At least two independent implementations producing blocks on mainnet or a public testnet with their registered identifier.
+- [x] At least one public explorer or dashboard decoding the identifier per this CIP.
 - [ ] At least one public explorer or dashboard decoding payloads through registered payload definitions.
 
 ### Implementation Plan
