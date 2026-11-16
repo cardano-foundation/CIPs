@@ -478,7 +478,6 @@ Every block produced before this CIP decodes to a value this document already ac
 - [x] Publish `payload-definition.format-0.schema.json` alongside this CIP.
 - [ ] Reference decoder: a few lines in two languages, or a link to a shared test-vector file.
 - [ ] Reach out to explorers (Cexplorer, PoolTool, Cardanoscan, AdaStat) and node teams.
-- [ ] cardano-node: populate `self_reported_software_tag` with its registered identifier when building Dijkstra headers, in place of the release minor.
 
 ## References
 
