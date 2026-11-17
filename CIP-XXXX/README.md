@@ -14,15 +14,15 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Governance actions often belong together: an Info Action approves a budget category or a grant round, and later Treasury Withdrawals pay it out. Nothing on chain says which actions belong together, so every tool that groups them or shows how much of an approved allocation has been withdrawn curates that grouping by hand.
+Treasury Withdrawals often belong to a larger allocation: a budget domain that spends over a year, a grant round, or a program paid in tranches. Nothing on chain says which withdrawals belong to which allocation, so every tool that groups them or shows how much of an allocation has been withdrawn curates that grouping by hand.
 
 This CIP adds one optional field, `category`, to the `body` of [CIP-0108](../CIP-0108/README.md) governance action metadata. An Info Action uses it to define a category. A Treasury Withdrawal or a later Info Action uses it to point at the defining Info Action by its governance action ID. A definition can carry a ceiling, a period and the reward accounts that may receive its funds, so tools can check a withdrawal's claim against its on-chain recipients and compute withdrawn totals.
 
 ## Motivation: Why is this CIP necessary?
 
-Treasury spending is often approved first and withdrawn later: an annual budget split into categories, a grant program approved per round, a multi-year commitment paid in tranches. Processes call these groups categories, domains, tracks, funds or rounds. This CIP calls all of them categories.
+Treasury spending is increasingly organized in allocations that span several withdrawals: an annual budget split into domains, a grant program funded per round, a multi-year commitment paid in tranches. Processes call these groups categories, domains, tracks, funds or rounds. This CIP calls all of them categories.
 
-For each one, DReps, delegators and analysts want to see what was approved, which later actions belong to it, how much has been withdrawn against it, and where the funds went. The approval and the recipients are on chain today. The membership is not, so tools fall back to reading titles or to lists in their own databases. Two tools will disagree, and neither can be checked by a third.
+For each one, DReps, delegators and analysts want to see what was allocated, which actions belong to it, how much has been withdrawn against it, and where the funds went. Withdrawals and their recipients are on chain today. Which allocation they belong to is not, so tools fall back to reading titles or to lists in their own databases. Two tools will disagree, and neither can be checked by a third.
 
 One current example is Intersect's proposal for a more strategic 2027 budget approach ([discussion](https://dreptalk.com/t/a-more-strategic-2027-cardano-budget-approach-released-for-d-jgsvng)), which organizes funding by domain. Each domain could be defined as a category under this CIP. The field does not depend on that proposal or any other process. It works for processes that exist today, ones that are only proposed, and a single proposer who wants to tie a multi-step project to its first approval.
 
@@ -140,11 +140,11 @@ A `category` object is valid only when all of the following hold. Otherwise read
 
 ## Rationale: How does this CIP achieve its goals?
 
-**The Info Action is the identity.** A string such as `"core-infra"` would need a registry and would collide across years and processes. The governance action ID already exists, is unique, and points at the vote that approved the category.
+**The Info Action is the identity.** A string such as `"core-infra"` would need a registry and would collide across years and processes. The governance action ID already exists, is unique, and points at the vote on the category.
 
 **Optional budget fields.** Grouping is useful on its own, for example a grant round's reports. With the budget fields optional, one mechanism covers a plain group and a funded allocation.
 
-**Only Treasury Withdrawals and Info Actions.** These are the types that approve, spend or report on treasury funds. Other types already have a ledger-recorded type and no figure to compute. A later version can open the field to them without breaking version 1 documents.
+**Only Treasury Withdrawals and Info Actions.** These are the types that set up, spend or report on treasury funds. Other types already have a ledger-recorded type and no figure to compute. A later version can open the field to them without breaking version 1 documents.
 
 **In the action's own metadata.** A separate metadata label could be posted by anyone. In `body`, the link is part of what the proposers signed, and the anchor hash fixes it after submission.
 
