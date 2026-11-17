@@ -1,16 +1,16 @@
 ## Abstract
 
-We propose two lanes by which a user can submit a transaction to a node: urgent and standard. Only urgent transactions can enter Ranking Blocks. Both urgent and standard transactions can enter Endorser Blocks. Nodes produce Ranking Blocks more frequently than Endorser Blocks, and a Ranking Block enters the chain immediately. When capacity and queue order permit, an urgent transaction can therefore enter an earlier Ranking Block instead of the later Endorser Block path. This creates an earlier inclusion opportunity, not a guarantee of earlier inclusion.
+We propose two lanes by which a user can submit a transaction to a node: urgent and standard. Only urgent transactions can enter Ranking Blocks. Both urgent and standard transactions can enter Endorser Blocks. Nodes produce Ranking Blocks more frequently than Endorser Blocks, and a Ranking Block enters the chain immediately. When capacity and queue order permit, an urgent transaction can therefore enter an earlier Ranking Block instead of the later Endorser Block path. This only creates an earlier inclusion opportunity, rather than a guarantee of earlier inclusion.
 
-The ledger enforces the urgency signalling rule: every transaction in a valid Ranking Block must carry a fee that covers the urgent quote for that block. In simulation under severe congestion, the mechanism preserves more urgent-class transaction value than linear Leios with today's flat fee. Retained value means the modelled gross transaction value that remains at inclusion, before fees. Urgent-class retained value improved across most simulated loads. At light load, the mechanism slightly reduces overall retained value, because transactions on the standard path wait longer while Endorser Blocks fill. The Rationale gives exact figures.
+The ledger enforces the urgency signalling rule: every transaction in a valid Ranking Block must carry a fee that covers the urgent quote for that block. In simulation under severe congestion, the mechanism preserves more urgent-class transaction value than linear Leios with today's flat fee. Retained value means the modelled gross transaction value that remains at inclusion, before fees. Urgent-class retained value improved across most simulated loads. At light load, the mechanism slightly reduces overall retained value, because transactions on the standard path wait longer.
 
 ## Motivation: Why is this CIP necessary?
 
 Some transactions lose value when delayed, but users currently have no protocol-level way to signal that urgency.
 
-Linear Leios introduces a new block type: the Endorser Block. Vanilla linear Leios uses this additional path only when traffic exceeds Ranking Block capacity. This proposal instead routes standard transactions through Endorser Blocks at every load. Endorser Blocks are slightly slower than Ranking Blocks, so latency variability increases. An urgency signal offsets this cost: it lets nodes allocate block space to serve users' intents.
+While linear Leios significantly enhances throughput, Praos block (AKA Ranking Block) space will remain scarce. The SundaeSwap launch resulted in saturation of Praos blocks, so a similar event may result in saturation of RBs. Thus, a motivating historical scenario has already occurred.
 
-While linear Leios significantly enhances throughput, Praos block (AKA Ranking Block) space will remain scarce. The SundaeSwap launch resulted in saturation of Praos blocks, so a similar event may result in saturation of RBs, so a motivating historical scenario has already occurred.
+Linear Leios introduces a new block type: the Endorser Block. Vanilla linear Leios uses this additional path only when traffic exceeds Ranking Block capacity. This proposal gives users the tools to signal their preference; if they don't care about a slight delay, they select the standard lane, and if they do care they'll select the urgent lane.
 
 From CPS-0031:
 
@@ -18,11 +18,9 @@ From CPS-0031:
 
 > Candidate solutions should be evaluated by how they handle prioritising high-urgency transactions, and by how they affect ordinary and low-urgency users during sustained congestion.
 
-<!-- PORTABILITY: once CPS-0031 (PR #1194) merges, repoint this at the repo-relative ../CPS-0031 -->
+See [CPS-0031](../CPS-0031) for more information.
 
-See [CPS-0031](https://github.com/cardano-foundation/CIPs/pull/1194) for more information.
-
-We initially planned a mechanism based on full tiered pricing, then set it aside in favour of the two-lane design specified here. The Rationale section [Why not full tiered pricing?](#why-not-full-tiered-pricing) gives the comparison.
+We initially planned a mechanism based on full tiered pricing, then set it aside in favour of the two-lane design specified here. The Rationale section in the CIP explains why.
 
 ## Specification
 
@@ -38,25 +36,25 @@ The core of the design rests on a two-lane system:
 
 Both lanes have dynamic fees, and each lane's fee is controlled independently. That means the standard fee can move when the urgent fee does not and vice versa.
 
-Fee movement is determined by a rolling window of prior blocks. The urgent lane takes into account the previous 5 blocks, while the standard lane takes into account the previous 10. The urgent lane still receives a signal from Endorser Blocks: urgent transactions in an EB act as fill signal. Specifically, an RB's-worth (~90KB) of urgent transactions in an EB provides the equivalent signal to an actual RB full of urgent transactions.
+Fee movement is determined by a rolling window of prior blocks. The urgent lane takes into account the previous 5 transaction-carrying blocks, while the standard lane takes into account the previous 10. The urgent lane can still receive a signal from Endorser Blocks: urgent transactions in an EB act as urgent fill signal. Specifically, an RB's-worth (~90KB) of urgent transactions in an EB provides the equivalent signal to an actual RB full of urgent transactions.
 
 The point at which dynamism activates is determined by the target utilisation value. This simply means a fill fraction. 
 
 The urgent lane has a target utilisation of 0.5, meaning that if RBs are more than 50% full the price increases, and if they are below 50% the price decreases. 
 
-The standard lane has a target utilisation of 0.75, meaning that if EBs are more than 75% full the price increases, and if they are below 75% the price decreases.
+The standard lane has a target utilisation of 0.75, meaning that if EBs are more than 75% full the price increases, and if they are below 75% the price decreases. Note that only standard transactions count towards standard lane fill.
 
 #### Block entry eligibility
 
-An urgent transaction's fee must cover the urgent lane's fee at the time of block construction in order to enter an RB. If it does not, it can still enter an EB.
+An urgent transaction's fee must cover the urgent lane's fee at the time of block construction in order to enter an RB. If it does not, it can still enter an EB, as long as it covers the standard lane fee.
 
-If a transaction in the mempool does not cover either fee at any point after admission, it should be evicted.
+If a transaction in the mempool does not cover the lowest of the two lanes' fees at any point after admission, it should be evicted.
 
-An urgent transaction may be put into an EB for any reason, for example if an RB is full of other urgent transactions or carries an EB certificate. In this case, the difference between the urgent fee price and the standard fee price will be refunded to an change account if specified.
+An urgent transaction may be put into an EB, for example if an RB is full of other urgent transactions or carries an EB certificate. In this case, the difference between the transaction's fee and the standard fee price will be refunded to a change account if specified.
 
 #### Refunds
 
-A transaction may specify, in a new field, an account. This account will be used for refunds.
+A transaction may specify an account. This account will be used for refunds.
 
 Refunds can occur for one reason: A transaction's offered fee is higher than the current fee of the lane it ended up in.
 
@@ -69,13 +67,13 @@ This can occur in three cases:
 
 #### Mempool
 
-A proof has been written which shows that transactions can be re-ordered without requiring full revalidation under specified conditions. This proof allows us to maintain distinct "urgent" and "standard" portions of the mempool by shifting incoming urgent transactions to the back of the urgent queue, which is at the front of the standard queue.
+A proof has been written which shows that transactions can be re-ordered without requiring full revalidation under specified conditions. This proof allows us to maintain distinct "urgent" and "standard" portions of the mempool by shifting incoming urgent transactions to the back of the urgent queue. The urgent queue is always ahead of the standard queue.
 
-So, when a priority transaction arrives, if it passes the conflict check, put it at the back of the priority portion of the queue, performing partial revalidation.
+So, when an urgent transaction arrives, if it passes the conflict check, we put it at the back of the urgent portion of the queue, performing partial revalidation.
 
-A transaction which conflicts with another transaction already in the mempool, for any reason, will not be admitted. This means that an urgent transaction cannot boot out a standard transaction it conflicts with.
+An urgent transaction which conflicts with a standard transaction already in the mempool will not be admitted.
 
-When the information of a new block becomes available, evict all transactions whose offered fees don't satisfy the necessary requirement.
+When a new block is produced, calculate the new price and evict all transactions whose offered fees don't satisfy the necessary requirement.
 
 #### Node
 
@@ -93,32 +91,42 @@ We extend the rules to check a tx's fee is appropriate for its block type.
 
 We extend the rules to ensure the only transactions added to an RB are urgent.
 
-If the tx has a refund account specified, refund unused fee portion.
+If the tx has a refund account specified, we refund any unused fee. If no refund account is specified, the unused fee goes to the treasury.
 
-Pricing information in is added to the LedgerState.
+Pricing information is added to the `LedgerState`.
 
 Pricing update logic maintains the pricing information.
 
-An EB certificate is invalid is it carries less than 50% of the capacity of an RB, unless it's been 10 blocks since the last included EB certificate.
+An EB certificate is invalid if it carries less than 50% of the capacity of an RB, unless it's been 10 blocks since the last included EB certificate. If we didn't do this, a trickle of standard transactions would cause unnecessary urgent lane delays.
 
 #### Plutus
 
 New version. Scripts can see the lane and refund account but not the refund amount.
+
+#### Compatibility and initial settings
+
+A transaction is urgent by default unless otherwise specified. 
+
+A transaction may be admitted to the urgent lane as long as it covers the current standard lane price, but unless the fee offered can cover the urgent price at inclusion time, it won't be eligible for an RB.
+
+Price multipliers will start at 1.0, meaning fees will start out the same as today.
+
+Target fill rate will initially be set to 1.0, meaning dynamic pricing will be turned off at the time of the hard fork. It can be turned on via governance.
 
 ### Common misconceptions: clarified
 
 * Refunds support two cases:
   * The transaction offers the urgent fee but ends up in an EB
   * The transaction offers headroom in its fee to reduce the risk of eviction due to price increases, but not all of that headroom is required at the time of inclusion
-* The premium above the ordinary minimum fee goes to the treasury, so producers cannot earn it by favouring urgent transactions over EB certificates.
-* Under the normal block-production policy, a ready, qualifying EB certificate takes precedence over a direct RB transaction payload, regardless of urgent backlog. Urgent backlog therefore does not defer that certificate under this policy. Tips paid directly to a producer could give it a reason to break this policy; see [Why not leave priority to the mempool?](#why-not-leave-priority-to-the-mempool).
-* A transaction entering the urgent lane is eligible but not guaranteed to be included in an RB. If it instead enters an EB, it pays the standard quote at inclusion time, with the excess being refunded (assuming the transaction specifies a registered refund account).
-* Each lane’s quote is a posted price calculated by its controller. A larger fee cap provides headroom against quote increases; under the reference FIFO policy, it does not buy an earlier queue position.
-* The standard lane has its own controller; it is not derived from the urgent quote.
+* The premium above the ordinary minimum fee goes to the treasury, so producers aren't incentivised to prefer RBs over EBs, which could negatively impact linear Leios' improvements.
+* Under the normal block-production policy, a ready, qualifying EB certificate takes precedence over a direct RB transaction payload, regardless of urgent backlog. Urgent transactions therefore do not displace EBs under this policy.
+* A transaction entering the urgent lane is eligible, but not guaranteed, to be included in an RB. If it instead enters an EB, it pays the standard quote at inclusion time, with the excess being refunded (assuming the transaction specifies a registered refund account).
+* Each lane’s price is deterministically calculated using data from prior blocks. A transaction can offer a larger fee to act as headroom against quote increases; this does not buy an earlier queue position, it just protects against eviction.
+* The standard lane has its own, separate, price controller; it is not derived from the urgent quote.
 * A standard transaction is _never_ eligible to enter an RB, even if a produced RB would be otherwise empty.
-* Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee all the time. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, conversely, the price decreases again.
-* Standard transactions may never enter RBs in order to make RB entry ledger enforceable, so as to eliminate bribery as a route into the urgent resource for transactions not offering the urgent fee
-* A small portion of determinism is given up. If a transaction elects to use a refund account, certainty of collected fees is lost, as is certainty of that refund account's balance after transaction inclusion. This is a per-transaction choice.
+* Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee at all times. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, the price decreases, but it won't decrease below min fee.
+* The reason standard transactions may never enter RBs is so that RB entry is ledger-enforceable. This is desirable because it means that standard transactions can't tip producers and hope to be included in an RB. Urgent transactions _can_ still do this, but the incentives to do so are weaker than linear Leios without these changes, due to the urgent fee being required in addition to the tip.
+* A small portion of determinism is given up. If a transaction elects to use a refund account, certainty of collected fees is lost; since [CIP-159](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0159), the refund account's balance after transaction inclusion is already uncertain.
 
 ### A note on linear Leios, as specified in CIP-0164
 
