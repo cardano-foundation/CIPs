@@ -175,6 +175,7 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 
 - Is there a need for a lighter mode in which an action carries a category without a definition action?
 - Should `budget` be required on definitions?
+- Is a fixed `recipients` list the right check when a category pays many recipients that are not known when it is defined, or does a later version need another way to confirm membership?
 - Does the Net Change Limit belong here as an optional pointer on definitions?
 - Does a later version need a link from a new definition to the one it replaces, and what decides between competing replacements?
 - Should a later version open member actions to further action types?
