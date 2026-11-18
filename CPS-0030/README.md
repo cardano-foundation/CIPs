@@ -225,7 +225,7 @@ laptop with a 32-byte message.
 | Signature                       | 448 B   | 2,884 B    | ×6.4   |
 | Verification key                | 32 B    | 32 B       | ×1.0   |
 | Signing key, serialised         | 608 B   | 2,338 B    | ×3.8   |
-| Verification                    | 20.8 µs | 20.5 µs    | ×1.0   |
+| Verification                    | 20.8 µs | 11.3 µs    | ×0.54  |
 | Signing                         | 7.8 µs  | 1.85 ms    | ×240   |
 | Key evolution (period 0 to 1)   | 12.7 µs | 6.2 ms     | ×490   |
 | Key evolution (period 31 to 32) | 0.37 ms | 210 ms     | ×570   |
@@ -237,13 +237,11 @@ laptop with a 32-byte message.
   leaves make up 62% of it. The KES verification key remains a 32-byte hash, so
   operational certificates do not grow. Larger headers bear directly on the
   open questions about block propagation and the `activeSlotsCoeff` parameter.
-- **Verification is unchanged.** Verifying a KES signature, which is on the
-  critical path of block adoption, takes 20.5 µs with Falcon and 20.8 µs with
-  Ed25519. A single signature verification on a Linux machine points the same
-  way: 30.7 µs for Falcon and 34.3 µs for Ed25519. Falcon could even be faster:
-  the prototype hashes the message to a point in constant time, which
-  verification does not need, as its inputs are public. In a test with the
-  variable-time hash, KES verification takes 11.4 µs.
+- **Verification is faster.** Verifying a KES signature, which is on the
+  critical path of block adoption, takes 11.3 µs with Falcon and 20.8 µs with
+  Ed25519. The prototype hashes the message to a point in variable time: the
+  constant-time version is not needed in verification, as its inputs are
+  public, and it nearly doubles the verification time.
 - **Block producers pay more, off the critical path.** Signing takes 1.85 ms per
   forged block. The key evolves once per KES period (36 hours on mainnet), in
   6.2 ms for the first step and up to 210 ms when it moves to the second half of
