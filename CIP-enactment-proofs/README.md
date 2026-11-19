@@ -7,7 +7,8 @@ Authors:
     - keyanm <keyanmaskoot@gmail.com>
     - Philip DiSarro <phil@midgardlabs.io>
 Implementors: []
-Discussions: [] # Add the original PR link when submitted.
+Discussions:
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1326
 Created: 2026-09-28
 License: CC-BY-4.0
 ---
