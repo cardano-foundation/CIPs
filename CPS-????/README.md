@@ -8,11 +8,10 @@ Authors:
     - Giorgos Panagiotakos <giorgos.panagiotakos@iohk.io>
 Proposed Solutions: []
 Discussions: []
-Created: 2026-09-17
+Created: 2026-11-19
 License: CC-BY-4.0
 ---
 
-## Version 0.24
 
 ## Abstract
 
