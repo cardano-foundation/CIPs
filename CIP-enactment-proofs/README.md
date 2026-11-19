@@ -32,6 +32,20 @@ action has enacted rather than remaining pending.
 Like required signers, the field declares requirements that the ledger checks and
 makes available to scripts.
 
+### Existing cost-model workaround
+
+In one transaction, an application registers its proposal in a shared list and
+submits a CIP-1694 parameter change to raise or lower the cost of a rarely used
+Plutus builtin by one unit. To mint a `PASS` token before expiry, the validator
+reconstructs the transaction body and script-data hash to verify that the full
+proposed cost model is in effect. The application burns the token to authorize
+its operation. See [Aiken Design Patterns PR #31][cost-model-workaround].
+
+Using execution costs as an approval signal leaves the action ID ambiguous. A
+different governance action could enact the same model. The application must
+also trust a multisig to maintain the lifespan used to set proposal deadlines,
+because scripts cannot read the ledger's governance-action lifetime directly.
+
 ## Specification
 
 ### Scope
@@ -321,6 +335,7 @@ If the enriched context is adopted, additional validation must cover:
 - Reference ledger source below is pinned to commit
   [`d2e02427567ae650677ebf2e9c17f2a5e69c0dd4`][ledger-baseline].
 
+[cost-model-workaround]: https://github.com/Anastasia-Labs/aiken-design-patterns/pull/31
 [ledger-baseline]: https://github.com/IntersectMBO/cardano-ledger/tree/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4
 [apply-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Governance/Proposals.hs#L492-L560
 [epoch-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Epoch.hs#L318-L329
