@@ -8,6 +8,7 @@ Authors:
     - Giorgos Panagiotakos <giorgos.panagiotakos@iohk.io>
 Proposed Solutions: []
 Discussions: []
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1325
 Created: 2026-11-19
 License: CC-BY-4.0
 ---
