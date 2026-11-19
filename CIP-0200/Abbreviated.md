@@ -126,7 +126,7 @@ Target fill rate will initially be set to 1.0, meaning dynamic pricing will be t
 * A standard transaction is _never_ eligible to enter an RB, even if a produced RB would be otherwise empty.
 * Both lanes are dynamically priced. This doesn't mean, however, that either lane will be priced higher than min fee at all times. Only once windowed utilisation exceeds the target (by default in our specification, 50% for the urgent lane and 75% for the standard lane) does the price increase; below the target, the price decreases, but it won't decrease below min fee.
 * The reason standard transactions may never enter RBs is so that RB entry is ledger-enforceable. This is desirable because it means that standard transactions can't tip producers and hope to be included in an RB. Urgent transactions _can_ still do this, but the incentives to do so are weaker than linear Leios without these changes, due to the urgent fee being required in addition to the tip.
-* A small portion of determinism is given up. If a transaction elects to use a refund account, certainty of collected fees is lost; since [CIP-159](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0159), the refund account's balance after transaction inclusion is already uncertain.
+* A small portion of certainty is given up. If a transaction elects to use a refund account, certainty of collected fees is lost; since [CIP-159](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0159), the refund account's balance after transaction inclusion is already uncertain. Note that this is not a loss of determinism in kind, due to the existence of accounts.
 
 ### A note on linear Leios, as specified in CIP-0164
 
