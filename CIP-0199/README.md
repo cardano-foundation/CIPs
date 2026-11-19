@@ -91,13 +91,19 @@ This subsection describes that mode: the same **sponge** construction as used by
 The internal state is a vector of $t = r + c$ field elements:
 
 - $r$ (the *rate*): how many field elements of input are absorbed per step, and how many are squeezed out per step (this is where the word **sponge** comes from).
-- $c$ (the *capacity*): reserved elements that are never touched directly by input/output; they carry the security of the construction.
+- $c$ (the *capacity*): reserved elements into which no message input is ever absorbed and from which no output is squeezed (though they may be initialized with a protocol-defined parameter, see below); they carry the security of the construction.
 
 Starting from an **initial state** $I = 0^r \Vert 0^c$ of $t = r + c$ field elements — a fixed public constant of all zeros, where a protocol-defined tag (a domain-separation or input-length tag) may take the place of the zeros in the capacity part — hashing proceeds in two phases:
 
 1. **Absorb**: the input (padded to a multiple of $r$) is split into chunks $m_1, m_2, \dots$ of $r$ field elements each.
-   Each chunk $m_i$ is added into the first $r$ elements of the state, then the whole state is run through the Poseidon **permutation** $P$.
-2. **Squeeze**: after all input is absorbed, the first $r$ elements of the state are read off as the output $z_1$.
+   Each chunk $m_i$ is added into the rate part (the first $r$ elements) of the state.
+   Then $P$ is applied to the **whole** state, capacity included, replacing all $t$ elements with a new state.
+   The capacity is never written to by the message, but it still changes with every call.
+   Because $P$ is a bijection, this step can be undone: the old state can be recomputed from the new one (see *Misuse warnings*).
+2. **Squeeze**: after all chunks have been absorbed, the first $r$ elements of the state are read off as the output $z_1$; the $c$ capacity elements are **not part of the output**.
+   This truncation is what makes the result a hash, and it concerns what is *published as the output*, not secrecy: the capacity is not a secret.
+   A commitment must publish only the squeezed output; because $P$ is invertible, publishing the full final state instead would let anyone run the sponge backwards and recover the committed input (see *Misuse warnings*).
+   Once the input is revealed (e.g. when a script checks an opening on chain), anyone can recompute every state of the computation, capacity included, but this leaks nothing, since the input is already public.
    If more output is needed, $P$ is applied again and further outputs $z_2, \dots$ are read.
 
 ![The sponge construction](./sponge.svg)
@@ -154,6 +160,9 @@ The key HADES insight is mixing two kinds of rounds:
 
 The rounds are arranged as $R_F/2$ full rounds, then $R_P$ partial rounds, then $R_F/2$ full rounds.
 Full rounds provide strong security against statistical attacks (differential/linear), while the cheaper partial rounds provide algebraic security (against interpolation / Gröbner-basis attacks) at a fraction of the constraint cost.
+This split is essential to security, not just an optimization.
+Because all but one lane pass through a partial round linearly, the partial rounds on their own offer little resistance to statistical attacks: that resistance is provided by the full rounds alone, which is why the construction is only secure when enough full rounds — $R_F/2$ on *each* side — surround the partial rounds (at least $R_F = 6$ in total, see the notation below).
+Moving full rounds into the partial block, or placing them all on one side, voids the security argument even if the total number of rounds is unchanged.
 
 > **Notation:** the paper [1] uses two symbols for full rounds: $R_f$ (lowercase) for the full rounds on *one* side, and $R_F = 2R_f$ (uppercase) for the *total*.
 > Throughout this document $R_F$ always denotes the total number of full rounds (so $R_F/2$ on each side equals the paper's $R_f$).
