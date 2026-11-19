@@ -15,11 +15,9 @@ License: CC-BY-4.0
 ## Abstract
 
 This CIP introduces an optional `required_enactments` transaction-body field.
-It maps each governance action ID to a requirement. Every requirement asks the
-ledger to verify enactment. A transaction can also require the ID to be the
-current root of a named governance purpose or to be outside all four roots.
-The ledger checks these claims in phase 1 and exposes them in Plutus `TxInfo`.
-Its permanent set of enacted IDs starts empty at activation.
+The ledger checks the supplied governance action IDs against a permanent set of
+enacted actions during phase 1 and exposes them in Plutus `TxInfo`. The set starts
+empty at activation and records enactments processed under the new rules.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -30,10 +28,6 @@ enact.
 
 For proposals submitted in the transaction, contracts can require that a parent
 action has enacted rather than remaining pending.
-
-Contracts can also check which of the enacted actions they use are still
-current roots. For example, a spending validator can require the current
-committee root even when its transaction submits no governance proposal.
 
 Like required signers, the field declares requirements that the ledger checks and
 makes available to scripts.
@@ -47,11 +41,6 @@ protocol parameter changes, hard fork initiations, committee updates, motions of
 no confidence, new constitutions, and treasury withdrawals. Information actions
 do not enact.
 
-Conway tracks one optional root for each of four governance purposes. Protocol
-parameter changes, hard fork initiations, and new constitutions each have their
-own tree. Committee updates and motions of no confidence share the committee
-tree. Treasury withdrawals sit outside all four trees. [Ledger purpose definitions][action-purposes]
-
 ### Ledger state
 
 Add a `Set GovActionId` to governance state. At each epoch transition under the
@@ -62,14 +51,12 @@ reference implementation, these are the keys of `enactedActions` returned by
 expired actions, or actions removed because a competing action enacted.
 
 Retain IDs when later actions enact, including every action enacted at the same
-boundary. The baseline stores only IDs in the new set. Include it in ledger-state
-serialization and snapshots, and restore it with the rest of the state on rollback.
+boundary. The baseline stores only IDs; action contents and parent links are not
+added. Include the set in ledger-state serialization and snapshots, and restore
+it with the rest of the state on rollback.
 
 Validation uses the state immediately before applying the transaction, after any
-epoch transition due for its block. Read the four committed proposal roots from
-`govStatePrevGovActionIds`. When several actions of one purpose enact at the
-same boundary, its root is the final one committed at that boundary. Computing
-root status requires no per-ID purpose, root flag, or parent history. [Committed root lookup][committed-roots]
+epoch transition due for its block.
 
 ### Initialization
 
@@ -79,50 +66,23 @@ activation are not added, and their IDs fail membership checks. No historical
 snapshot or retrieval of pre-activation enactments is required.
 
 An action proposed or ratified before activation is included if its enactment is
-processed under the new rules. Every requirement checks membership in the set,
-so even a still-current root that enacted before activation fails all three
-requirements.
+processed under the new rules.
 
 ### Transaction-body field
 
-The ledger uses Conway's existing `GovActionId` and `GovActionPurpose` types.
-Each ID in `required_enactments` has one requirement.
-
-```haskell
-data EnactmentRequirement
-  = Enacted
-  | NonRoot
-  | RootOf !GovActionPurpose
-  deriving (Eq, Show)
-
-newtype RequiredEnactments = RequiredEnactments
-  (Map GovActionId EnactmentRequirement)
-```
-
-Expose `RequiredEnactments` as an opaque type. Transaction builders and the
-ledger decoder use the same smart constructor, `mkRequiredEnactments`. It
-checks the input entries before collecting them into a map and rejects an
-empty collection, a repeated action ID, or a second `RootOf` for the same
-purpose. Distinct IDs may carry the same `Enacted` or `NonRoot` requirement.
-
-Insert `enactment_fields` into the transaction-body map. Key `30` is a
-placeholder. The keys use the existing ledger `gov_action_id` encoding and the
-values are unsigned integers. [CDDL fragment](./enactment.cddl)
+Insert `enactment_fields` into the transaction-body map. Key `30` is a placeholder;
+`gov_action_id` and `nonempty_set` reuse existing ledger types. The field follows
+the [required-signers encoding][required-signers]. The fragment is also available
+in [enactment.cddl](./enactment.cddl).
 
 ```cddl
 enactment_fields = (
   ? 30 : required_enactments
 )
 
-required_enactments = { + gov_action_id => enactment_requirement }
+required_enactments = nonempty_set<gov_action_id>
 
-enactment_requirement =
-    0  ; Enacted
-  / 1  ; NonRoot
-  / 2  ; RootOf PParamUpdatePurpose
-  / 3  ; RootOf HardForkPurpose
-  / 4  ; RootOf CommitteePurpose
-  / 5  ; RootOf ConstitutionPurpose
+nonempty_set<a0> = #6.258([+ a0]) / [+ a0]
 
 gov_action_id = [
   transaction_id : transaction_id,
@@ -132,88 +92,53 @@ gov_action_id = [
 transaction_id = bytes .size 32
 ```
 
-Omitting the field makes no enactment requirement. The decoder rejects malformed
-IDs, unknown requirement codes, and values of the wrong CBOR type, including
-`nil`. These encoding rules and the smart constructor's checks apply regardless
-of `is_valid`.
+Omitting the field makes no enactment requirement. If present, it must contain at
+least one distinct action ID. Empty collections, duplicate IDs, `nil`, and
+malformed IDs are always rejected. The field does not assert that an action is
+the latest or that another action has not enacted.
 
 ### Phase-1 validation
 
-When `is_valid = true`, every supplied ID must belong to the enacted set. For
-an ID that passes membership, apply the check named in its map entry.
+When `is_valid = true`, every supplied ID must belong to the enacted set. Any
+missing ID causes a phase-1 failure reporting the missing IDs. The check also
+applies to transactions without Plutus scripts.
 
-| Requirement | Condition |
-| --- | --- |
-| `Enacted` | Membership suffices, regardless of whether the ID is a root. |
-| `NonRoot` | The ID differs from every present root across the four purposes. |
-| `RootOf purpose` | The named purpose has a root and its ID equals the supplied ID. |
-
-For example, if committee action B succeeds committee action A, both satisfy
-`Enacted`. A satisfies `NonRoot` and B satisfies `RootOf CommitteePurpose`.
-An enacted treasury withdrawal satisfies `Enacted` and `NonRoot`.
-
-A missing ID or a failed root claim causes a phase-1 failure. Report missing
-IDs and identify failed root claims by ID and requirement. These rules also
-apply to transactions without Plutus scripts.
-
-When `is_valid = false`, skip both membership and root checks, following the
-ledger's `validateTreasuryValue` check. Inclusion of such a transaction does
-not authenticate its claims. [Treasury validation rule][treasury-check]
+When `is_valid = false`, skip these membership lookups. This follows the existing
+[`validateTreasuryValue` check][treasury-check]. In that case, block inclusion alone
+does not prove enactment.
 
 ### Plutus script context
 
-Mirror `EnactmentRequirement` and the four `GovActionPurpose` constructors in
-the Plutus API. The baseline field uses the Plutus map and action ID types.
+The baseline adds the following field to `TxInfo`:
 
 ```haskell
-newtype RequiredEnactments = RequiredEnactments
-  (Map GovernanceActionId EnactmentRequirement)
-
--- Field of the Plutus TxInfo record
-txInfoRequiredEnactments :: RequiredEnactments
+txInfoRequiredEnactments :: [GovernanceActionId]
 ```
 
-Translate exactly the entries from the transaction body. Encode the wrapper
-directly as a Plutus Data map, using the existing `GovernanceActionId` encoding
-for keys and a Plutus Data integer with the corresponding requirement code
-(`0`–`5`) for each value. Order entries by ascending transaction hash bytes
-and then numerical action index, regardless of their order in the body. Omission
-produces an empty map.
-
-A script that needs to know an ID's root status must require `NonRoot` or
-`RootOf purpose` for that ID. An `Enacted` entry leaves its root status unspecified.
+Construct this list solely from the transaction body, sorted in ascending order
+by transaction hash bytes and then numerical action index, regardless of the order
+in the body. Omission produces an empty list. Encode it as a Plutus Data list
+using the existing `GovernanceActionId` encoding for each entry.
 
 #### Enriched context — open design question
 
-The enriched alternative would let contracts inspect the original proposal
-alongside the requirement the ledger checked. It would use the same
-transaction-body map and give the existing `TxInfo` field a richer value type.
+A desirable extension would let contracts inspect the original proposal contents
+alongside proof of enactment. If adopted, it would replace the baseline list with:
 
 ```haskell
-data EnactedProposal = EnactedProposal
-  { checkedRequirement :: EnactmentRequirement
-  , originalProposal   :: ProposalProcedure
-  }
-
-newtype ResolvedEnactments = ResolvedEnactments
-  (Map GovernanceActionId EnactedProposal)
-
--- Alternative field type in the Plutus TxInfo record
-txInfoRequiredEnactments :: ResolvedEnactments
+txInfoRequiredEnactments :: Map GovernanceActionId ProposalProcedure
 ```
 
-For a valid transaction, construct `ResolvedEnactments` by traversing the
-checked requirements in baseline key order. For each ID, copy its requirement
-and attach its authenticated original proposal. A `RootOf CommitteePurpose`
-claim on ID B thus yields `EnactedProposal (RootOf CommitteePurpose) proposalB`
-under key B. This preserves the restriction to one root claim per purpose.
-Omission produces an empty map.
+The intended map contains one authenticated original proposal per ID in the
+transaction's `required_enactments`. Omitting the field produces an empty map.
+Entries are ordered by transaction hash bytes and then numerical action index,
+regardless of the order in the transaction body.
 
-Encode `ResolvedEnactments` directly as a Plutus Data map. Encode each
-`EnactedProposal` as constructor `0` with two fields in declaration order,
-the requirement integer followed by the existing Plutus `ProposalProcedure`.
-That procedure contains the original deposit, return credential, and governance
-action. The existing translation omits the proposal metadata anchor. [Proposal translation][proposal-translation]
+Values use the existing Plutus `ProposalProcedure` representation: the original
+deposit, return credential, and governance action. Metadata anchors are omitted,
+as in the existing [`transProposal` translation][proposal-translation]. The map
+would use Plutus Data map encoding with the existing key and value encodings;
+this requires no new UPLC primitive.
 
 The storage and authentication design remains open for reviewer input, including
 resolution behavior when `is_valid = false`. Adoption of this extension is not a
@@ -222,11 +147,9 @@ the exclusion of pre-activation enactments apply to either design.
 
 ### Repeated reads and availability
 
-Recorded IDs can satisfy `Enacted` repeatedly, even after newer actions enact.
-If a successor becomes the root before a transaction is included, a
-`RootOf` claim on the former root fails in phase 1. The former root now
-satisfies `NonRoot`. Contracts can enforce single use through their own state.
-A rollback restores the enacted set and roots of the selected chain.
+Recorded IDs remain available after newer actions enact and can be required
+repeatedly. Contracts can enforce single use through their own state. A rollback
+removes enactments that are no longer part of the selected chain.
 
 ### Versioning and activation
 
@@ -251,22 +174,18 @@ permanent state beyond the latest roots currently retained by the ledger.
 Starting with an empty set keeps activation independent of historical enactment
 data.
 
-The signed map fixes the IDs and requirements a script sees. A root change can
-invalidate a claim before inclusion while the script inputs remain fixed.
-Keying the map by ID gives each action one requirement. The smart constructor
-can reject two claims on the same purpose's root before consulting ledger
-state. The enriched context would additionally require authenticated proposal
-contents for the requested IDs.
+In the baseline, supplying IDs in the transaction keeps script inputs fixed.
+Ledger state decides whether the requirements are met; it does not change what
+the script sees. The enriched context would also require authenticated proposal
+contents for those IDs.
 
 ### Lookup and storage costs
 
 A balanced [Haskell `Set`][set-complexity] supports membership checks in
-`O(log N)` time, where `N` is the number of enacted IDs. A `RootOf` claim adds
-one root lookup and a `NonRoot` claim adds at most four ID comparisons. For a
-decoded map with `k` entries, the phase-1 state checks take `O(k log N + k)`
-time. Each requirement code occupies one byte in its shortest CBOR encoding.
-Transaction and block size limits bound `k`. Benchmark successful and failed
-checks with large histories and transactions filled with requirements.
+`O(log N)` time, where `N` is the number of enacted IDs. Checking `k` supplied IDs
+takes `O(k log N)` time without scanning history. Transaction and block size
+limits bound `k`, but validation costs must be benchmarked for large histories
+and transactions filled with IDs, including unsuccessful lookups.
 
 The set grows permanently with actual enactments. Submitting a proposal or
 requiring an ID does not add an entry. Each entry stores a 32-byte transaction
@@ -293,9 +212,9 @@ for the enriched context. The following approaches remain open:
 
 | Approach | Benefit | Additional work or cost |
 | --- | --- | --- |
-| Retain enacted proposal records | Direct lookup and reuse of proposal translation from the requested IDs | Permanent storage of variable-size records |
-| Retain a content hash per enacted ID | Fixed-size commitment per ID | Proposal witness encoding, hashing, verification, and transaction data |
-| Retain only enacted IDs | Preserves the baseline state representation | Authenticate supplied original transaction bodies against the transaction hash and select proposals by index, accounting for historical encodings and transaction size |
+| Retain enacted proposal records | Direct lookup and reuse of proposal translation; consuming transactions supply only IDs | Permanent storage of variable-size records |
+| Retain a content hash per enacted ID | Fixed-size commitment per ID; consuming transactions supply proposal witnesses | Witness encoding, hashing, verification, and transaction data |
+| Retain only enacted IDs | Preserves the baseline state representation | Authenticate supplied original transaction bodies against the transaction hash and select proposals by index; historical encodings and transaction size need consideration |
 
 A governance action ID identifies a transaction and a proposal index. Supplying
 a proposal record alone does not establish its association with that ID.
@@ -325,7 +244,7 @@ receive. The policy for combining this field with older scripts remains open.
 - What limits or fees should cover resolved proposal sizes and context
   construction if the enriched context is adopted?
 - How should enriched context resolution handle unavailable or mismatched data
-  when `is_valid = false`, given that the baseline skips membership and root checks?
+  when `is_valid = false`, given that the baseline skips membership checks?
 
 These choices, community review, and an implementation commitment are pending.
 The enrichment questions are conditional on adopting that extension.
@@ -334,17 +253,14 @@ The enrichment questions are conditional on adopting that extension.
 
 ### Acceptance Criteria
 
-- [ ] Assign the body key, activation version, Plutus ledger language version,
-      and `TxInfo` field position.
-- [ ] Implement the enacted set and state codecs, the requirements smart
-      constructor and body codec, phase-1 membership and root checks, and
-      translation to the selected Plutus context.
+- [ ] Assign the body key, activation version, and Plutus context encoding.
+- [ ] Implement the enacted set, state codecs, body codecs, phase-1 checks, and
+      context translation.
 - [ ] Verify empty-set initialization at activation and accumulation of enactments
       processed under the new rules.
 - [ ] Update the `plutus` repository's interface specification and implementation.
-- [ ] Support querying membership of supplied IDs and the four committed roots.
-      Support constructing requirements in transaction builders and reading the
-      selected context in script libraries.
+- [ ] Provide node queries for membership of supplied IDs and support in external
+      transaction builders and script libraries.
 - [ ] Publish encoding vectors and pass ledger integration tests covering the
       cases below.
 - [ ] Benchmark lookup, memory, snapshot size, and snapshot read/write costs at
@@ -352,46 +268,28 @@ The enrichment questions are conditional on adopting that extension.
 - [ ] Implementation present within block producing nodes used by 80%+ of stake.
 - [ ] Activate the protocol change on Cardano mainnet.
 
-The required ledger integration tests cover the following cases.
+Required test cases:
 
-- Omission produces an empty context map. All six codes round-trip through the
-  body codec and translate to the specified Plutus Data integers. Context maps
-  have identical key order across body input orderings.
-- The builder and decoder reject empty maps, duplicate action IDs, and two
-  `RootOf` claims for one purpose. The decoder rejects malformed IDs, `nil`,
-  unknown codes, and wrong CBOR types. Exercise structural rejection with both
-  values of `is_valid`.
-- Check every ID in a valid transaction, including transactions without scripts
-  and maps with partly missing IDs. An `is_valid = false` transaction skips
-  membership and root comparisons even for missing IDs and false root claims.
-- Each of the four `RootOf` claims succeeds only for the current root of its
-  purpose. Cover an absent root, the root of a different purpose, and multiple
-  distinct purposes in one map. Committee updates and no-confidence motions use
-  the same root.
-- `NonRoot` fails for each current root and succeeds for an enacted treasury
-  withdrawal. `Enacted` succeeds in both cases. Repeated `Enacted` reads work
-  for every enactable action type.
-- Enact two successive parameter changes at one boundary. Both immediately
-  satisfy `Enacted`. The first satisfies `NonRoot` and the final change
-  satisfies `RootOf PParamUpdatePurpose`. A transaction signed with a former
-  root fails its `RootOf` claim after a successor enacts.
+- Omitted fields; accepted set encodings; rejection of empty collections, `nil`,
+  duplicate and malformed IDs; all-present and partly missing requirements.
+- Both validation branches and unconditional structural checks; transactions
+  without Plutus scripts; deterministic context encoding across input orderings.
+- Every enactable action type, including treasury withdrawals; repeated reads and
+  reads after subsequent enactments; all actions enacted at the same boundary
+  under the new rules remain available.
 - Merely proposed or ratified actions, expired actions, removed competitors,
   information actions and unknown IDs fail membership checks; pending ratification
   and pulser progress do not add IDs.
-- Empty-set initialization at activation. All three requirements fail membership
-  for pre-activation enactments, including any still-current root. Enactments
-  processed under the new rules accumulate, including actions proposed or
-  ratified before activation.
+- Empty-set initialization at activation; pre-activation enactments fail membership
+  checks; enactments processed under the new rules accumulate, including actions
+  proposed or ratified before activation.
 - Equivalent results after replay, snapshot restoration, restart, and rollback,
-  including restoration of root status and removal of enactments from an
-  abandoned branch.
+  including removal of enactments from an abandoned branch.
 
 If the enriched context is adopted, additional validation must cover:
 
-- Each entry preserves the submitted requirement and resolves the original
-  proposal for that ID. Cover every enactable action type, the constructor index
-  and field order of `EnactedProposal`, exact key sets, empty maps on omission,
-  and deterministic map ordering.
+- Correct ID-to-proposal associations for every enactable action type; exactly
+  the requested IDs; empty maps on omission; deterministic map encoding.
 - Missing, mismatched, or forged proposal data under the selected authentication
   design, including resolution behavior in both validity branches.
 - Identical proposal values after replay, snapshot restoration, and restart;
@@ -405,11 +303,10 @@ If the enriched context is adopted, additional validation must cover:
    assignments above.
 2. Add the enacted set, empty-set initialization at the hard fork, epoch-transition
    updates, and state codecs for persistence and snapshots.
-3. Add the body map and its smart constructor and codecs. Place membership and
-   root checks alongside the current treasury value check.
+3. Add the body field and codecs, and place the membership check alongside the
+   current treasury value check.
 4. Update the Plutus specification and implementation, node queries,
-   transaction builders, and script libraries for the chosen context. If the
-   enriched context is adopted, implement proposal authentication and resolution.
+   transaction builders, and script libraries.
 5. Add test vectors, integration tests and benchmarks; verify empty initialization,
    subsequent enactment tracking, and snapshot/replay agreement on a test network.
 6. Release the node and Plutus changes, then activate through a hard fork enabling
@@ -427,8 +324,7 @@ If the enriched context is adopted, additional validation must cover:
 [ledger-baseline]: https://github.com/IntersectMBO/cardano-ledger/tree/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4
 [apply-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Governance/Proposals.hs#L492-L560
 [epoch-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Epoch.hs#L318-L329
-[action-purposes]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Governance/Procedures.hs#L663-L694
-[committed-roots]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Governance.hs#L285-L286
+[required-signers]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/cddl/data/conway.cddl#L621-L623
 [treasury-check]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Ledger.hs#L375-L379
 [proposal-translation]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/TxInfo.hs#L732-L742
 [set-complexity]: https://hackage-content.haskell.org/package/containers-0.8/docs/Data-Set.html
