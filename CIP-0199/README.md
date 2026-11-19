@@ -41,7 +41,7 @@ The initial instance registry contains two entries, chosen to serve the two domi
 
 ### Poseidon
 
-Poseidon is a family of cryptographic hash functions designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.), each built as a framing around a core permutation — the layer this CIP exposes.
+Poseidon [1] is a family of cryptographic hash functions designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.), each built as a framing around a core permutation — the layer this CIP exposes.
 Unlike "traditional" hashes such as SHA-256 or Blake2b, which operate on bits and are
 cheap on a CPU but extremely expensive to prove in a circuit, Poseidon operates directly over the elements of a large prime field $\mathbb{F}_p$, where $p$ is usually the scalar field prime of the elliptic curve underlying the proof system.
 Because the operations of which a Poseidon function is comprised are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation in-circuit is orders of magnitude smaller than for a bit-oriented hash.
@@ -49,9 +49,9 @@ This is what makes it "arithmetization-friendly".
 
 #### Prime fields
 
-A **prime field** $\mathbb{F}_p$ is the set of integers $\{0, 1, \dots, p-1\}$ for a prime modulus $p$, with addition and multiplication performed modulo $p$.
+A **prime field** $\mathbb{F}_p$ is the set of integers $`\{0, 1, \dots, p-1\}`$ for a prime modulus $p$, with addition and multiplication performed modulo $p$.
 Because $p$ is prime, every non-zero element has a multiplicative inverse, so $\mathbb{F}_p$ supports the four basic arithmetic operations: it behaves like ordinary arithmetic that wraps around at $p$.
-An element of such a field is a single number in $\{0, \dots, p-1\}$; this is the basic unit of data Poseidon operates on.
+An element of such a field is a single number in $`\{0, \dots, p-1\}`$; this is the basic unit of data Poseidon operates on.
 
 Elliptic-curve-based proof systems come with two prime fields: the *base field*, over which the curve's point coordinates are defined, and the **scalar field**, whose modulus is the (prime) order of the cryptographic subgroup of the curve.
 The arithmetic of a circuit — and hence the values a prover commits to — lives in the scalar field, so a hash function that is cheap to prove must operate natively on scalar-field elements.
@@ -108,7 +108,7 @@ Starting from an **initial state** $I = 0^r \Vert 0^c$ of $t = r + c$ field elem
 
 ![The sponge construction](./sponge.svg)
 
-*Message chunks $m_i$ are added into the rate part of the state, interleaved with applications of the permutation $P$; once all input is absorbed, output elements $z_i$ are read from the rate part.*
+*Message chunks $`m_i`$ are added into the rate part of the state, interleaved with applications of the permutation $`P`$; once all input is absorbed, output elements $`z_i`$ are read from the rate part.*
 
 In practice, however, most deployments of Poseidon do not hash arbitrary-length data but use a **fixed-arity** instance.
 This is a consequence of how zk circuits work: a circuit is fixed at compile/setup time, meaning its entire structure — every wire, every constraint, and therefore the number of permutation calls — must be known before any input exists.
@@ -185,11 +185,11 @@ A concrete Poseidon instance is fully specified by the *numeric* parameters:
 
 - the order of operations within a round — this document defines a round as ARC → S-box → Mix, as above; implementations may internally reorder or pre-compose constants (e.g. the common "shifted" schedule that applies an initial ARC and then folds each round's constants into the end of the previous round) provided the result is observationally identical to the definition;
 - which state element the partial-round S-box applies to (e.g. the circom implementations use the *first* element; midnight-zk and the reference implementation backing this proposal use the *last*);
-- the orientation of the MDS multiplication: row-major $\text{state}'_i = \sum_j M_{ij} \cdot \text{state}_j$, versus multiplying by the transpose;
+- the orientation of the MDS multiplication: row-major $`\text{state}'_i = \sum_j M_{ij} \cdot \text{state}_j`$, versus multiplying by the transpose;
 - the consumption order of the round-constant list (which constant goes to which round and lane).
 
 These structural choices are not cosmetic.
-For example, the circom BLS12-381 instance and the reference implementation differ *only* in the partial-round S-box position, and importing the circom constants requires an exact state-reversal conjugation — $M'_{ij} = M_{(t-1-i)(t-1-j)}$ with each round's constant chunk reversed, inputs fed in reverse order and the digest read from the mirrored lane.
+For example, the circom BLS12-381 instance and the reference implementation differ *only* in the partial-round S-box position, and importing the circom constants requires an exact state-reversal conjugation — $`M'_{ij} = M_{(t-1-i)(t-1-j)}`$ with each round's constant chunk reversed, inputs fed in reverse order and the digest read from the mirrored lane.
 Applied blindly, the same numeric constants produce entirely different digests.
 
 (A concrete *hash*, finally, additionally requires a **framing** on top of the permutation — see *Framing conventions*; the built-in exposes the permutation only, so framings are documented per instance rather than baked into its semantics.)
@@ -345,7 +345,7 @@ hash3 in1 in2 in3 =
 ```
 
 **The circom BLS12-381 port's 2-input hash** (variant 1).
-This framing sizes the width to the arity — an $n$-input hash uses a width-$(n{+}1)$ instance, so all inputs fit into the rate of a single chunk and one call suffices, with the capacity lane (first) fixed to zero:
+This framing sizes the width to the arity — an $n$-input hash uses a width-$`(n{+}1)`$ instance, so all inputs fit into the rate of a single chunk and one call suffices, with the capacity lane (first) fixed to zero:
 
 ```text
 hash2 in1 in2 = head (bls12_381_poseidonPermutation 1 [0, in1, in2]) -- digest = first lane
@@ -387,7 +387,7 @@ The two initial entries are chosen to cover the two dominant proving-stack linea
 | 1 | circom BLS12-381 port [7], 2-input | 3 | 5 | 8 | 56 | first | [`circom-bls-t3-poseidon-constants.json`](./circom-bls-t3-poseidon-constants.json) |
 
 **Index 0 — midnight-zk (plonkish/halo2 ecosystem).**
-The instance behind midnight-zk's Poseidon chip: width 3, $R_F = 8$, $R_P = 60$, S-box $x^5$, partial-round S-box on the last lane, row-major MDS ($\text{state}'_i = \sum_j M_{ij}\,\text{state}_j$), constants consumed in ARC → S-box → Mix order.
+The instance behind midnight-zk's Poseidon chip: width 3, $R_F = 8$, $R_P = 60$, S-box $x^5$, partial-round S-box on the last lane, row-major MDS ($`\text{state}'_i = \sum_j M_{ij}\,\text{state}_j`$), constants consumed in ARC → S-box → Mix order.
 Provenance: `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (the pasta-hadeshash generator); source of truth `circuits/src/hash/poseidon/constants/blstrs.rs` in [6] (`Fq::from_raw` little-endian limbs, canonical form), converted to the decimal integers in the constants file and cross-validated against midnight's own Rust implementation.
 The ecosystem it originates from operates it as: capacity lane last, initialized to the input count; digest = first lane (an example use, documented non-normatively in the constants file and demonstrated in *Non-normative examples*).
 
@@ -417,7 +417,7 @@ Beyond completeness, the entry must satisfy:
    Ecosystems native to a different field — the canonical BN254 deployments of circomlib, or Noir with its Barretenberg backend (BN254) — are permanently out of scope: their digests cannot be reproduced over this field at any layer.
 2. **S-box**: $\gcd(\alpha, p - 1) = 1$, so $x \mapsto x^\alpha$ is a bijection.
 3. **Security level**: a declared level of at least 128 bits, with $(R_F, R_P)$ meeting the Poseidon paper's minima plus its recommended margin for the declared $(t, \alpha)$ [1].
-4. **Constant properties**: all constants canonical in $[0, p)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $\{x : x_{\text{S-box lane}} = 0\}$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
+4. **Constant properties**: all constants canonical in $[0, p)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $`\{x : x_{\text{S-box lane}} = 0\}`$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
    (The stronger condition that no power $M^i$ has *any* eigenvalue in $\mathbb{F}_p$ is sufficient but **not necessary** — both registered width-3 instances have such eigenvalues yet satisfy the criterion above; the width-4 circom candidate happens to have none.)
 5. **Cross-validation**: test vectors reproduced against the upstream implementation the instance claims compatibility with, plus the normative permutation vector.
 6. **Demonstrated demand**: a concrete user or protocol that needs this instance.
@@ -499,10 +499,10 @@ Two observations:
 
 #### Proposed costing
 
-- **CPU**: a constant per call, set to the measured worst case over registered instances — about 24 µs on the benchmarking machine, i.e. on the order of $2.4 \times 10^7$ `ExCPU`. Because the size curve is so flat, this conservative constant overcharges realistic usage (255-bit inputs) by only a few percent. For inputs beyond the benchmarked range the modular reduction keeps scaling, so the constant should be accompanied by a small linear term in the total size of the list elements (mirroring how `modInteger` is costed today) to keep adversarially large integers safely costed.
+- **CPU**: a constant per instance, set to that instance's measured worst case — about 24 µs for index 0 and 23 µs for index 1 on the benchmarking machine, i.e. on the order of $2.4 \times 10^7$ `ExCPU`. Because the size curve is so flat, this conservative constant overcharges realistic usage (255-bit inputs) by only a few percent. For inputs beyond the benchmarked range the modular reduction keeps scaling, so the constant should be accompanied by a small linear term in the total size of the list elements (mirroring how `modInteger` is costed today) to keep adversarially large integers safely costed.
 - **Memory**: a constant per call: the output is $t$ canonical field elements of at most 4 words each (12 words of integers for the width-3 instances, plus list overhead).
 
-One nuance: Plutus costing functions depend on argument *sizes*, not values, so a costing function cannot dispatch on the variant index — both indices cost the same. For the current registry this loses almost nothing (the two width-3 instances are within 5% of each other), but it makes cost part of instance admission: a future instance with a materially larger width or round count either raises the shared constant for every variant or requires new value-indexed costing machinery.
+One nuance: Plutus costing functions usually depend on argument *sizes* rather than values, but Plutus already provides newtype wrappers that change an argument's size measure, used in the builtin's denotation and its budgeting benchmark alike. `IntegerCostedLiterally`, for example, makes an integer's size its absolute value; this is how `dropList` (whose cost depends on the number of elements dropped) and `shiftByteString`/`rotateByteString` are costed. Wrapping the variant index the same way lets the costing function depend on which instance is selected, so each instance is charged its own cost rather than the worst case over all of them. This also keeps the registry extensible: a future instance with a materially larger width or round count can be costed on its own without raising the cost of existing ones. The exact shape — whether an existing costing-function form suffices, or a dedicated size measure mapping each index to its cost is needed — is to be agreed with the Plutus Core team.
 
 #### Comparison with other built-ins
 
@@ -513,11 +513,11 @@ Per the current mainnet cost model, hashing one 64-byte Merkle node (two 32-byte
 **On chain, a Poseidon Merkle node is therefore roughly 90× more expensive than a `blake2b_256` node** (roughly 50× a `sha2_256` node).
 That factor is the price of arithmetization-friendliness, and it buys back far more on the proving side: in-circuit, a bit-oriented hash costs tens of thousands of constraints per evaluation against a few hundred for Poseidon (see *Motivation*) — a ~100× saving exactly where the budget is scarce.
 
-In protocol terms (`ExCPU` is calibrated as ~1 ps on the reference machine), one permutation call is ~$2.4 \times 10^7$ `ExCPU`, i.e. **~0.24% of the mainnet per-transaction CPU budget** of $10^{10}$. A single transaction could afford over 400 permutation calls on CPU cost alone.
+In protocol terms (`ExCPU` is calibrated as ~1 ps on the reference machine), one permutation call is ~$`2.4 \times 10^7`$ `ExCPU`, i.e. **~0.24% of the mainnet per-transaction CPU budget** of $10^{10}$. A single transaction could afford over 400 permutation calls on CPU cost alone.
 
 #### What this buys: a Merkle tree on chain
 
-The motivating workload is Merkle verification. In both registered framings a 2-to-1 compression — hashing a node's left and right child — is a *single* permutation call (circom: digest of $P(0, l, r)$; midnight: digest of $P(l, r, 2)$), so verifying a Merkle membership proof of depth $d$ costs $d$ calls plus cheap glue (list construction, selecting the left/right position per level):
+The motivating workload is Merkle verification. In both registered framings a 2-to-1 compression — hashing a node's left and right child — is a *single* permutation call (circom: digest of $P(0, l, r)$; midnight: digest of $`P(l, r, 2)`$), so verifying a Merkle membership proof of depth $d$ costs $d$ calls plus cheap glue (list construction, selecting the left/right position per level):
 
 | Tree depth (leaves) | Permutation calls | Built-in CPU cost | Share of tx budget | Same proof with `blake2b_256` |
 | --- | --- | --- | --- | --- |
