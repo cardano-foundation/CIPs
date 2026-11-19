@@ -7,9 +7,7 @@ Authors:
     - Matthias Fitzi <matthias.fitzi@iohk.io>
     - Giorgos Panagiotakos <giorgos.panagiotakos@iohk.io>
 Proposed Solutions: []
-Discussions:
-    - Blogspot : []
-    - Pull Request: []
+Discussions: []
 Created: 2026-09-17
 License: CC-BY-4.0
 ---
@@ -42,7 +40,7 @@ Concurrent block production in Full Leios raises a further problem: concurrent b
 
 The [Leios roadmap][Leios-roadmap] addresses this with UTxO sharding. The UTxO space is split into shards, each input block (IB) serves a single shard, and the per-shard IB rate is kept low enough that conflicts are mostly avoided. The same mechanism is the roadmap's route to horizontal scaling, where "any new node that runs the protocol increases throughput proportionally to its resources." Nodes track only the shards they choose, and SNARKs and data availability sampling let them check the rest. This is a projection, not settled protocol: [CIP-0164][] does not specify sharding.
 
-This CPS is about full state and execution sharding, along the lines the roadmap projects or otherwise. Because no node then stores all data, a solution also relies on layer-1 data availability for shard data. The companion CPS *Layer 1 Data Availability for Cardano* (number not yet assigned) addresses data availability for applications and layer 2; whether it can also serve shard data, which must be checkable within consensus and retained as history, is open.
+This CPS is about full state and execution sharding, along the lines the roadmap projects or otherwise. Because no node then stores all data, a solution also relies on layer-1 data availability for shard data. The companion CPS [*Layer 1 Data Availability for Cardano*][CPS-DA] (number not yet assigned) addresses data availability for applications and layer 2; whether it can also serve shard data, which must be checkable within consensus and retained as history, is open.
 
 ### Why EUTxO changes the odds
 
@@ -147,7 +145,7 @@ A CIP addressing this problem should answer each of the six headline questions i
 ## References
 
 - [CPS-0018: Greater Transaction Throughput][CPS-0018]
-- CPS (number not yet assigned): Layer 1 Data Availability for Cardano (working title)
+- [CPS (number not yet assigned): Layer 1 Data Availability for Cardano (working title)][CPS-DA]
 - [CIP-0164: Ouroboros Linear Leios][CIP-0164]
 - [CIP-0140: Ouroboros Peras][CIP-0140]
 - [Ouroboros Leios: design goals and concepts][Leios-paper]
@@ -172,6 +170,7 @@ Prior art:
 [CPS-0018]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0018
 [CIP-0164]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0164
 [CIP-0140]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0140
+[CPS-DA]: https://github.com/cardano-foundation/CIPs/pull/1310
 [Leios-paper]: https://iohk.io/en/research/library/papers/ouroboros-leios-design-goals-and-concepts/
 [Leios-roadmap]: https://www.iog.io/news/the-leios-roadmap-to-solving-the-blockchain-trilemma
 [EUTxO]: https://iohk.io/en/research/library/papers/the-extended-utxo-model/
