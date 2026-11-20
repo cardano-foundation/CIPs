@@ -85,19 +85,19 @@ processed under the new rules.
 
 ### Transaction-body field
 
-Insert `enactment_fields` into the transaction-body map. Key `30` is a placeholder;
-`gov_action_id` and `nonempty_set` reuse existing ledger types. The field follows
-the [required-signers encoding][required-signers]. The fragment is also available
-in [enactment.cddl](./enactment.cddl).
+Insert `enactment_fields` into the transaction-body map. Key `30` is a placeholder.
+The field uses the ledger's [nonempty ordered set][ordered-set-encoding] of
+`gov_action_id`, with the same tagged and untagged array forms as
+[required signers][required-signers]. See [enactment.cddl](./enactment.cddl).
 
 ```cddl
 enactment_fields = (
   ? 30 : required_enactments
 )
 
-required_enactments = nonempty_set<gov_action_id>
+required_enactments = nonempty_oset<gov_action_id>
 
-nonempty_set<a0> = #6.258([+ a0]) / [+ a0]
+nonempty_oset<a0> = #6.258([+ a0]) / [+ a0]
 
 gov_action_id = [
   transaction_id : transaction_id,
@@ -130,10 +130,9 @@ The baseline adds the following field to `TxInfo`:
 txInfoRequiredEnactments :: [GovernanceActionId]
 ```
 
-Construct this list solely from the transaction body, sorted in ascending order
-by transaction hash bytes and then numerical action index, regardless of the order
-in the body. Omission produces an empty list. Encode it as a Plutus Data list
-using the existing `GovernanceActionId` encoding for each entry.
+Copy the IDs from `required_enactments` into the Plutus Data list in CBOR array
+order, using the existing `GovernanceActionId` encoding. Omission produces an
+empty list.
 
 #### Enriched context — open design question
 
@@ -144,10 +143,9 @@ alongside proof of enactment. If adopted, it would replace the baseline list wit
 txInfoRequiredEnactments :: Map GovernanceActionId ProposalProcedure
 ```
 
-The intended map contains one authenticated original proposal per ID in the
-transaction's `required_enactments`. Omitting the field produces an empty map.
-Entries are ordered by transaction hash bytes and then numerical action index,
-regardless of the order in the transaction body.
+Emit one map entry per ID in `required_enactments`, in the same CBOR array order
+as the baseline list. Each ID maps to its authenticated original proposal.
+Omitting the field produces an empty map.
 
 Values use the existing Plutus `ProposalProcedure` representation: the original
 deposit, return credential, and governance action. Metadata anchors are omitted,
@@ -287,8 +285,13 @@ Required test cases:
 
 - Omitted fields; accepted set encodings; rejection of empty collections, `nil`,
   duplicate and malformed IDs; all-present and partly missing requirements.
-- Both validation branches and unconditional structural checks; transactions
-  without Plutus scripts; deterministic context encoding across input orderings.
+- Both validation branches and unconditional structural checks, including
+  transactions without Plutus scripts.
+- Require the same enacted IDs in two orders, `[A#1, B#0, A#0]` and
+  `[B#0, A#0, A#1]`, where `A` and `B` are distinct transaction hashes and the
+  number after `#` is the action index. Set `is_valid = true` and test each
+  order with and without tag 258. In all four cases, the membership check
+  passes and `txInfoRequiredEnactments` lists the IDs in the supplied order.
 - Every enactable action type, including treasury withdrawals; repeated reads and
   reads after subsequent enactments; all actions enacted at the same boundary
   under the new rules remain available.
@@ -303,8 +306,9 @@ Required test cases:
 
 If the enriched context is adopted, additional validation must cover:
 
-- Correct ID-to-proposal associations for every enactable action type; exactly
-  the requested IDs; empty maps on omission; deterministic map encoding.
+- For every enactable action type, each ID maps to its original proposal and
+  the encoded keys match the baseline list element for element. Check both
+  permutations with and without tag 258. Omission produces an empty map.
 - Missing, mismatched, or forged proposal data under the selected authentication
   design, including resolution behavior in both validity branches.
 - Identical proposal values after replay, snapshot restoration, and restart;
@@ -341,6 +345,7 @@ If the enriched context is adopted, additional validation must cover:
 [apply-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Governance/Proposals.hs#L492-L560
 [epoch-enactment]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Epoch.hs#L318-L329
 [required-signers]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/cddl/data/conway.cddl#L621-L623
+[ordered-set-encoding]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/cddl/data/conway.cddl#L429-L431
 [treasury-check]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/Rules/Ledger.hs#L375-L379
 [proposal-translation]: https://github.com/IntersectMBO/cardano-ledger/blob/d2e02427567ae650677ebf2e9c17f2a5e69c0dd4/eras/conway/impl/src/Cardano/Ledger/Conway/TxInfo.hs#L732-L742
 [set-complexity]: https://hackage-content.haskell.org/package/containers-0.8/docs/Data-Set.html

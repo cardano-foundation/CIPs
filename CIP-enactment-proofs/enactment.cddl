@@ -4,11 +4,12 @@ enactment_fields = (
   ? 30 : required_enactments
 )
 
-required_enactments = nonempty_set<gov_action_id>
+required_enactments = nonempty_oset<gov_action_id>
 
 ; Existing ledger types, repeated here to make the fragment self-contained.
 ; Set elements must be distinct; CDDL alone does not enforce uniqueness.
-nonempty_set<a0> = #6.258([+ a0]) / [+ a0]
+; Decoders must preserve the array order with or without tag 258.
+nonempty_oset<a0> = #6.258([+ a0]) / [+ a0]
 
 gov_action_id = [
   transaction_id : transaction_id,
