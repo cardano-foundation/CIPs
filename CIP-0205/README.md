@@ -280,6 +280,14 @@ all (reference) scripts used. This can eventually be reflected in lower fees.
 
 ### Alternatives considered
 
+### Retaining the scope check
+
+Retaining the scope check follows the tradition of Plutus' conservative design
+philosopy. That is, preferring a smaller, restrictive language which rejects
+malformed programs early. Removing the scope check relaxes this guarantee in
+favour of increased validator performance. However, such trade-offs have been
+made before, such as when moving from TPLC (Typed Plutus Core) to UPLC.
+Therefore the change is consistent with past evolution of the language.
 
 #### Fixing the scope check instead of removing it
 
