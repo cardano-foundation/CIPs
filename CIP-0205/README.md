@@ -4,7 +4,7 @@ Title: Removal of the scope check in Plutus Core
 Category: Plutus
 Status: Proposed
 Authors:
-  - Jacco Krijnen <jacco.krijnen@iohk.io>
+  - Jacco Krijnen <jacco@midgardlabs.io>
 Implementors: []
 Discussions:
   - Original PR: https://github.com/cardano-foundation/CIPs/pull/1278
