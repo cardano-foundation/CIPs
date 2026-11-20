@@ -22,7 +22,7 @@ This CIP adds one optional field, `category`, to the `body` of [CIP-0108](../CIP
 
 Treasury spending is increasingly organized in allocations that span several withdrawals: an annual budget split into domains, a grant program funded per round, a multi-year commitment paid in tranches. Processes call these groups categories, domains, tracks, funds or rounds. This CIP calls all of them categories.
 
-For each one, DReps, delegators and analysts want to see what was allocated, which actions belong to it, how much has been withdrawn against it, and where the funds went. Withdrawals and their recipients are on chain today. Which allocation they belong to is not, so tools fall back to reading titles or to lists in their own databases. Two tools will disagree, and neither can be checked by a third.
+For each one, DReps, delegators and analysts want to see what was allocated, which actions reference it, how much has been withdrawn against it, and where the funds went. Withdrawals and their recipients are on chain today. Which allocation they belong to is not, so tools fall back to reading titles or to lists in their own databases. Two tools will disagree, and neither can be checked by a third.
 
 One current example is Intersect's proposal for a more strategic 2027 budget approach ([discussion](https://dreptalk.com/t/a-more-strategic-2027-cardano-budget-approach-released-for-d-jgsvng)), which organizes funding by domain. Each domain could be defined as a category under this CIP. The field does not depend on that proposal or any other process. It works for processes that exist today, ones that are only proposed, and a single proposer who wants to tie a multi-step project to its first approval.
 
@@ -134,7 +134,7 @@ A `category` object is valid only when all of the following hold. Otherwise read
 ### How tools read it
 
 1. **Approval stays a social decision.** Info Actions are never enacted, so the ledger never says whether a category was approved. Tools MUST show the definition action's tally and status next to the category and MUST NOT present a category as approved by protocol. A tool MAY apply a threshold named by the process the category belongs to, and MUST say which one.
-2. **Resolving a category.** Tools read `category` only from a document whose bytes match the action's own on-chain anchor hash, for definition and member actions alike. A member action resolves when `categoryId` is the ID of a definition action whose anchor document has been verified at least once. Tools MAY keep verified bytes, and a category stays as read when its anchor URL later stops serving. A member action that does not resolve is shown as unresolved. Tools MUST NOT guess the category from titles.
+2. **Resolving a category.** Tools read `category` only from a document whose bytes match the action's own on-chain anchor hash, for definition and member actions alike. A member action resolves when `categoryId` is the ID of a definition action whose anchor document has been verified at least once. Tools MAY keep verified bytes, and a category stays as read when its anchor URL later stops serving. A member action that does not resolve is shown as unresolved. Tools MUST NOT guess the category from titles. Tools SHOULD show a Treasury Withdrawal without a valid `category` as having no declared category.
 3. **Recipient check.** When the definition lists `recipients`, a tool decodes each listed account and each reward account in the Treasury Withdrawal's ledger body to its header byte and 28-byte credential, and compares those. A listed account on another network never matches. The result is **matched** when every withdrawal recipient is listed, and **mismatch** otherwise. Without `recipients`, the withdrawal is **unchecked**.
 4. **Counting.** A category's checked total is the sum of the ledger amounts of enacted, **matched** member Treasury Withdrawals, attributed by enactment epoch and limited to `period` when given. Amounts always come from the ledger, never from metadata. Tools SHOULD show unchecked and mismatched withdrawals as separate figures and MUST NOT add them to the total. Members not yet enacted, or enacted outside `period`, are listed with the category and appear in no figure.
 
@@ -177,7 +177,8 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 - Should `budget` be required on definitions?
 - Is a fixed `recipients` list the right check when a category pays many recipients that are not known when it is defined, or does a later version need another way to confirm membership?
 - Does the Net Change Limit belong here as an optional pointer on definitions?
-- Does a later version need a link from a new definition to the one it replaces, and what decides between competing replacements?
+- Does a later version need a link from a new definition to the one it replaces, for example when the receiving account changes mid-period and the ceiling should count only once, and what decides between competing replacements?
+- Should a later version let a party other than the proposer record or dispute an action's category after submission?
 - Should a later version open member actions to further action types?
 
 ## Path to Active
