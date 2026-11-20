@@ -1,0 +1,38 @@
+{
+  "profile": "https://cips.cardano.org/cips/cip57/extensions/compiled-interface/v1/encodings/scott-cbv-v1",
+  "notation": "UPLC named-term notation; const-data and const-integer are distinct constructors. These are not serialized scripts.",
+  "vectors": [
+    {
+      "schema": {
+        "dataType": "integer"
+      },
+      "value": 7,
+      "term": "(const-data (I 7))"
+    },
+    {
+      "schema": {
+        "dataType": "#integer"
+      },
+      "value": 7,
+      "term": "(const-integer 7)"
+    },
+    {
+      "schemaRef": "parameter-encodings.json#/definitions/OptionalInteger",
+      "value": {
+        "constructor": 0,
+        "fields": []
+      },
+      "term": "(lam b0 (lam b1 (force b0)))"
+    },
+    {
+      "schemaRef": "parameter-encodings.json#/definitions/OptionalInteger",
+      "value": {
+        "constructor": 1,
+        "fields": [
+          7
+        ]
+      },
+      "term": "(lam b0 (lam b1 (app (force b1) (const-integer 7))))"
+    }
+  ]
+}

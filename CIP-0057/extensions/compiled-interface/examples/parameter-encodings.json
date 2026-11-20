@@ -1,0 +1,86 @@
+{
+  "$schema": "https://cips.cardano.org/cips/cip57/extensions/compiled-interface/v1/schema.json",
+  "preamble": {
+    "title": "Parameter representations (interface-only illustration)",
+    "version": "1.0.0-draft",
+    "plutusVersion": "v3"
+  },
+  "validators": [
+    {
+      "id": "parameter-demo",
+      "title": "Parameter representations",
+      "redeemer": {
+        "schema": {}
+      },
+      "parameters": [
+        {
+          "title": "Data integer",
+          "schema": {
+            "dataType": "integer"
+          }
+        },
+        {
+          "title": "Native integer",
+          "schema": {
+            "dataType": "#integer"
+          }
+        },
+        {
+          "title": "Scott optional native integer",
+          "schema": {
+            "$ref": "#/definitions/OptionalInteger"
+          }
+        }
+      ],
+      "interface": {
+        "callingConvention": "ledger-v3",
+        "invocations": [
+          {
+            "purpose": "mint",
+            "arguments": [
+              {
+                "role": "parameter",
+                "source": "/parameters/0"
+              },
+              {
+                "role": "parameter",
+                "source": "/parameters/1"
+              },
+              {
+                "role": "parameter",
+                "source": "/parameters/2"
+              },
+              {
+                "role": "context"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "definitions": {
+    "OptionalInteger": {
+      "dataType": "#scott",
+      "encoding": "https://cips.cardano.org/cips/cip57/extensions/compiled-interface/v1/encodings/scott-cbv-v1",
+      "constructors": [
+        {
+          "name": "None",
+          "fields": []
+        },
+        {
+          "name": "Some",
+          "fields": [
+            {
+              "dataType": "#integer"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "$vocabulary": {
+    "https://cips.cardano.org/cips/cip57/extensions/compiled-interface/v1/vocabulary": true,
+    "https://cips.cardano.org/cips/cip57": true
+  }
+}
