@@ -73,7 +73,7 @@ credential = [0, hash28] / [1, hash28]  ; key hash or script hash, as in the led
 anchor = [url: [+ text .size (0..64)], data_hash: bytes .size 32]
 
 event =
-    [0, 0, control: hash28, [], ? profile: anchor]       ; create, open group
+    [0, 0, control: hash28, ? profile: anchor]           ; create, open group
   / [0, 1, control: hash28, admission: hash28, ? profile: anchor] ; create, permissioned group
   / [1, group: event_ref, seq: uint, changes: update_map]  ; update
   / [2, group: event_ref, seq: uint]                       ; dissolve
@@ -99,7 +99,7 @@ native_script =
   / [5, slot: uint64]                 ; before (invalid_hereafter)
 ```
 
-- `mode` is 0 for an open group and 1 for a permissioned group. Mode 1 needs a `hash28` admission policy, mode 0 needs the empty array `[]`. Transaction metadata has no null value, so the empty array is the placeholder. The mode is fixed at `create` and cannot change.
+- `mode` is 0 for an open group and 1 for a permissioned group. Mode 1 needs a `hash28` admission policy at index 3. Mode 0 has no admission field, so the profile of an open group follows the control policy at index 3. The mode is fixed at `create` and cannot change.
 - An `update` with an empty `update_map` is valid. It only increments `seq`, which makes pending control transactions stale on purpose (see [Processing rules](#processing-rules)).
 - The anchor URL is split into text chunks of at most 64 bytes, as transaction metadata requires. Indexers decode each chunk as UTF-8 and concatenate the results unchanged, without removing a byte order mark or normalizing the text.
 - A script entry is split into byte string chunks of at most 64 bytes. Indexers concatenate the chunks in order, then parse and hash the result.
@@ -310,7 +310,7 @@ The identifier follows the pattern of the CIP-0129 governance action id, a trans
 
 ### Label and use before this CIP
 
-Label 8416 is registered in [CIP-0010](../CIP-0010/README.md) through a separate pull request ([#1317](https://github.com/cardano-foundation/CIPs/pull/1317)), so the label stays reserved while this CIP is in review. It was unused on mainnet, preprod and preview before the reference implementation started. It carries transactions of the reference implementation in the version 1 format, on preprod since November 2026 and on mainnet from the publication of this CIP. Review tightened the version 1 rules before any wider use: explicit signatures for admin consent, consent per role, the rejection of signature-free policies and the `resign` event. Every event published under label 8416 before this change already meets the tightened rules, checked on 2026-11-10 against all label 8416 transactions on mainnet (1 create, 1 join, 1 approve) and preprod (5 create, 3 update, 15 join, 11 approve, 2 leave, 4 dissolve), so no existing group or membership changes its state. The display form of group ids changed during review twice, from `group` with a two byte index to `drep_group` with a two byte index and then to `drep_group` with a one byte index. The on-chain refs are unchanged, but every published bech32 id changed, so website proofs must list the new form. Tools MAY accept the earlier forms as input and translate them to the current one. Later versions keep processing version 1 payloads, as [Versioning](#versioning) requires.
+Label 8416 is registered in [CIP-0010](../CIP-0010/README.md) through a separate pull request ([#1317](https://github.com/cardano-foundation/CIPs/pull/1317)), so the label stays reserved while this CIP is in review. It was unused on mainnet, preprod and preview before the reference implementation started. It carries transactions of the reference implementation in the version 1 format, on preprod since November 2026 and on mainnet from the publication of this CIP. Review tightened the version 1 rules before any wider use: explicit signatures for admin consent, consent per role, the rejection of signature-free policies and the `resign` event. Every event published under label 8416 before this change already meets the tightened rules, checked on 2026-11-10 against all label 8416 transactions on mainnet (1 create, 1 join, 1 approve) and preprod (5 create, 3 update, 15 join, 11 approve, 2 leave, 4 dissolve), so no existing group or membership changes its state. Later, review removed the empty array that an open `create` carried in the admission position. One open group on preprod was created with it, and its `create` and its join are invalid under this text. The display form of group ids changed during review twice, from `group` with a two byte index to `drep_group` with a two byte index and then to `drep_group` with a one byte index. The on-chain refs are unchanged, but every published bech32 id changed, so website proofs must list the new form. Tools MAY accept the earlier forms as input and translate them to the current one. Later versions keep processing version 1 payloads, as [Versioning](#versioning) requires.
 
 ### Backward compatibility
 
