@@ -1,0 +1,73 @@
+{
+  "$id": "https://github.com/cardano-governance/vocabulary/schemas/VoterRationale",
+  "@type": "VoterRationale",
+  "title": "Voter Rationale",
+  "description": "A rationale file for an on-chain voter as either an SPO or DRep",
+  "type": "object",
+  "required": [
+    "hashAlgorithm",
+    "authors",
+    "body",
+    "@type"
+  ],
+  "properties": {
+    "hashAlgorithm": {
+      "$ref": "/vocabulary/schemas/cip100/hashAlgorithm"
+    },
+    "authors": {
+      "$ref": "/vocabulary/schemas/cip100/authors"
+    },
+    "body": {
+      "title": "Rationale Body",
+      "description": "Contains the contents of the rationale",
+      "type": "object",
+      "required": [
+        "vote",
+        "govActionId"
+      ],
+      "properties": {
+        "comment": {
+          "title": "Rationale Statement",
+          "description": "This is an open-ended text field giving the voter the opportunity to describe their decision-making processes.",
+          "$ref": "/vocabulary/schemas/cip100/comment"
+        },
+        "vote": {
+          "title": "Vote Cast",
+          "description": "The value of this field should match the on-chain vote",
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "abstain"
+          ]
+        },
+        "govActionId": {
+          "title": "Governance Action ID",
+          "description": "The bech32 representation of the Governance Proposal to which this rationale applies",
+          "type": "string",
+          "example": "gov1a33...2cb"
+        },
+        "internalVote": {
+          "title": "Internal Vote",
+          "description": "For group or consortium voters, this object allows providing context to the group vote",
+          "$ref": "/vocabulary/schemas/cip136/InternalVote"
+        },
+        "signatories": {
+          "title": "Signatories",
+          "description": "An array of expected or allowed authors. If present, the authors field should be cross-referenced to this list",
+          "type": "array",
+          "items": {
+            "title": "Signer",
+            "description": "The bech32 ID of a signer of this rationale (drep1..., pool1..., cchot1...)",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "@type": {
+      "title": "Document Type",
+      "type": "string",
+      "value": "VoterRationale"
+    }
+  }
+}
