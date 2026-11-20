@@ -1,0 +1,28 @@
+[
+  {
+    "scheme": 0,
+    "id": 65,
+    "name": "Amaru",
+    "status": "active",
+    "maintainers": ["yHSJ", "KtorZ", "etorreborre", "jeluard", "rkuhn", "J-GainSec", "arwlf", "Quantumplation", "Dam-CZ", "Quantumplation"],
+    "repository": "https://github.com/pragma-org/amaru",
+    "payload_documentation": "https://github.com/pragma-org/amaru/blob/main/engineering-decision-records/040-cip-0203-block-producer-identifer.md",
+    "payload_definition": "https://github.com/pragma-org/amaru/blob/8fce2fbbf25e8445d4b5060598a02c8aff1df032/cip-203-payload-definition.json",
+    "registered": "2026-11-14",
+    "retired": null,
+    "description": "A rust implementation of Cardano"
+  },
+  {
+    "scheme": 0,
+    "id": 79,
+    "name": "TSUNAGI",
+    "status": "active",
+    "maintainers": ["cryptoleo79"],
+    "repository": "https://github.com/cryptoleo79/tsunagi-preview",
+    "payload_documentation": null,
+    "payload_definition": null,
+    "registered": "2026-10-13",
+    "retired": null,
+    "description": "Independent Cardano node implementation written in Zig, with demonstrated Preview block production and ongoing sovereign Mainnet qualification."
+  }
+]
