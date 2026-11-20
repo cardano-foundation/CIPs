@@ -1,0 +1,19 @@
+; Insert this group into the existing transaction_body map.
+; Key 30 is a placeholder, not an assigned transaction-body key.
+enactment_fields = (
+  ? 30 : required_enactments
+)
+
+required_enactments = nonempty_oset<gov_action_id>
+
+; Existing ledger types, repeated here to make the fragment self-contained.
+; Set elements must be distinct; CDDL alone does not enforce uniqueness.
+; Decoders must preserve the array order with or without tag 258.
+nonempty_oset<a0> = #6.258([+ a0]) / [+ a0]
+
+gov_action_id = [
+  transaction_id : transaction_id,
+  gov_action_index : uint .size 2
+]
+
+transaction_id = bytes .size 32
