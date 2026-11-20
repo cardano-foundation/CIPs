@@ -184,6 +184,10 @@
     "description": "DRep Groups: on-chain register of DRep groups and their members"
   },
   {
+    "transaction_metadatum_label": 8420,
+    "description": "Nightlane: US trucking carrier checks (FMCSA status snapshot + SHA-256 fingerprint)"
+  },
+  {
     "transaction_metadatum_label": 10297,
     "description": "fida.finance transaction metadata"
   },
