@@ -130,6 +130,7 @@ We define the following set of common prefixes with their corresponding semantic
 | `cc_cold`           | Constitutional committee cold identifier              | Constitutional committee cold credential, see [CIP-0129]      |
 | `cc_hot`            | Constitutional committee hot identifier               | Constitutional committee hot credential, see [CIP-0129]       |
 | `gov_action`        | Governance action identifier                          | Governance action ID, see [CIP-0129]                          |
+| `drep_group`        | DRep group identifier                                 | Transaction ID and event index of the group's `create` event, see [CIP-XXXX](../CIP-XXXX/README.md) |
 
 
 ### Deprecated Governance Prefixes
@@ -157,6 +158,7 @@ In order to make it easy to keep up with updates to this specification, we inclu
 
 | ID  | Date        | Summary of changes                                              | Pull Request                                                  |
 | --- | ---         | ---                                                             | ---                                                           |
+| 3   | 2026-11-10  | Defined bech32 prefix for DRep group identifiers                | [#1318](https://github.com/cardano-foundation/CIPs/pull/1318) |
 | 2   | 2025-05-13  | Defined bech32 prefixes for extended pool operator keys         | [#1036](https://github.com/cardano-foundation/CIPs/pull/1036) |
 | 1   | 2025-04-22  | Defined bech32 prefixes for genesis keys and created changelog. | [#1027](https://github.com/cardano-foundation/CIPs/pull/1027) |
 
