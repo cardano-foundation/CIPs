@@ -1,0 +1,186 @@
+{
+    "title": "CIP-185 Governance Action Update",
+    "description": "Metadata document providing an append-only update to a submitted Cardano governance action, extending CIP-100",
+    "type": "object",
+    "required": ["hashAlgorithm", "authors", "body"],
+    "properties": {
+        "hashAlgorithm": {
+            "$ref": "#/definitions/hashAlgorithm"
+        },
+        "authors": {
+            "$ref": "#/definitions/authors"
+        },
+        "body": {
+            "$ref": "#/definitions/body"
+        }
+    },
+    "definitions": {
+        "hashAlgorithm": {
+            "type": "string",
+            "enum": ["blake2b-256"],
+            "title": "Hash Algorithm",
+            "description": "The algorithm used to authenticate this document externally (CIP-100)"
+        },
+        "authors": {
+            "title": "Authors",
+            "description": "The authors of this update; witnesses must verify against the original proposal's author keys (CIP-100)",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/author"
+            }
+        },
+        "author": {
+            "title": "Author",
+            "description": "An author endorsing the content of a metadata document (CIP-100)",
+            "type": "object",
+            "required": ["witness"],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "title": "Name"
+                },
+                "witness": {
+                    "$ref": "#/definitions/witness"
+                }
+            }
+        },
+        "witness": {
+            "title": "Witness",
+            "description": "A witness proving that the author endorses the content of the metadata",
+            "type": "object",
+            "properties": {
+                "witnessAlgorithm": {
+                    "title": "WitnessAlgorithm",
+                    "type": "string",
+                    "enum": ["ed25519", "CIP-0008"]
+                },
+                "publicKey": {
+                    "title": "PublicKey",
+                    "type": "string"
+                },
+                "signature": {
+                    "title": "Signature",
+                    "type": "string"
+                }
+            }
+        },
+        "body": {
+            "title": "Body",
+            "description": "The body of the update document that is hashed to produce the witness signatures (CIP-100)",
+            "type": "object",
+            "required": ["governanceActionId", "updateType", "sequenceNumber", "updateContext"],
+            "properties": {
+                "governanceActionId": {
+                    "type": "string",
+                    "title": "Governance Action ID",
+                    "description": "The identifier of the on-chain governance action this update pertains to, as <txHash>#<index>",
+                    "pattern": "^[0-9a-fA-F]{64}#[0-9]+$"
+                },
+                "updateType": {
+                    "type": "string",
+                    "title": "Update Type",
+                    "description": "The kind of update being made to the referenced governance action",
+                    "enum": ["Update", "Clarification", "Correction", "Narrowing", "Commitment", "Withdrawal"]
+                },
+                "sequenceNumber": {
+                    "type": "integer",
+                    "title": "Sequence Number",
+                    "description": "Position of this update in the append-only log for the referenced action, starting at 1",
+                    "minimum": 1
+                },
+                "supersedes": {
+                    "type": "integer",
+                    "title": "Supersedes",
+                    "description": "The sequenceNumber of a previous update that this update retracts or corrects",
+                    "minimum": 1
+                },
+                "updateContext": {
+                    "type": "string",
+                    "title": "Update Context",
+                    "description": "The prose of the update, in Markdown"
+                },
+                "bindingStatements": {
+                    "type": "array",
+                    "title": "Binding Statements",
+                    "description": "Structured statements making the update machine-actionable for downstream reviewers",
+                    "items": {
+                        "$ref": "#/definitions/bindingStatement"
+                    }
+                },
+                "references": {
+                    "type": "array",
+                    "title": "References",
+                    "description": "Links to off-chain discussions, FAQs, or previous metadata (CIP-100 reference shape)",
+                    "items": {
+                        "$ref": "#/definitions/reference"
+                    }
+                }
+            }
+        },
+        "bindingStatement": {
+            "title": "Binding Statement",
+            "type": "object",
+            "required": ["field", "revisedText"],
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "title": "Field",
+                    "description": "A human-readable locator for the aspect of the proposal being amended"
+                },
+                "originalText": {
+                    "type": "string",
+                    "title": "Original Text",
+                    "description": "The text from the original proposal being clarified or corrected, quoted verbatim"
+                },
+                "revisedText": {
+                    "type": "string",
+                    "title": "Revised Text",
+                    "description": "The replacement or refinement"
+                },
+                "rationale": {
+                    "type": "string",
+                    "title": "Rationale",
+                    "description": "Why this is an update rather than a new proposal"
+                }
+            }
+        },
+        "reference": {
+            "title": "Reference",
+            "type": "object",
+            "required": ["@type", "label", "uri"],
+            "properties": {
+                "@type": {
+                    "type": "string",
+                    "enum": ["GovernanceMetadata", "Other"],
+                    "title": "Type",
+                    "description": "The type of reference (CIP-100)"
+                },
+                "label": {
+                    "type": "string",
+                    "title": "Label",
+                    "description": "A human readable display name for the reference"
+                },
+                "uri": {
+                    "type": "string",
+                    "title": "URI",
+                    "description": "The location of the referenced content"
+                },
+                "referenceHash": {
+                    "type": "object",
+                    "title": "Reference Hash",
+                    "description": "Optional integrity hash of the referenced content",
+                    "required": ["hashDigest", "hashAlgorithm"],
+                    "properties": {
+                        "hashDigest": {
+                            "type": "string"
+                        },
+                        "hashAlgorithm": {
+                            "type": "string",
+                            "enum": ["blake2b-256"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
