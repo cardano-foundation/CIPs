@@ -136,7 +136,37 @@ A `category` object is valid only when all of the following hold. Otherwise read
 1. **Approval stays a social decision.** Info Actions are never enacted, so the ledger never says whether a category was approved. Tools MUST show the definition action's tally and status next to the category and MUST NOT present a category as approved by protocol. A tool MAY apply a threshold named by the process the category belongs to, and MUST say which one.
 2. **Resolving a category.** Tools read `category` only from a document whose bytes match the action's own on-chain anchor hash, for definition and member actions alike. A member action resolves when `categoryId` is the ID of a definition action whose anchor document has been verified at least once. Tools MAY keep verified bytes, and a category stays as read when its anchor URL later stops serving. A member action that does not resolve is shown as unresolved. Tools MUST NOT guess the category from titles. Tools SHOULD show a Treasury Withdrawal without a valid `category` as having no declared category.
 3. **Recipient check.** When the definition lists `recipients`, a tool decodes each listed account and each reward account in the Treasury Withdrawal's ledger body to its header byte and 28-byte credential, and compares those. A listed account on another network never matches. The result is **matched** when every withdrawal recipient is listed, and **mismatch** otherwise. Without `recipients`, the withdrawal is **unchecked**.
-4. **Counting.** A category's checked total is the sum of the ledger amounts of enacted, **matched** member Treasury Withdrawals, attributed by enactment epoch and limited to `period` when given. Amounts always come from the ledger, never from metadata. Tools SHOULD show unchecked and mismatched withdrawals as separate figures and MUST NOT add them to the total. Members not yet enacted, or enacted outside `period`, are listed with the category and appear in no figure.
+4. **Counting.** A category's checked total is the sum of the ledger amounts of enacted, **matched** member Treasury Withdrawals, attributed by enactment epoch and limited to `period` when given. Amounts always come from the ledger, never from metadata. Tools SHOULD show unchecked and mismatched withdrawals as separate figures and MUST NOT add them to the total. Members not yet enacted, or enacted outside `period`, are listed with the category and appear in no figure. Tools SHOULD make clear that membership rests on the proposer's own reference.
+
+### Example
+
+The `body` of a definition action, abbreviated to `title` and the part this CIP adds. `body.@context` with the term definition from above is left out. IDs and the account are made up for illustration, with valid checksums.
+
+```json
+"body": {
+  "title": "Core Infrastructure 2027",
+  "category": {
+    "specVersion": 1,
+    "kind": "definition",
+    "label": "Core Infrastructure 2027",
+    "budget": "50000000000000",
+    "period": { "startEpoch": 620, "endEpoch": 692 },
+    "recipients": ["stake179xe3t8ka8c52d73a747kxkuqqvrh0hh3urzqwlgnlqursq8p8cvg"]
+  }
+}
+```
+
+Suppose this action is `gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29`. A later Treasury Withdrawal that spends against it carries:
+
+```json
+"category": {
+  "specVersion": 1,
+  "kind": "member",
+  "categoryId": "gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29"
+}
+```
+
+If that withdrawal pays the listed account and is enacted in an epoch from 620 to 692, its ledger amount counts towards the 50 million ada ceiling. If it pays another account, tools show it as a mismatch outside the total.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -178,7 +208,7 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 - Is a fixed `recipients` list the right check when a category pays many recipients that are not known when it is defined, or does a later version need another way to confirm membership?
 - Does the Net Change Limit belong here as an optional pointer on definitions?
 - Does a later version need a link from a new definition to the one it replaces, for example when the receiving account changes mid-period and the ceiling should count only once, and what decides between competing replacements?
-- Should a later version let a party other than the proposer record or dispute an action's category after submission?
+- Should a later version let a party other than the proposer confirm, contest or reassign an action's category, for example in a stage before the vote through a [CIP-0179](../CIP-0179/README.md) survey or an addendum ([CIP-0185?](https://github.com/cardano-foundation/CIPs/pull/1180)), and which result then counts for the totals?
 - Should a later version open member actions to further action types?
 
 ## Path to Active
