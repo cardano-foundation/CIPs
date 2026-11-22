@@ -16,7 +16,7 @@ License: CC-BY-4.0
 
 Treasury Withdrawals often belong to a larger allocation: a budget domain that spends over a year, a grant round, or a program paid in tranches. Nothing on chain says which withdrawals belong to which allocation, so every tool that groups them or shows how much of an allocation has been withdrawn curates that grouping by hand.
 
-This CIP adds one optional field, `category`, to the `body` of [CIP-0108](../CIP-0108/README.md) governance action metadata. An Info Action uses it to define a category. A Treasury Withdrawal or a later Info Action uses it to point at the defining Info Action by its governance action ID. A definition can carry a ceiling, a period and the reward accounts that may receive its funds, so tools can check a withdrawal's claim against its on-chain recipients and compute withdrawn totals.
+This CIP adds one optional field, `category`, to the `body` of [CIP-0108](../CIP-0108/README.md) governance action metadata. An Info Action uses it to define one or more categories. A Treasury Withdrawal or a later Info Action uses it to point at one of them by the defining action's governance action ID and the category's key. A category can carry a ceiling, a period and the reward accounts that may receive its funds, so tools can check a withdrawal's claim against its on-chain recipients and compute withdrawn totals.
 
 ## Motivation: Why is this CIP necessary?
 
@@ -32,9 +32,9 @@ The key words MUST, MUST NOT, SHOULD, SHOULD NOT, RECOMMENDED and MAY are to be 
 
 ### Terms
 
-- **Category**: a named group of governance actions that an Info Action defines. It may describe an allocation of treasury funds that later Treasury Withdrawals spend against.
-- **Definition action**: an Info Action whose metadata carries a valid `category` with `kind` `definition`. It defines exactly one category.
-- **Category ID**: the governance action ID of the definition action. A category has no other identity.
+- **Category**: a named group of governance actions, defined as one entry of a definition action. It may describe an allocation of treasury funds that later Treasury Withdrawals spend against.
+- **Definition action**: an Info Action whose metadata carries a valid `category` with `kind` `definition`. It defines one or more categories.
+- **Category identity**: the governance action ID of the definition action together with the category's `key`. A category has no other identity. In a member, `categoryId` holds the first part and `categoryKey` the second.
 - **Member action**: a Treasury Withdrawal or Info Action whose metadata carries a valid `category` with `kind` `member`.
 - **Governance action ID**: always written in [CIP-0129](../CIP-0129/README.md) bech32 form (`gov_action1…`), lower case. A value that is not lower case or does not decode with a valid checksum is invalid.
 - **Reward account**: a [CIP-0019](../CIP-0019/README.md) reward address, written in lower-case bech32 (`stake1…`, `stake_test1…`). A value that is not lower case or does not decode with a valid checksum to a reward address is invalid.
@@ -47,7 +47,7 @@ The key words MUST, MUST NOT, SHOULD, SHOULD NOT, RECOMMENDED and MAY are to be 
 The CIP-0108 context sets no `@vocab`, so an unmapped property is dropped from the canonical form or rejected in safe mode. Therefore:
 
 1. Writers MUST add the term definition below to the existing `body.@context`. They MUST keep `body`'s `@id` and every term already mapped there, including other extensions such as [CIP-0169](../CIP-0169/README.md) `onChain` and [CIP-0179](../CIP-0179/README.md) `cip179`. Replacing `body` wholesale produces an invalid context.
-2. Readers MUST treat `category` as absent unless the context maps `category` and every sub-property present in it, including `period.startEpoch` and `period.endEpoch`, to this CIP's namespace. The `CIPCAT` prefix MUST be defined at the top level of the context. This affects only `category`. The rest of the document is shown as usual.
+2. Readers MUST treat `category` as absent unless the context maps `category` and every sub-property present in it, including the properties of each `categories` entry and `period.startEpoch` and `period.endEpoch`, to this CIP's namespace. The `CIPCAT` prefix MUST be defined at the top level of the context. This affects only `category`. The rest of the document is shown as usual.
 
 Term definition to insert into `body.@context`:
 
@@ -58,6 +58,8 @@ Term definition to insert into `body.@context`:
     "@language": null,
     "specVersion": "CIPCAT:specVersion",
     "kind": "CIPCAT:kind",
+    "categories": { "@id": "CIPCAT:categories", "@container": "@set" },
+    "key": "CIPCAT:key",
     "label": { "@id": "CIPCAT:label", "@language": "en-us" },
     "budget": "CIPCAT:budget",
     "period": {
@@ -66,7 +68,8 @@ Term definition to insert into `body.@context`:
     },
     "recipients": { "@id": "CIPCAT:recipients", "@container": "@set" },
     "process": "CIPCAT:process",
-    "categoryId": "CIPCAT:categoryId"
+    "categoryId": "CIPCAT:categoryId",
+    "categoryKey": "CIPCAT:categoryKey"
   }
 }
 ```
@@ -97,17 +100,24 @@ Allowed only on Info Actions.
 | --- | --- | --- | --- |
 | `specVersion` | yes | JSON integer `1` | Version of this CIP. |
 | `kind` | yes | `"definition"` | |
+| `categories` | yes | non-empty array of category entries | The categories this action defines. |
+| `process` | no | governance action ID | An Info Action that set up a wider process these categories belong to, for example an annual budget. Tools MAY show it as a link. Version 1 defines no rule that resolves it. |
+
+Each category entry:
+
+| Property | Required | Type and form | Meaning |
+| --- | --- | --- | --- |
+| `key` | yes | string matching `^[a-z0-9]+(-[a-z0-9]+)*$`, 1 to 32 characters, distinct within the action | Identifies the category within the definition action. |
 | `label` | yes | string, 1 to 80 Unicode code points | Human-readable name of the category. |
 | `budget` | no | string matching `^(0\|[1-9][0-9]*)$` | The category's ceiling in lovelace. A JSON number is invalid, because it loses precision above 2^53. |
 | `period` | no | object with exactly the two properties `startEpoch` and `endEpoch`, non-negative JSON integers, `startEpoch <= endEpoch` | Inclusive range of enactment epochs in which withdrawals count against this category. |
 | `recipients` | no | non-empty array of distinct reward accounts | Reward accounts that may receive this category's withdrawals. |
-| `process` | no | governance action ID | An Info Action that set up a wider process this category belongs to, for example an annual budget. Tools MAY show it as a link. Version 1 defines no rule that resolves it. |
 
-The smallest valid definition carries only `specVersion`, `kind` and `label`. It groups actions but has no recipient check, so its checked total stays 0 and every enacted member withdrawal appears in the unchecked figure.
+The smallest valid definition carries `specVersion`, `kind` and one entry with only `key` and `label`. Such a category groups actions but has no recipient check, so its checked total stays 0 and every enacted member withdrawal appears in the unchecked figure.
 
 The prose in `abstract`, `motivation` and `rationale` stays authoritative for what the category covers and who runs it. Tools compute with the structured fields and SHOULD link the prose next to every computed figure.
 
-A category changes only through a new definition action with a new Category ID. Version 1 has no link between an old and a new definition.
+A category changes only through a new definition action. Version 1 has no link between an old and a new definition.
 
 ### Member
 
@@ -117,60 +127,77 @@ Allowed on Treasury Withdrawals and Info Actions.
 | --- | --- | --- | --- |
 | `specVersion` | yes | JSON integer `1` | Version of this CIP. |
 | `kind` | yes | `"member"` | |
-| `categoryId` | yes | governance action ID | Category ID of the definition action. |
+| `categoryId` | yes | governance action ID | Governance action ID of the definition action. |
+| `categoryKey` | yes | string in the form of `key` | `key` of the category within that definition action. |
 
 A member action names exactly one category. A proposal that spans categories is split into one action per category. An Info Action member, such as a report or a scope change, is listed with the category and never adds to any total.
 
 ### Validity
 
-A `category` object is valid only when all of the following hold. Otherwise readers MUST treat it as absent and MUST NOT repair or coerce values. Readers check validity on the JSON document as anchored, before JSON-LD expansion, because expansion hides differences such as an empty array, a single string in place of an array, or duplicate entries.
+A `category` object is valid only when all of the following hold. Otherwise readers MUST treat it as absent and MUST NOT repair or coerce values. Readers check validity on the JSON document as anchored, before JSON-LD expansion, because expansion hides differences such as an empty array, a single string or object in place of an array, or duplicate entries.
 
 - The context maps it as described above.
 - `specVersion` is the JSON integer `1`. Readers that implement version 1 ignore any other value.
 - `kind` is `definition` on an Info Action, or `member` on a Treasury Withdrawal or Info Action. Any other combination, including any `category` on another action type, is invalid.
 - Every required property is present, and every present property has the type and form given in its table.
-- Properties not defined for its `kind` are absent.
+- The `category` object carries only the properties defined for its `kind`.
+- Each category entry carries only the properties in the category entry table.
+- The `key` values within `categories` are distinct.
 
 ### How tools read it
 
-1. **Approval stays a social decision.** Info Actions are never enacted, so the ledger never says whether a category was approved. Tools MUST show the definition action's tally and status next to the category and MUST NOT present a category as approved by protocol. A tool MAY apply a threshold named by the process the category belongs to, and MUST say which one.
-2. **Resolving a category.** Tools read `category` only from a document whose bytes match the action's own on-chain anchor hash, for definition and member actions alike. A member action resolves when `categoryId` is the ID of a definition action whose anchor document has been verified at least once. Tools MAY keep verified bytes, and a category stays as read when its anchor URL later stops serving. A member action that does not resolve is shown as unresolved. Tools MUST NOT guess the category from titles. Tools SHOULD show a Treasury Withdrawal without a valid `category` as having no declared category.
-3. **Recipient check.** When the definition lists `recipients`, a tool decodes each listed account and each reward account in the Treasury Withdrawal's ledger body to its header byte and 28-byte credential, and compares those. A listed account on another network never matches. The result is **matched** when every withdrawal recipient is listed, and **mismatch** otherwise. Without `recipients`, the withdrawal is **unchecked**.
-4. **Counting.** A category's checked total is the sum of the ledger amounts of enacted, **matched** member Treasury Withdrawals, attributed by enactment epoch and limited to `period` when given. Amounts always come from the ledger, never from metadata. Tools SHOULD show unchecked and mismatched withdrawals as separate figures and MUST NOT add them to the total. Members not yet enacted, or enacted outside `period`, are listed with the category and appear in no figure. Tools SHOULD make clear that membership rests on the proposer's own reference.
+1. **Approval stays a social decision.** Info Actions are never enacted, so the ledger never says whether a category was approved. Tools MUST show the definition action's tally and status next to the category, SHOULD make clear when that tally covers several categories, and MUST NOT present a category as approved by protocol. A tool MAY apply a threshold named by the process the category belongs to, and MUST say which one.
+2. **Resolving a category.** Tools read `category` only from a document whose bytes match the action's own on-chain anchor hash, for definition and member actions alike. A member action resolves when `categoryId` is the ID of a definition action whose anchor document has been verified at least once, and `categoryKey` is the `key` of one of its categories. Tools MAY keep verified bytes, and a category stays as read when its anchor URL later stops serving. A member action that does not resolve is shown as unresolved. Tools MUST NOT guess the category from titles. Tools SHOULD show a Treasury Withdrawal without a valid `category` as having no declared category.
+3. **Recipient check.** When the category lists `recipients`, a tool decodes each listed account and each reward account in the Treasury Withdrawal's ledger body to its header byte and 28-byte credential, and compares those. A listed account on another network never matches. The result is **matched** when every withdrawal recipient is listed, and **mismatch** otherwise. Without `recipients`, the withdrawal is **unchecked**.
+4. **Counting.** A member counts only for the category that its `categoryId` and `categoryKey` together resolve to. A category's checked total is the sum of the ledger amounts of enacted, **matched** member Treasury Withdrawals, attributed by enactment epoch and limited to `period` when given. Amounts always come from the ledger, never from metadata. Tools SHOULD show unchecked and mismatched withdrawals as separate figures and MUST NOT add them to the total. Members not yet enacted, or enacted outside `period`, are listed with the category and appear in no figure. Tools SHOULD make clear that membership rests on the proposer's own reference.
 
 ### Example
 
-The `body` of a definition action, abbreviated to `title` and the part this CIP adds. `body.@context` with the term definition from above is left out. IDs and the account are made up for illustration, with valid checksums.
+The `body` of a definition action that defines two categories, abbreviated to `title` and the part this CIP adds. `body.@context` with the term definition from above is left out. IDs and the account are made up for illustration, with valid checksums. `process` points at the Info Action that set up the wider budget, for example one that set a Net Change Limit.
 
 ```json
 "body": {
-  "title": "Core Infrastructure 2027",
+  "title": "Budget domains 2027",
   "category": {
     "specVersion": 1,
     "kind": "definition",
-    "label": "Core Infrastructure 2027",
-    "budget": "50000000000000",
-    "period": { "startEpoch": 620, "endEpoch": 692 },
-    "recipients": ["stake179xe3t8ka8c52d73a747kxkuqqvrh0hh3urzqwlgnlqursq8p8cvg"]
+    "process": "gov_action1neayu43mmlucmgpz9nn6z0e683amvdawk08vcush9qkfnmfkgdqsqsnqerx",
+    "categories": [
+      {
+        "key": "core-infra",
+        "label": "Core Infrastructure 2027",
+        "budget": "50000000000000",
+        "period": { "startEpoch": 620, "endEpoch": 692 },
+        "recipients": ["stake179xe3t8ka8c52d73a747kxkuqqvrh0hh3urzqwlgnlqursq8p8cvg"]
+      },
+      {
+        "key": "community",
+        "label": "Community 2027",
+        "period": { "startEpoch": 620, "endEpoch": 692 }
+      }
+    ]
   }
 }
 ```
 
-Suppose this action is `gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29`. A later Treasury Withdrawal that spends against it carries:
+Suppose this action is `gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29`. A later Treasury Withdrawal that spends against the first category carries:
 
 ```json
 "category": {
   "specVersion": 1,
   "kind": "member",
-  "categoryId": "gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29"
+  "categoryId": "gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29",
+  "categoryKey": "core-infra"
 }
 ```
 
-If that withdrawal pays the listed account and is enacted in an epoch from 620 to 692, its ledger amount counts towards the 50 million ada ceiling. If it pays another account, tools show it as a mismatch outside the total.
+If that withdrawal pays the listed account and is enacted in an epoch from 620 to 692, its ledger amount counts towards the 50 million ada ceiling. If it pays another account, tools show it as a mismatch outside the total. The second category has no `budget` and no `recipients`, so it groups its members, and their withdrawals enacted within its period appear in its unchecked figure.
 
 ## Rationale: How does this CIP achieve its goals?
 
-**The Info Action is the identity.** A string such as `"core-infra"` would need a registry and would collide across years and processes. The governance action ID already exists, is unique, and points at the vote on the category.
+**The definition action and a key identify a category.** A string such as `"core-infra"` on its own would need a registry and would collide across years and processes. The governance action ID already exists, is unique, and points at the vote on the category, so a `key` only has to be unique within one action.
+
+**One or several categories per definition.** A process can define all its categories in one action, for example an annual budget with its domains, or put each category in its own action so DReps vote on each one separately. The CIP leaves that choice to the process. Categories defined in one action share its tally.
 
 **Optional budget fields.** Grouping is useful on its own, for example a grant round's reports. With the budget fields optional, one mechanism covers a plain group and a funded allocation.
 
@@ -184,7 +211,7 @@ If that withdrawal pays the listed account and is enacted in an epoch from 620 t
 
 **No role for who runs a category.** The names for that role (steward, administrator, committee) carry positions in an ongoing debate about control of treasury funds. `recipients` covers what tools can check, and the rest belongs in the prose and `references`.
 
-**One category per action.** Several categories on one action would count the same lovelace twice, and a per-recipient split would repeat amounts the ledger already holds.
+**One category per member action.** Several categories on one member action would count the same lovelace twice, and a per-recipient split would repeat amounts the ledger already holds.
 
 **No supersession in version 1.** A pointer from a new definition to an old one raises questions the chain cannot answer: who may replace a category, which of two replacements wins, and whether totals carry over.
 
@@ -195,7 +222,6 @@ If that withdrawal pays the listed account and is enacted in an epoch from 620 t
 - *CIP-0179* adds survey links to the same `body`. This CIP follows its context merge.
 - *Governance Action Addendums* ([CIP-0185?](https://github.com/cardano-foundation/CIPs/pull/1180)) publish later updates under a separate label. A category in the anchored `body` cannot change afterwards, which keeps totals stable. Addendums could reuse this field later.
 - *A free label without a definition action* would let two processes pick the same word and has nothing to check against.
-- *One Info Action defining several categories* would let one tally approve all of them, so DReps could not accept one and reject another.
 - *Tool-side curation* has to be repeated by every tool. It remains the fallback for actions submitted before this CIP.
 ### Backwards compatibility
 
@@ -203,12 +229,10 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 
 ### Open Questions
 
-- Is there a need for a lighter mode in which an action carries a category without a definition action?
-- Should `budget` be required on definitions?
+- Should definitions keep pointing at an umbrella action only through the generic `process` field, which still fits if the way treasury funds are set up changes, or name the Net Change Limit or another funding mechanism explicitly?
 - Is a fixed `recipients` list the right check when a category pays many recipients that are not known when it is defined, or does a later version need another way to confirm membership?
-- Does the Net Change Limit belong here as an optional pointer on definitions?
 - Does a later version need a link from a new definition to the one it replaces, for example when the receiving account changes mid-period and the ceiling should count only once, and what decides between competing replacements?
-- Should a later version let a party other than the proposer confirm, contest or reassign an action's category, for example in a stage before the vote through a [CIP-0179](../CIP-0179/README.md) survey or an addendum ([CIP-0185?](https://github.com/cardano-foundation/CIPs/pull/1180)), and which result then counts for the totals?
+- Should a later version let a party other than the proposer confirm, contest or reassign an action's category, for example in a stage before the vote through a [CIP-0179](../CIP-0179/README.md) survey or an addendum ([CIP-0185?](https://github.com/cardano-foundation/CIPs/pull/1180)), which result then counts for the totals, and should tools show such statements from parties eligible to vote on the action next to the proposer's reference?
 - Should a later version open member actions to further action types?
 
 ## Path to Active
@@ -225,7 +249,7 @@ The field is optional. Tools that do not implement this CIP can ignore it. Earli
 No implementation exists yet. The format is put up for review first, so that tool builders, budget process teams and DReps can shape it before any document carries it.
 
 - [x] Open the CIP pull request and fix the namespace IRI.
-- [ ] Publish test vectors with the CIP: valid documents with and without `onChain` and `cip179`, with anchor and canonical body hashes, one invalid document per validity rule, the three recipient results, and one total fixture covering every member status and the `period` bounds.
+- [ ] Publish test vectors with the CIP: valid documents with and without `onChain` and `cip179`, with anchor and canonical body hashes, one invalid document per validity rule, the three recipient results, one total fixture covering every member status and the `period` bounds, and one fixture with a definition of two categories that differ in `recipients` and `period`, members for each key, a member with an unknown key, and the same key under another definition.
 - [x] Ask budget process teams, grant programs and tool builders to review the format.
 
 No tool should write the field on Mainnet until this CIP is merged. Testnets are fine.
