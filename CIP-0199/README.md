@@ -41,7 +41,7 @@ The initial instance registry contains two entries, chosen to serve the two domi
 
 ### Poseidon
 
-Poseidon [1] is a family of cryptographic hash functions designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.), each built as a framing around a core permutation — the layer this CIP exposes.
+Poseidon[^poseidon] is a family of cryptographic hash functions designed to be efficient inside zero-knowledge proof systems (ZK-SNARKs, STARKs, PLONK, etc.), each built as a framing around a core permutation — the layer this CIP exposes.
 Unlike "traditional" hashes such as SHA-256 or Blake2b, which operate on bits and are
 cheap on a CPU but extremely expensive to prove in a circuit, Poseidon operates directly over the elements of a large prime field $\mathbb{F}_p$, where $p$ is usually the scalar field prime of the elliptic curve underlying the proof system.
 Because the operations of which a Poseidon function is comprised are native field additions and multiplications, the number of constraints needed to prove a Poseidon evaluation in-circuit is orders of magnitude smaller than for a bit-oriented hash.
@@ -124,10 +124,10 @@ Which state element plays the role of the capacity, what value the capacity is i
 Real-world implementations disagree on every one of these choices.
 Two deployed examples over the BLS12-381 scalar field, both cross-validated against the reference implementation accompanying this proposal:
 
-- **circom-style** ([`jmagan/poseidon-bls12381-circom`](https://github.com/jmagan/poseidon-bls12381-circom) [7], following the framing of the widely used `circomlib` library [5]): an $n$-input hash uses width $t = n + 1$; the capacity element is the *first* state element and is initialized to zero; the whole hash is a *single* application of $P$ to $(0, \text{in}_1, \dots, \text{in}_n)$; the digest is the *first* element of the output state — i.e. it is read from the position the capacity occupied, not from the rate.
+- **circom-style** ([`jmagan/poseidon-bls12381-circom`](https://github.com/jmagan/poseidon-bls12381-circom)[^circom-bls12-381], following the framing of the widely used `circomlib` library[^circomlib]): an $n$-input hash uses width $t = n + 1$; the capacity element is the *first* state element and is initialized to zero; the whole hash is a *single* application of $P$ to $(0, \text{in}_1, \dots, \text{in}_n)$; the digest is the *first* element of the output state — i.e. it is read from the position the capacity occupied, not from the rate.
   There is no domain-separation or length tag.
   (This lineage's extended `PoseidonEx` template does allow a caller to initialize the capacity element to an arbitrary value, which is how a domain-separation tag *can* be injected in that ecosystem, but the plain `Poseidon` template used in practice fixes it to zero.)
-- **[midnight-zk](https://github.com/midnightntwrk/midnight-zk) fixed-arity hash** [6]: the capacity element is the *last* state element and is initialized to the *number of inputs* (a length tag); inputs are absorbed in rate-sized chunks with one application of $P$ per chunk; the digest is the *first* element of the output state.
+- **[midnight-zk](https://github.com/midnightntwrk/midnight-zk) fixed-arity hash**[^midnight-zk]: the capacity element is the *last* state element and is initialized to the *number of inputs* (a length tag); inputs are absorbed in rate-sized chunks with one application of $P$ per chunk; the digest is the *first* element of the output state.
   Concretely, the 3-input hash on the width-3 instance runs:
 
   1. start from the initial state $(0, 0, 3)$ — the capacity element (last) holds the length tag;
@@ -164,9 +164,9 @@ This split is essential to security, not just an optimization.
 Because all but one lane pass through a partial round linearly, the partial rounds on their own offer little resistance to statistical attacks: that resistance is provided by the full rounds alone, which is why the construction is only secure when enough full rounds — $R_F/2$ on *each* side — surround the partial rounds (at least $R_F = 6$ in total, see the notation below).
 Moving full rounds into the partial block, or placing them all on one side, voids the security argument even if the total number of rounds is unchanged.
 
-> **Notation:** the paper [1] uses two symbols for full rounds: $R_f$ (lowercase) for the full rounds on *one* side, and $R_F = 2R_f$ (uppercase) for the *total*.
+> **Notation:** the paper[^poseidon] uses two symbols for full rounds: $R_f$ (lowercase) for the full rounds on *one* side, and $R_F = 2R_f$ (uppercase) for the *total*.
 > Throughout this document $R_F$ always denotes the total number of full rounds (so $R_F/2$ on each side equals the paper's $R_f$).
-> The paper's statistical-security minimum is $R_F \geq 6$; the value $R_F = 8$ used below is that minimum plus the paper's recommended safety margin of two additional full rounds [1].
+> The paper's statistical-security minimum is $R_F \geq 6$; the value $R_F = 8$ used below is that minimum plus the paper's recommended safety margin of two additional full rounds[^poseidon].
 
 The S-box is the most expensive operation in a circuit, so applying it to one element instead of $t$ for most rounds is where the savings come from.
 The exact round counts $(R_F, R_P)$ are derived from $p$, $t$, and $\alpha$ to give a target security level (typically 128 bits).
@@ -211,16 +211,16 @@ The deployed BLS12-381 instances that have been cross-validated against the refe
 
 | Origin | $t$ (rate $r$ / capacity $c$) | $\alpha$ | $R_F$ | $R_P$ | Constant generation |
 | --- | --- | --- | --- | --- | --- |
-| [midnight-zk](https://github.com/midnightntwrk/midnight-zk) [6] | 3 ($r=2$, $c=1$) | 5 | 8 | 60 | `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (pasta-hadeshash) |
-| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom) [7] | 3 ($r=2$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (hadeshash) |
-| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom) [7] | 4 ($r=3$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 4 5 128 <r>` (hadeshash) |
+| [midnight-zk](https://github.com/midnightntwrk/midnight-zk)[^midnight-zk] | 3 ($r=2$, $c=1$) | 5 | 8 | 60 | `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (pasta-hadeshash) |
+| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom)[^circom-bls12-381] | 3 ($r=2$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (hadeshash) |
+| [circom BLS12-381 port](https://github.com/jmagan/poseidon-bls12381-circom)[^circom-bls12-381] | 4 ($r=3$, $c=1$) | 5 | 8 | 56 | `generate_params_poseidon.sage 1 0 255 4 5 128 <r>` (hadeshash) |
 
 Note that two of these share the same $(p, t, \alpha)$ yet use different partial-round counts, 60 versus 56: both include a security margin over the paper's minima, but the margin and the derivation script differ.
 The Poseidon paper's own `calc_round_numbers.py` can likewise produce slightly different counts depending on the margin and attack assumptions chosen.
 Neither instance is "wrong" — but they are different hash functions, and their digests are incompatible.
 
 > **Caveat:** for exactly this reason, this specification fixes for each registered instance the exact generator script and its inputs (not merely a round-count table), so that round constants, the MDS matrix, and round counts are reproducible bit-for-bit.
-> **Note:** *Poseidon2* [3] is a newer successor that keeps the same round structure but uses a cheaper linear layer and constant schedule.
+> **Note:** *Poseidon2*[^poseidon2] is a newer successor that keeps the same round structure but uses a cheaper linear layer and constant schedule.
 > It is explicitly **out of scope** for this CIP: this specification standardizes the original, battle-tested Poseidon, which has seen years of deployment and cryptanalysis across the ZK ecosystem.
 
 ### The built-in
@@ -232,7 +232,7 @@ bls12_381_poseidonPermutation : integer -> list integer -> list integer
 ```
 
 (The name carries `bls12_381` following the existing family of BLS12-381 built-ins; the final spelling is to be agreed with the Plutus Core team.
-It deliberately says *permutation*, not hash — see the terminology box below — and deliberately says *Poseidon* rather than HADES: HADES [2] is the broader design *strategy*, of which other instantiations exist, whereas this built-in's registry admits specifically the original Poseidon construction — power-map S-box, a single MDS linear layer, the Poseidon paper's round-count minima.)
+It deliberately says *permutation*, not hash — see the terminology box below — and deliberately says *Poseidon* rather than HADES: HADES[^hades] is the broader design *strategy*, of which other instantiations exist, whereas this built-in's registry admits specifically the original Poseidon construction — power-map S-box, a single MDS linear layer, the Poseidon paper's round-count minima.)
 
 Its semantics:
 
@@ -261,7 +261,7 @@ Space is constant per instance: the state is $t$ field elements throughout, and 
 
 #### Reference implementation
 
-The permutation core referenced throughout this document is the C Poseidon implementation in Nomadic Labs' [`ocaml-bls12-381-hash`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash) library [10] ([`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon)), MIT-licensed, which operates on the same `blst` field arithmetic as the existing BLS12-381 built-ins.
+The permutation core referenced throughout this document is the C Poseidon implementation in Nomadic Labs' [`ocaml-bls12-381-hash`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash) library[^nomadic-labs] ([`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon)), MIT-licensed, which operates on the same `blst` field arithmetic as the existing BLS12-381 built-ins.
 Its permutation context is parameterized over the width, round counts and constants, so each registry entry instantiates the same core with its own constants file (index 1 additionally needs either a generalized partial-S-box lane or the shipped `conjugated_form` — see *Implementation Plan*).
 This core, integrated into `cardano-base` and Plutus, is what produced the benchmark results in *Cost model and initial benchmarks*; that integration is **preliminary work demonstrating onchain feasibility, not a production implementation**, and the C core has not yet been independently audited (see *Trustworthiness* and *Path to Active*).
 
@@ -295,7 +295,7 @@ The signature contains $t$ but says nothing about the split $t = r + c$, and del
 $P$ is a bijection on $\mathbb{F}_p^t$ with no distinguished lanes — the reference C context accordingly stores only the width, round counts and constants.
 "Rate" and "capacity" only come into existence in a *mode*: the rate is the set of lanes a mode chooses to add message into, and the capacity is the set of lanes it promises never to touch.
 Since the built-in never absorbs, there is nothing for it to be ambiguous about: how an arity-6 hash splits its inputs — three chunks of two on a width-3 instance, or a single chunk on a width-7 instance — is written out explicitly in the calling script, one permutation call per chunk, and different splits are simply different (individually well-defined) hash functions.
-The split does matter for *security*: the sponge indifferentiability argument [4] applies only to scripts that leave the instance's $c$ designated capacity lanes untouched by input and output.
+The split does matter for *security*: the sponge indifferentiability argument[^sponge] applies only to scripts that leave the instance's $c$ designated capacity lanes untouched by input and output.
 Each registry entry therefore documents its ecosystem's rate/capacity split and lane positions — as the contract a script must follow to inherit the instance's security analysis, not as behaviour the built-in enforces.
 
 #### Why the full state is returned
@@ -317,7 +317,7 @@ In particular:
 - **The full output state is never a commitment.**
   Given all $t$ output elements, the entire input state is recoverable exactly by running $P$ backwards.
   More generally, *revealing* (or absorbing into) all $t$ lanes leaves no hidden state: an attacker who learns the full state after any permutation call can run the sponge backwards to recover everything absorbed and forwards to compute digests of arbitrary extensions.
-  Preimage resistance exists only because the $c$ capacity lanes of the final state are withheld — a digest must be a *truncation* of the output (the sponge construction bounds security by $c \cdot \log_2(p) / 2$ bits [4], about 127 bits for a width-3, $c = 1$ instance).
+  Preimage resistance exists only because the $c$ capacity lanes of the final state are withheld — a digest must be a *truncation* of the output (the sponge construction bounds security by $c \cdot \log_2(p) / 2$ bits[^sponge], about 127 bits for a width-3, $c = 1$ instance).
   Consequently: publish only the framing's designated digest lane(s); never absorb message elements into the capacity lane; never build keyed constructions (MAC-like uses) that expose more of the state than the framing's digest.
 
 - **Prefix and extension attacks on home-made framings.**
@@ -383,20 +383,20 @@ The two initial entries are chosen to cover the two dominant proving-stack linea
 
 | Index | Instance | $t$ | $\alpha$ | $R_F$ | $R_P$ | Partial S-box lane | Constants |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 0 | midnight-zk [6] | 3 | 5 | 8 | 60 | last | [`midnight-poseidon-constants.json`](./midnight-poseidon-constants.json) |
-| 1 | circom BLS12-381 port [7], 2-input | 3 | 5 | 8 | 56 | first | [`circom-bls-t3-poseidon-constants.json`](./circom-bls-t3-poseidon-constants.json) |
+| 0 | midnight-zk[^midnight-zk] | 3 | 5 | 8 | 60 | last | [`midnight-poseidon-constants.json`](./midnight-poseidon-constants.json) |
+| 1 | circom BLS12-381 port[^circom-bls12-381], 2-input | 3 | 5 | 8 | 56 | first | [`circom-bls-t3-poseidon-constants.json`](./circom-bls-t3-poseidon-constants.json) |
 
 **Index 0 — midnight-zk (plonkish/halo2 ecosystem).**
 The instance behind midnight-zk's Poseidon chip: width 3, $R_F = 8$, $R_P = 60$, S-box $x^5$, partial-round S-box on the last lane, row-major MDS ($`\text{state}'_i = \sum_j M_{ij}\,\text{state}_j`$), constants consumed in ARC → S-box → Mix order.
-Provenance: `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (the pasta-hadeshash generator); source of truth `circuits/src/hash/poseidon/constants/blstrs.rs` in [6] (`Fq::from_raw` little-endian limbs, canonical form), converted to the decimal integers in the constants file and cross-validated against midnight's own Rust implementation.
+Provenance: `generate_parameters_grain.sage 1 0 255 3 8 60 <r>` (the pasta-hadeshash generator); source of truth `circuits/src/hash/poseidon/constants/blstrs.rs` in midnight-zk[^midnight-zk] (`Fq::from_raw` little-endian limbs, canonical form), converted to the decimal integers in the constants file and cross-validated against midnight's own Rust implementation.
 The ecosystem it originates from operates it as: capacity lane last, initialized to the input count; digest = first lane (an example use, documented non-normatively in the constants file and demonstrated in *Non-normative examples*).
 
 **Index 1 — circom BLS12-381 port, 2-input (R1CS ecosystem).**
-The width-3 instance of the circom port [7], serving the circomlib-style R1CS ecosystem: width 3, $R_F = 8$, $R_P = 56$, S-box $x^5$, partial-round S-box on the **first** lane, row-major MDS, constants consumed in ARC → S-box → Mix order.
-Provenance: `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (the hadeshash generator); source of truth `circuits/poseidon255_constants.circom` in [7], cross-validated against the circom tooling on the compiled circuit.
+The width-3 instance of the circom port[^circom-bls12-381], serving the circomlib-style R1CS ecosystem: width 3, $R_F = 8$, $R_P = 56$, S-box $x^5$, partial-round S-box on the **first** lane, row-major MDS, constants consumed in ARC → S-box → Mix order.
+Provenance: `generate_params_poseidon.sage 1 0 255 3 5 128 <r>` (the hadeshash generator); source of truth `circuits/poseidon255_constants.circom` in the circom port[^circom-bls12-381], cross-validated against the circom tooling on the compiled circuit.
 The entry is *defined* by this upstream form; an implementation whose permutation core fixes the S-box on the last lane may realize it through the exact state-reversal conjugation shipped as `conjugated_form` in the constants file — observationally identical, hence not a distinct variant under the registry contract.
 The ecosystem it originates from operates it as: a single permutation of $(0, \text{in}_1, \text{in}_2)$ — capacity lane first, fixed to zero, exactly two inputs; digest = first lane (an example use, documented non-normatively in the constants file).
-This lineage also covers other toolchains that follow circomlib's conventions: Noir's Poseidon library [9], for instance, uses exactly this recipe (Grain/hadeshash constants, width $t = n + 1$, capacity first and zero, partial-round S-box and digest on the first lane) — today only over the BN254 field and hence out of scope, but a future Noir proving backend over the BLS12-381 scalar field adopting the same recipe would be served by this instance family rather than needing a new one.
+This lineage also covers other toolchains that follow circomlib's conventions: Noir's Poseidon library[^noir-poseidon], for instance, uses exactly this recipe (Grain/hadeshash constants, width $t = n + 1$, capacity first and zero, partial-round S-box and digest on the first lane) — today only over the BN254 field and hence out of scope, but a future Noir proving backend over the BLS12-381 scalar field adopting the same recipe would be served by this instance family rather than needing a new one.
 
 #### Candidate instances
 
@@ -404,7 +404,7 @@ The following instance is fully validated against its upstream implementation an
 
 | Instance | $t$ | $\alpha$ | $R_F$ | $R_P$ | Partial S-box lane | Constants |
 | --- | --- | --- | --- | --- | --- | --- |
-| circom BLS12-381 port [7], 3-input | 4 | 5 | 8 | 56 | first | [`circom-bls-t4-poseidon-constants.json`](./circom-bls-t4-poseidon-constants.json) |
+| circom BLS12-381 port[^circom-bls12-381], 3-input | 4 | 5 | 8 | 56 | first | [`circom-bls-t4-poseidon-constants.json`](./circom-bls-t4-poseidon-constants.json) |
 
 Provenance: `generate_params_poseidon.sage 1 0 255 4 5 128 <r>` (the hadeshash generator); the same first-lane S-box and conjugation remarks as index 1 apply.
 
@@ -416,8 +416,8 @@ Beyond completeness, the entry must satisfy:
 1. **Field**: the BLS12-381 scalar field — this built-in never hosts another field.
    Ecosystems native to a different field — the canonical BN254 deployments of circomlib, or Noir with its Barretenberg backend (BN254) — are permanently out of scope: their digests cannot be reproduced over this field at any layer.
 2. **S-box**: $\gcd(\alpha, p - 1) = 1$, so $x \mapsto x^\alpha$ is a bijection.
-3. **Security level**: a declared level of at least 128 bits, with $(R_F, R_P)$ meeting the Poseidon paper's minima plus its recommended margin for the declared $(t, \alpha)$ [1].
-4. **Constant properties**: all constants canonical in $[0, p)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero [1, footnote 7], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $`\{x : x_{\text{S-box lane}} = 0\}`$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ [1, §2.3; 8].
+3. **Security level**: a declared level of at least 128 bits, with $(R_F, R_P)$ meeting the Poseidon paper's minima plus its recommended margin for the declared $(t, \alpha)$[^poseidon].
+4. **Constant properties**: all constants canonical in $[0, p)$; round constants pairwise distinct and nonzero; the matrix genuinely MDS (every square minor nonzero, see footnote 7 of the Poseidon paper[^poseidon], hence invertible); and no infinitely long subspace trail keeping the partial-round S-box inactive — the only $M$-invariant subspace contained in $`\{x : x_{\text{S-box lane}} = 0\}`$ is the trivial one, checked as full rank of the matrix with rows $e_l M^j$, $j = 0, \dots, t-1$ (Poseidon paper[^poseidon], §2.3; see also[^subspace-trails]).
    (The stronger condition that no power $M^i$ has *any* eigenvalue in $\mathbb{F}_p$ is sufficient but **not necessary** — both registered width-3 instances have such eigenvalues yet satisfy the criterion above; the width-4 circom candidate happens to have none.)
 5. **Cross-validation**: test vectors reproduced against the upstream implementation the instance claims compatibility with, plus the normative permutation vector.
 6. **Demonstrated demand**: a concrete user or protocol that needs this instance.
@@ -467,7 +467,7 @@ Exposing the permutation as a native built-in — costed as a constant per varia
 
 Per CIP-35, a proposed built-in must argue that its implementation can be trusted. For the reference implementation (see *Reference implementation*):
 
-- **Provenance and review.** The C core comes from Nomadic Labs' MIT-licensed `ocaml-bls12-381-hash` library [10], built on the same `blst` arithmetic as the existing BLS12-381 built-ins. It has been reviewed by the authors of this proposal, and every registered instance is cross-validated against its upstream ecosystem implementation through the shipped test vectors (`test-vectors.json`, re-derivable via `check-constants.py`). It has **not** yet been independently audited; an audit is a precondition for a production release and appears in the acceptance criteria below.
+- **Provenance and review.** The C core comes from Nomadic Labs' MIT-licensed `ocaml-bls12-381-hash` library[^nomadic-labs], built on the same `blst` arithmetic as the existing BLS12-381 built-ins. It has been reviewed by the authors of this proposal, and every registered instance is cross-validated against its upstream ecosystem implementation through the shipped test vectors (`test-vectors.json`, re-derivable via `check-constants.py`). It has **not** yet been independently audited; an audit is a precondition for a production release and appears in the acceptance criteria below.
 - **Termination.** Every call executes exactly $R_F + R_P$ rounds of straight-line field arithmetic; there is no input-dependent control flow, so the function always terminates.
 - **No exceptions.** The function is total apart from its two specified failure modes — an unregistered variant index and a wrong-length input list — both of which are ordinary, costed built-in evaluation failure, not exceptions. The arithmetic itself is total: the modular reduction accepts any integer (negative included) and no division is performed.
 - **Predictable behaviour.** The cost is constant per instance up to the input-size-linear modular reduction; the benchmarks below show a flat curve (under 10% variation over a 31× input-size range), and the proposed linear guard term covers inputs beyond the benchmarked range. There is no data-dependent worst case.
@@ -543,25 +543,23 @@ A Poseidon membership proof is thus ~90× the cost of its `blake2b_256` counterp
 - [ ] Validate the shipped constants files: re-run the pinned generator scripts and diff against the upstream sources of truth (`blstrs.rs` for index 0, `poseidon255_constants.circom` for index 1), and verify the admission criteria's constant properties via `check-constants.py`.
 - [ ] Implement the primitive (e.g. in `cardano-base`/`plutus`) with test vectors cross-checked against the upstream implementation of each registered instance.
   The existing `cardano-base`/`plutus` integration that produced the benchmarks in this document is preliminary work — its purpose was to demonstrate that the built-in can run on chain, not to be the final production implementation.
-- [ ] Commission an independent audit of the C permutation core [10] and its bindings.
+- [ ] Commission an independent audit of the C permutation core[^nomadic-labs] and its bindings.
 - [ ] Align the `cardano-base` variant registry with the table in this CIP.
-  The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash` [10] instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
+  The preliminary implementation registers a different width-3 instance at index 0 — the Nomadic Labs `ocaml-bls12-381-hash`[^nomadic-labs] instance ($R_P = 56$, different constants and provenance); the registry becomes append-only upon ratification of this CIP, so that entry must be replaced by the table above before release (the Nomadic instance can still be registered later under the admission criteria if a user demonstrates demand).
   Index 1 needs either a generalized partial-S-box lane in the C core or the shipped `conjugated_form`, and the constant test suite asserts the eigenvalue-freeness condition that the criteria above deliberately relax to the subspace-trail criterion.
 - [ ] Benchmark and propose costing parameters (initial benchmarks and a proposed costing shape in *Cost model and initial benchmarks*).
-
-## References
-
-1. L. Grassi, D. Khovratovich, C. Rechberger, A. Roy, M. Schofnegger. *Poseidon: A New Hash Function for Zero-Knowledge Proof Systems.* USENIX Security 2021. IACR ePrint [2019/458](https://eprint.iacr.org/2019/458).
-2. L. Grassi, R. Lüftenegger, C. Rechberger, D. Rotaru, M. Schofnegger. *On a Generalization of Substitution-Permutation Networks: The HADES Design Strategy.* EUROCRYPT 2020. IACR ePrint [2019/1107](https://eprint.iacr.org/2019/1107).
-3. L. Grassi, D. Khovratovich, M. Schofnegger. *Poseidon2: A Faster Version of the Poseidon Hash Function.* AFRICACRYPT 2023. IACR ePrint [2023/323](https://eprint.iacr.org/2023/323). Reference parameters: [HorizenLabs/poseidon2](https://github.com/HorizenLabs/poseidon2/blob/main/poseidon2_rust_params.sage).
-4. G. Bertoni, J. Daemen, M. Peeters, G. Van Assche. *Cryptographic Sponge Functions* / *On the Indifferentiability of the Sponge Construction*, EUROCRYPT 2008. [keccak.team/sponge_duplex.html](https://keccak.team/sponge_duplex.html).
-5. iden3. *circomlib*. Reference Poseidon circuit: [circuits/poseidon.circom](https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom).
-6. Midnight Network. *midnight-zk*, the zero-knowledge library of the Midnight blockchain; Poseidon instance and constants under [`circuits/src/hash/poseidon`](https://github.com/midnightntwrk/midnight-zk/tree/main/circuits/src/hash/poseidon). [github.com/midnightntwrk/midnight-zk](https://github.com/midnightntwrk/midnight-zk).
-7. J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
-8. L. Grassi, C. Rechberger, M. Schofnegger. *Proving Resistance Against Infinitely Long Subspace Trails: How to Choose the Linear Layer.* IACR ToSC 2021(2). IACR ePrint [2020/500](https://eprint.iacr.org/2020/500).
-9. noir-lang. *poseidon*, the Poseidon library of the Noir language (formerly in the Noir standard library); circomlib-consistent instantiations over BN254. [github.com/noir-lang/poseidon](https://github.com/noir-lang/poseidon).
-10. Nomadic Labs. *ocaml-bls12-381-hash*, MIT-licensed C implementations (with OCaml bindings) of arithmetization-friendly hash primitives over the BLS12-381 scalar field; the Poseidon permutation core referenced by this proposal lives under [`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon). [gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash).
 
 ## Copyright
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+[^poseidon]: L. Grassi, D. Khovratovich, C. Rechberger, A. Roy, M. Schofnegger. *Poseidon: A New Hash Function for Zero-Knowledge Proof Systems.* USENIX Security 2021. IACR ePrint [2019/458](https://eprint.iacr.org/2019/458).
+[^hades]: L. Grassi, R. Lüftenegger, C. Rechberger, D. Rotaru, M. Schofnegger. *On a Generalization of Substitution-Permutation Networks: The HADES Design Strategy.* EUROCRYPT 2020. IACR ePrint [2019/1107](https://eprint.iacr.org/2019/1107).
+[^poseidon2]: L. Grassi, D. Khovratovich, M. Schofnegger. *Poseidon2: A Faster Version of the Poseidon Hash Function.* AFRICACRYPT 2023. IACR ePrint [2023/323](https://eprint.iacr.org/2023/323). Reference parameters: [HorizenLabs/poseidon2](https://github.com/HorizenLabs/poseidon2/blob/main/poseidon2_rust_params.sage).
+[^sponge]: G. Bertoni, J. Daemen, M. Peeters, G. Van Assche. *Cryptographic Sponge Functions* / *On the Indifferentiability of the Sponge Construction*, EUROCRYPT 2008. [keccak.team/sponge_duplex.html](https://keccak.team/sponge_duplex.html).
+[^circomlib]: iden3. *circomlib*. Reference Poseidon circuit: [circuits/poseidon.circom](https://github.com/iden3/circomlib/blob/master/circuits/poseidon.circom).
+[^midnight-zk]: Midnight Network. *midnight-zk*, the zero-knowledge library of the Midnight blockchain; Poseidon instance and constants under [`circuits/src/hash/poseidon`](https://github.com/midnightntwrk/midnight-zk/tree/main/circuits/src/hash/poseidon). [github.com/midnightntwrk/midnight-zk](https://github.com/midnightntwrk/midnight-zk).
+[^circom-bls12-381]: J. Magán. *poseidon-bls12381-circom*, a circom Poseidon implementation over the BLS12-381 scalar field. [github.com/jmagan/poseidon-bls12381-circom](https://github.com/jmagan/poseidon-bls12381-circom).
+[^subspace-trails]: L. Grassi, C. Rechberger, M. Schofnegger. *Proving Resistance Against Infinitely Long Subspace Trails: How to Choose the Linear Layer.* IACR ToSC 2021(2). IACR ePrint [2020/500](https://eprint.iacr.org/2020/500).
+[^noir-poseidon]: noir-lang. *poseidon*, the Poseidon library of the Noir language (formerly in the Noir standard library); circomlib-consistent instantiations over BN254. [github.com/noir-lang/poseidon](https://github.com/noir-lang/poseidon).
+[^nomadic-labs]: Nomadic Labs. *ocaml-bls12-381-hash*, MIT-licensed C implementations (with OCaml bindings) of arithmetization-friendly hash primitives over the BLS12-381 scalar field; the Poseidon permutation core referenced by this proposal lives under [`src/poseidon`](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash/-/tree/main/src/poseidon). [gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash](https://gitlab.com/nomadic-labs/cryptography/ocaml-bls12-381-hash).
