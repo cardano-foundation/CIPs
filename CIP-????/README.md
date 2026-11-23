@@ -16,7 +16,7 @@ Created: 2026-11-10
 License: CC-BY-4.0
 ---
 
-## 1. Abstract
+## Abstract
 
 On Cardano, every output must contain a certain minimum amount of ADA. This 
 minimum is commonly called minutxo, and its calculation is currently based on 
@@ -32,7 +32,7 @@ the number of distinct native assets, and the sizes of any datum and reference s
 This makes the calculation easier to reproduce consistently across the tools and
 programming languages used to construct transactions.
 
-## 2. Motivation: Why is this CIP necessary?
+## Motivation: Why is this CIP necessary?
 
 Cardano's minimum-ADA requirement gives users an economic incentive to use the live UTxO
 set efficiently. Creating more outputs, or larger outputs, requires more ADA to remain
@@ -91,7 +91,7 @@ the address, datum and reference script. This gives transaction-building tools a
 set of measurements to implement and verify, making the minimum-ADA rule easier to
 support consistently across the ecosystem.
 
-## 3. Specification
+## Specification
 
 ### 3.1 Formula
 
@@ -158,7 +158,7 @@ The ledger applies the new formula to outputs created after activation.
 Any change to the formula's constants or inputs requires a new CIP that
 supersedes this one.
 
-## 4. Rationale: How does this CIP achieve its goals?
+## Rationale: How does this CIP achieve its goals?
 
 We achieve the goal of avoiding recursive calculation by omitting ADA quantity 
 from the formula.
@@ -309,14 +309,14 @@ the estimate, and the estimate cannot fall below the ledger's requirement.
 As such, we can leave the ledger-enforced formula as it currently stands, and 
 provide people with the fixed ADA encoding allowance formula via tooling.
 
-## 5. Path to Active
+## Path to Active
 
-### 5.1 Acceptance Criteria
+### Acceptance Criteria
 
 - [ ] The specified minimum-ADA formula is implemented and activated on Cardano 
 mainnet.
 
-### 5.2 Implementation Plan
+### Implementation Plan
 
 Implementation requires updating the ledger specification and minimum-ADA 
 validation to use the new formula, and updating transaction-building tools to 
@@ -325,12 +325,12 @@ calculate the same requirement.
 The changes must be implemented, tested and included in a node release. 
 Activation requires a hard fork.
 
-## 6. References
+## References
 
 - [CPS-0037: application and transaction friction in minUTxO implementation](../CPS-0037/README.md)
 - [CIP-0055: Protocol Parameters (Babbage Era)](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0055), which defines the current formula
 
-## 7. Copyright
+## Copyright
 
 This CIP is licensed under
 [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
