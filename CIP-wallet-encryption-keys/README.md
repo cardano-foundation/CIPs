@@ -52,6 +52,19 @@ the alternatives are all unacceptable:
   constant can be requested again by any site.
 - **Keeping the feature inside wallet UIs.** Every dApp would need wallet-specific integration,
   which defeats the purpose of a common bridge.
+- **Reusing a signing key for encryption**, for example by converting the Ed25519 payment or stake
+  key to X25519. One key then both signs and encrypts (see
+  [A separate role](#a-separate-role-not-the-payment-or-stake-key)).
+- **Managing keys outside the wallet.** The dApp then has to solve backup itself, and the user's
+  seed no longer restores access.
+
+### Prior attempts
+
+The request is not new. [Issue #204] asked for `api.getSharedSecret` in 2022; it was closed in 2026
+without a standard. On Ethereum, MetaMask deprecated `eth_getEncryptionPublicKey` and
+`eth_decrypt`. As [ERC-5630] explains, the flaw was structural: one secret used for both signing and
+encryption, and one hard-coded cipher inside the wallet. This proposal takes both lessons: a
+separate key, and a wallet that performs key agreement only, leaving the scheme to the application.
 
 ### Use cases
 
@@ -367,6 +380,27 @@ those do. ECDH between a long-lived key and a per-message ephemeral key is the p
 schemes share. It also keeps the unit of disclosure small: a shared secret opens **one** note or
 message, whereas the key opens all of them.
 
+### A separate role, not the payment or stake key
+
+Using the existing keys directly (Ed25519 converted to X25519) means one key both signs and
+encrypts. That is the kind of key reuse MetaMask deprecated, and it is proven jointly secure only
+under specific conditions ([ePrint 2021/509]). It also cannot serve `jubjub` at all. Deriving the
+encryption key *from* the stake key would be cryptographically sound, but this CIP forbids it (see
+[Key Derivation](#key-derivation)) because it loses what a separate branch keeps:
+
+1. **Rotation.** The stake key has no generation index. Rotating the encryption key would mean
+   rotating the stake key, which changes addresses and delegation.
+2. **Damage limited by structure.** The key material sits at a hardened node on its own branch.
+   If it leaks through an implementation bug, it reveals no stake or spending key. A key derived
+   from the stake key has that key as its input, and a leaked stake key together with the
+   account's public key reveals the account's private key.
+3. **One branch for the ecosystem.** [CIP-0105] added three roles for governance keys. One more
+   role covers every encryption use, rather than one ad hoc derivation per application.
+
+Discovery is not an argument for the existing keys either. A stake public key is visible on chain
+only after its owner has signed with it, and a `jubjub` key cannot be read off it at all. A claim
+signed with [CIP-30] `signData` does that job (see [No export](#no-export-proof-of-possession-is-open)).
+
 ### Separate keys per purpose and per network
 
 Reusing one key across purposes would let a site granted access to, for example, encrypted
@@ -423,6 +457,14 @@ touched. This is acceptable for a cofactor curve here because the key is used fo
 only, on validated points, with no homomorphic algebra on attacker-supplied values. It also means
 a hostile page cannot cost the user a prompt.
 
+### Privacy
+
+A purpose's public key is a stable identifier for the account across every origin and application
+that uses that purpose, and wherever it is published with a stake-key claim it is linked to the
+account. Per-network keys add no link across networks. A new generation gives a key that origins
+without a grant for the old one cannot link to it. It is still linked if bound by the same
+stake-key claim, and it rotates every purpose (see [Open Question 1](#open-questions)).
+
 ### Relationship to other proposals
 
 - **[CIP-95]** is the template: a namespaced, additive [CIP-30] extension that introduced a new
@@ -432,16 +474,19 @@ a hostile page cannot cost the user a prompt.
 - **[Native Confidential Transfers]** is a ledger-level proposal that depends on future hard
   forks, so it is expected to follow this CIP by a long way. It also proposes role `6` for its
   viewing key. This CIP generalises that role to encryption keys, so that a later ledger-level
-  scheme can register its curve as a profile here instead of claiming the role separately.
+  scheme can register its curve as a profile here instead of claiming the role separately. If
+  that scheme needs other uses of its viewing key (deterministic ephemeral keys derived from it, a
+  Schnorr proof of possession, auditor export), which the key-usage and no-export rules of this CIP
+  forbid, it can instead keep its own key under role `6` with its own, domain-separated mapping,
+  outside this API. If the two proposals cannot share role `6`, this CIP moves to role `7` with no
+  other change.
 - **[CIP-83]** is a candidate for a future purpose that would replace shared passphrases with
   public-key encryption.
 - **Out of scope: signing [CIP-113] programmable inputs.** Spending confidential notes held as
   [CIP-113] programmable tokens requires wallets to witness inputs at a programmable-logic script
   address when the transaction names the wallet's stake key in `required_signers`. [CIP-30]
   `signTx` with `partialSign` already permits this. Whether and under which safety conditions a
-  wallet *should* do it concerns every [CIP-113] token, so it belongs in a separate proposal:
-  [Web-Wallet Bridge - Programmable Token Signing]. Confidential transfers through dApps need
-  both proposals. Neither depends on the other.
+  wallet *should* do it concerns every [CIP-113] token, so it belongs in a separate proposal.
 
 ### Backwards Compatibility
 
@@ -479,8 +524,9 @@ do not use the extension are unaffected.
 
 ### Acceptance Criteria
 
-- [ ] A CIP number is assigned, and role `6` is accepted into [CIP-1852], either by this CIP or by
-      a companion CIP.
+- [ ] A CIP number is assigned, and role `6` (or `7`, see
+      [Relationship to other proposals](#relationship-to-other-proposals)) is accepted into
+      [CIP-1852], either by this CIP or by a companion CIP.
 - [ ] Open Questions 1 and 2 are resolved in the specification.
 - [ ] Conformance test vectors are published for every registered purpose and profile: key
       derivation for each network, `PK`, ECDH, and rejection of invalid `Epk` values.
@@ -497,6 +543,9 @@ do not use the extension are unaffected.
       tokens, verified on Preprod.
 - [ ] Align the prototype with this specification (namespace, method names, derivation tag with
       network separation, explicit on-curve check).
+- [ ] Reference implementations in TypeScript (`@noble/curves`) and Java (cardano-client-lib and
+      BouncyCastle) that
+      produce the conformance test vectors.
 - [ ] Engage other wallet implementors via the wallet working groups and [CPS-0010].
 
 ## References
@@ -510,6 +559,9 @@ do not use the extension are unaffected.
 - [CIP-113] — Programmable token-like assets
 - [CIP-1852] — HD (Hierarchy for Deterministic) Wallets for Cardano
 - [CPS-0010] — Wallet Connectors
+- [ePrint 2021/509] — On using the same key pair for Ed25519 and an X25519 based KEM
+- [ERC-5630] — New approach for encryption / decryption
+- [Issue #204] — `api.getSharedSecret` for CIP-30
 - [Native Confidential Transfers] — CIP-???? (PR #1233)
 - [RFC 2119] — Key words for use in RFCs to Indicate Requirement Levels
 - [RFC 5869] — HMAC-based Extract-and-Expand Key Derivation Function (HKDF)
@@ -545,6 +597,17 @@ do not use the extension are unaffected.
      This excludes every small-order point other than the identity (`y = p − 1`, `y = 0` and the
      two `y` values of the order-8 points) and every mixed-order point;
   4. **not the identity:** `y ≠ 1`.
+
+  The points of order 1, 2, 4 and 8 have five `y` values. A wallet MAY reject them by value before
+  step 2, as a cheap first filter. Step 3 or 4 rejects them in any case (big-endian hex):
+
+  ```
+  0000000000000000000000000000000000000000000000000000000000000001   order 1 (identity)
+  73eda753299d7d483339d80809a1d80553bda402fffe5bfeffffffff00000000   order 2 (y = p − 1)
+  0000000000000000000000000000000000000000000000000000000000000000   order 4
+  4958bdb21966982e16a13035ad4d72669106ee90f384a4a1ff0d2068eff496dd   order 8
+  2a94e9a11036e51a1c98a7d25c54659ec2b6b5720c79b75d00f2df96100b6924   order 8
+  ```
 - **Prototype test vectors (not conformance vectors).** These were produced by the Gero prototype
   with the tag `cip1233-poc/viewing-key/jubjub-v1` and no network separation (see
   [Open Question 3](#open-questions)). They demonstrate the derivation path and mapping, but do
@@ -577,6 +640,9 @@ This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4
 [CIP-113]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0113
 [CIP-1852]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-1852
 [CPS-0010]: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0010
+[ePrint 2021/509]: https://eprint.iacr.org/2021/509
+[ERC-5630]: https://eips.ethereum.org/EIPS/eip-5630
+[Issue #204]: https://github.com/cardano-foundation/CIPs/issues/204
 [Native Confidential Transfers]: https://github.com/cardano-foundation/CIPs/pull/1233
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119
 [RFC 5869]: https://www.rfc-editor.org/rfc/rfc5869
