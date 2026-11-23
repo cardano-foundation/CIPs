@@ -46,7 +46,7 @@ constructed. This CIP aims to reduce that development burden while preserving th
 economic deterrent.
 [CPS-0037](https://github.com/cardano-foundation/CIPs/tree/master/CPS-0037)
 
-### 2.1 Funding an output can change the amount it needs
+### 1 Funding an output can change the amount it needs
 
 Consider an application preparing an output to send a native token. It needs to
 determine how much ADA must accompany that token.
@@ -71,7 +71,7 @@ The proposed calculation makes the minimum independent of the ADA amount being c
 Once the output's other contents are determined, software can calculate its requirement
 and fund it without that funding increasing the requirement again.
 
-### 2.2 The calculation must be reproduced throughout the ecosystem
+### 2 The calculation must be reproduced throughout the ecosystem
 
 Minimum ADA must be calculated before a transaction reaches a node. Wallets, SDKs,
 applications, backend services and scripts all need access to a calculation that agrees
@@ -93,7 +93,7 @@ support consistently across the ecosystem.
 
 ## Specification
 
-### 3.1 Formula
+### 1 Formula
 
 ```math
 \begin{aligned}
@@ -120,7 +120,7 @@ because outputs with the same asset count can differ in size depending on the
 lengths of the asset names, the encoded sizes of the quantities, and the number 
 of distinct policy IDs.
 
-| Address | Other output measurements | Pricing units | Required lovelace | Alternative formula ([§4.1](#41-primary-alternative-for-community-consideration)) | Current formula |
+| Address | Other output measurements | Pricing units | Required lovelace | Alternative formula ([Rationale §1](#1-primary-alternative-for-community-consideration)) | Current formula |
 | --- | --- | ---: | ---: | ---: | ---: |
 | Base (57 bytes) | No native assets, datum or script | $`193 + 57`$ | 1,077,500 | 1,077,500 | 969,750 |
 | Base (57 bytes) | One native asset, no datum or script | $`193 + 57 + 74`$ | 1,396,440 | 1,396,440 | 1,120,600–1,297,310 |
@@ -133,7 +133,7 @@ of distinct policy IDs.
 | Bootstrap, Daedalus style (76 bytes) | No native assets, datum or script | $`193 + 76`$ | 1,159,390 | 1,159,390 | 1,051,640 |
 | Bootstrap, padded (4,721 bytes) | No native assets, datum or script | $`193 + 4721`$ | 21,179,340 | 21,179,340 | 21,075,900 |
 
-### 3.2 Formula inputs
+### 2 Formula inputs
 
 - `coinsPerUTxOByte`: the protocol parameter in effect for the transaction, in
   lovelace per byte.
@@ -149,11 +149,11 @@ of distinct policy IDs.
 
 Each size is measured on the bytes as they appear in the transaction.
 
-### 3.3 Enforcement and compatibility
+### 3 Enforcement and compatibility
 
 The ledger applies the new formula to outputs created after activation.
 
-### 3.4 Versioning
+### 4 Versioning
 
 Any change to the formula's constants or inputs requires a new CIP that
 supersedes this one.
@@ -188,11 +188,11 @@ Each output is compared with what the current formula required:
 | --- | ---: | ---: |
 | Current | 1.43 ADA | – / – |
 | No address term | 1.91 ADA | 0 / none |
-| Asset and policy counts with address, asset-name, datum and script sizes ([§4.2](#42-alternative-formulae-considered)) | 1.53 ADA | 0 / none |
-| Token count and datum size only ([§4.2](#42-alternative-formulae-considered)) | 1.91 ADA | 5,253 (0.006%) / 69.24 ADA |
-| Byte-based formula with a fixed ADA encoding allowance ([§4.2](#42-alternative-formulae-considered)) | 1.45 ADA | 0 / none |
-| Primary alternative ([§4.1](#41-primary-alternative-for-community-consideration)) | 1.91 ADA | 0 / none |
-| This CIP ([§3.1](#31-formula)) | 1.89 ADA | 0 / none |
+| Asset and policy counts with address, asset-name, datum and script sizes ([Rationale §2](#2-alternative-formulae-considered)) | 1.53 ADA | 0 / none |
+| Token count and datum size only ([Rationale §2](#2-alternative-formulae-considered)) | 1.91 ADA | 5,253 (0.006%) / 69.24 ADA |
+| Byte-based formula with a fixed ADA encoding allowance ([Rationale §2](#2-alternative-formulae-considered)) | 1.45 ADA | 0 / none |
+| Primary alternative ([Rationale §1](#1-primary-alternative-for-community-consideration)) | 1.91 ADA | 0 / none |
+| This CIP ([Specification §1](#1-formula)) | 1.89 ADA | 0 / none |
 
 **Excess over the current requirement (median / 95th percentile)**
 
@@ -250,7 +250,7 @@ carrying asset entries with zero quantities, which the ledger now rejects.
 
 Method, full results and reproduction: [historical backtest](https://github.com/willjgould/cardano-minutxo-integration/blob/2abe34cabf72799d8c122f23c23f03da31c48415/docs/minutxo-calibration/history-formulas.md).
 
-### 4.1 Primary alternative for community consideration
+### 1 Primary alternative for community consideration
 
 An alternative can be adopted if there is a community desire to avoid address
 serialisation in most cases. Its base allowance depends on the address type.
@@ -278,7 +278,7 @@ Here, we consider the address only if it's a bootstrap address. Remember:
 bootstrap addresses can be up to 4.7KB, so a formula that doesn't consider 
 the address size is vulnerable to a potential attack.
 
-### 4.2 Alternative formulae considered
+### 2 Alternative formulae considered
 
 | Alternative | Formula | Trade-off |
 | --- | --- | --- |
@@ -286,7 +286,7 @@ the address size is vulnerable to a potential attack.
 | Token count and datum size only | $`\begin{aligned} & \mathrm{coinsPerUTxOByte} \times \bigl( \\ & 250 \\ & {}+ 74 \times \mathrm{numberOfNativeAssets} \\ & {}+ \mathrm{serializedDatumBytes}\bigr) \end{aligned}`$ | Simple, but underestimates too much |
 | Byte-based formula with a fixed ADA encoding allowance | $`\begin{aligned} & \mathrm{coinsPerUTxOByte} \times \bigl( \\ & 160 \\ & {}+ \mathrm{serializedOutputBytes} \\ & {}- \mathrm{serializedAdaAmountBytes} \\ & {}+ 9\bigr) \end{aligned}`$ | Very close to the current formula, but depends on the whole output |
 
-### 4.3 Alternative implementation
+### 3 Alternative implementation
 
 This CIP requires ledger changes, but ledger changes aren't necessary in order 
 to solve the recursive nature of the minutxo formula.
