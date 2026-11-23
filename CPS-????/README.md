@@ -1,6 +1,6 @@
 ---
 CPS: "?"
-Title: Horizontal Scaling of Cardano through Sharding
+Title: Horizontal Scaling through Sharding
 Category: Consensus
 Status: Open
 Authors:
