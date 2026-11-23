@@ -9,7 +9,8 @@ Authors:
     - Polina Vinogradova <polina.vinogradova@iohk.io>
 Implementors: []
 Discussions:
-    - "CPS review: https://github.com/cardano-foundation/CIPs/pull/1268"
+    - Original PR: https://github.com/cardano-foundation/CIPs/pull/1328
+    - CPS review: https://github.com/cardano-foundation/CIPs/pull/1268
 Solution To:
     - "CPS-0037: https://github.com/cardano-foundation/CIPs/tree/master/CPS-0037"
 Created: 2026-11-10
