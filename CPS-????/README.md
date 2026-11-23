@@ -46,6 +46,32 @@ This CPS is about full state and execution sharding, along the lines the roadmap
 
 In an account-based system such as Ethereum, the state a transaction touches is in general only discovered by running it; systems that require it to be declared, such as Solana, add this as an extra rule. In EUTxO it is intrinsic: a transaction *declares* its inputs and outputs, so the state it reads and writes is known before execution. That is exactly the information a partitioning scheme needs, and it comes for free. Shard assignment can be decided locally, cross-shard cases identified rather than guessed, and transactions built to avoid crossing shards. Not all ledger state is UTxO, though: reward withdrawals, certificates and governance actions touch account-like state, which a partitioning scheme must also place (Goal 3d).
 
+
+### Explored Alternatives
+
+Neither layer 2 nor sharding as deployed elsewhere meets the goals above.
+
+#### Layer 2
+
+Off-chain execution is complementary, not a substitute. It moves execution off the base layer but leaves settlement on it, and a thriving L2 ecosystem *increases* base-layer load. Its savings also hold only while the layer 2 operates normally: disputes and exits fall back to the base layer, and a mass exit can load it heavily at short notice.
+
+#### Sharding elsewhere
+
+**State sharding is in production.** [NEAR][NEAR-Nightshade] and [MultiversX][MultiversX-sharding] run state-sharded chains. Nearly all deployed sharded chains are account-based; [Alephium][Alephium] shards a stateful UTXO model, but none uses EUTxO. Measurements of NEAR on commodity hardware (§IV-A, Fig. 2), with all shards co-located on a single machine and sharing its resources, find aggregate throughput peaking at eight shards (about 1,500 TPS, 40% above one shard) and then declining to about 1,100 TPS at 24 shards. Although co-location avoids physical inter-node communication overhead, it also introduces resource contention. These results illustrate practical bottlenecks in shard coordination and resource sharing, however, without establishing the limits of horizontal scaling across independent machines.
+
+
+**Ethereum abandoned execution sharding.** Shard chains are [off Ethereum's roadmap][ETH-danksharding]. Only data sharding survived: proto-danksharding (2024) and the first data availability sampling (PeerDAS, 2025) are live, and [full danksharding is still future work][ETH-scaling]. Execution moved to layer-2 rollups instead.
+
+#### Why no existing design fits Cardano
+
+**Cross-shard atomicity.** Cross-shard transactions cannot be avoided altogether: in a partitioning of about 750,000 historical Ethereum transactions, their [fraction grows with the number of shards][Cross-shard] (§3, Fig. 2), staying below 30% when partitioning to minimize cross-shard traffic, against over 90% under random assignment (§1). For plain UTXO, atomicity is well studied: each input shard checks and locks its own inputs and certifies them, and the transaction commits once all inputs are certified, a form of two-phase commit (§1). This relies on each input being validated locally. In EUTxO it is not: a Plutus script sees the whole transaction, including inputs, datums and reference inputs held in other shards, so validation itself becomes cross-shard. Deployed sharded chains process cross-shard transactions asynchronously, leaving them half-applied, which EUTxO semantics do not allow. None yet provides general cross-shard atomic execution, though [NEAR aims to add it][NEAR-SPICE]. A solution must make script validation work across shards, not only the commit step.
+
+**Per-shard security.** If a subset of stake maintains a shard, an adversary below the global threshold may control it. Deployed systems assume that each shard's randomly sampled validators stay within a fault threshold, maintained by periodic random reassignment; in NEAR, chunk validators are resampled at every block while chunk producers rotate per epoch ([NEAR-NEP509][]). This is not adaptive security as Ouroboros defines it.
+
+**State distribution.** Shards become imbalanced and popular applications create hot shards. State migration must be safe and cheap and must not become a censorship vector.
+
+**Live migration.** There is no precedent for partitioning a live ledger like Cardano's. NEAR has split its live state several times, but on an account-based ledger built for sharding from the start. Ethereum planned to add execution shards alongside its existing chain rather than partition it, and dropped the plan.
+
 ## Use Cases
 
 **A stake pool operator on commodity hardware.** After one or two increases in the node specification, the operator must upgrade beyond what the pool's margin allows, or stop. They want contributing *some* capacity to be enough for full participation, and growth to come from more operators like them rather than fewer, larger ones.
@@ -85,30 +111,6 @@ We state three goals, ranked by importance. A proposed solution should be assess
 - **Fixing a shard count or partitioning.** These are outputs of a solution.
 - **Privacy.** A separate problem.
 
-## Explored Alternatives
-
-Neither layer 2 nor sharding as deployed elsewhere meets the goals above.
-
-### Layer 2
-
-Off-chain execution is complementary, not a substitute. It moves execution off the base layer but leaves settlement on it, and a thriving L2 ecosystem *increases* base-layer load. Its savings also hold only while the layer 2 operates normally: disputes and exits fall back to the base layer, and a mass exit can load it heavily at short notice.
-
-### Sharding elsewhere
-
-**State sharding is in production.** [NEAR][NEAR-Nightshade] and [MultiversX][MultiversX-sharding] run state-sharded chains. Nearly all deployed sharded chains are account-based; [Alephium][Alephium] shards a stateful UTXO model, but none uses EUTxO. Measurements of NEAR on commodity hardware (§IV-A, Fig. 2), with all shards co-located on a single machine and sharing its resources, find aggregate throughput peaking at eight shards (about 1,500 TPS, 40% above one shard) and then declining to about 1,100 TPS at 24 shards. Although co-location avoids physical inter-node communication overhead, it also introduces resource contention. These results illustrate practical bottlenecks in shard coordination and resource sharing, however, without establishing the limits of horizontal scaling across independent machines.
-
-
-**Ethereum abandoned execution sharding.** Shard chains are [off Ethereum's roadmap][ETH-danksharding]. Only data sharding survived: proto-danksharding (2024) and the first data availability sampling (PeerDAS, 2025) are live, and [full danksharding is still future work][ETH-scaling]. Execution moved to layer-2 rollups instead.
-
-### Why no existing design fits Cardano
-
-**Cross-shard atomicity.** Cross-shard transactions cannot be avoided altogether: in a partitioning of about 750,000 historical Ethereum transactions, their [fraction grows with the number of shards][Cross-shard] (§3, Fig. 2), staying below 30% when partitioning to minimize cross-shard traffic, against over 90% under random assignment (§1). For plain UTXO, atomicity is well studied: each input shard checks and locks its own inputs and certifies them, and the transaction commits once all inputs are certified, a form of two-phase commit (§1). This relies on each input being validated locally. In EUTxO it is not: a Plutus script sees the whole transaction, including inputs, datums and reference inputs held in other shards, so validation itself becomes cross-shard. Deployed sharded chains process cross-shard transactions asynchronously, leaving them half-applied, which EUTxO semantics do not allow. None yet provides general cross-shard atomic execution, though [NEAR aims to add it][NEAR-SPICE]. A solution must make script validation work across shards, not only the commit step.
-
-**Per-shard security.** If a subset of stake maintains a shard, an adversary below the global threshold may control it. Deployed systems assume that each shard's randomly sampled validators stay within a fault threshold, maintained by periodic random reassignment; in NEAR, chunk validators are resampled at every block while chunk producers rotate per epoch ([NEAR-NEP509][]). This is not adaptive security as Ouroboros defines it.
-
-**State distribution.** Shards become imbalanced and popular applications create hot shards. State migration must be safe and cheap and must not become a censorship vector.
-
-**Live migration.** There is no precedent for partitioning a live ledger like Cardano's. NEAR has split its live state several times, but on an account-based ledger built for sharding from the start. Ethereum planned to add execution shards alongside its existing chain rather than partition it, and dropped the plan.
 
 ## Open Questions
 
