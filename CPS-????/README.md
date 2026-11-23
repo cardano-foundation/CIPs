@@ -115,29 +115,29 @@ Off-chain execution is complementary, not a substitute. It moves execution off t
 
 A CIP addressing this problem should answer each of the six headline questions in its *Rationale*, covering the sub-questions beneath it.
 
-**What is sharded, and how does a node verify what it does not hold?**
+### What is sharded, and how does a node verify what it does not hold?
 - Which of diffusion, execution, live state, history and validation are partitioned, and which stay replicated?
 - Does every node still verify the whole ledger? If so, how (direct execution, succinct proofs, data availability sampling, fraud proofs), and under what assumption?
 - What is the unit of partitioning: UTxO, address, script, asset, or something else?
 
-**How is each shard secured against an adversary below the global threshold?**
+### How is each shard secured against an adversary below the global threshold?
 - How are block producers assigned to shards, how often is the assignment rotated, and is it public or by private sortition? How does that interact with adaptive corruption and with offline parties?
 - Can such an adversary control a shard? What exactly is guaranteed, and what do honest parties observe if a shard misbehaves?
 - Are dynamic availability and Genesis-style bootstrapping preserved?
 
-**How do transactions that span shards behave?**
+### How do transactions that span shards behave?
 - Is a multi-shard transaction atomic? If not, what states can it leave, how are they resolved, and who bears the cost?
 - How does a long-lived single-state-thread contract avoid being capped at one shard's throughput without its state forking?
 
-**How is state kept balanced and live across shards?**
+### How is state kept balanced and live across shards?
 - How is shard imbalance detected and corrected? What triggers migration, who pays for it, and can it be used as an attack?
 - What happens to a congested or spammed shard? Does per-shard pricing create a censorship vector?
 
-**How do fees, rewards, staking and governance work when no node holds the whole state?**
+### How do fees, rewards, staking and governance work when no node holds the whole state?
 - How are fees distributed when validation work is uneven, and what prevents operators from serving only cheap shards?
 - How are stake distribution, rewards and governance tallies computed and verified, and at what cost in latency and finality?
 
-**How does the design fit the rest of the protocol, and how is it delivered and validated?**
+### How does the design fit the rest of the protocol, and how is it delivered and validated?
 - How does it interact with Peras, Mithril, Hydra, rollup settlement and post-quantum migration? Where does it depart from the UTxO sharding projected on the Leios roadmap, why?
 - What must change in ledger rules, transaction and address formats, and Plutus? Which changes are backwards-compatible?
 - What is the incremental deployment path, and what is the first independently valuable step?
