@@ -84,25 +84,25 @@ Off-chain execution is complementary, not a substitute. It moves execution off t
 
 We state three goals, ranked by importance. A proposed solution should be assessable against each sub-criterion.
 
-### 1. Horizontal scalability
+### Horizontal scalability
 
-- **1a. Capacity grows with participation.** Aggregate capacity grows with the number of participants while per-node resource use stays bounded. The solution must state which resources it bounds, and the scaling relationship and its limits.
-- **1b. Single-shard is the common case.** The solution should use the fact that EUTxO transactions declare their inputs in advance to keep most transactions within one shard. It must measure the share of cross-shard transactions under realistic workloads, not assume it is small.
+- **Capacity grows with participation.** Aggregate capacity grows with the number of participants while per-node resource use stays bounded. The solution must state which resources it bounds, and the scaling relationship and its limits.
+- **Single-shard is the common case.** The solution should use the fact that EUTxO transactions declare their inputs in advance to keep most transactions within one shard. It must measure the share of cross-shard transactions under realistic workloads, not assume it is small.
 
 
-### 2. No weakening of security or decentralization
+### No weakening of security or decentralization
 
-- **2a. Ouroboros-grade security.** Security must be established with the same rigor and under the same adversarial model as today, including adaptive corruption and dynamic availability. Shards secured by less than global stake are not disqualifying, but the assumption must be stated, quantified and defended.
-- **2b. Decentralization improves.** The minimum viable node specification should fall, or at worst hold, as capacity rises.
-- **2c. Sound economics.** Fees and rewards stay incentive-compatible: whoever causes cross-shard work pays for it, operators are paid in proportion to the work they do, and congestion in one shard must not enable censorship or shard capture.
+- **Ouroboros-grade security.** Security must be established with the same rigor and under the same adversarial model as today, including adaptive corruption and dynamic availability. Shards secured by less than global stake are not disqualifying, but the assumption must be stated, quantified and defended.
+- **Decentralization improves.** The minimum viable node specification should fall, or at worst hold, as capacity rises.
+- **Sound economics.** Fees and rewards stay incentive-compatible: whoever causes cross-shard work pays for it, operators are paid in proportion to the work they do, and congestion in one shard must not enable censorship or shard capture.
 
-### 3. Preserve EUTxO semantics and deployability
+### Preserve EUTxO semantics and deployability
 
-- **3a. EUTxO semantics and composability.** Determinism, local verifiability and predictable fees must be kept. Atomic multi-script composition must remain available across shards, or be replaced by a clearly specified alternative.
-- **3b. Shards invisible to users.** Wallets and users should not have to reason about shard placement; where it must be exposed, it should be to applications and infrastructure.
-- **3c. Migration from the live ledger.** Deployment must be incremental: existing UTxOs, scripts and addresses keep working, and there is no flag day.
-- **3d. Governance, staking and rewards keep working.** Stake distribution, rewards and governance tallies are aggregates over the whole ledger. A solution must say how they are computed and verified when no node holds the entire state, without voting power or rewards depending on shard placement.
-- **3e. A bounded complexity budget.** Implementable without an unbounded rewrite, specified precisely enough for formal analysis, and checkable by people other than its authors.
+- **EUTxO semantics and composability.** Determinism, local verifiability and predictable fees must be kept. Atomic multi-script composition must remain available across shards, or be replaced by a clearly specified alternative.
+- **Shards invisible to users.** Wallets and users should not have to reason about shard placement; where it must be exposed, it should be to applications and infrastructure.
+- **Migration from the live ledger.** Deployment must be incremental: existing UTxOs, scripts and addresses keep working, and there is no flag day.
+- **Governance, staking and rewards keep working.** Stake distribution, rewards and governance tallies are aggregates over the whole ledger. A solution must say how they are computed and verified when no node holds the entire state, without voting power or rewards depending on shard placement.
+- **A bounded complexity budget.** Implementable without an unbounded rewrite, specified precisely enough for formal analysis, and checkable by people other than its authors.
 
 ### Non-goals
 
@@ -116,33 +116,33 @@ We state three goals, ranked by importance. A proposed solution should be assess
 
 A CIP addressing this problem should answer each of the six headline questions in its *Rationale*, covering the sub-questions beneath it.
 
-1. **What is sharded, and how does a node verify what it does not hold?**
-   1. Which of diffusion, execution, live state, history and validation are partitioned, and which stay replicated?
-   2. Does every node still verify the whole ledger? If so, how (direct execution, succinct proofs, data availability sampling, fraud proofs), and under what assumption?
-   3. What is the unit of partitioning: UTxO, address, script, asset, or something else?
+**What is sharded, and how does a node verify what it does not hold?**
+- Which of diffusion, execution, live state, history and validation are partitioned, and which stay replicated?
+- Does every node still verify the whole ledger? If so, how (direct execution, succinct proofs, data availability sampling, fraud proofs), and under what assumption?
+- What is the unit of partitioning: UTxO, address, script, asset, or something else?
 
-2. **How is each shard secured against an adversary below the global threshold?**
-   1. How are block producers assigned to shards, how often is the assignment rotated, and is it public or by private sortition? How does that interact with adaptive corruption and with offline parties?
-   2. Can such an adversary control a shard? What exactly is guaranteed, and what do honest parties observe if a shard misbehaves?
-   3. Are dynamic availability and Genesis-style bootstrapping preserved?
+**How is each shard secured against an adversary below the global threshold?**
+- How are block producers assigned to shards, how often is the assignment rotated, and is it public or by private sortition? How does that interact with adaptive corruption and with offline parties?
+- Can such an adversary control a shard? What exactly is guaranteed, and what do honest parties observe if a shard misbehaves?
+- Are dynamic availability and Genesis-style bootstrapping preserved?
 
-3. **How do transactions that span shards behave?**
-   1. Is a multi-shard transaction atomic? If not, what states can it leave, how are they resolved, and who bears the cost?
-   2. How does a long-lived single-state-thread contract avoid being capped at one shard's throughput without its state forking?
+**How do transactions that span shards behave?**
+- Is a multi-shard transaction atomic? If not, what states can it leave, how are they resolved, and who bears the cost?
+- How does a long-lived single-state-thread contract avoid being capped at one shard's throughput without its state forking?
 
-4. **How is state kept balanced and live across shards?**
-   1. How is shard imbalance detected and corrected? What triggers migration, who pays for it, and can it be used as an attack?
-   2. What happens to a congested or spammed shard? Does per-shard pricing create a censorship vector?
+**How is state kept balanced and live across shards?**
+- How is shard imbalance detected and corrected? What triggers migration, who pays for it, and can it be used as an attack?
+- What happens to a congested or spammed shard? Does per-shard pricing create a censorship vector?
 
-5. **How do fees, rewards, staking and governance work when no node holds the whole state?**
-   1. How are fees distributed when validation work is uneven, and what prevents operators from serving only cheap shards?
-   2. How are stake distribution, rewards and governance tallies computed and verified, and at what cost in latency and finality?
+**How do fees, rewards, staking and governance work when no node holds the whole state?**
+- How are fees distributed when validation work is uneven, and what prevents operators from serving only cheap shards?
+- How are stake distribution, rewards and governance tallies computed and verified, and at what cost in latency and finality?
 
-6. **How does the design fit the rest of the protocol, and how is it delivered and validated?**
-   1. How does it interact with Peras, Mithril, Hydra, rollup settlement and post-quantum migration? Where does it depart from the UTxO sharding projected on the Leios roadmap, why?
-   2. What must change in ledger rules, transaction and address formats, and Plutus? Which changes are backwards-compatible?
-   3. What is the incremental deployment path, and what is the first independently valuable step?
-   4. Which benchmarks and adversarial scenarios, at what scale, would demonstrate the design works, and what result would falsify it?
+**How does the design fit the rest of the protocol, and how is it delivered and validated?**
+- How does it interact with Peras, Mithril, Hydra, rollup settlement and post-quantum migration? Where does it depart from the UTxO sharding projected on the Leios roadmap, why?
+- What must change in ledger rules, transaction and address formats, and Plutus? Which changes are backwards-compatible?
+- What is the incremental deployment path, and what is the first independently valuable step?
+- Which benchmarks and adversarial scenarios, at what scale, would demonstrate the design works, and what result would falsify it?
 
 ## References
 
