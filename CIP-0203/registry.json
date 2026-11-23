@@ -4,10 +4,10 @@
     "id": 65,
     "name": "Amaru",
     "status": "active",
-    "maintainers": ["yHSJ", "KtorZ", "etorreborre", "jeluard", "rkuhn", "J-GainSec", "arwlf", "Quantumplation", "Dam-CZ", "Quantumplation"],
+    "maintainers": ["yHSJ", "KtorZ", "etorreborre", "jeluard", "rkuhn", "J-GainSec", "arwlf", "Quantumplation", "Dam-CZ"],
     "repository": "https://github.com/pragma-org/amaru",
     "payload_documentation": "https://github.com/pragma-org/amaru/blob/main/engineering-decision-records/040-cip-0203-block-producer-identifer.md",
-    "payload_definition": "https://github.com/pragma-org/amaru/blob/8fce2fbbf25e8445d4b5060598a02c8aff1df032/cip-203-payload-definition.json",
+    "payload_definition": "https://raw.githubusercontent.com/pragma-org/amaru/main/crates/amaru-kernel/src/cardano/software_tag/cip-0203-payload.json",
     "registered": "2026-11-14",
     "retired": null,
     "description": "A rust implementation of Cardano"
