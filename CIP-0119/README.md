@@ -143,7 +143,8 @@ If the `imageObject` DOES NOT contain a base64 encoded image, the `contentUrl` M
 - Optional
 - Is a boolean expression that can be given a single value of either `true` or `false`.
 - Authors SHOULD use a JSON boolean (`true` or `false`).
-- Tooling SHOULD also accept the strings `"true"` and `"false"`, as earlier versions of the schema required a string.
+- Tooling SHOULD also accept the strings `"true"` and `"false"`,
+  as earlier versions of the schema required a string.
 - If not included then the value is assumed to be `false`.
 - A `true` value means that the DRep does **not** want to campaign for delegation via tooling.
 - A `false` value means that the DRep does want to campaign for delegation via tooling and thus be shown via that tooling.

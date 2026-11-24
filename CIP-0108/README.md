@@ -101,7 +101,9 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - Each object MAY have a OPTIONAL `referenceHash` object.
   - Each object MUST have a `hashDigest` field.
   - Each object MUST have a `hashAlgorithm` field, which is inherited from CIP-100.
-- This should be used by the author to link related or supporting work via the URI, and to refer to these references (for example by their `label`) within their freeform text fields.
+- This should be used by the author to link related or supporting work
+  via the URI, and to refer to these references
+  (for example by their `label`) within their freeform text fields.
 
 ### Application
 Governance action metadata must include all compulsory fields to be considered CIP-0108 compliant.

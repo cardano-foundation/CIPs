@@ -74,7 +74,10 @@ We define a specification for fields which can be added to CC votes.
 
 ### Witnesses
 
-Authors' witnesses MAY use any `witnessAlgorithm` defined by CIP-100 (`ed25519`) or by [CIP-108](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0108#new-witness-type) (`CIP-0008`).
+Authors' witnesses MAY use any `witnessAlgorithm` defined by CIP-100 (`ed25519`)
+or by [CIP-108][CIP-108-witness] (`CIP-0008`).
+
+[CIP-108-witness]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0108#new-witness-type
 
 ### Extended Body Vocabulary
 
