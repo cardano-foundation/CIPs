@@ -50,7 +50,7 @@ This section outlines the high level format and requirements of this standard.
 - The JSON document SHOULD be formatted for human readability, for the sake of anyone who is manually perusing the metadata.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
 - The hash in the anchor MUST be the hash of the the raw bytes of the content, using the hashing algorithm specified in the `hashAlgorithm` field. Currently only blake2b-256 is supported.
-- For the purposes of hashing and signature validation, we should use the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification.
+- For the purposes of author signatures and their validation, the `body` is hashed using the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification (see [Hashing and Signatures](#hashing-and-signatures)). This canonical form is not used for the anchor hash.
 
 ### Versioning
 
@@ -79,7 +79,8 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
 - A new CIP, which defines new JSON-LD vocabulary to extend this one, which seeks broad adoption.
 - A new context document, used in the wild, but not officially standardized, and which doesn't seek broad adoption.
 
-See the [Extension Index](./extensions.md) for a list of CIPs extending this standard, how they combine, and known gotchas.
+See the [Extension Index](./extensions.md) for a list of CIPs extending
+this standard, how they combine, and known gotchas.
 
 ### Hosting
 
