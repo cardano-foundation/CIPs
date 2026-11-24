@@ -302,5 +302,5 @@ See [Test Vectors File](./test-vectors.md).
 
 This CIP is licensed under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
 
-[CIP-0129]: (https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md)
+[CIP-0129]: https://github.com/cardano-foundation/CIPs/blob/master/CIP-0129/README.md
 [DEPRECATED]: #deprecated-governance-id-definition

@@ -948,7 +948,7 @@ The VDF component in Phalanx relies on class group security, which is parameteri
 - $`\lambda`$, the **class group security parameter**, and
 - $`\rho`$, the **grinding resistance parameter**, newly introduced in the Phalanx design.
 
-Several combinations of $`\lambda`$ and $`\rho`$ are considered in the literature, depending on the desired level of paranoia or efficiency. Based on the recommendations from the paper [Trustless Unknown-Order Groups]((https://arxiv.org/pdf/2211.16128)), we highlight the following trade-offs: 
+Several combinations of $`\lambda`$ and $`\rho`$ are considered in the literature, depending on the desired level of paranoia or efficiency. Based on the recommendations from the paper [Trustless Unknown-Order Groups](https://arxiv.org/pdf/2211.16128), we highlight the following trade-offs: 
 
 - A **paranoid** setting, $(\lambda, \rho) = (128, 128)$, requires a **group size of \~3400 bits**.
 - A more **realistic yet cautious** setting, $(\lambda, \rho) = (128, 55)$, brings the group size down to **\~1900 bits**, but requires discriminants of at least **3800 bits**.
@@ -1698,7 +1698,7 @@ Finally, a point of critical importance that we emphasized in the [CPS-21: Ourob
 We therefore **strongly recommend deploying both mechanisms in tandem**:
 
 * [**Peras**](https://peras.cardano-scaling.org/) for rapid probabilistic finality and real-time detection,
-* [**Phalanx**](./Readme.md) as a fallback that offers **quantifiable grinding resistance** even in worst-case epochs.
+* [**Phalanx**](./README.md) as a fallback that offers **quantifiable grinding resistance** even in worst-case epochs.
 
 **Note:** If Peras committee selection ultimately relies on randomness from the standard beacon in its production version, it too inherits vulnerability to grinding — especially when a **Praos epoch precedes a Peras epoch**. In such cases, **Phalanx mitigates the grinding risk at the source**, reducing the manipulation surface of the beacon and thereby **indirectly strengthening Peras**. This highlights the **complementarity** of the two systems: **each reinforces the other**.
 
