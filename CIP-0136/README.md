@@ -72,6 +72,10 @@ i.e. translation tools, rationale comparison tools.
 
 We define a specification for fields which can be added to CC votes.
 
+### Witnesses
+
+Authors' witnesses MAY use any `witnessAlgorithm` defined by CIP-100 (`ed25519`) or by [CIP-108](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0108#new-witness-type) (`CIP-0008`).
+
 ### Extended Body Vocabulary
 
 The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
