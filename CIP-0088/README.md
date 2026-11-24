@@ -176,7 +176,7 @@ standard.
 | 3     | Validation Method                           | Array  | Yes      | How should this payload be validated.                                                                                                                                                                                                             |
 | 4     | Nonce                                       | UInt   | Yes      | A simple cache-busting nonce. Recommend to use the blockchain slot height at the time of submission. Only the highest observed nonce value should be honored by explorers.                                                                        |
 | 5     | Oracle URI                                  | Array  | No       | Reserved for future use, URI to an informational oracle API for this policy                                                                                                                                                                       |
-| 6     | [CIP Details](#6--cip-specific-information) | Object | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
+| 6     | [CIP Details](#6-cip-specific-information) | Object | No       | If one or more of the CIPs addressed in the Feature Set have additionally defined metadata, it may be added here                                                                                                                                  |
 
 The following fields are required in all token registration submissions.
 

@@ -762,7 +762,7 @@ for these situations.
 This proposal may be considered active if:
 
 1. The solution meets the design goals listed in the
-[Rationale](#rationale) section to a satisfactory degree.
+[Rationale](#rationale-how-does-this-cip-achieve-its-goals) section to a satisfactory degree.
 2. The indexer and simple tools to construct CIP-86 update transactions
 (as described in the [Specification](#specification) section)
 are fully implemented and provided in an open-source (Apache 2.0 licensed)

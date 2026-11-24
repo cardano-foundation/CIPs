@@ -478,7 +478,7 @@ Servers will want some way to manage this to avoid abuse. However, this is a typ
 
 ### Backwards compatibility
 
-See [Special Case: Phase-1 Monetary Policies](#special-case--phase--1-monetary-policies) which covers existing implementations. 
+See [Special Case: Phase-1 Monetary Policies](#special-case-phase-1-monetary-policies) which covers existing implementations. 
 
 ## Path to Active
 

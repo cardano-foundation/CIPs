@@ -25,7 +25,7 @@ This proposal aims to provide a specification for off-chain metadata vocabulary 
 Without a sufficiently detailed standard for governance actions we introduce the possibility to undermine voters ability to adequately assess governance actions.
 Furthermore a lack of such standards risks preventing interoperability between tools, to the detriment of user experiences.
 
-For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgments).
 
 ## Motivation: Why is this CIP necessary?
 Blockchains are poor choices to act as content databases.
