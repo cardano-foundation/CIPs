@@ -58,6 +58,7 @@ This standard introduces the possibility of using [Github markdown text styling]
 The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
 
 #### `title`
+- Compulsory.
 - A very short freefrom text field. Limited to `80` characters.
 - This SHOULD NOT support markdown text styling.
 - Authors SHOULD use this field to succinctly describe the governance action and its motivation.
@@ -65,17 +66,20 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - i.e; Increase K protocol parameter to `100,000` to increase decentralization of Cardano.
 
 #### `abstract`
+- Compulsory.
 - A short freefrom text field. Limited to `2500` characters.
 - This SHOULD support markdown text styling.
 - Authors SHOULD use this field to expand upon their `title` by describing the contents of the governance action, its motivation and rationale.
 
 #### `motivation`
+- Compulsory.
 - A freeform text field.
 - This SHOULD support markdown text styling.
 - This SHOULD be used by the author to encapsulate all context around the problem that is being solved by the on-chain action.
 - This SHOULD be used to outline the related stakeholders and use cases. 
 
 #### `rationale`
+- Compulsory.
 - A freeform text field.
 - This SHOULD support markdown text styling.
 - This SHOULD be used by the author to discuss how the content of the governance action addresses the problem outlined within the `motivation`.
@@ -97,10 +101,11 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 - Each object MAY have a OPTIONAL `referenceHash` object.
   - Each object MUST have a `hashDigest` field.
   - Each object MUST have a `hashAlgorithm` field, which is inherited from CIP-100.
-- This should be used by the author to link related or supporting work via the URI, and reference this via the index within their freefrom text fields.
+- This should be used by the author to link related or supporting work via the URI, and to refer to these references (for example by their `label`) within their freeform text fields.
 
 ### Application
 Governance action metadata must include all compulsory fields to be considered CIP-0108 compliant.
+The compulsory fields are `title`, `abstract`, `motivation` and `rationale`.
 As this is an extension to CIP-100, all CIP-100 fields can be included within CIP-108 compliant metadata.
 
 ### Test Vector
