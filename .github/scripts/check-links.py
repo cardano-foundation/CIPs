@@ -51,8 +51,8 @@ class Problem(NamedTuple):
     is_warning: bool
 
 
-def strip_code(content: str) -> str:
-    """Blank out fenced code blocks and inline code spans, preserving line count."""
+def strip_code(content: str, inline: bool = True) -> str:
+    """Blank out fenced code blocks and (optionally) inline code spans, preserving line count."""
     lines = content.split('\n')
     out = []
     in_fence = False
@@ -70,7 +70,7 @@ def strip_code(content: str) -> str:
             fence_marker = m.group(1)[0] * 3
             out.append('')
             continue
-        out.append(re.sub(r'`[^`\n]*`', '', line))
+        out.append(re.sub(r'`[^`\n]*`', '', line) if inline else line)
     return '\n'.join(out)
 
 
@@ -121,7 +121,8 @@ def heading_slugs(md_path: Path) -> Set[str]:
         return set()
     slugs: Set[str] = set()
     seen: Dict[str, int] = {}
-    for line in strip_code(content).split('\n'):
+    # Keep inline code in headings:  (e.g. "#### `paymentAddress`" -> "#paymentaddress")
+    for line in strip_code(content, inline=False).split('\n'):
         m = re.match(r'^ {0,3}(#{1,6})\s+(.*?)(?:\s+#+\s*)?$', line)
         if m:
             slugs.add(github_slug(m.group(2), seen))
