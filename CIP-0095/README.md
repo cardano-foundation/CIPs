@@ -39,7 +39,7 @@ focussed web-based stacks. Here we aim to support the requirements of Ada
 holders and DReps in the Conway Ledger era, this specification is based on the
 [Conway Ledger Era Specification](https://github.com/IntersectMBO/cardano-ledger/blob/dcacf044c8d38362edc57a761e027953aab3f335/eras/conway/impl/cddl-files/conway.cddl).
 
-For the many contributors to this proposal, see [Acknowledgements](#acknowledgements).
+For the many contributors to this proposal, see [Acknowledgements](#acknowledgments).
 
 ## Motivation: Why is this CIP necessary?
 
