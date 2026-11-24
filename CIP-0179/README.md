@@ -591,7 +591,12 @@ and the `cip179` term **inside the `body` context**:
 
 Every `cip179` sub-field MUST be mapped; the CIP-108 context sets no `@vocab`, so an unmapped field is dropped from the witnessed body (though still present in raw JSON) — an inconsistency to avoid.
 
-For convenience, [`cip-0179.common.jsonld`](./cip-0179.common.jsonld) provides the complete CIP-108 context with these terms already merged in. It can be used directly as a linking anchor's `@context`. Do not combine it with the CIP-108 context in a `@context` array: both define the `body` term, and a later definition replaces an earlier one, dropping its terms.
+For convenience, [`cip-0179.common.jsonld`](./cip-0179.common.jsonld)
+provides the complete CIP-108 context with these terms already merged in.
+It can be used directly as a linking anchor's `@context`.
+Do not combine it with the CIP-108 context in a `@context` array:
+both define the `body` term,
+and a later definition replaces an earlier one, dropping its terms.
 
 #### Conway voter tag to CIP-179 role mapping
 
