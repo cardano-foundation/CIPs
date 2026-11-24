@@ -186,6 +186,12 @@ This section outlines a number of other best practices for tools and user experi
  - If you are hosting the content for the user, you SHOULD use a content-addressable hosting platform such as IPFS or Arweave
  - If the content is self-hosted, you SHOULD take care to warn the user about changing the content
    - For example, you CAN detect well-known content-addressable file storage platforms such as IPFS or Arweave, and display an extra warning if the content is not hosted on one of those
+ - When creating author witnesses, you MUST NOT sign a document in which any property of the `body` is not defined by its `@context`.
+   - JSON-LD silently drops undefined properties during expansion, so they are excluded from the canonicalized `body` and are not covered by the author signatures, even though they remain in the raw JSON.
+   - For example, you CAN detect this by expanding the document with a JSON-LD processor in a mode that fails on dropped properties, such as the `safe` mode of jsonld.js.
+ - When validating author witnesses, you SHOULD warn the user about any property of the `body` which is not defined by the document's `@context`, as it is not covered by the author signatures.
+ - You SHOULD display a reference with an unrecognized `@type` as a generic link, using its `label` and `uri`.
+   - Extensions to this standard may define additional reference types.
 
 ## Rationale: How does this CIP achieve its goals?
 

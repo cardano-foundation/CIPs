@@ -79,6 +79,8 @@ and sets `@context` to its URL:
 - **Context terms are missing in several places.**
   No context uses `@vocab` (except inside CIP-0169 `onChain`),
   so any undefined field is silently left unsigned.
+  CIP-0100's [Best Practices](./README.md#best-practices) forbid signing
+  such documents.
   The CIP-0108, CIP-0119 and CIP-0136 contexts omit `comment`
   and `externalUpdates`.
   The base CIP-0100 context defines lowercase `governanceMetadata`/`other`,
