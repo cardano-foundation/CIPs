@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano has become a multi-implementation network. Blocks on mainnet have been produced by Amaru, Dingo, Gerolamo, and cardano-node, among others. In an attempt to measure client diversity across the network, Dingo, Amaru and Gerolamo have committed to using the vestigial minor component of the header `protocol_version` to identify blocks produced by each implementation.
+Cardano has become a multi-implementation network. Blocks on mainnet have been produced by Amaru, Dingo, Gerolamo, and cardano-node, among others. In an attempt to measure client diversity across the network, Amaru, Bean, Dingo, Gerolamo, and TSUNAGI have committed to using the vestigial minor component of the header `protocol_version` to identify blocks produced by each implementation.
 
 This CIP fixes a bit layout for the 32-bit field: an 8-bit implementation identifier, a 22-bit implementation-defined payload, and a 2-bit scheme version. It also establishes a machine-readable registry of identifiers in this repository with governing rules for assignment, update, and retirement. Finally, it defines a small JSON format with which an implementation can describe how its payload bits decode into named values, so that generic consumers can read any registered payload without implementation-specific code. This is strictly voluntary, and requires no hard fork or changes in existing nodes.
 
@@ -28,7 +28,7 @@ Importantly, such a signalling mechanism will only ever represent a "best-effort
 
 ## Motivation: Why is this CIP necessary?
 
-For the full problem statement, read [the CPS-0036 draft](https://github.com/cardano-foundation/CIPs/pull/1260). In summary, while client diversity becomes a critical metric for Cardano's health, there is currently nothing that attributes individual blocks to a particular implementation. While there has been much discussion on the subject, including a [stalled proposal](https://github.com/cardano-foundation/CIPs/pull/1157), there is already a _de facto_ convention on chain. [Dingo](https://github.com/blinklabs-io/dingo), [Bean](https://bean.zw3rk.com/), and [Gerolamo](https://github.com/harmoniclabs/gerolamo) have produced mainnet blocks with a minor `protocol_version` value `69`, `67`, and `42` respectively. Other node implementations have agreed to follow this approach. Without a registry, it would be impossible to attribute a block to the reported node implementation. Introducing a standard encoding scheme makes it simple for anyone to read the on-chain data. The proposed `CIP-0180` stalled because it required a new ledger era. Importantly, this approach avoids a fork completely.
+For the full problem statement, read [the CPS-0036 draft](https://github.com/cardano-foundation/CIPs/pull/1260). In summary, while client diversity becomes a critical metric for Cardano's health, there is currently nothing that attributes individual blocks to a particular implementation. While there has been much discussion on the subject, including a [stalled proposal](https://github.com/cardano-foundation/CIPs/pull/1157), there is already a _de facto_ convention on chain. [Dingo](https://github.com/blinklabs-io/dingo), [Bean](https://bean.zw3rk.com/), and [Amaru](https://github.com/pragma-org/amaru) have produced mainnet blocks with a minor `protocol_version` value `69`, `67`, and `65` respectively, and [Gerolamo](https://github.com/harmoniclabs/gerolamo) will use `42`. Other node implementations have agreed to follow this approach. Without a registry, it would be impossible to attribute a block to the reported node implementation. Introducing a standard encoding scheme makes it simple for anyone to read the on-chain data. The proposed `CIP-0180` stalled because it required a new ledger era. Importantly, this approach avoids a fork completely.
 
 The 22 payload bits let an implementation report more than its identity: a release, enabled capabilities, configuration state, or readiness for an upcoming hard fork. If each implementation describes its payload only in prose, every explorer, dashboard and monitoring tool has to write and maintain a decoder per implementation, and payload data ends up useful only to the teams who emitted it. A shared, machine-readable description of the payload bit layout lets a consumer read the identifier, look up the registry entry, fetch the payload definition, and decode the payload with one generic parser. The meaning of the decoded values stays with each implementation.
 
@@ -117,7 +117,7 @@ Values are shown as the decimal integer that appears in the header, its 32-bit h
 |-------------------|---------------|----------|-------------|------|------|
 | 0                 | `0x00000000`  | 0        | 0           | 0    | No signal. |
 | 7                 | `0x00000007`  | 0        | 0           | 7    | Legacy cardano-node at release minor 7. Reserved; MUST NOT be emitted by an implementation of this CIP. |
-| 67                | `0x00000043`  | 0        | 0           | 67   | Gerolamo, no payload. |
+| 67                | `0x00000043`  | 0        | 0           | 67   | Bean, no payload. |
 | 69                | `0x00000045`  | 0        | 0           | 69   | Dingo, no payload. |
 | 315973            | `0x0004D245`  | 0        | 1234        | 69   | `id` 69 with payload 1234. |
 | 1073741637        | `0x3FFFFF45`  | 0        | 4194303     | 69   | Maximum payload. |
@@ -386,7 +386,7 @@ The minor component of the header `protocol_version` has never been consulted by
 
 Consumers already parse this field. Before each hard fork, explorers report the share of blocks carrying each major version as a proxy for upgrade readiness. Reading the minor version is the same code path.
 
-Most importantly, this is the mechanism the ecosystem has already chosen. Matthias Benkort proposed fitting implementation identity inside the minor version during review of the CIP-0180 draft and at a node diversity workshop. Dingo has produced blocks on mainnet with the value `69`, Gerolamo followed with `67`, and Amaru has committed to the same approach. Any other proposal would be asking those three implementations to change working code and would leave blocks on mainnet without a standard interpretation.
+Most importantly, this is the mechanism the ecosystem has already chosen. Matthias Benkort proposed fitting implementation identity inside the minor version during review of the CIP-0180 draft and at a node diversity workshop. Bean has produced blocks on mainnet with the value `67` since July 2026, Dingo followed with `69` and Amaru with `65`, and Gerolamo has committed to the same approach. TSUNAGI, which holds identifier `79` in the initial registry alongside Amaru, produced mainnet blocks before this CIP existed and has also committed to signalling its registered identifier. Any other proposal would be asking these implementations to change working code and would leave blocks on mainnet without a standard interpretation.
 
 ### Why 8 bits for the identifier
 
@@ -394,7 +394,7 @@ The `id` needs to be large enough that no plausible number of block-producing im
 
 ### Why the identifier is in the low-order byte
 
-The low-order byte preserves backwards compatibility. Dingo and Gerolamo have produced blocks that use a plain integer. Under this scheme, those values would decode as identifier `69` and `67` respectively, with an empty payload and scheme `0`. It also means that an explorer that already displays the decimal value of the minor version shows the identifier, and a reader who knows the registry can resolve it easily.
+The low-order byte preserves backwards compatibility. Dingo and Bean have produced blocks that use a plain integer. Under this scheme, those values would decode as identifier `69` and `67` respectively, with an empty payload and scheme `0`. It also means that an explorer that already displays the decimal value of the minor version shows the identifier, and a reader who knows the registry can resolve it easily.
 
 ### Why identifiers 1 to 15 are reserved
 
@@ -461,7 +461,7 @@ An operator who does not want to disclose their software could simply emit `0`, 
 
 ### Backward compatibility
 
-Every block produced before this CIP decodes to a value this document already accounts for: `0 - 15` for cardano-node releases, and `67` or `69` for Gerolamo and Dingo, which match their registry entries. Producers that never adopt this CIP continue to emit `0` and are attributed correctly either way.
+Every block produced before this CIP decodes to a value this document already accounts for: `0 - 15` for cardano-node releases, and `65`, `67` or `69` for Amaru, Bean and Dingo. Producers that never adopt this CIP continue to emit `0` and are attributed correctly either way.
 
 ## Path to Active
 
