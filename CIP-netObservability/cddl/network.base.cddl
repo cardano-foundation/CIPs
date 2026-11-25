@@ -1,0 +1,25 @@
+;
+; Shared base types for observability-CIP CDDL drafts.
+; Aligned with ouroboros-network cardano-diffusion/protocols/cddl/specs/network.base.cddl
+; (subset used by observability + n2n version data).
+;
+
+block = any
+header = any
+tip = any
+point = any
+; The codec only accepts definite-length list.
+points = [ *point ]
+txId = any
+tx = any
+objectId = any
+object = any
+
+; although some protocols are polymorphic over slots, slots are always
+; encoded as word64.
+slotNo = word64
+
+word8 = uint .size 1  ; 1 byte
+word16 = uint .size 2 ; 2 bytes
+word32 = uint .size 4 ; 4 bytes
+word64 = uint .size 8 ; 8 bytes
