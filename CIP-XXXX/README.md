@@ -1,5 +1,5 @@
 ---
-CIP: "?"
+CIP: 210
 Title: DRep Groups
 Category: Metadata
 Status: Proposed
