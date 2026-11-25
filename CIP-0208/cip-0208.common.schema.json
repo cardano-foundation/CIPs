@@ -1,0 +1,16 @@
+{
+  "title": "CIP-208 Common",
+  "description": "The reference of a CIP-119 document or of registered pool metadata, with the type Role of CIP-208",
+  "definitions": {
+    "reference": {
+      "title": "Reference",
+      "type": "object",
+      "required": ["@type", "label", "uri"],
+      "properties": {
+        "@type": {"type": "string", "enum": ["GovernanceMetadata", "Other", "Link", "Identity", "Role"]},
+        "label": {"type": "string", "minLength": 1},
+        "uri": {"type": "string"}
+      }
+    }
+  }
+}
