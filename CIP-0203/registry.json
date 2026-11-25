@@ -14,6 +14,19 @@
   },
   {
     "scheme": 0,
+    "id": 67,
+    "name": "Bean",
+    "status": "active",
+    "maintainers": ["angerman"],
+    "repository": "http://bean.zw3rk.com",
+    "payload_documentation": null,
+    "payload_definition": null,
+    "registered": "2026-11-25",
+    "retired": null,
+    "description": "Independent Cardano full node implementation written in Java, producing blocks on Cardano mainnet."
+  },
+  {
+    "scheme": 0,
     "id": 79,
     "name": "TSUNAGI",
     "status": "active",
