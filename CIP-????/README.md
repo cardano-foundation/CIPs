@@ -196,7 +196,7 @@ or we could have selected 36 for the reasons described above.
 Note that outputs can be constructed whose `minutxo`s are lower with this new 
 formula than today's formula. For example, both cases below assume at least 
 2^32 lovelace (~4295 ADA), an inline datum with a serialised size of at least 
-256 bytes, anda Plutus reference script with a payload of at least 256 bytes:
+256 bytes, and a Plutus reference script with a payload of at least 256 bytes:
 
 * A base-address output with one native asset, whose name is 32 bytes and whose 
   quantity is at least 2^32. Its overhead is 35 bytes, exceeding the 33-byte 
