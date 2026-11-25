@@ -154,7 +154,7 @@ Reserved identifiers are defined here and do not appear in `registry.json`. A co
 - `payload_documentation` links human-readable documentation of what decoded payload values mean. It MUST NOT be used in place of a `payload_definition`, and MUST be `null` when `payload_definition` is `null`.
 - The registry lists only identifiers assigned to implementations. Reserved identifiers are defined by this document and MUST NOT be added to `registry.json`.
 - The registry is partitioned by `scheme`. An identifier is the pair `(scheme, id)`, and that pair is unique. The same `id` under two different schemes refers to two unrelated entries. This CIP defines only entries with `scheme = 0`; a future CIP that defines a new scheme adds entries under that scheme to the same file.
-- The schema cannot enforce uniqueness of `(scheme, id)` across entries; editors check it at review. Consider a small CI script later.
+- The schema cannot enforce uniqueness of `(scheme, id)` across entries. [`validate-cip203-registry.py`](../.github/scripts/validate-cip203-registry.py) checks it, along with the other registry rules the schema cannot express, on every pull request that changes `registry.json`.
 
 #### Assignment
 

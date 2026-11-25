@@ -1,0 +1,86 @@
+name: CIP-0203 - Validate Registry JSON
+
+# Validates CIP-0203/registry.json when a pull request changes it.
+# workflow_dispatch re-runs the check for an existing pull request.
+
+on:
+  pull_request:
+    paths:
+      - 'CIP-0203/registry.json'
+      - 'CIP-0203/*.schema.json'
+      - '.github/scripts/validate-cip203-registry.py'
+      - '.github/workflows/cip203-validation.yaml'
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to validate'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Merge PR branch into master
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+        run: |
+          if ! [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "::error::PR number must be a positive integer, got '${PR_NUMBER}'"
+            exit 1
+          fi
+          git fetch origin "pull/${PR_NUMBER}/head:pr-branch"
+          # Build the same tree a pull_request run checks out: the PR merged into master, with master as first parent.
+          git checkout --detach origin/master
+          if ! git -c user.name=ci -c user.email=ci@localhost merge --no-ff --no-edit pr-branch; then
+            echo "::error::PR #${PR_NUMBER} does not merge cleanly into master"
+            exit 1
+          fi
+          # Run the validator from master
+          git checkout origin/master -- .github/scripts/
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install jsonschema
+
+      - name: Validate registry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            PR_AUTHOR=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq .user.login)
+          fi
+
+          # HEAD is the PR merged into its base branch, and HEAD^1 is that base.
+          CHANGED=$(git diff --name-only HEAD^1 HEAD)
+          if echo "$CHANGED" | grep -qx 'CIP-0203/registry.json'; then
+            OTHERS=$(echo "$CHANGED" | grep -vx 'CIP-0203/registry.json' | paste -sd ' ' - || true)
+            if [ -n "$OTHERS" ]; then
+              echo "::warning file=CIP-0203/registry.json,title=CIP-0203 registry::CIP-0203 asks for registry changes in a PR against registry.json only. This PR also changes: ${OTHERS}"
+            fi
+          fi
+
+          ARGS=(--registry CIP-0203/registry.json --author "$PR_AUTHOR" --fetch-payload-definitions)
+          if git cat-file -e HEAD^1:CIP-0203/registry.json 2>/dev/null; then
+            git show HEAD^1:CIP-0203/registry.json > "$RUNNER_TEMP/registry.base.json"
+            ARGS+=(--base "$RUNNER_TEMP/registry.base.json")
+          fi
+          python3 .github/scripts/validate-cip203-registry.py "${ARGS[@]}"
