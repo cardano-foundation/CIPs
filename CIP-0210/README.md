@@ -221,7 +221,7 @@ The `profile` anchor points to a [CIP-0100](../CIP-0100/README.md) document with
 | `charter` | URL | optional, the group's rules |
 | `paymentAddresses` | list of `{ address, purpose?, paymentScript? }` | optional |
 
-The CIP-0100 schema lists `authors` as required. Like CIP-0119 DRep metadata, a group profile leaves `authors` out, and tools ignore it if present. The profile's authority comes from the control policy that signed the `create` or `update` that anchors it, not from witnesses inside the document. The JSON-LD context is [`cip-xxxx.jsonld`](./cip-xxxx.jsonld).
+The CIP-0100 schema lists `authors` as required. Like CIP-0119 DRep metadata, a group profile leaves `authors` out, and tools ignore it if present. The profile's authority comes from the control policy that signed the `create` or `update` that anchors it, not from witnesses inside the document. The JSON-LD context is [`cip-0210.jsonld`](./cip-0210.jsonld).
 
 A document that cannot be fetched or does not match its hash MUST be marked as such, and its fields MUST NOT be shown as the group's profile.
 

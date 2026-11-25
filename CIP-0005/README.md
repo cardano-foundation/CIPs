@@ -130,7 +130,7 @@ We define the following set of common prefixes with their corresponding semantic
 | `cc_cold`           | Constitutional committee cold identifier              | Constitutional committee cold credential, see [CIP-0129]      |
 | `cc_hot`            | Constitutional committee hot identifier               | Constitutional committee hot credential, see [CIP-0129]       |
 | `gov_action`        | Governance action identifier                          | Governance action ID, see [CIP-0129]                          |
-| `drep_group`        | DRep group identifier                                 | Transaction ID and event index of the group's `create` event, see [CIP-XXXX](../CIP-XXXX/README.md) |
+| `drep_group`        | DRep group identifier                                 | Transaction ID and event index of the group's `create` event, see [CIP-0210](../CIP-0210/README.md) |
 
 
 ### Deprecated Governance Prefixes
