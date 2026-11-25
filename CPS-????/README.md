@@ -1,5 +1,5 @@
 ---
-CPS: "?"
+CPS: 40
 Title: Horizontal Scaling through Sharding
 Category: Consensus
 Status: Open
