@@ -23,7 +23,7 @@
         },
         "authors": {
             "title": "Authors",
-            "description": "The authors of this update; witnesses must verify against the original proposal's author keys (CIP-100)",
+            "description": "The signers of this update; witnesses must verify against the original proposal's author keys, or against the deposit return account where the original has no valid author witness (CIP-100)",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/author"
@@ -73,8 +73,8 @@
                 "governanceActionId": {
                     "type": "string",
                     "title": "Governance Action ID",
-                    "description": "The identifier of the on-chain governance action this update pertains to, as <txHash>#<index>",
-                    "pattern": "^[0-9a-fA-F]{64}#[0-9]+$"
+                    "description": "The identifier of the on-chain governance action this update pertains to, in lower-case CIP-0129 bech32 form",
+                    "pattern": "^gov_action1[02-9ac-hj-np-z]{59,}$"
                 },
                 "updateType": {
                     "type": "string",

@@ -1,0 +1,14 @@
+_:c14n0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#OtherReference> .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-label> "Town Hall Recording"@en-us .
+_:c14n0 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#reference-uri> "https://example.com/town-hall-2026-04-15"@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#bindingStatements> _:c14n3 .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#governanceActionId> "gov_action1g4rurffw7f7neduyc0e6p0c259tqpm59j6fknwsfgk7dsns068esqxgylar" .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#references> _:c14n0 .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#sequenceNumber> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#updateContext> "Following the community town hall on April 15th, we are clarifying the budget breakdown for milestone 2. The figure stated in the proposal covers audit costs only; engineering costs for milestone 2 are covered by the milestone 1 disbursement, as several DReps asked."@en-us .
+_:c14n1 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#updateType> "Clarification" .
+_:c14n2 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#body> _:c14n1 .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#bindingStatement-field> "milestones[2].budget"@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#bindingStatement-originalText> "Milestone 2: 150,000 ada"@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#bindingStatement-rationale> "Two defensible readings existed; this fixes the intended one without changing any amount."@en-us .
+_:c14n3 <https://github.com/cardano-foundation/CIPs/blob/master/CIP-0185/README.md#bindingStatement-revisedText> "Milestone 2: 150,000 ada, covering third-party audit costs only; engineering costs are covered under milestone 1."@en-us .
