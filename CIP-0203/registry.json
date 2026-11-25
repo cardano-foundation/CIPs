@@ -27,6 +27,19 @@
   },
   {
     "scheme": 0,
+    "id": 73,
+    "name": "Scarab",
+    "status": "active",
+    "maintainers": ["scasplte2"],
+    "repository": "https://github.com/KD5UJC-XYZ/scarab",
+    "payload_documentation": null,
+    "payload_definition": null,
+    "registered": "2026-11-25",
+    "retired": null,
+    "description": "Block-producing Cardano node written in Scala 3 with Cats Effect."
+  },
+  {
+    "scheme": 0,
     "id": 79,
     "name": "TSUNAGI",
     "status": "active",
