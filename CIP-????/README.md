@@ -20,10 +20,10 @@ License: CC-BY-4.0
 ## Abstract
 
 On Cardano, every output must contain a certain minimum amount of ADA. This 
-minimum is commonly called minutxo, and its calculation is currently based on 
+minimum is commonly called `minutxo`, and its calculation is currently based on 
 the output.
 
-The current minutxo formula is challenging to calculate and has been explicitly 
+The current `minutxo` formula is challenging to calculate and has been explicitly 
 referenced as a pain point by community members; specifically, the 
 recursive nature of the calculation. 
 
@@ -113,7 +113,7 @@ custom attributes. An attacker can specify up to 254, each of which costs up to
 18 bytes if maximally padded; the ledger does have a 64-byte limit on 
 attributes, but it only counts the derivation path and custom attribute values,
 so none of these 18 bytes count toward it. So, this would offer exactly the kind 
-of attack surface minutxo exists to curb, if we were to omit the address size.
+of attack surface `minutxo` exists to curb, if we were to omit the address size.
 
 See the following for some examples, with `coinsPerUTxOByte = 4310` as it 
 currently is on mainnet. Note that the current formula column shows ranges 
@@ -167,13 +167,52 @@ from the formula.
 We achieve this in balance with keeping overestimates close "enough" 
 to the current formula, and while keeping underestimates to a minimum.
 
-The constant 193 consists of the existing 160, plus 33, approximating the 
-additional components of a near-worst-case output. The constant 74 is made up 
-of: 
+The constant 193 consists of the existing 160, plus 33, which is the maximum 
+overhead not measured by the formula for an output without native assets (for 
+non-bootstrap addresses; bootstrap addresses can add an extra byte), composed of 
+the following:
+
+| Component | Bytes (largest) |
+| --- | ---: |
+| Map header | 1 |
+| Field keys | 4 |
+| Address length header | 2 |
+| ADA amount | 9 |
+| Inline datum wrapper | 7 |
+| Reference script wrapper | 10 |
+| **Total** | **33** |
+
+The maximum overhead with native-assets is 36 (with the same bootstrap address 
+caveat as above): +1 byte for the value array header and +2 bytes for the policy 
+map header. We selected 33 over 36 as a judgement call. The cost of this is that 
+it's possible for `minutxo` to be lower than today for some outputs (although no 
+under-estimate was observed in any of the Conway data).
+
+To be clear: selecting 33 is still somewhat arbitrary, but it's structurally 
+justifiable (see the above table). We could have selected 29 because it's the 
+lowest value which doesn't underestimate any outputs from the Conway dataset, 
+or we could have selected 36 for the reasons described above.
+
+Note that outputs can be constructed whose `minutxo`s are lower with this new 
+formula than today's formula. For example, both cases below assume at least 
+2^32 lovelace (~4295 ADA), an inline datum with a serialised size of at least 
+256 bytes, anda Plutus reference script with a payload of at least 256 bytes:
+
+* A base-address output with one native asset, whose name is 32 bytes and whose 
+  quantity is at least 2^32. Its overhead is 35 bytes, exceeding the 33-byte 
+  allowance by two bytes.
+* A bootstrap-address output with no native assets, whose serialised address
+  is at least 256 bytes. Its overhead is 34 bytes, exceeding the 33-byte
+  allowance by one byte.
+
+The constant 74 is made up of: 
 - 30 for the policy ID (a 28-byte hash and a 2-byte header)
 - 1 for the header of that policy's asset map
 - 34 for the asset name (32 bytes and a 2-byte header)
 - 9 for the quantity (8 bytes and a 1-byte header)
+
+We assume shortest valid, definite-length encoding for all of the 
+above, for analytical purposes.
 
 We tested this against the 85.7 million outputs created on mainnet in the
 Conway era, from its first block, at slot 133,660,855 with hash
@@ -290,7 +329,7 @@ the address size is vulnerable to a potential attack.
 ### 3. Alternative implementation
 
 This CIP requires ledger changes, but ledger changes aren't necessary in order 
-to solve the recursive nature of the minutxo formula.
+to solve the recursive nature of the `minutxo` formula.
 
 Instead, we can simply disseminate the byte-based alternative formula with a 
 fixed ADA encoding allowance, which never underestimates, throughout tooling 
