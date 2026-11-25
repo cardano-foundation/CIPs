@@ -1,6 +1,6 @@
 ---
-CIP: "?"
-Title: Required Governance Enactments
+CIP: 212
+Title: Plutus Core Required Governance Enactments
 Category: Plutus
 Status: Proposed
 Authors:
