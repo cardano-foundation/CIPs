@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "cip-XXXX.common.schema.json",
-  "title": "CIP-XXXX Common",
+  "$id": "cip-0211.common.schema.json",
+  "title": "CIP-0211 Common",
   "description": "CIP-0108 governance action metadata with the optional `category` property of this CIP. The schema checks the form of `category` only. Checks it cannot express (bech32 checksums, distinct keys, startEpoch <= endEpoch, kind against the action type, the JSON-LD context) are listed in the CIP's Validity section.",
   "type": "object",
   "required": ["hashAlgorithm", "authors", "body"],

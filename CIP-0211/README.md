@@ -192,13 +192,13 @@ If that withdrawal pays the listed account and is enacted in an epoch from 620 t
 
 ### Example files and schema
 
-[`cip-XXXX.common.jsonld`](./cip-XXXX.common.jsonld) is the CIP-0108 context with this CIP's term definition and prefix merged in. [`examples/`](./examples/) holds complete documents for the definition above, a Treasury Withdrawal in `core-infra` and a report as an Info Action in `community`. They carry no author witnesses. The documents in [`examples/invalid/`](./examples/invalid/) each break one rule.
+[`cip-0211.common.jsonld`](./cip-0211.common.jsonld) is the CIP-0108 context with this CIP's term definition and prefix merged in. [`examples/`](./examples/) holds complete documents for the definition above, a Treasury Withdrawal in `core-infra` and a report as an Info Action in `community`. They carry no author witnesses. The documents in [`examples/invalid/`](./examples/invalid/) each break one rule.
 
-[`cip-XXXX.common.schema.json`](./cip-XXXX.common.schema.json) (JSON Schema 2020-12) checks the form of `category`. It cannot check bech32 checksums, distinct keys, `startEpoch <= endEpoch`, `kind` against the action type, or the context mapping, so readers still apply every rule in the Validity section. With [ajv-cli](https://github.com/ajv-validator/ajv-cli), which picks its parser from the file extension:
+[`cip-0211.common.schema.json`](./cip-0211.common.schema.json) (JSON Schema 2020-12) checks the form of `category`. It cannot check bech32 checksums, distinct keys, `startEpoch <= endEpoch`, `kind` against the action type, or the context mapping, so readers still apply every rule in the Validity section. With [ajv-cli](https://github.com/ajv-validator/ajv-cli), which picks its parser from the file extension:
 
 ```sh
 cp examples/definition.jsonld /tmp/example.json
-ajv validate --spec=draft2020 -s cip-XXXX.common.schema.json -d /tmp/example.json --all-errors
+ajv validate --spec=draft2020 -s cip-0211.common.schema.json -d /tmp/example.json --all-errors
 ```
 
 ## Rationale: How does this CIP achieve its goals?
