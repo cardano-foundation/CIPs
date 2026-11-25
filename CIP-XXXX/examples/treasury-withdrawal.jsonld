@@ -1,0 +1,94 @@
+{
+  "@context": {
+    "CIP100": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md#",
+    "CIP108": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0108/README.md#",
+    "CIPCAT": "https://github.com/cardano-foundation/CIPs/pull/1322#",
+    "hashAlgorithm": "CIP100:hashAlgorithm",
+    "body": {
+      "@id": "CIP108:body",
+      "@context": {
+        "references": {
+          "@id": "CIP108:references",
+          "@container": "@set",
+          "@context": {
+            "GovernanceMetadata": "CIP100:GovernanceMetadataReference",
+            "Other": "CIP100:OtherReference",
+            "label": "CIP100:reference-label",
+            "uri": "CIP100:reference-uri",
+            "referenceHash": {
+              "@id": "CIP108:referenceHash",
+              "@context": {
+                "hashDigest": "CIP108:hashDigest",
+                "hashAlgorithm": "CIP100:hashAlgorithm"
+              }
+            }
+          }
+        },
+        "title": "CIP108:title",
+        "abstract": "CIP108:abstract",
+        "motivation": "CIP108:motivation",
+        "rationale": "CIP108:rationale",
+        "category": {
+          "@id": "CIPCAT:category",
+          "@context": {
+            "@language": null,
+            "kind": "CIPCAT:kind",
+            "categories": {
+              "@id": "CIPCAT:categories",
+              "@container": "@set"
+            },
+            "key": "CIPCAT:key",
+            "label": {
+              "@id": "CIPCAT:label",
+              "@language": "en-us"
+            },
+            "budget": "CIPCAT:budget",
+            "period": {
+              "@id": "CIPCAT:period",
+              "@context": {
+                "startEpoch": "CIPCAT:startEpoch",
+                "endEpoch": "CIPCAT:endEpoch"
+              }
+            },
+            "recipients": {
+              "@id": "CIPCAT:recipients",
+              "@container": "@set"
+            },
+            "process": "CIPCAT:process",
+            "categoryId": "CIPCAT:categoryId",
+            "categoryKey": "CIPCAT:categoryKey"
+          }
+        }
+      }
+    },
+    "authors": {
+      "@id": "CIP100:authors",
+      "@container": "@set",
+      "@context": {
+        "did": "@id",
+        "name": "http://xmlns.com/foaf/0.1/name",
+        "witness": {
+          "@id": "CIP100:witness",
+          "@context": {
+            "witnessAlgorithm": "CIP100:witnessAlgorithm",
+            "publicKey": "CIP100:publicKey",
+            "signature": "CIP100:signature"
+          }
+        }
+      }
+    }
+  },
+  "hashAlgorithm": "blake2b-256",
+  "authors": [],
+  "body": {
+    "title": "Core Infrastructure 2027, first tranche",
+    "abstract": "Withdraws the first tranche of the Core Infrastructure 2027 domain to its administrator account.",
+    "motivation": "Funds the first quarter of work in the domain.",
+    "rationale": "The amount stays within the domain's ceiling.",
+    "category": {
+      "kind": "member",
+      "categoryId": "gov_action1s6seccwg27dtcmktfgrshm2gupk8rx6l68y6082yja59e4mqxj2sql4mr29",
+      "categoryKey": "core-infra"
+    }
+  }
+}
