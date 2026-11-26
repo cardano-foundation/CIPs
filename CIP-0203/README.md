@@ -20,7 +20,7 @@ License: CC-BY-4.0
 
 ## Abstract
 
-Cardano has become a multi-implementation network. Blocks on mainnet have been produced by Amaru, Dingo, Gerolamo, and cardano-node, among others. In an attempt to measure client diversity across the network, Amaru, Bean, Dingo, Gerolamo, and TSUNAGI have committed to using the vestigial minor component of the header `protocol_version` to identify blocks produced by each implementation.
+Cardano has become a multi-implementation network. At the time of writing, blocks on mainnet have been produced by Amaru, Dingo, Bean,  TSUNAGI, and cardano-node, among others. In an attempt to measure client diversity across the network, Amaru, Bean, Dingo, Gerolamo, and TSUNAGI have committed to using the vestigial minor component of the header `protocol_version` to identify blocks produced by each implementation.
 
 This CIP fixes a bit layout for the 32-bit field: an 8-bit implementation identifier, a 22-bit implementation-defined payload, and a 2-bit scheme version. It also establishes a machine-readable registry of identifiers in this repository with governing rules for assignment, update, and retirement. Finally, it defines a small JSON format with which an implementation can describe how its payload bits decode into named values, so that generic consumers can read any registered payload without implementation-specific code. This is strictly voluntary, and requires no hard fork or changes in existing nodes.
 
