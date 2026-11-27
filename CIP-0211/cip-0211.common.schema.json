@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cip-0211.common.schema.json",
+  "title": "CIP-0211 Common",
+  "description": "CIP-0108 governance action metadata with the optional `category` property of this CIP. The schema checks the form of `category` only. Checks it cannot express (bech32 checksums, distinct keys, startEpoch <= endEpoch, kind against the action type, the JSON-LD context) are listed in the CIP's Validity section.",
+  "type": "object",
+  "required": ["hashAlgorithm", "authors", "body"],
+  "properties": {
+    "hashAlgorithm": { "type": "string", "enum": ["blake2b-256"] },
+    "authors": { "type": "array" },
+    "body": {
+      "type": "object",
+      "properties": {
+        "category": { "$ref": "#/$defs/category" }
+      }
+    }
+  },
+  "$defs": {
+    "govActionId": {
+      "description": "CIP-0129 governance action ID, lower-case bech32.",
+      "type": "string",
+      "pattern": "^gov_action1[02-9ac-hj-np-z]+$"
+    },
+    "rewardAccount": {
+      "description": "CIP-0019 reward address, lower-case bech32.",
+      "type": "string",
+      "pattern": "^(stake|stake_test)1[02-9ac-hj-np-z]+$"
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 32,
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "category": {
+      "oneOf": [
+        { "$ref": "#/$defs/definition" },
+        { "$ref": "#/$defs/member" }
+      ]
+    },
+    "definition": {
+      "type": "object",
+      "required": ["kind", "categories"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "definition" },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/categoryEntry" }
+        },
+        "process": { "$ref": "#/$defs/govActionId" }
+      }
+    },
+    "categoryEntry": {
+      "type": "object",
+      "required": ["key", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "$ref": "#/$defs/key" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "budget": {
+          "description": "Ceiling in lovelace, as a string.",
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "period": {
+          "type": "object",
+          "required": ["startEpoch", "endEpoch"],
+          "additionalProperties": false,
+          "properties": {
+            "startEpoch": { "type": "integer", "minimum": 0 },
+            "endEpoch": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/rewardAccount" }
+        }
+      }
+    },
+    "member": {
+      "type": "object",
+      "required": ["kind", "categoryId", "categoryKey"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "member" },
+        "categoryId": { "$ref": "#/$defs/govActionId" },
+        "categoryKey": { "$ref": "#/$defs/key" }
+      }
+    }
+  }
+}
