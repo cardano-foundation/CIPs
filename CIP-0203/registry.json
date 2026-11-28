@@ -27,6 +27,19 @@
   },
   {
     "scheme": 0,
+    "id": 69,
+    "name": "Dingo",
+    "status": "active",
+    "maintainers": ["wolf31o2"],
+    "repository": "https://github.com/blinklabs-io/dingo",
+    "payload_documentation": "https://github.com/blinklabs-io/dingo/blob/aa3c909d050a4dc050c533254225459a8af5b9be/docs/cip-0203.md",
+    "payload_definition": "https://raw.githubusercontent.com/blinklabs-io/dingo/aa3c909d050a4dc050c533254225459a8af5b9be/docs/cip-0203-payload-definition.json",
+    "registered": "2026-11-27",
+    "retired": null,
+    "description": "Independent Cardano full node implementation written in Go, producing blocks on Cardano mainnet."
+  },
+  {
+    "scheme": 0,
     "id": 73,
     "name": "Scarab",
     "status": "active",
