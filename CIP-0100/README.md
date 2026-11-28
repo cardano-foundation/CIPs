@@ -50,7 +50,7 @@ This section outlines the high level format and requirements of this standard.
 - The JSON document SHOULD be formatted for human readability, for the sake of anyone who is manually perusing the metadata.
 - That content SHOULD be hosted on a content addressable storage medium, such as IPFS or Arweave, to ensure immutability and long term archival.
 - The hash in the anchor MUST be the hash of the the raw bytes of the content, using the hashing algorithm specified in the `hashAlgorithm` field. Currently only blake2b-256 is supported.
-- For the purposes of hashing and signature validation, we should use the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification.
+- For the purposes of author signatures and their validation, the `body` is hashed using the [canonical RDF triplet representation](https://www.w3.org/TR/rdf-canon/), as outlined in the JSON-LD specification (see [Hashing and Signatures](#hashing-and-signatures)). This canonical form is not used for the anchor hash.
 
 ### Versioning
 
@@ -78,6 +78,9 @@ Note: Any URI's in the @context field SHOULD be content-addressable and robustly
 - CIP-0100 itself can be updated through the normal CIP process to provide additional clarity on any concepts that are giving people trouble with adoption, or to correct inaccuracies.
 - A new CIP, which defines new JSON-LD vocabulary to extend this one, which seeks broad adoption.
 - A new context document, used in the wild, but not officially standardized, and which doesn't seek broad adoption.
+
+See the [Extension Index](./extensions.md) for a list of CIPs extending
+this standard, how they combine, and known gotchas.
 
 ### Hosting
 
@@ -183,6 +186,12 @@ This section outlines a number of other best practices for tools and user experi
  - If you are hosting the content for the user, you SHOULD use a content-addressable hosting platform such as IPFS or Arweave
  - If the content is self-hosted, you SHOULD take care to warn the user about changing the content
    - For example, you CAN detect well-known content-addressable file storage platforms such as IPFS or Arweave, and display an extra warning if the content is not hosted on one of those
+ - When creating author witnesses, you MUST NOT sign a document in which any property of the `body` is not defined by its `@context`.
+   - JSON-LD silently drops undefined properties during expansion, so they are excluded from the canonicalized `body` and are not covered by the author signatures, even though they remain in the raw JSON.
+   - For example, you CAN detect this by expanding the document with a JSON-LD processor in a mode that fails on dropped properties, such as the `safe` mode of jsonld.js.
+ - When validating author witnesses, you SHOULD warn the user about any property of the `body` which is not defined by the document's `@context`, as it is not covered by the author signatures.
+ - You SHOULD display a reference with an unrecognized `@type` as a generic link, using its `label` and `uri`.
+   - Extensions to this standard may define additional reference types.
 
 ## Rationale: How does this CIP achieve its goals?
 
