@@ -119,23 +119,42 @@ production costing.
 
 ### Header size and propagation
 
-Size is the binding constraint for a post quantum KES leaf and this proposal
-states it rather than leaves it open. An ML-DSA-44 KES signature is 5364 bytes,
-so a full header is about 6 kilobytes, against a live maxBlockHeaderSize of 1100
-bytes at protocol version 11. This leaf therefore requires raising
-maxBlockHeaderSize to about 7000 bytes. It does not touch the block body limit of
-90112 bytes, the transaction limit of 16384 bytes, the slot schedule, or the tree
-structure. A 6 kilobyte header is a small addition to a block whose body can
-reach 90112 bytes, so the effect on what a node diffuses each block is modest.
+The diffusion cost of a larger header is bounded and measurable, and Cardano's
+own guardrails set the yardstick. Guardrail MBHS-05 asks that maxBlockHeaderSize
+stay within the TCP initial congestion window. RFC 6928 fixes that window at
+14600 bytes, and a message inside it is delivered in a single round trip before
+any acknowledgement is required, so its latency contribution is one round trip
+for any size up to that bound. The Ouroboros Praos diffusion delay is driven by
+those round trips, not by the byte count of a header that already fits the first
+window.
 
-The header growth bears on block propagation and on the activeSlotsCoeff margin.
-That is a networking and consensus decision for the ledger and consensus
-maintainers, not a cryptographic one settled here. What this proposal contributes
-to that decision is the exact header size for a named standardized leaf and a
-reference that produces it, so the propagation question can be evaluated against a
-fixed number rather than an estimate. Any lattice KES leaf crosses the 1100 byte
-limit, so the header change is required for this direction regardless of which
-leaf is chosen.
+An ML-DSA-44 KES leaf takes the header from about 1100 bytes to about 6000 bytes,
+which is well inside the 14600 byte window. The header therefore still diffuses
+in one round trip, so the KES leaf adds no round trip to block propagation.
+Verification rises from about 21 to about 51 microseconds, a 30 microsecond
+increase that does not register on the adoption path. The diffusion cost of this
+change is bounded and small.
+
+Guardrail MBHS-01 caps the header at 5000 bytes so that the majority of a block
+stays transaction payload, and its own rationale records that the bound may be
+varied when the protocol changes or maxBlockBodySize changes. A post quantum KES
+leaf is that protocol change. At a 6000 byte header against the 90112 byte body
+the payload is still about 94 percent of the block, so the intent of MBHS-01
+holds, and maxBlockHeaderSize is raised to fit the roughly 6000 byte header while
+staying inside the 14600 byte window. This does not touch the block body limit of
+90112 bytes, the transaction limit of 16384 bytes, the slot schedule, or the tree
+structure.
+
+This proposal does not size the header for the full post quantum set. The header
+also carries the VRF proof and the operational certificate, and a post quantum
+VRF has no standard yet and is the largest and least settled of the three
+artifacts. The 14600 byte window is the shared budget for all of them. The
+ML-DSA-44 KES leaf measured here takes about 5.4 kilobytes of that budget and
+leaves the rest, and the final header limit and any cross artifact tradeoff,
+including the activeSlotsCoeff lever that CPS-0030 raises, belong with the VRF
+decision. What this proposal fixes is the KES contribution as a measured input to
+that budget, shown to diffuse in one round trip and to keep the block majority as
+payload.
 
 ## Rationale: How does this CIP achieve its goals?
 
@@ -193,8 +212,9 @@ is already efficient for a post quantum leaf, its internal nodes being hashes.
   in the node and pass the conformance vectors published with this proposal.
 - maxBlockHeaderSize is raised and guardrail MBHS-01 is lifted so that a header
   carrying an ML-DSA-44 KES signature is valid.
-- Block production and verification interoperate across the activation, with the
-  measured header size assessed for propagation by the consensus maintainers.
+- The header stays within the TCP initial congestion window so that block
+  diffusion is unchanged at one round trip, and block production and verification
+  interoperate across the activation.
 
 ### Implementation Plan
 
@@ -212,6 +232,7 @@ is already efficient for a post quantum leaf, its internal nodes being hashes.
 - [cardano-base, Cardano.Crypto.KES.Sum](https://github.com/IntersectMBO/cardano-base)
 - [cardano-ledger, KES StandardCrypto](https://github.com/IntersectMBO/cardano-ledger)
 - [FIPS 204, ML-DSA](https://csrc.nist.gov/pubs/fips/204/final)
+- [RFC 6928, increasing TCP's initial window](https://www.rfc-editor.org/rfc/rfc6928)
 - [NIST post quantum cryptography, FN-DSA and FIPS 206 status](https://csrc.nist.gov/projects/post-quantum-cryptography)
 - [Cardano Constitution, guardrails MBHS-01 and MBHS-03](https://github.com/IntersectMBO/cardano-constitution)
 - [Reference instantiation and conformance vectors](https://github.com/quantova-inc/cardano-pq-tooling/tree/main/kes-mldsa)
