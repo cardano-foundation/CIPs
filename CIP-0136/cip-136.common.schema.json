@@ -53,7 +53,8 @@
                     "title": "WitnessAlgorithm",
                     "type": "string",
                     "enum": [
-                        "ed25519"
+                        "ed25519",
+                        "CIP-0008"
                     ]
                 },
                 "publicKey": {
@@ -103,6 +104,9 @@
                     "type": "string",
                     "title": "conclusion",
                     "description": "Closing conclusion of the rationale"
+                },
+                "internalVote": {
+                    "$ref": "#/definitions/internalVote"
                 }
             }
         },
@@ -134,22 +138,27 @@
             "properties": {
                 "constitutional": {
                     "type": "integer",
+                    "minimum": 0,
                     "title": "Constitutional Internal Vote Total"
                 },
                 "unconstitutional": {
                     "type": "integer",
+                    "minimum": 0,
                     "title": "Unconstitutional Internal Vote Total"
                 },
                 "abstain": {
                     "type": "integer",
+                    "minimum": 0,
                     "title": "Abstain Internal Vote Total"
                 },
                 "didNotVote": {
                     "type": "integer",
+                    "minimum": 0,
                     "title": "Total of individuals who did not vote"
                 },
                 "againstVote": {
                     "type": "integer",
+                    "minimum": 0,
                     "title": "Total of individuals who did not want the member to vote"
                 }
             }

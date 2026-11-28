@@ -53,8 +53,10 @@
                     "description": "A space where the registrant can to list the qualifications they hold that are relevant to their role as a DRep, maximum 1000."
                 },
                 "doNotList": {
-                    "type": "string",
-                    "enum": ["true", "false"],
+                    "oneOf": [
+                        { "type": "boolean" },
+                        { "type": "string", "enum": ["true", "false"] }
+                    ],
                     "title": "Do Not List",
                     "description": "A true or false value means that the DRep does not want to show up in tooling that displays DReps."
                 },

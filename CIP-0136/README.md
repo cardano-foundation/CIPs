@@ -72,6 +72,13 @@ i.e. translation tools, rationale comparison tools.
 
 We define a specification for fields which can be added to CC votes.
 
+### Witnesses
+
+Authors' witnesses MAY use any `witnessAlgorithm` defined by CIP-100 (`ed25519`)
+or by [CIP-108][CIP-108-witness] (`CIP-0008`).
+
+[CIP-108-witness]: https://github.com/cardano-foundation/CIPs/tree/master/CIP-0108#new-witness-type
+
 ### Extended Body Vocabulary
 
 The following properties extend the potential vocabulary of [CIP-100](https://github.com/cardano-foundation/CIPs/tree/master/CIP-0100)'s `body` property.
@@ -123,31 +130,31 @@ The following properties extend the potential vocabulary of [CIP-100](https://gi
 
 ##### `constitutional`
 
-- A positive integer.
+- A non-negative integer.
 - The author SHOULD use this field to represent a number of internal votes for the constitutionality of the action.
 - Optional.
 
 ##### `unconstitutional`
 
-- A positive integer.
+- A non-negative integer.
 - The author SHOULD use this field to represent a number of internal votes against the constitutionality of the action.
 - Optional.
 
 ##### `abstain`
 
-- A positive integer.
+- A non-negative integer.
 - The author SHOULD use this field to represent a number of internal abstain votes for the action.
 - Optional.
 
 ##### `didNotVote`
 
-- A positive integer.
+- A non-negative integer.
 - The author SHOULD use this field to represent a number of unused internal votes.
 - Optional.
 
 ##### `againstVote`
 
-- A positive integer.
+- A non-negative integer.
 - The author SHOULD use this field to represent a number of internal votes to not vote on the action.
 - Optional.
 
@@ -205,7 +212,7 @@ By separating this from `rationaleStatement` we encourage specific discussion of
 This field, gives the ability for CC members who are operated by multiple individuals to share insights on specific voting choice of the individuals.
 This could add additional context to the workings and opinions of the individuals who operate the CC member.
 
-### `relevantArticles`
+### `RelevantArticles`
 
 By providing a new type to CIP-100 `References` we encourage tooling to differentiate clearly `References` to the constitution from other types of `Reference`.
 
