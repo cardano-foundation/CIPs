@@ -1,5 +1,5 @@
 ---
-CIP: ?
+CIP: "?"
 Title: ML-DSA-44 KES Leaf for Post Quantum Block Production
 Category: Consensus
 Status: Proposed
@@ -7,9 +7,10 @@ Authors:
   - Quantova Inc <https://github.com/quantova-inc>
 Implementors: []
 Discussions:
-  - https://github.com/cardano-foundation/CIPs/pull/1300
-Solution-To:
-  - CPS-0030
+  - Proposal PR: https://github.com/cardano-foundation/CIPs/pull/1341
+  - Related CIP-0206 thread: https://github.com/cardano-foundation/CIPs/pull/1300
+Solution To:
+  - CPS-0030: https://github.com/cardano-foundation/CIPs/blob/master/CPS-0030/README.md
 Created: 2026-11-28
 License: CC-BY-4.0
 ---
@@ -25,7 +26,7 @@ working reference instantiation, measured sizes and verify cost, a versioned lea
 encoding for agility, and the one protocol change this requires, a larger block
 header limit.
 
-## Motivation
+## Motivation: Why is this CIP necessary?
 
 Cardano block production signs each header with a key evolving signature so that a
 compromised hot key cannot forge past blocks. Today the leaf of that KES is
@@ -63,14 +64,14 @@ leaf.
 Leaf scheme identifier. The operational certificate gains a two byte leaf scheme
 id so the KES leaf can move to a later scheme without a second format break. Id 1
 is Ed25519, the current leaf. Id 2 is ML-DSA-44. This is the same agility pattern
-I used in CIP-0206, where a versioned encoding names the scheme rather than
+used in CIP-0206, where a versioned encoding names the scheme rather than
 dispatching on field width.
 
 Scope. This proposal changes the KES leaf only. The operational certificate cold
 key stays classical in this step. Making the cold key post quantum is a separate
 and additive change and I flag it rather than fold it in silently.
 
-## Measured results
+### Measured results
 
 I built a reference instantiation of the Cardano sum composition that is a
 faithful mirror of cardano-base, same Blake2b pairing, same seed split, same
@@ -90,7 +91,7 @@ was refused at any other period, and was refused under a tampered header. Timing
 are a single machine release build and are indicative only, not a production
 costing. Verification cost is not a concern against a 20 second slot.
 
-## Rationale
+## Rationale: How does this CIP achieve its goals?
 
 Why ML-DSA-44. ML-DSA is the NIST standardized lattice signature under FIPS 204.
 It has a fixed signature size, which the KES fixed size serialization needs, and a
@@ -119,24 +120,43 @@ than ship a weak VRF claim. It does not make the cold key post quantum, which is
 separate step. It does not require a new hashing or tree design, the sum tree is
 already efficient for a post quantum leaf because its internal nodes are hashes.
 
-## Path to active
+## Path to Active
 
 The in node KES change is consensus critical and its adoption needs a hardfork
 through the standard Cardano process. That work belongs to the ledger and
 consensus maintainers. This proposal fixes the leaf scheme, the encoding and the
 verification semantics against FIPS 204 so the change can be implemented against a
-precise target with vectors. I provide the reference instantiation and conformance
-vectors in a Quantova repository and link them here rather than merge code, which
-matches how CIP-0206 was handled. I offer to maintain the vectors and support
-conformance.
+precise target with vectors.
+
+### Acceptance Criteria
+
+- The ML-DSA-44 KES leaf and the two byte leaf scheme identifier are implemented
+  in the node and pass the conformance vectors published with this CIP.
+- maxBlockHeaderSize is raised and guardrail MBHS-01 is lifted so a header
+  carrying an ML-DSA-44 KES signature is valid.
+- The change is activated through a hardfork, with block production and
+  verification interoperating across the upgrade.
+
+### Implementation Plan
+
+- The ledger and consensus maintainers implement the leaf and the encoding in the
+  node against the vectors and semantics fixed here.
+- I provide and maintain the reference instantiation and the conformance vectors
+  in a Quantova repository and support conformance.
+- The parameter and guardrail change is proposed through the normal governance
+  process ahead of the hardfork that activates the leaf.
 
 ## References
 
-CPS-0030 Quantum secure settlement layer.
-cardano-base Cardano.Crypto.KES.Sum.
-Cardano ledger KES StandardCrypto type.
-MMM, Composition and Efficiency Tradeoffs for Forward Secure Digital Signatures.
-FIPS 204 ML-DSA.
-Cardano Constitution, guardrail MBHS-01, maxBlockHeaderSize must not exceed 5000 bytes.
-Live protocol parameters, epoch 670, protocol version 11.
-Reference and conformance vectors, https://github.com/quantova-inc/cardano-pq-tooling/tree/main/kes-mldsa
+- CPS-0030 Quantum secure settlement layer.
+- cardano-base Cardano.Crypto.KES.Sum.
+- Cardano ledger KES StandardCrypto type.
+- MMM, Composition and Efficiency Tradeoffs for Forward Secure Digital Signatures.
+- FIPS 204 ML-DSA.
+- Cardano Constitution, guardrail MBHS-01, maxBlockHeaderSize must not exceed 5000 bytes.
+- Live protocol parameters, epoch 670, protocol version 11.
+- Reference and conformance vectors, https://github.com/quantova-inc/cardano-pq-tooling/tree/main/kes-mldsa
+
+## Copyright
+
+This CIP is licensed under CC-BY-4.0.
