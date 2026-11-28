@@ -128,18 +128,18 @@ regardless of which leaf is chosen.
 ## Rationale: How does this CIP achieve its goals?
 
 Why ML-DSA-44 and not Falcon-512. PR 1320 measures a Falcon-512 leaf in the same
-Sum6KES and concludes, correctly, that size is the main constraint. I agree with
-that finding and my numbers sit beside it. Two points about the comparison need
-stating plainly. First, the Falcon measured in PR 1320 is not the scheme NIST is
-standardizing. It is Algorand's deterministic Falcon-512, and FN-DSA, the Falcon
-based signature in draft FIPS 206, is not finalized and is not compatible with
-it. Choosing a Falcon KES now would commit Cardano to a non standard variant and
-a later migration to FN-DSA once it is published, which is a second format break.
-Second, a KES leaf must be deterministic in its seed, and to meet that on Falcon
-PR 1320 uses integer emulation of the floating point arithmetic Falcon signing
-needs. The published literature reports that this emulation runs substantially
-slower than native floating point Falcon, so the Falcon key generation and
-signing costs reported in PR 1320 include that emulation penalty.
+Sum6KES and reports that size is the main constraint. Size is the constraint for
+any lattice leaf and my numbers sit beside that one, but the Falcon figures do
+not carry the weight they look like they carry, for two reasons. First, the
+Falcon measured in PR 1320 is not the scheme NIST is standardizing. It is
+Algorand's deterministic Falcon-512, and FN-DSA, the Falcon based signature in
+draft FIPS 206, is not finalized and is not compatible with it. Building a KES on
+Falcon now buys a non standard variant and a forced migration to FN-DSA once it
+is published, which is a second format break. Second, a KES leaf must be
+deterministic in its seed, and to meet that on Falcon PR 1320 runs Falcon's
+floating point in integer emulation. The published literature reports that this
+emulation runs far slower than native floating point Falcon, so the Falcon key
+generation and signing figures reported there are inflated by the emulation.
 
 ML-DSA-44 avoids both problems. It is finalized under FIPS 204 today with public
 ACVP vectors, and it is integer only by design, so its determinism and its
