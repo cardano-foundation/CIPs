@@ -1,0 +1,117 @@
+{
+  "$schema": "https://cips.cardano.org/cips/cipXXXX/schemas/assurance-v2.json",
+  "preamble": {
+    "title": "Escrow contract — formal verification assurance",
+    "description": "Machine-checked safety properties of the escrow validator, verified with Blaster.",
+    "version": "1.0.0",
+    "authors": [
+      "Input Output — Blaster team <blaster@iohk.io>"
+    ],
+    "created": "2026-08-11",
+    "license": "CC-BY-4.0"
+  },
+  "blueprint": {
+    "uri": "https://raw.githubusercontent.com/example-org/escrow/v1.2.0/plutus.json",
+    "hash": {
+      "alg": "sha256",
+      "digest": "3f8a1c2b9d4e5f60718293a4b5c6d7e8f9012a3b4c5d6e7f8091a2b3c4d5e6f7"
+    }
+  },
+  "languages": {
+    "ual": {
+      "name": "Universal Annotation Language",
+      "version": "0.4",
+      "uri": "https://github.com/input-output-hk/UniversalAnnotationLanguage",
+      "description": "Property specification language used by Blaster."
+    }
+  },
+  "tools": {
+    "blaster": {
+      "name": "Blaster",
+      "version": "0.3.1",
+      "uri": "https://github.com/input-output-hk/Lean-blaster",
+      "description": "SMT-based formal verification tool for UPLC validators."
+    }
+  },
+  "properties": [
+    {
+      "id": "no-locked-funds",
+      "title": "Funds can always be recovered",
+      "scope": {
+        "validators": ["escrow-spend"]
+      },
+      "statement": {
+        "text": "For every reachable state of the escrow, either the buyer or the seller can construct a transaction that spends the locked UTxO.",
+        "formal": {
+          "language": "ual",
+          "uri": "https://raw.githubusercontent.com/example-org/escrow/v1.2.0/verification/no-locked-funds.ual"
+        }
+      },
+      "assumptions": [
+        {
+          "text": "The datum of the escrow UTxO conforms to the blueprint's datum schema."
+        },
+        {
+          "text": "The transaction validity interval is finite."
+        }
+      ],
+      "tags": ["safety", "liveness"],
+      "evidence": [
+        {
+          "method": "smt-check",
+          "verifier": "Input Output — Blaster team",
+          "tool": "blaster",
+          "outcome": "verified",
+          "date": "2026-08-01",
+          "scriptHash": "7b3c9d1e5f2a8b4c6d0e9f317a5b8c2d4e6f0a1b3c5d7e9f2a4b6c8d",
+          "artifact": {
+            "uri": "https://github.com/example-org/escrow/releases/download/v1.2.0/escrow-proofs.tar.gz",
+            "hash": {
+              "alg": "sha256",
+              "digest": "ab31c7e2f4d5968a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f708192a3b4c5d6"
+            },
+            "mediaType": "application/gzip"
+          }
+        }
+      ]
+    },
+    {
+      "id": "redeem-authorized",
+      "title": "Only authorized parties can move funds",
+      "scope": {
+        "validators": ["escrow-spend"]
+      },
+      "statement": {
+        "text": "Before the deadline, only a transaction signed by the buyer can spend the escrow UTxO; after the deadline, only a transaction signed by the seller can.",
+        "formal": {
+          "language": "ual",
+          "uri": "https://raw.githubusercontent.com/example-org/escrow/v1.2.0/verification/redeem-authorized.ual"
+        }
+      },
+      "assumptions": [
+        {
+          "text": "The datum of the escrow UTxO conforms to the blueprint's datum schema."
+        }
+      ],
+      "tags": ["safety", "authorization"],
+      "evidence": [
+        {
+          "method": "smt-check",
+          "verifier": "Input Output — Blaster team",
+          "tool": "blaster",
+          "outcome": "verified",
+          "date": "2026-08-01",
+          "scriptHash": "7b3c9d1e5f2a8b4c6d0e9f317a5b8c2d4e6f0a1b3c5d7e9f2a4b6c8d",
+          "artifact": {
+            "uri": "https://github.com/example-org/escrow/releases/download/v1.2.0/escrow-proofs.tar.gz",
+            "hash": {
+              "alg": "sha256",
+              "digest": "ab31c7e2f4d5968a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f708192a3b4c5d6"
+            },
+            "mediaType": "application/gzip"
+          }
+        }
+      ]
+    }
+  ]
+}
