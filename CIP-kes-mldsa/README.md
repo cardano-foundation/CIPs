@@ -125,8 +125,8 @@ so a full header is about 6 kilobytes, against a live maxBlockHeaderSize of 1100
 bytes at protocol version 11. This leaf therefore requires raising
 maxBlockHeaderSize to about 7000 bytes. It does not touch the block body limit of
 90112 bytes, the transaction limit of 16384 bytes, the slot schedule, or the tree
-structure. A 6 kilobyte header is a small fraction of a full block and sits
-inside the existing body budget for diffusion.
+structure. A 6 kilobyte header is a small addition to a block whose body can
+reach 90112 bytes, so the effect on what a node diffuses each block is modest.
 
 The header growth bears on block propagation and on the activeSlotsCoeff margin.
 That is a networking and consensus decision for the ledger and consensus
@@ -213,7 +213,7 @@ is already efficient for a post quantum leaf, its internal nodes being hashes.
 - [cardano-ledger, KES StandardCrypto](https://github.com/IntersectMBO/cardano-ledger)
 - [FIPS 204, ML-DSA](https://csrc.nist.gov/pubs/fips/204/final)
 - [NIST post quantum cryptography, FN-DSA and FIPS 206 status](https://csrc.nist.gov/projects/post-quantum-cryptography)
-- [Cardano Constitution, guardrails MBHS-01 and MBHS-03](https://constitution.gov.tools)
+- [Cardano Constitution, guardrails MBHS-01 and MBHS-03](https://github.com/IntersectMBO/cardano-constitution)
 - [Reference instantiation and conformance vectors](https://github.com/quantova-inc/cardano-pq-tooling/tree/main/kes-mldsa)
 
 ## Copyright
